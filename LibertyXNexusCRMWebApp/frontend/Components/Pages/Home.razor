@@ -1,7 +1,60 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Nexus Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="home-page">
+    <h1>Nexus Prototype Pages</h1>
+    <p>Select a page to open it.</p>
 
-Welcome to your new app.
+    <div class="page-links">
+        <a href="/nexus/login">Login</a>
+        <a href="/nexus/register">Register</a>
+        <a href="/nexus/advisor">Advisor Dashboard</a>
+        <a href="/nexus/new-client">New Client</a>
+        <a href="/nexus/client">Client Dashboard</a>
+        <a href="/nexus/documents">Documents</a>
+        <a href="/nexus/calendar">Calendar</a>
+        <a href="/nexus/messages">Messages / Notifications</a>
+        <a href="/nexus/assistant">AI Chatbot</a>
+    </div>
+</div>
+
+<style>
+    .home-page {
+        max-width: 900px;
+        margin: 60px auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+        .home-page h1 {
+            margin-bottom: 8px;
+        }
+
+        .home-page p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+    .page-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+    }
+
+        .page-links a {
+            display: block;
+            padding: 16px 18px;
+            background: #062b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+            .page-links a:hover {
+                background: #0a3b61;
+                transform: translateY(-2px);
+            }
+</style>

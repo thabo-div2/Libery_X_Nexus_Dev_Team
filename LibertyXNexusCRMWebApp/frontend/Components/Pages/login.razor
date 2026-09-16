@@ -1,5 +1,50 @@
-﻿<h3>login</h3>
+﻿@page "/login"
 
-@code {
+<div class="auth-page">
+    <section class="auth-brand-panel">
+        <div class="auth-logo">
+            <div class="brand-mark">N</div>
+            <div>
+                <div class="brand-name">Nexus</div>
+            </div>
+        </div>
 
-}
+        <div class="auth-copy">
+            <h1>One place for your<br />policies, paperwork and<br />advisor.</h1>
+            <p>Track every case from intake to issue, sign documents digitally, and get answers the moment you need them.</p>
+
+            <ul class="auth-benefits">
+                <li><span>✓</span> Live case status across Liberty &amp; Standard Bank</li>
+                <li><span>✓</span> Pre-populated, e-signable documents</li>
+                <li><span>✓</span> AI assistant with advisor handoff</li>
+            </ul>
+        </div>
+
+        <div class="auth-footer">FSCA compliant · POPIA aligned · Audit logged</div>
+    </section>
+
+    <section class="auth-form-panel">
+        <div class="auth-form-card">
+            <h2>Welcome back</h2>
+            <p class="muted">Sign in to your Nexus account.</p>
+
+            <form>
+                <label>Email address</label>
+                <input type="email" value="you@example.co.za" />
+
+                <label>Password</label>
+                <input type="password" value="password" />
+
+                <div class="form-row between small-row">
+                    <label class="checkline"><input type="checkbox" /> <span>Keep me signed in</span></label>
+                    <a href="#" class="text-link">Forgot password?</a>
+                </div>
+
+                <button type="button" class="btn btn-primary full">Sign in →</button>
+                <button type="button" class="btn btn-secondary full">Continue as client</button>
+
+                <div class="auth-switch">New here? <a href="/nexus/register">Create an account</a></div>
+            </form>
+        </div>
+    </section>
+</div>
