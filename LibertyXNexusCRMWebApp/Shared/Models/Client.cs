@@ -12,6 +12,7 @@ namespace Shared.Models
         [Key]
         public int ClientId { get; set; }
 
+        [Required, MaxLength(100)]
         public string IdentityProviderSubjectId { get; set; } = string.Empty;
 
         [Required, MaxLength(100)]
@@ -40,7 +41,7 @@ namespace Shared.Models
         public Advisor? Advisor { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         // Navigation properties
         public ICollection<Policy> Policies { get; set; } = new List<Policy>();
