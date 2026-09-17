@@ -1,0 +1,483 @@
+﻿/* ========================================
+   REGISTER PAGE
+   ======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+.register-page {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    background: #f7f9fc;
+}
+
+
+
+/* ========================================
+   LEFT BRAND PANEL
+   ======================================== */
+
+.brand-panel {
+    min-height: 100vh;
+    background: #062a47;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 48px 50px 44px;
+    position: relative;
+}
+
+
+
+/* LOGO */
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+    background: #ff872c;
+    color: #0c2c45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+.brand-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+
+
+/* ========================================
+   BRAND TEXT
+   ======================================== */
+
+.brand-content {
+    margin-top: auto;
+    margin-bottom: auto;
+    max-width: 470px;
+}
+
+
+    .brand-content h1 {
+        margin: 0 0 20px;
+        color: white;
+        font-size: 37px;
+        font-weight: 400;
+        line-height: 1.08;
+        letter-spacing: -0.9px;
+    }
+
+
+.brand-description {
+    margin: 0;
+    max-width: 450px;
+    color: #aebdca;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+
+
+/* ========================================
+   BENEFITS
+   ======================================== */
+
+.benefits {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #c3ced8;
+    font-size: 12px;
+}
+
+
+.benefit-icon {
+    color: #ff872c;
+    font-size: 17px;
+    line-height: 1;
+}
+
+
+
+/* ========================================
+   LEFT FOOTER
+   ======================================== */
+
+.brand-footer {
+    color: #8095a7;
+    font-size: 10px;
+    letter-spacing: 0.1px;
+}
+
+
+
+/* ========================================
+   RIGHT PANEL
+   ======================================== */
+
+.form-panel {
+    min-height: 100vh;
+    background: #f7f9fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+
+
+/* ========================================
+   REGISTER FORM CONTAINER
+   ======================================== */
+
+.register-form {
+    width: 100%;
+    max-width: 390px;
+    transform: translateY(-4px);
+}
+
+
+
+/* ========================================
+   HEADING
+   ======================================== */
+
+.register-heading {
+    margin-bottom: 27px;
+}
+
+
+    .register-heading h2 {
+        margin: 0 0 7px;
+        color: #132b3f;
+        font-size: 25px;
+        font-weight: 650;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+
+
+    .register-heading p {
+        margin: 0;
+        color: #8896a2;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+
+
+/* ========================================
+   FORM
+   ======================================== */
+
+form {
+    width: 100%;
+}
+
+
+.form-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+
+    .form-group label {
+        margin-bottom: 6px;
+        color: #50616e;
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+
+    .form-group input {
+        width: 100%;
+        height: 43px;
+        padding: 0 12px;
+        border: 1px solid #cfd8df;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #53616d;
+        font-family: inherit;
+        font-size: 11px;
+        outline: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+
+        .form-group input::placeholder {
+            color: #8e99a3;
+        }
+
+
+        .form-group input:focus {
+            border-color: #174361;
+            box-shadow: 0 0 0 2px rgba(23, 67, 97, 0.08);
+        }
+
+
+
+/* ========================================
+   FIRST + LAST NAME
+   ======================================== */
+
+.name-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+
+    .name-grid .form-group {
+        margin-bottom: 16px;
+    }
+
+
+
+/* ========================================
+   POPIA CONSENT
+   ======================================== */
+
+.consent-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 1px;
+    margin-bottom: 17px;
+    cursor: pointer;
+}
+
+
+    .consent-row input {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        margin: 1px 0 0;
+        accent-color: #0a3657;
+    }
+
+
+    .consent-row span {
+        color: #75838e;
+        font-size: 9px;
+        line-height: 1.35;
+    }
+
+
+
+/* ========================================
+   CREATE ACCOUNT BUTTON
+   ======================================== */
+
+.create-account-button {
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 4px;
+    background: #0b385a;
+    color: white;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+
+    .create-account-button:hover {
+        background: #082f4d;
+    }
+
+
+    .create-account-button:active {
+        transform: translateY(1px);
+    }
+
+
+
+/* ========================================
+   LOGIN LINK
+   ======================================== */
+
+.login-switch {
+    margin-top: 17px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    color: #8b969f;
+    font-size: 10px;
+}
+
+
+    .login-switch a {
+        color: #143853;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+
+        .login-switch a:hover {
+            text-decoration: underline;
+        }
+
+
+
+/* ========================================
+   SMALLER DESKTOP
+   ======================================== */
+
+@media (max-width: 1200px) {
+
+    .brand-panel {
+        padding: 40px;
+    }
+
+
+    .brand-content h1 {
+        font-size: 34px;
+    }
+
+
+    .register-form {
+        max-width: 370px;
+    }
+}
+
+
+
+/* ========================================
+   TABLETS
+   ======================================== */
+
+@media (max-width: 850px) {
+
+    .register-page {
+        grid-template-columns: 1fr;
+    }
+
+
+    .brand-panel {
+        min-height: auto;
+        padding: 28px 32px;
+    }
+
+
+    .brand-content {
+        margin-top: 65px;
+        margin-bottom: 65px;
+    }
+
+
+        .brand-content h1 {
+            font-size: 31px;
+        }
+
+
+    .brand-footer {
+        margin-top: 20px;
+    }
+
+
+    .form-panel {
+        min-height: auto;
+        padding: 70px 30px;
+    }
+
+
+    .register-form {
+        transform: none;
+    }
+}
+
+
+
+/* ========================================
+   MOBILE
+   ======================================== */
+
+@media (max-width: 560px) {
+
+    .register-page {
+        display: block;
+    }
+
+
+    .brand-panel {
+        padding: 22px 24px 35px;
+    }
+
+
+    .brand-content {
+        margin-top: 55px;
+        margin-bottom: 40px;
+    }
+
+
+        .brand-content h1 {
+            font-size: 29px;
+        }
+
+
+    .brand-description {
+        font-size: 11px;
+    }
+
+
+    .benefits {
+        margin-top: 25px;
+        gap: 14px;
+    }
+
+
+    .benefit-item {
+        font-size: 11px;
+    }
+
+
+    .form-panel {
+        padding: 55px 24px 70px;
+    }
+
+
+    .register-heading h2 {
+        font-size: 23px;
+    }
+
+
+    .name-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}

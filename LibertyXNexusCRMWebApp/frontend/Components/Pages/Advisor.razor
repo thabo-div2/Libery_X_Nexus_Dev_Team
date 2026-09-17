@@ -1,135 +1,157 @@
 ﻿@page "/advisor"
 
-<NexusShell Title="Good afternoon, Rudolf!"
-            Subtitle="38 active cases · 11 waiting on client action"
+<PageTitle>Advisor Dashboard | Nexus</PageTitle>
+
+<NexusShell Title="Advisor Dashboard"
+            Subtitle="Manage your clients, cases and documents"
             ShowPrimaryAction="true">
+
+    <!-- ==============================
+         TOP STAT CARDS
+         ============================== -->
+
     <div class="stats-grid">
+
         <div class="stat-card">
             <span class="eyebrow">ACTIVE CASES</span>
-            <strong>38</strong>
-            <span class="stat-note">↗ +4 this month</span>
+            <strong class="stat-value">--</strong>
+            <span class="stat-note">No data available</span>
         </div>
+
         <div class="stat-card">
             <span class="eyebrow">AWAITING DOCUMENTS</span>
-            <strong>11</strong>
-            <span class="stat-note">7 overdue</span>
+            <strong class="stat-value">--</strong>
+            <span class="stat-note">No data available</span>
         </div>
+
         <div class="stat-card">
             <span class="eyebrow">MEETINGS THIS WEEK</span>
-            <strong>7</strong>
-            <span class="stat-note">↗ 2 today</span>
+            <strong class="stat-value">--</strong>
+            <span class="stat-note">No data available</span>
         </div>
+
         <div class="stat-card">
             <span class="eyebrow">VALUE IN PIPELINE</span>
-            <strong>R 4.2m</strong>
-            <span class="stat-note">↗ R 180k Jul</span>
+            <strong class="stat-value">--</strong>
+            <span class="stat-note">No data available</span>
         </div>
+
     </div>
 
+
+    <!-- ==============================
+         MAIN DASHBOARD
+         ============================== -->
+
     <div class="dashboard-grid">
-        <section class="card pipeline-card">
-            <div class="card-head">
+
+        <!-- CASE PIPELINE -->
+        <section class="dashboard-card pipeline-card">
+
+            <div class="card-header">
+
                 <h3>Case pipeline</h3>
+
                 <div class="segmented">
                     <button class="active">All</button>
                     <button>Liberty</button>
                     <button>Standard Bank</button>
                 </div>
+
             </div>
 
+
             <div class="table-wrap">
+
                 <table class="nexus-table">
+
                     <thead>
                         <tr>
                             <th>CLIENT</th>
                             <th>PRODUCT</th>
                             <th>INSTITUTION</th>
-                            <th>STATUS</th>
+                            <th>STAGE</th>
                             <th>UPDATED</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        <tr>
-                            <td><strong>Thandi Mokoena</strong></td>
-                            <td>Retirement Annuity</td>
-                            <td>Liberty</td>
-                            <td><span class="pill amber">Awaiting FICA</span></td>
-                            <td>2h ago</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Pieter van Wyk</strong></td>
-                            <td>Life Cover</td>
-                            <td>Standard Bank</td>
-                            <td><span class="pill green">KYC verified</span></td>
-                            <td>Yesterday</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Aisha Patel</strong></td>
-                            <td>Investment Plan</td>
-                            <td>Liberty</td>
-                            <td><span class="pill red">Info incomplete</span></td>
-                            <td>3 days ago</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Sipho Dlamini</strong></td>
-                            <td>Tax-Free Savings</td>
-                            <td>Standard Bank</td>
-                            <td><span class="pill green">Issued</span></td>
-                            <td>5 Aug</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Marine Coetzee</strong></td>
-                            <td>Disability Cover</td>
-                            <td>Liberty</td>
-                            <td><span class="pill amber">Awaiting signature</span></td>
-                            <td>6 Aug</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Johan Steyn</strong></td>
-                            <td>Estate Review</td>
-                            <td>Standard Bank</td>
-                            <td><span class="pill blue">Consultation booked</span></td>
-                            <td>7 Aug</td>
-                        </tr>
                     </tbody>
+
                 </table>
+
+
+                <div class="empty-state">
+                    <strong>No cases yet</strong>
+
+                    <span>
+                        Cases will appear here once they have been added.
+                    </span>
+                </div>
+
             </div>
+
         </section>
 
+
+        <!-- ==============================
+             RIGHT SIDE
+             ============================== -->
+
         <aside class="right-stack">
-            <section class="card">
-                <h3>Upcoming deadlines</h3>
-                <div class="deadline-list">
-                    <div class="deadline-row"><span>FICA expiry — A. Patel</span><span class="pill red">Due in 2 days</span></div>
-                    <div class="deadline-row"><span>Annual review — J. Steyn</span><span class="pill amber">16 Aug</span></div>
-                    <div class="deadline-row"><span>Liberty submission cut-off</span><span class="pill amber">18 Aug</span></div>
-                    <div class="deadline-row"><span>Policy anniversary — S. Dlamini</span><span class="pill blue">21 Aug</span></div>
+
+            <!-- UPCOMING DEADLINES -->
+            <section class="dashboard-card deadlines-card">
+
+                <div class="card-header simple">
+                    <h3>Upcoming deadlines</h3>
                 </div>
+
+                <div class="empty-section">
+                    No upcoming deadlines.
+                </div>
+
             </section>
 
-            <section class="card">
-                <h3>Cases by institution</h3>
-                <div class="progress-item">
-                    <div class="progress-label"><span>Liberty</span><span>21 cases</span></div>
-                    <div class="progress"><span style="width:72%"></span></div>
+
+            <!-- CASES BY INSTITUTION -->
+            <section class="dashboard-card institution-card">
+
+                <div class="card-header simple">
+                    <h3>Cases by institution</h3>
                 </div>
-                <div class="progress-item">
-                    <div class="progress-label"><span>Standard Bank</span><span>14 cases</span></div>
-                    <div class="progress"><span style="width:51%"></span></div>
+
+                <div class="empty-section">
+                    No institution data available.
                 </div>
-                <div class="progress-item">
-                    <div class="progress-label"><span>Other</span><span>3 cases</span></div>
-                    <div class="progress"><span style="width:16%"></span></div>
-                </div>
+
             </section>
 
-            <a href="/nexus/assistant" class="assistant-banner">
-                <div>
-                    <strong>Ask the Nexus assistant</strong>
-                    <span>Draft correspondence, prep cases, summarise documents</span>
+
+            <!-- AI ASSISTANT -->
+            <a href="/assistant"
+               class="assistant-banner">
+
+                <div class="assistant-copy">
+
+                    <strong>
+                        Ask the Nexus assistant
+                    </strong>
+
+                    <span>
+                        Draft correspondence, prepare cases and summarise documents
+                    </span>
+
                 </div>
-                <span>↗</span>
+
+                <span class="assistant-arrow">
+                    ↗
+                </span>
+
             </a>
+
         </aside>
+
     </div>
+
 </NexusShell>

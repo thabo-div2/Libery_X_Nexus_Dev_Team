@@ -1,63 +1,200 @@
 @page "/register"
+@layout EmptyLayout
 
-<div class="auth-page">
-    <section class="auth-brand-panel">
-        <div class="auth-logo">
+<PageTitle>Create Account | Nexus</PageTitle>
+
+<div class="register-page">
+
+    <!-- LEFT SIDE -->
+    <section class="brand-panel">
+
+        <div class="brand-logo">
             <div class="brand-mark">N</div>
-            <div class="brand-name">Nexus</div>
+            <span class="brand-name">Nexus</span>
         </div>
 
-        <div class="auth-copy">
-            <h1>One place for your<br />policies, paperwork and<br />advisor.</h1>
-            <p>Track every case from intake to issue, sign documents digitally, and get answers the moment you need them.</p>
 
-            <ul class="auth-benefits">
-                <li><span>✓</span> Live case status across Liberty &amp; Standard Bank</li>
-                <li><span>✓</span> Pre-populated, e-signable documents</li>
-                <li><span>✓</span> AI assistant with advisor handoff</li>
-            </ul>
-        </div>
+        <div class="brand-content">
 
-        <div class="auth-footer">FSCA compliant · POPIA aligned · Audit logged</div>
-    </section>
+            <h1>
+                One place for your<br />
+                policies, paperwork and<br />
+                adviser.
+            </h1>
 
-    <section class="auth-form-panel">
-        <div class="auth-form-card register-card">
-            <h2>Create your account</h2>
-            <p class="muted">Your advisor invited you to Nexus. Takes about two minutes.</p>
+            <p class="brand-description">
+                Track every case from intake to issue, sign documents digitally,
+                and get answers the moment you need them.
+            </p>
 
-            <form>
-                <div class="form-grid two">
-                    <div>
-                        <label>First name</label>
-                        <input value="Thandi" />
-                    </div>
-                    <div>
-                        <label>Last name</label>
-                        <input value="Mokoena" />
-                    </div>
+
+            <div class="benefits">
+
+                <div class="benefit-item">
+                    <span class="benefit-icon">⌾</span>
+                    <span>
+                        Live case status across Liberty &amp; Standard Bank
+                    </span>
                 </div>
 
-                <label>Email address</label>
-                <input type="email" value="you@example.co.za" />
+                <div class="benefit-item">
+                    <span class="benefit-icon">⌾</span>
+                    <span>
+                        Prepopulated, e-signable documents
+                    </span>
+                </div>
 
-                <label>Mobile number</label>
-                <input value="+27 82 000 0000" />
+                <div class="benefit-item">
+                    <span class="benefit-icon">⌾</span>
+                    <span>
+                        AI assistant with adviser handoff
+                    </span>
+                </div>
 
-                <label>ID number</label>
-                <input value="9001015800086" />
+            </div>
 
-                <label>Password</label>
-                <input type="password" value="password123" />
+        </div>
 
-                <label class="checkline terms">
+
+        <div class="brand-footer">
+            FSCA compliant · POPIA aligned · Audit logged
+        </div>
+
+    </section>
+
+
+
+    <!-- RIGHT SIDE -->
+    <section class="form-panel">
+
+        <div class="register-form">
+
+            <div class="register-heading">
+                <h2>Create your account</h2>
+
+                <p>
+                    Your adviser invited you to Nexus. Takes about two minutes.
+                </p>
+            </div>
+
+
+            <form>
+
+                <!-- FIRST NAME / LAST NAME -->
+                <div class="name-grid">
+
+                    <div class="form-group">
+                        <label for="firstName">
+                            First name
+                        </label>
+
+                        <input id="firstName"
+                               type="text"
+                               value="Thandi"
+                               autocomplete="given-name" />
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="lastName">
+                            Last name
+                        </label>
+
+                        <input id="lastName"
+                               type="text"
+                               value="Mokoena"
+                               autocomplete="family-name" />
+                    </div>
+
+                </div>
+
+
+                <!-- EMAIL -->
+                <div class="form-group">
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <input id="email"
+                           type="email"
+                           value="you@example.co.za"
+                           autocomplete="email" />
+                </div>
+
+
+                <!-- MOBILE -->
+                <div class="form-group">
+                    <label for="mobile">
+                        Mobile number
+                    </label>
+
+                    <input id="mobile"
+                           type="tel"
+                           value="+27 82 000 0000"
+                           autocomplete="tel" />
+                </div>
+
+
+                <!-- ID NUMBER -->
+                <div class="form-group">
+                    <label for="idNumber">
+                        ID number
+                    </label>
+
+                    <input id="idNumber"
+                           type="text"
+                           value="9001015800086" />
+                </div>
+
+
+                <!-- PASSWORD -->
+                <div class="form-group">
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input id="password"
+                           type="password"
+                           placeholder="Minimum 8 characters"
+                           autocomplete="new-password" />
+                </div>
+
+
+                <!-- CONSENT -->
+                <label class="consent-row">
+
                     <input type="checkbox" />
-                    <span>I consent to Nexus processing my personal information under POPIA for the purpose of financial planning services.</span>
+
+                    <span>
+                        I consent to Nexus processing my personal information
+                        under POPIA for the purpose of financial planning services.
+                    </span>
+
                 </label>
 
-                <button type="button" class="btn btn-primary full">Create account</button>
-                <div class="auth-switch">Already registered? <a href="/nexus/login">Sign in</a></div>
+
+                <!-- BUTTON -->
+                <button type="button"
+                        class="create-account-button">
+                    Create account
+                </button>
+
+
+                <!-- LOGIN LINK -->
+                <div class="login-switch">
+
+                    <span>Already registered?</span>
+
+                    <a href="/">
+                        Sign in
+                    </a>
+
+                </div>
+
             </form>
+
         </div>
+
     </section>
+
 </div>
