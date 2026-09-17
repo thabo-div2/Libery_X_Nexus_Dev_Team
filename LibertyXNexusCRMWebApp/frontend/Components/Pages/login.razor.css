@@ -1,0 +1,430 @@
+﻿/* ================================
+   LOGIN PAGE
+   ================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+.login-page {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    background: #f6f8fb;
+}
+
+
+/* ================================
+   LEFT BRAND PANEL
+   ================================ */
+
+.brand-panel {
+    min-height: 100vh;
+    background: #052844;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 46px 48px 45px 48px;
+}
+
+
+/* Logo */
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.brand-mark {
+    width: 34px;
+    height: 34px;
+    background: #ff8a32;
+    color: #10263a;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 17px;
+}
+
+.brand-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+}
+
+
+/* Main left text */
+
+.brand-content {
+    margin-top: auto;
+    margin-bottom: auto;
+    max-width: 470px;
+}
+
+    .brand-content h1 {
+        margin: 0 0 21px 0;
+        font-size: 38px;
+        line-height: 1.08;
+        letter-spacing: -1px;
+        font-weight: 450;
+        color: #ffffff;
+    }
+
+.brand-description {
+    max-width: 455px;
+    margin: 0;
+    color: #aebdca;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+
+/* Benefits */
+
+.benefits {
+    margin-top: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #c7d0da;
+    font-size: 13px;
+}
+
+.benefit-icon {
+    color: #ff8a32;
+    font-size: 18px;
+    line-height: 1;
+}
+
+
+/* Footer */
+
+.brand-footer {
+    color: #8294a5;
+    font-size: 11px;
+    letter-spacing: 0.1px;
+}
+
+
+/* ================================
+   RIGHT PANEL
+   ================================ */
+
+.form-panel {
+    min-height: 100vh;
+    background: #f7f9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+
+/* Login form container */
+
+.login-form {
+    width: 100%;
+    max-width: 390px;
+    transform: translateY(-10px);
+}
+
+
+/* Heading */
+
+.login-heading {
+    margin-bottom: 30px;
+}
+
+    .login-heading h2 {
+        margin: 0 0 6px 0;
+        color: #132a3e;
+        font-size: 26px;
+        line-height: 1.2;
+        font-weight: 650;
+        letter-spacing: -0.5px;
+    }
+
+    .login-heading p {
+        margin: 0;
+        color: #8996a2;
+        font-size: 13px;
+    }
+
+
+/* ================================
+   FORM
+   ================================ */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+    .form-group label {
+        color: #53616c;
+        font-size: 11px;
+        font-weight: 500;
+        margin-bottom: 7px;
+    }
+
+    .form-group input {
+        width: 100%;
+        height: 43px;
+        border: 1px solid #ced6dd;
+        border-radius: 4px;
+        background: #ffffff;
+        padding: 0 12px;
+        color: #44515c;
+        font-family: inherit;
+        font-size: 12px;
+        outline: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+        .form-group input:focus {
+            border-color: #173d5d;
+            box-shadow: 0 0 0 2px rgba(23, 61, 93, 0.08);
+        }
+
+
+/* ================================
+   KEEP SIGNED IN / FORGOT PASSWORD
+   ================================ */
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -3px;
+    margin-bottom: 18px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: #84909a;
+    font-size: 11px;
+}
+
+    .remember-me input {
+        width: 15px;
+        height: 15px;
+        margin: 0;
+        accent-color: #0b3555;
+    }
+
+.forgot-password {
+    color: #173a57;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+
+/* ================================
+   BUTTONS
+   ================================ */
+
+.sign-in-button {
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 4px;
+    background: #0a3657;
+    color: white;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+    .sign-in-button:hover {
+        background: #082f4d;
+    }
+
+    .sign-in-button:active {
+        transform: translateY(1px);
+    }
+
+.button-arrow {
+    position: absolute;
+    right: 45%;
+    transform: translateX(60px);
+    font-size: 15px;
+}
+
+
+/* Continue as client */
+
+.client-button {
+    width: 100%;
+    height: 44px;
+    margin-top: 15px;
+    border: 1px solid #d2d9df;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #152d40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+    .client-button:hover {
+        background: #f4f6f8;
+        border-color: #bdc7cf;
+    }
+
+
+/* ================================
+   REGISTER
+   ================================ */
+
+.register-text {
+    margin-top: 18px;
+    text-align: center;
+    color: #9aa4ad;
+    font-size: 10px;
+}
+
+    .register-text a {
+        color: #173a57;
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 2px;
+    }
+
+        .register-text a:hover {
+            text-decoration: underline;
+        }
+
+
+/* ================================
+   LAPTOP / SMALLER DESKTOP
+   ================================ */
+
+@media (max-width: 1200px) {
+
+    .brand-panel {
+        padding: 40px;
+    }
+
+    .brand-content h1 {
+        font-size: 34px;
+    }
+
+    .login-form {
+        max-width: 370px;
+    }
+}
+
+
+/* ================================
+   TABLET
+   ================================ */
+
+@media (max-width: 850px) {
+
+    .login-page {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-panel {
+        min-height: auto;
+        padding: 28px 32px;
+    }
+
+    .brand-content {
+        margin-top: 70px;
+        margin-bottom: 70px;
+    }
+
+        .brand-content h1 {
+            font-size: 32px;
+        }
+
+    .brand-footer {
+        margin-top: 20px;
+    }
+
+    .form-panel {
+        min-height: auto;
+        padding: 80px 30px;
+    }
+
+    .login-form {
+        transform: none;
+    }
+}
+
+
+/* ================================
+   MOBILE
+   ================================ */
+
+@media (max-width: 560px) {
+
+    .login-page {
+        display: block;
+    }
+
+    .brand-panel {
+        padding: 22px 24px 35px;
+    }
+
+    .brand-content {
+        margin-top: 55px;
+        margin-bottom: 40px;
+    }
+
+        .brand-content h1 {
+            font-size: 29px;
+        }
+
+    .brand-description {
+        font-size: 12px;
+    }
+
+    .benefits {
+        gap: 14px;
+        margin-top: 25px;
+    }
+
+    .benefit-item {
+        font-size: 12px;
+    }
+
+    .form-panel {
+        padding: 60px 24px 80px;
+    }
+
+    .login-heading h2 {
+        font-size: 24px;
+    }
+}
