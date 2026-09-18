@@ -1,0 +1,15 @@
+﻿using Shared.Models;
+using Shared.Models.Enums;
+
+namespace API.Services
+{
+    public interface IClientRepository : IGenericRepository<Client>
+    {
+        Task<Client?> GetWithDetailsAsync(int clientId);
+        Task<Client?> GetByEmailAsync(string email);
+        Task<Client?> GetByIdentitySubjectIdAsync(string subjectId);
+        Task<IEnumerable<Client>> GetByAdvisorAsync(int advisorId);
+        Task<IEnumerable<Client>> SearchAsync(string? searchTerm = null, ClientStatus? status = null, int? advisorId = null);
+        Task<IEnumerable<Client>> GetDueForReviewAsync(DateTime reviewCutoff);
+    }
+}
