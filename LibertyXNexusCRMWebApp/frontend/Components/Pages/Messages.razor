@@ -1,5 +1,360 @@
-﻿<h3>Messages</h3>
+﻿@page "/messages"
+@layout MainLayout
+
+<PageTitle>Messages | Nexus</PageTitle>
+
+<div class="messages-page">
+
+    <header class="messages-header">
+
+        <div class="messages-heading">
+            <h1>Messages &amp; notifications</h1>
+
+            <p>
+                @if (UnreadMessageCount.HasValue || SystemAlertCount.HasValue)
+                {
+                    <span>
+                        @(UnreadMessageCount ?? 0) unread client messages ·
+                        @(SystemAlertCount ?? 0) system alerts
+                    </span>
+                }
+                else
+                {
+                    <span>Client conversations and system notifications</span>
+                }
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       placeholder="Search clients, cases, documents" />
+            </div>
+
+            <button type="button"
+                    class="notification-button"
+                    aria-label="Notifications">
+                ♧
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="messages-content">
+
+        <section class="conversation-panel">
+
+            <div class="panel-heading">
+                <h2>Conversations</h2>
+            </div>
+
+            <div class="conversation-list">
+
+                @if (ConversationThreads.Count > 0)
+                {
+                    @foreach (var conversation in ConversationThreads)
+                    {
+                        <button type="button"
+                                class="conversation-item @(conversation.Id == SelectedConversationId ? "selected" : "")"
+                                @onclick="() => SelectConversation(conversation.Id)">
+
+                            <div class="conversation-top">
+
+                                <strong>
+                                    @conversation.ClientName
+                                </strong>
+
+                                <span class="conversation-time">
+                                    @conversation.TimeText
+                                </span>
+
+                            </div>
+
+                            <div class="conversation-bottom">
+
+                                <span class="conversation-preview">
+                                    @conversation.Preview
+                                </span>
+
+                                @if (conversation.UnreadCount > 0)
+                                {
+                                    <span class="unread-badge">
+                                        @conversation.UnreadCount
+                                    </span>
+                                }
+
+                            </div>
+
+                        </button>
+                    }
+                }
+                else
+                {
+                    <div class="conversation-empty">
+                        <span>No conversations yet</span>
+                    </div>
+                }
+
+            </div>
+
+        </section>
+
+
+        <section class="chat-panel">
+
+            <div class="chat-header">
+
+                <div class="chat-client">
+
+                    <h2>
+                        @(string.IsNullOrWhiteSpace(SelectedClientName)
+                            ? "Select a conversation"
+                            : SelectedClientName)
+                    </h2>
+
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(SelectedCaseStatus))
+                {
+                    <span class="case-status">
+                        <span class="status-dot"></span>
+                        @SelectedCaseStatus
+                    </span>
+                }
+
+            </div>
+
+
+            <div class="chat-body">
+
+                @if (ChatMessages.Count > 0)
+                {
+                    @foreach (var message in ChatMessages)
+                    {
+                        <div class="message-row @(message.IsAdvisor ? "advisor-message-row" : "client-message-row")">
+
+                            <div class="message-bubble @(message.IsAdvisor ? "advisor-message" : "client-message")">
+
+                                <span class="message-text">
+                                    @message.Text
+                                </span>
+
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(message.TimeText))
+                            {
+                                <span class="message-time">
+                                    @message.TimeText
+                                </span>
+                            }
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="chat-empty-state">
+
+                        <div class="empty-chat-icon">✉</div>
+
+                        <strong>No conversation selected</strong>
+
+                        <span>
+                            Choose a client conversation to view messages.
+                        </span>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <div class="reply-area">
+
+                <input type="text"
+                       @bind="ReplyText"
+                       placeholder="Write a reply..."
+                       disabled="@string.IsNullOrWhiteSpace(SelectedClientName)" />
+
+                <button type="button"
+                        class="send-button"
+                        disabled="@string.IsNullOrWhiteSpace(SelectedClientName)"
+                        aria-label="Send message">
+
+                    ➤
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <aside class="notifications-panel">
+
+            <div class="panel-heading">
+                <h2>Notifications</h2>
+            </div>
+
+            <div class="notification-list">
+
+                @if (NotificationItems.Count > 0)
+                {
+                    @foreach (var notification in NotificationItems)
+                    {
+                        <div class="system-notification">
+
+                            <div class="notification-type-icon @GetNotificationIconClass(notification.Type)">
+                                @GetNotificationIcon(notification.Type)
+                            </div>
+
+                            <div class="notification-details">
+
+                                <strong>
+                                    @notification.Title
+                                </strong>
+
+                                @if (!string.IsNullOrWhiteSpace(notification.TimeText))
+                                {
+                                    <span>
+                                        @notification.TimeText
+                                    </span>
+                                }
+
+                            </div>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="notifications-empty">
+                        <span>No new notifications</span>
+                    </div>
+                }
+
+            </div>
+
+        </aside>
+
+    </main>
+
+</div>
+
 
 @code {
 
+    private int? UnreadMessageCount;
+    private int? SystemAlertCount;
+
+    private int? SelectedConversationId;
+
+    private string? SelectedClientName;
+    private string? SelectedCaseStatus;
+
+    private string ReplyText { get; set; } = string.Empty;
+
+    private List<ConversationThread> ConversationThreads { get; set; } = new();
+
+    private List<ChatMessageItem> ChatMessages { get; set; } = new();
+
+    private List<NotificationItem> NotificationItems { get; set; } = new();
+
+
+    /// <summary>
+    /// Later, load the adviser's conversations, unread counts,
+    /// notifications and selected conversation from the service layer.
+    /// </summary>
+    protected override Task OnInitializedAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+
+    /// <summary>
+    /// Later, load the selected client's conversation from the
+    /// application's messaging service.
+    /// </summary>
+    private void SelectConversation(int conversationId)
+    {
+        SelectedConversationId = conversationId;
+
+        var selectedConversation =
+            ConversationThreads.FirstOrDefault(x => x.Id == conversationId);
+
+        if (selectedConversation is null)
+        {
+            return;
+        }
+
+        SelectedClientName = selectedConversation.ClientName;
+        SelectedCaseStatus = selectedConversation.CaseStatus;
+    }
+
+
+    private static string GetNotificationIcon(string? type)
+    {
+        return type?.ToLowerInvariant() switch
+        {
+            "warning" => "△",
+            "document" => "▤",
+            "calendar" => "□",
+            "success" => "✓",
+            _ => "•"
+        };
+    }
+
+
+    private static string GetNotificationIconClass(string? type)
+    {
+        return type?.ToLowerInvariant() switch
+        {
+            "warning" => "notification-warning",
+            "document" => "notification-document",
+            "calendar" => "notification-calendar",
+            "success" => "notification-success",
+            _ => "notification-neutral"
+        };
+    }
+
+
+    public class ConversationThread
+    {
+        public int Id { get; set; }
+
+        public string ClientName { get; set; } = string.Empty;
+
+        public string Preview { get; set; } = string.Empty;
+
+        public string TimeText { get; set; } = string.Empty;
+
+        public string CaseStatus { get; set; } = string.Empty;
+
+        public int UnreadCount { get; set; }
+    }
+
+
+    public class ChatMessageItem
+    {
+        public string Text { get; set; } = string.Empty;
+
+        public string TimeText { get; set; } = string.Empty;
+
+        public bool IsAdvisor { get; set; }
+    }
+
+
+    public class NotificationItem
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string TimeText { get; set; } = string.Empty;
+
+        public string Type { get; set; } = string.Empty;
+    }
 }
