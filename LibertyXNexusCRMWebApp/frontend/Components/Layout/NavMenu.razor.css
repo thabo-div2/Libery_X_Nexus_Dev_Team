@@ -1,105 +1,327 @@
-.navbar-toggler {
-    appearance: none;
-    cursor: pointer;
-    width: 3.5rem;
-    height: 2.5rem;
-    color: white;
-    position: absolute;
-    top: 0.5rem;
-    right: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
+* {
+    box-sizing: border-box;
 }
 
-.navbar-toggler:checked {
-    background-color: rgba(255, 255, 255, 0.5);
+
+/* ===============================
+   SIDEBAR
+   =============================== */
+
+.nav-menu {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 12px 14px;
+    background: #062946;
+    color: #ffffff;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    overflow: hidden;
 }
 
-.top-row {
-    min-height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+
+/* ===============================
+   BRAND
+   =============================== */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0 7px;
+    color: #ffffff;
+    text-decoration: none;
 }
 
-.navbar-brand {
-    font-size: 1.1rem;
-}
-
-.bi {
-    display: inline-block;
-    position: relative;
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.75rem;
-    top: -1px;
-    background-size: cover;
-}
-
-.bi-house-door-fill-nav-menu {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-house-door-fill' viewBox='0 0 16 16'%3E%3Cpath d='M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5Z'/%3E%3C/svg%3E");
-}
-
-.bi-plus-square-fill-nav-menu {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-plus-square-fill' viewBox='0 0 16 16'%3E%3Cpath d='M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z'/%3E%3C/svg%3E");
-}
-
-.bi-list-nested-nav-menu {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-list-nested' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4.5 11.5A.5.5 0 0 1 5 11h10a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm-2-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm-2-4A.5.5 0 0 1 1 3h10a.5.5 0 0 1 0 1H1a.5.5 0 0 1-.5-.5z'/%3E%3C/svg%3E");
-}
-
-.nav-item {
-    font-size: 0.9rem;
-    padding-bottom: 0.5rem;
-}
-
-    .nav-item:first-of-type {
-        padding-top: 1rem;
+    .brand:hover {
+        color: #ffffff;
+        text-decoration: none;
     }
 
-    .nav-item:last-of-type {
-        padding-bottom: 1rem;
+.brand-mark {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background: #ff8a1d;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.brand-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+    .brand-copy strong {
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.2;
     }
 
-    .nav-item ::deep .nav-link {
-        color: #d7d7d7;
-        background: none;
-        border: none;
-        border-radius: 4px;
-        height: 3rem;
+    .brand-copy small {
+        color: #8ea6b9;
+        font-size: 8px;
+        font-weight: 400;
+        line-height: 1.2;
+    }
+
+
+/* ===============================
+   NAVIGATION CONTAINER
+   =============================== */
+
+.nav-links {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+
+    /* ===============================
+   NAV LINKS
+
+   ::deep is needed because NavLink
+   generates the actual <a> element.
+   =============================== */
+
+    .nav-links ::deep .nav-item {
+        width: 100%;
+        height: 36px;
         display: flex;
         align-items: center;
-        line-height: 3rem;
-        width: 100%;
+        gap: 11px;
+        padding: 0 11px;
+        border-radius: 4px;
+        color: #9db1c1;
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 1;
+        transition: background-color 0.12s ease, color 0.12s ease;
     }
 
-.nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.37);
-    color: white;
+        .nav-links ::deep .nav-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .nav-links ::deep .nav-item.active {
+            background: #103b5d;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+
+    /* ===============================
+   NAV ICONS
+   =============================== */
+
+    .nav-links ::deep .nav-icon {
+        width: 17px;
+        height: 17px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #8ca5b8;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1;
+    }
+
+    .nav-links ::deep .nav-item:hover .nav-icon {
+        color: #ffffff;
+    }
+
+    .nav-links ::deep .nav-item.active .nav-icon {
+        color: #ffffff;
+    }
+
+
+    /* ===============================
+   NAV TEXT
+   =============================== */
+
+    .nav-links ::deep .nav-text {
+        overflow: hidden;
+        color: inherit;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+/* ===============================
+   SPACER
+   =============================== */
+
+.nav-spacer {
+    flex: 1;
 }
 
-.nav-item ::deep .nav-link:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
+
+/* ===============================
+   PROFILE AREA
+   =============================== */
+
+.profile-section {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 7px 2px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.nav-scrollable {
-    display: none;
+.profile-avatar {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #163e5b;
+    color: #dce7ef;
+    font-size: 8px;
+    font-weight: 600;
 }
 
-.navbar-toggler:checked ~ .nav-scrollable {
-    display: block;
+.profile-details {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
 }
 
-@media (min-width: 641px) {
-    .navbar-toggler {
+    .profile-details strong {
+        overflow: hidden;
+        color: #ffffff;
+        font-size: 9px;
+        font-weight: 500;
+        line-height: 1.2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .profile-details span {
+        overflow: hidden;
+        color: #839daf;
+        font-size: 7px;
+        line-height: 1.2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+
+/* ===============================
+   LOG OUT
+   =============================== */
+
+.logout-button {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 4px;
+    color: #8ea7ba;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.12s ease, background-color 0.12s ease;
+}
+
+    .logout-button:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+
+/* ===============================
+   TABLET
+   =============================== */
+
+@media (max-width: 900px) {
+
+    .brand {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+}
+
+
+/* ===============================
+   MOBILE COLLAPSED SIDEBAR
+   =============================== */
+
+@media (max-width: 650px) {
+
+    .nav-menu {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+
+    /* Brand */
+
+    .brand {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .brand-mark {
+        width: 34px;
+        height: 34px;
+    }
+
+    .brand-copy {
         display: none;
     }
 
-    .nav-scrollable {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
 
-        /* Allow sidebar to scroll for tall menus */
-        height: calc(100vh - 3.5rem);
-        overflow-y: auto;
+    /* Navigation */
+
+    .nav-links ::deep .nav-item {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .nav-links ::deep .nav-icon {
+        width: 20px;
+        font-size: 15px;
+    }
+
+    .nav-links ::deep .nav-text {
+        display: none;
+    }
+
+
+    /* Profile */
+
+    .profile-section {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .profile-details {
+        display: none;
+    }
+
+    .logout-button {
+        display: none;
     }
 }

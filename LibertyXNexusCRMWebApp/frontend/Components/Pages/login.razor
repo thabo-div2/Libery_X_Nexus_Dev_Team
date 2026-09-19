@@ -6,11 +6,11 @@
 <div class="login-page">
 
     <!-- LEFT SIDE -->
-    <section class="brand-panel">
+    <section class="login-brand-panel">
 
         <div class="brand-logo">
-            <div class="brand-mark">N</div>
-            <span class="brand-name">Nexus</span>
+            <div class="brand-icon">N</div>
+            <span>NEXUS</span>
         </div>
 
         <div class="brand-content">
@@ -25,20 +25,20 @@
                 and get answers the moment you need them.
             </p>
 
-            <div class="benefits">
+            <div class="brand-features">
 
-                <div class="benefit-item">
-                    <span class="benefit-icon">⌾</span>
+                <div class="feature-item">
+                    <span class="feature-icon">▢</span>
                     <span>Live case status across Liberty &amp; Standard Bank</span>
                 </div>
 
-                <div class="benefit-item">
-                    <span class="benefit-icon">⌾</span>
-                    <span>Prepopulated, e-signable documents</span>
+                <div class="feature-item">
+                    <span class="feature-icon">▣</span>
+                    <span>Pre-populated, e-signable documents</span>
                 </div>
 
-                <div class="benefit-item">
-                    <span class="benefit-icon">⌾</span>
+                <div class="feature-item">
+                    <span class="feature-icon">◇</span>
                     <span>AI assistant with adviser handoff</span>
                 </div>
 
@@ -46,82 +46,66 @@
         </div>
 
         <div class="brand-footer">
-            FSCA compliant · POPIA aligned · Audit logged
+            FSP-compliant · POPIA-aligned · Audit logged
         </div>
 
     </section>
 
 
     <!-- RIGHT SIDE -->
-    <section class="form-panel">
+    <section class="login-form-panel">
 
-        <div class="login-form">
+        <div class="login-card">
 
             <div class="login-heading">
                 <h2>Welcome back</h2>
                 <p>Sign in to your Nexus account.</p>
             </div>
 
-            <form>
-                <!-- Add functionality-->
-                <div class="form-group">
-                    <label for="email">Email address</label>
+            <div class="form-group">
+                <label for="email">Email address</label>
 
-                    <input id="email"
-                           type="email"
-                           value="you@example.co.za"
-                           autocomplete="email" />
-                </div>
+                <input id="email"
+                       type="email"
+                       placeholder="you@example.co.za"
+                       autocomplete="email" />
+            </div>
 
-                <!-- Add functionality-->
-                <div class="form-group">
-                    <label for="password">Password</label>
+            <div class="form-group">
+                <label for="password">Password</label>
 
-                    <input id="password"
-                           type="password"
-                           value="password"
-                           autocomplete="current-password" />
-                </div>
+                <input id="password"
+                       type="password"
+                       placeholder="••••••••"
+                       autocomplete="current-password" />
+            </div>
 
+            <div class="form-options">
 
-                <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" />
+                    <span>Keep me signed in</span>
+                </label>
 
-                    <label class="remember-me">
-                        <input type="checkbox" />
-                        <span>Keep me signed in</span>
-                    </label>
+                <button type="button" class="forgot-password">
+                    Forgot password?
+                </button>
 
-                    <a href="#" class="forgot-password">
-                        Forgot password?
-                    </a>
+            </div>
 
-                </div>
+            <a href="/advisor" class="sign-in-button">
+                <span>Sign in</span>
+                <span class="arrow">→</span>
+            </a>
 
-                <!-- takes you to advisor dashboard-->
-                <a href="/advisor" class="sign-in-button">
-                    <span>Sign in</span>
-                    <span class="button-arrow">→</span>
-                </a>
+            <a href="/client" class="client-button">
+                Continue as client
+            </a>
 
-
-
-                @* <button type="submit" class="sign-in-button">
-                    <span>Sign in</span>
-                    <span class="button-arrow">→</span>
-                </button> *@
-
-                <!--takes you to client dashboard-->
-                <a href="/client" class="client-button">
-                    Continue as client
-                </a>
-
-
-                <div class="register-text">
-                    <span>New here?</span>
-                    <a href="/register">Create an account</a>
-                </div>
-
-            </form>
+            <div class="register-section">
+                <span>New here?</span>
+                <a href="/register">Create an account</a>
+            </div>
 
         </div>
 

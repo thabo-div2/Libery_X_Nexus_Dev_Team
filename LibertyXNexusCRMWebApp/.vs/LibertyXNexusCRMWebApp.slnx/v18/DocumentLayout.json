@@ -3,24 +3,40 @@
   "WorkspaceRootPath": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\newclient.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\newclient.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\newclient.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\newclient.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\advisor.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\advisor.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\mainlayout.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\mainlayout.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\navmenu.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\navmenu.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\login.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\login.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\advisor.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\advisor.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\register.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
@@ -31,40 +47,8 @@
       "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\register.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\advisor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\models\\advisor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\models\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\emptylayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\emptylayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\wwwroot\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\wwwroot\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\mainlayout.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\mainlayout.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\newclient.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\newclient.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\client.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\client.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\login.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\login.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -74,214 +58,162 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Login.razor",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Login.razor",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
-              "RelativeToolTip": "frontend\\Components\\Pages\\Login.razor",
-              "ViewState": "AgIAAF0AAAAAAAAAAAAAAGcAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-16T21:30:12.007Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "Register.razor",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Register.razor",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor",
-              "RelativeToolTip": "frontend\\Components\\Pages\\Register.razor",
-              "ViewState": "AgIAALkAAAAAAAAAAAAkwMcAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-16T22:06:57.439Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Register.razor.css",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor.css",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Register.razor.css",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor.css",
-              "RelativeToolTip": "frontend\\Components\\Pages\\Register.razor.css",
-              "ViewState": "AgIAAMgBAAAAAAAAAAAIwOMBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-17T12:21:44.048Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Advisor.cs",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
-              "RelativeDocumentMoniker": "Shared\\Models\\Advisor.cs",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
-              "RelativeToolTip": "Shared\\Models\\Advisor.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-17T12:22:14.457Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "login.razor.css",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\login.razor.css",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\login.razor.css",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\login.razor.css",
-              "RelativeToolTip": "frontend\\Components\\Pages\\login.razor.css",
-              "ViewState": "AgIAAGUBAAAAAAAAAAAYwJ8BAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-17T11:31:34.632Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Advisor.razor",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Advisor.razor",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
-              "RelativeToolTip": "frontend\\Components\\Pages\\Advisor.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-16T22:02:59.443Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Advisor.razor.css",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor.css",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Advisor.razor.css",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor.css",
-              "RelativeToolTip": "frontend\\Components\\Pages\\Advisor.razor.css",
-              "ViewState": "AgIAAC4CAAAAAAAAAAAIwD8CAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-17T12:42:52.25Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "NavMenu.razor",
               "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Layout\\NavMenu.razor",
               "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor",
               "RelativeToolTip": "frontend\\Components\\Layout\\NavMenu.razor",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA8AAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAAFcAAAAAAAAAAADwv24AAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-17T11:36:30.481Z",
+              "WhenOpened": "2026-09-19T09:10:31.43Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "MainLayout.razor.css",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\MainLayout.razor.css",
-              "RelativeDocumentMoniker": "frontend\\Components\\Layout\\MainLayout.razor.css",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\MainLayout.razor.css",
-              "RelativeToolTip": "frontend\\Components\\Layout\\MainLayout.razor.css",
-              "ViewState": "AgIAAEcAAAAAAAAAAAAIwFYAAAArAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "NavMenu.razor.css",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor.css",
+              "RelativeDocumentMoniker": "frontend\\Components\\Layout\\NavMenu.razor.css",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor.css",
+              "RelativeToolTip": "frontend\\Components\\Layout\\NavMenu.razor.css",
+              "ViewState": "AgIAACsBAAAAAAAAAAAiwEYBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-17T11:53:47.67Z",
+              "WhenOpened": "2026-09-19T09:12:13.357Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 5,
+              "Title": "Login.razor",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
+              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Login.razor",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
+              "RelativeToolTip": "frontend\\Components\\Pages\\Login.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHEAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-19T08:43:01.639Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "MainLayout.razor",
               "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\MainLayout.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Layout\\MainLayout.razor",
               "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\MainLayout.razor",
               "RelativeToolTip": "frontend\\Components\\Layout\\MainLayout.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-17T11:51:46.378Z",
+              "WhenOpened": "2026-09-19T09:27:26.103Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Client.cs",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Client.cs",
-              "RelativeDocumentMoniker": "Shared\\Models\\Client.cs",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Client.cs",
-              "RelativeToolTip": "Shared\\Models\\Client.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAowBgAAAA5AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-17T11:39:46.104Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "EmptyLayout.razor",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\EmptyLayout.razor",
-              "RelativeDocumentMoniker": "frontend\\Components\\Layout\\EmptyLayout.razor",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\EmptyLayout.razor",
-              "RelativeToolTip": "frontend\\Components\\Layout\\EmptyLayout.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-17T11:37:34.448Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "app.css",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\wwwroot\\app.css",
-              "RelativeDocumentMoniker": "frontend\\wwwroot\\app.css",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\wwwroot\\app.css",
-              "RelativeToolTip": "frontend\\wwwroot\\app.css",
-              "ViewState": "AgIAACAAAAAAAAAAAAAIwDsAAAABAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "MainLayout.razor.css",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\MainLayout.razor.css",
+              "RelativeDocumentMoniker": "frontend\\Components\\Layout\\MainLayout.razor.css",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\MainLayout.razor.css",
+              "RelativeToolTip": "frontend\\Components\\Layout\\MainLayout.razor.css",
+              "ViewState": "AgIAADcAAAAAAAAAAAAiwFYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-17T11:50:15.877Z",
+              "WhenOpened": "2026-09-19T09:27:41.092Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Home.razor",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Home.razor",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Home.razor",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Home.razor",
-              "RelativeToolTip": "frontend\\Components\\Pages\\Home.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-16T21:39:39.142Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Client.razor",
-              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Client.razor",
-              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Client.razor",
-              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Client.razor",
-              "RelativeToolTip": "frontend\\Components\\Pages\\Client.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-16T22:10:07.549Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 1,
               "Title": "NewClient.razor",
               "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\NewClient.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\NewClient.razor",
               "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\NewClient.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\NewClient.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAFYBAAAAAAAAAAAowG0BAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-16T22:07:56.137Z",
+              "WhenOpened": "2026-09-19T09:31:53.254Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "newclient.razor.css",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\newclient.razor.css",
+              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\newclient.razor.css",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\newclient.razor.css",
+              "RelativeToolTip": "frontend\\Components\\Pages\\newclient.razor.css",
+              "ViewState": "AgIAACsCAAAAAAAAAAAQwEACAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-09-19T09:32:10.075Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Advisor.razor.css",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor.css",
+              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Advisor.razor.css",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor.css",
+              "RelativeToolTip": "frontend\\Components\\Pages\\Advisor.razor.css",
+              "ViewState": "AgIAALkCAAAAAAAAAAAQwM4CAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-09-19T09:09:31.946Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Advisor.razor",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
+              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Advisor.razor",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
+              "RelativeToolTip": "frontend\\Components\\Pages\\Advisor.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAANEBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-19T09:09:10.48Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Register.razor.css",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor.css",
+              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Register.razor.css",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor.css",
+              "RelativeToolTip": "frontend\\Components\\Pages\\Register.razor.css",
+              "ViewState": "AgIAAJEBAAAAAAAAAAAQwKYBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-09-19T09:06:15.508Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Register.razor",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor",
+              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Register.razor",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Register.razor",
+              "RelativeToolTip": "frontend\\Components\\Pages\\Register.razor",
+              "ViewState": "AgIAAJgAAAAAAAAAAAAQwKEAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-19T09:06:07.261Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "login.razor.css",
+              "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\login.razor.css",
+              "RelativeDocumentMoniker": "frontend\\Components\\Pages\\login.razor.css",
+              "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\login.razor.css",
+              "RelativeToolTip": "frontend\\Components\\Pages\\login.razor.css",
+              "ViewState": "AgIAAJgBAAAAAAAAAADwv68BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-09-19T09:02:30.862Z",
               "EditorCaption": ""
             }
           ]

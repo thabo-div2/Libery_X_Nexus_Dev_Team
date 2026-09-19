@@ -1,482 +1,421 @@
-﻿/* ========================================
-   REGISTER PAGE
-   ======================================== */
-
-* {
+﻿* {
     box-sizing: border-box;
 }
 
 .register-page {
     width: 100%;
     min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    display: flex;
     background: #f7f9fc;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
 }
 
 
-
-/* ========================================
-   LEFT BRAND PANEL
-   ======================================== */
+/* =========================
+   LEFT PANEL
+   ========================= */
 
 .brand-panel {
+    width: 52%;
     min-height: 100vh;
-    background: #062a47;
-    color: white;
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 48px 50px 44px;
-    position: relative;
+    padding: 48px 64px;
+    color: #ffffff;
+    background: radial-gradient( circle at 25% 45%, rgba(17, 78, 122, 0.22) 0%, transparent 50% ), linear-gradient( 145deg, #07345a 0%, #052b4c 35%, #031f38 100% );
 }
 
 
-
-/* LOGO */
+/* =========================
+   LOGO
+   ========================= */
 
 .brand-logo {
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
 }
 
-
-.brand-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 7px;
-    background: #ff872c;
-    color: #0c2c45;
+.brand-icon {
+    width: 29px;
+    height: 29px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 17px;
-    font-weight: 700;
-}
-
-
-.brand-name {
+    border-radius: 7px;
+    background: #ff8b1f;
+    color: white;
     font-size: 13px;
-    font-weight: 600;
-    color: #ffffff;
+    font-weight: 800;
 }
 
 
-
-/* ========================================
-   BRAND TEXT
-   ======================================== */
+/* =========================
+   LEFT CONTENT
+   ========================= */
 
 .brand-content {
     margin-top: auto;
     margin-bottom: auto;
-    max-width: 470px;
+    max-width: 590px;
 }
-
 
     .brand-content h1 {
-        margin: 0 0 20px;
-        color: white;
-        font-size: 37px;
-        font-weight: 400;
-        line-height: 1.08;
-        letter-spacing: -0.9px;
+        margin: 0 0 20px 0;
+        color: #ffffff;
+        font-size: clamp(34px, 3.3vw, 58px);
+        font-weight: 500;
+        line-height: 1.13;
+        letter-spacing: -1.8px;
     }
 
-
 .brand-description {
-    margin: 0;
-    max-width: 450px;
-    color: #aebdca;
-    font-size: 12px;
-    line-height: 1.55;
+    max-width: 490px;
+    margin: 0 0 32px 0;
+    color: #c1cfdd;
+    font-size: 14px;
+    line-height: 1.7;
 }
 
 
+/* =========================
+   FEATURES
+   ========================= */
 
-/* ========================================
-   BENEFITS
-   ======================================== */
-
-.benefits {
-    margin-top: 32px;
+.brand-features {
     display: flex;
     flex-direction: column;
-    gap: 17px;
+    gap: 14px;
 }
 
-
-.benefit-item {
+.feature-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #c3ced8;
-    font-size: 12px;
+    color: #d6e0e9;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.feature-icon {
+    width: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #ff8b1f;
+    font-size: 14px;
 }
 
 
-.benefit-icon {
-    color: #ff872c;
-    font-size: 17px;
-    line-height: 1;
-}
-
-
-
-/* ========================================
+/* =========================
    LEFT FOOTER
-   ======================================== */
+   ========================= */
 
 .brand-footer {
-    color: #8095a7;
+    margin-top: auto;
+    color: rgba(255, 255, 255, 0.43);
     font-size: 10px;
-    letter-spacing: 0.1px;
+    letter-spacing: 0.2px;
 }
 
 
-
-/* ========================================
+/* =========================
    RIGHT PANEL
-   ======================================== */
+   ========================= */
 
-.form-panel {
+.register-form-panel {
+    width: 48%;
     min-height: 100vh;
-    background: #f7f9fc;
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 40px;
+    justify-content: center;
+    padding: 50px;
+    background: #f8fafd;
 }
 
-
-
-/* ========================================
-   REGISTER FORM CONTAINER
-   ======================================== */
-
-.register-form {
+.register-card {
     width: 100%;
-    max-width: 390px;
-    transform: translateY(-4px);
+    max-width: 420px;
 }
 
 
-
-/* ========================================
+/* =========================
    HEADING
-   ======================================== */
+   ========================= */
 
 .register-heading {
-    margin-bottom: 27px;
+    margin-bottom: 26px;
 }
 
-
     .register-heading h2 {
-        margin: 0 0 7px;
-        color: #132b3f;
+        margin: 0 0 8px 0;
+        color: #10253e;
         font-size: 25px;
-        font-weight: 650;
-        line-height: 1.2;
+        font-weight: 700;
         letter-spacing: -0.5px;
     }
 
-
     .register-heading p {
         margin: 0;
-        color: #8896a2;
-        font-size: 11px;
-        line-height: 1.4;
+        color: #8693a3;
+        font-size: 12px;
+        line-height: 1.5;
     }
 
 
-
-/* ========================================
+/* =========================
    FORM
-   ======================================== */
-
-form {
-    width: 100%;
-}
-
+   ========================= */
 
 .form-group {
     width: 100%;
-    display: flex;
-    flex-direction: column;
     margin-bottom: 16px;
 }
 
-
     .form-group label {
+        display: block;
         margin-bottom: 6px;
-        color: #50616e;
+        color: #667587;
         font-size: 10px;
         font-weight: 500;
     }
 
-
     .form-group input {
         width: 100%;
-        height: 43px;
+        height: 42px;
         padding: 0 12px;
-        border: 1px solid #cfd8df;
+        border: 1px solid #dce2e8;
         border-radius: 4px;
+        outline: none;
         background: #ffffff;
-        color: #53616d;
+        color: #24364a;
         font-family: inherit;
         font-size: 11px;
-        outline: none;
         transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-
         .form-group input::placeholder {
-            color: #8e99a3;
+            color: #9da8b4;
         }
-
 
         .form-group input:focus {
-            border-color: #174361;
-            box-shadow: 0 0 0 2px rgba(23, 67, 97, 0.08);
+            border-color: #32698f;
+            box-shadow: 0 0 0 3px rgba(34, 91, 132, 0.08);
         }
 
 
-
-/* ========================================
+/* =========================
    FIRST + LAST NAME
-   ======================================== */
+   ========================= */
 
-.name-grid {
+.name-row {
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
 }
 
-
-    .name-grid .form-group {
+    .name-row .form-group {
         margin-bottom: 16px;
     }
 
 
-
-/* ========================================
-   POPIA CONSENT
-   ======================================== */
+/* =========================
+   CONSENT CHECKBOX
+   ========================= */
 
 .consent-row {
+    width: 100%;
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    margin-top: 1px;
-    margin-bottom: 17px;
+    margin-top: 2px;
+    margin-bottom: 18px;
     cursor: pointer;
 }
 
-
     .consent-row input {
-        width: 14px;
-        height: 14px;
+        width: 13px;
+        height: 13px;
+        margin: 2px 0 0 0;
         flex-shrink: 0;
-        margin: 1px 0 0;
-        accent-color: #0a3657;
+        cursor: pointer;
+        accent-color: #052f51;
     }
-
 
     .consent-row span {
-        color: #75838e;
-        font-size: 9px;
-        line-height: 1.35;
+        color: #718092;
+        font-size: 10px;
+        line-height: 1.45;
     }
 
 
-
-/* ========================================
+/* =========================
    CREATE ACCOUNT BUTTON
-   ======================================== */
+   ========================= */
 
 .create-account-button {
     width: 100%;
-    height: 44px;
-    border: none;
-    border-radius: 4px;
-    background: #0b385a;
-    color: white;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
+    min-height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s ease, transform 0.1s ease;
+    border: 1px solid #052f51;
+    border-radius: 4px;
+    background: #052f51;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
-
     .create-account-button:hover {
-        background: #082f4d;
+        background: #073b63;
+        color: #ffffff;
     }
-
 
     .create-account-button:active {
         transform: translateY(1px);
     }
 
 
+/* =========================
+   SIGN IN
+   ========================= */
 
-/* ========================================
-   LOGIN LINK
-   ======================================== */
-
-.login-switch {
-    margin-top: 17px;
+.sign-in-section {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    color: #8b969f;
+    margin-top: 18px;
+    color: #82909f;
     font-size: 10px;
 }
 
-
-    .login-switch a {
-        color: #143853;
+    .sign-in-section a {
+        color: #173650;
         font-weight: 600;
         text-decoration: none;
     }
 
-
-        .login-switch a:hover {
+        .sign-in-section a:hover {
             text-decoration: underline;
         }
 
 
+/* =========================
+   TABLET
+   ========================= */
 
-/* ========================================
-   SMALLER DESKTOP
-   ======================================== */
-
-@media (max-width: 1200px) {
+@media (max-width: 1000px) {
 
     .brand-panel {
+        width: 45%;
         padding: 40px;
     }
 
+    .register-form-panel {
+        width: 55%;
+        padding: 45px;
+    }
 
     .brand-content h1 {
-        font-size: 34px;
+        font-size: 36px;
     }
-
-
-    .register-form {
-        max-width: 370px;
-    }
-}
-
-
-
-/* ========================================
-   TABLETS
-   ======================================== */
-
-@media (max-width: 850px) {
-
-    .register-page {
-        grid-template-columns: 1fr;
-    }
-
-
-    .brand-panel {
-        min-height: auto;
-        padding: 28px 32px;
-    }
-
-
-    .brand-content {
-        margin-top: 65px;
-        margin-bottom: 65px;
-    }
-
-
-        .brand-content h1 {
-            font-size: 31px;
-        }
-
-
-    .brand-footer {
-        margin-top: 20px;
-    }
-
-
-    .form-panel {
-        min-height: auto;
-        padding: 70px 30px;
-    }
-
-
-    .register-form {
-        transform: none;
-    }
-}
-
-
-
-/* ========================================
-   MOBILE
-   ======================================== */
-
-@media (max-width: 560px) {
-
-    .register-page {
-        display: block;
-    }
-
-
-    .brand-panel {
-        padding: 22px 24px 35px;
-    }
-
-
-    .brand-content {
-        margin-top: 55px;
-        margin-bottom: 40px;
-    }
-
-
-        .brand-content h1 {
-            font-size: 29px;
-        }
-
 
     .brand-description {
-        font-size: 11px;
+        font-size: 13px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 760px) {
+
+    .register-page {
+        flex-direction: column;
     }
 
-
-    .benefits {
-        margin-top: 25px;
-        gap: 14px;
+    .brand-panel {
+        width: 100%;
+        min-height: auto;
+        padding: 30px 28px 38px;
     }
 
-
-    .benefit-item {
-        font-size: 11px;
+    .brand-logo {
+        margin-bottom: 70px;
     }
 
-
-    .form-panel {
-        padding: 55px 24px 70px;
+    .brand-content {
+        margin: 0;
     }
 
+        .brand-content h1 {
+            font-size: 34px;
+            letter-spacing: -1px;
+        }
+
+    .brand-description {
+        max-width: 100%;
+    }
+
+    .brand-footer {
+        margin-top: 55px;
+    }
+
+    .register-form-panel {
+        width: 100%;
+        min-height: auto;
+        padding: 55px 28px 70px;
+    }
+
+    .register-card {
+        max-width: 500px;
+    }
+}
+
+
+/* =========================
+   SMALL MOBILE
+   ========================= */
+
+@media (max-width: 480px) {
+
+    .brand-panel {
+        padding: 25px 22px 34px;
+    }
+
+    .register-form-panel {
+        padding: 45px 22px 60px;
+    }
+
+    .brand-logo {
+        margin-bottom: 55px;
+    }
+
+    .brand-content h1 {
+        font-size: 30px;
+    }
+
+    .feature-item {
+        font-size: 12px;
+    }
 
     .register-heading h2 {
         font-size: 23px;
     }
 
-
-    .name-grid {
+    .name-row {
         grid-template-columns: 1fr;
         gap: 0;
     }

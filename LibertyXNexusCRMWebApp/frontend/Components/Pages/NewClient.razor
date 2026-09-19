@@ -1,70 +1,366 @@
 @page "/new-client"
+@layout MainLayout
 
+<PageTitle>New Client | Nexus</PageTitle>
 
-<NexusShell Title="New client"
-            Subtitle="Step 1 of 4 · Details captured once populate every document">
-    <div class="new-client-layout">
-        <section>
-            <div class="stepper card">
-                <div class="step active"><span>1</span>Personal details</div>
-                <div class="step"><span>2</span>Financial profile</div>
-                <div class="step"><span>3</span>Documents</div>
-                <div class="step"><span>4</span>Service package</div>
+<div class="new-client-page">
+
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+
+        <div class="page-heading">
+            <h1>New client</h1>
+            <p>Step 1 of 4 · Details captured here populate every document</p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       placeholder="Search clients, cases, documents" />
             </div>
 
-            <section class="card form-card">
-                <h3>Personal details</h3>
-                <div class="form-grid two">
-                    <div><label>First name</label><input value="Thandi" /></div>
-                    <div><label>Last name</label><input value="Mokoena" /></div>
-                    <div><label>ID number</label><input value="9001015800086" /></div>
-                    <div><label>Date of birth</label><input value="01/01/1990" /></div>
-                    <div><label>Email</label><input value="thandi@example.co.za" /></div>
-                    <div><label>Mobile</label><input value="+27 82 000 0000" /></div>
+            <button type="button"
+                    class="notification-button"
+                    aria-label="Notifications">
+                ♧
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- PAGE BODY -->
+    <main class="new-client-content">
+
+        <div class="content-column">
+
+            <!-- =========================
+                 STEP INDICATOR
+                 ========================= -->
+            <section class="stepper-card">
+
+                <div class="step active">
+                    <span class="step-number">1</span>
+                    <span class="step-name">Personal details</span>
                 </div>
-                <label>Residential address</label>
-                <input value="12 Rivonia Road, Sandton" />
-                <div class="form-grid two">
-                    <div><label>Marital status</label><input value="Married in community of property" /></div>
-                    <div><label>Dependants</label><input value="2" /></div>
+
+                <div class="step-line"></div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <span class="step-name">Financial profile</span>
                 </div>
+
+                <div class="step-line"></div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <span class="step-name">Documents</span>
+                </div>
+
+                <div class="step-line"></div>
+
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <span class="step-name">Service package</span>
+                </div>
+
             </section>
 
-            <section class="card form-card">
-                <h3>Assign case</h3>
-                <div class="form-grid two">
-                    <div><label>Institution</label><input value="Liberty" /></div>
-                    <div><label>Product</label><input value="Retirement Annuity" /></div>
-                    <div><label>Advisor</label><input value="Rudolf Beukes" /></div>
-                    <div><label>Target submission date</label><input value="20/08/2026" /></div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-secondary">Save draft</button>
-                    <button class="btn btn-primary">Continue to financial profile</button>
-                </div>
-            </section>
-        </section>
 
-        <aside class="right-stack">
-            <section class="card">
-                <h3>Required to submit</h3>
-                <div class="check-list">
-                    <div class="done">✓ Identity details</div>
-                    <div class="done">✓ Contact details</div>
-                    <div>○ Address</div>
-                    <div>○ FICA documents</div>
-                    <div>○ Risk profile</div>
+            <!-- =========================
+                 PERSONAL DETAILS
+                 ========================= -->
+            <section class="form-card">
+
+                <div class="card-heading">
+                    <h2>Personal details</h2>
                 </div>
+
+                <div class="form-body">
+
+                    <div class="form-grid">
+
+                        <!-- FIRST NAME -->
+                        <div class="form-group">
+                            <label for="firstName">First name</label>
+
+                            <input id="firstName"
+                                   type="text"
+                                   placeholder="Thandi" />
+                        </div>
+
+
+                        <!-- LAST NAME -->
+                        <div class="form-group">
+                            <label for="lastName">Last name</label>
+
+                            <input id="lastName"
+                                   type="text"
+                                   placeholder="Mokoena" />
+                        </div>
+
+
+                        <!-- ID NUMBER -->
+                        <div class="form-group">
+                            <label for="idNumber">ID number</label>
+
+                            <input id="idNumber"
+                                   type="text"
+                                   placeholder="9001015800086" />
+                        </div>
+
+
+                        <!-- DATE OF BIRTH -->
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of birth</label>
+
+                            <input id="dateOfBirth"
+                                   type="text"
+                                   placeholder="01/01/1990" />
+                        </div>
+
+
+                        <!-- EMAIL -->
+                        <div class="form-group">
+                            <label for="email">Email</label>
+
+                            <input id="email"
+                                   type="email"
+                                   placeholder="thandi@example.co.za" />
+                        </div>
+
+
+                        <!-- MOBILE -->
+                        <div class="form-group">
+                            <label for="mobile">Mobile</label>
+
+                            <input id="mobile"
+                                   type="tel"
+                                   placeholder="+27 82 000 0000" />
+                        </div>
+
+
+                        <!-- ADDRESS -->
+                        <div class="form-group full-width">
+                            <label for="address">Residential address</label>
+
+                            <input id="address"
+                                   type="text"
+                                   placeholder="12 Rivonia Road, Sandton" />
+                        </div>
+
+
+                        <!-- MARITAL STATUS -->
+                        <div class="form-group">
+                            <label for="maritalStatus">Marital status</label>
+
+                            <select id="maritalStatus">
+                                <option value="">Select marital status</option>
+                                <option>Single</option>
+                                <option>Married in community of property</option>
+                                <option>Married out of community of property</option>
+                                <option>Divorced</option>
+                                <option>Widowed</option>
+                            </select>
+                        </div>
+
+
+                        <!-- DEPENDANTS -->
+                        <div class="form-group">
+                            <label for="dependants">Dependants</label>
+
+                            <input id="dependants"
+                                   type="number"
+                                   min="0"
+                                   placeholder="0" />
+                        </div>
+
+                    </div>
+
+                </div>
+
             </section>
 
-            <section class="card">
-                <h3>Quick upload</h3>
-                <div class="upload-box">
-                    <div class="upload-icon">⇧</div>
-                    <strong>Drop FICA documents</strong>
-                    <span>PDF, JPG or PNG up to 10 MB</span>
+
+            <!-- =========================
+                 ASSIGN CASE
+                 ========================= -->
+            <section class="form-card assign-card">
+
+                <div class="card-heading">
+                    <h2>Assign case</h2>
                 </div>
+
+                <div class="form-body">
+
+                    <div class="form-grid">
+
+                        <!-- INSTITUTION -->
+                        <div class="form-group">
+                            <label for="institution">Institution</label>
+
+                            <select id="institution">
+                                <option value="">Select institution</option>
+                                <option>Liberty</option>
+                                <option>Standard Bank</option>
+                            </select>
+                        </div>
+
+
+                        <!-- PRODUCT -->
+                        <div class="form-group">
+                            <label for="product">Product</label>
+
+                            <select id="product">
+                                <option value="">Select product</option>
+                                <option>Retirement Annuity</option>
+                                <option>Life Cover</option>
+                                <option>Investment Plan</option>
+                                <option>Tax-Free Savings</option>
+                                <option>Disability Cover</option>
+                                <option>Estate Review</option>
+                            </select>
+                        </div>
+
+
+                        <!-- ADVISER -->
+                        <div class="form-group">
+                            <label for="adviser">Adviser</label>
+
+                            <select id="adviser">
+                                <option value="">Select adviser</option>
+                            </select>
+                        </div>
+
+
+                        <!-- TARGET SUBMISSION -->
+                        <div class="form-group">
+                            <label for="submissionDate">
+                                Target submission date
+                            </label>
+
+                            <input id="submissionDate"
+                                   type="date" />
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button type="button"
+                                class="secondary-button">
+                            Save draft
+                        </button>
+
+                        <button type="button"
+                                class="primary-button">
+                            Continue to financial profile
+                        </button>
+
+                    </div>
+
+                </div>
+
             </section>
+
+        </div>
+
+
+        <!-- =========================
+             RIGHT SIDEBAR
+             ========================= -->
+        <aside class="side-column">
+
+            <!-- REQUIRED TO SUBMIT -->
+            <section class="side-card">
+
+                <div class="side-card-heading">
+                    <h2>Required to submit</h2>
+                </div>
+
+                <div class="requirements-list">
+
+                    <div class="requirement complete">
+                        <span class="requirement-icon">✓</span>
+                        <span>Identity details</span>
+                    </div>
+
+                    <div class="requirement complete">
+                        <span class="requirement-icon">✓</span>
+                        <span>Contact details</span>
+                    </div>
+
+                    <div class="requirement pending">
+                        <span class="requirement-icon"></span>
+                        <span>Address</span>
+                    </div>
+
+                    <div class="requirement pending">
+                        <span class="requirement-icon"></span>
+                        <span>FICA documents</span>
+                    </div>
+
+                    <div class="requirement pending">
+                        <span class="requirement-icon"></span>
+                        <span>Risk profile</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- QUICK UPLOAD -->
+            <section class="side-card upload-card">
+
+                <div class="side-card-heading">
+                    <h2>Quick upload</h2>
+                </div>
+
+                <div class="upload-wrapper">
+
+                    <label for="ficaUpload"
+                           class="upload-area">
+
+                        <span class="upload-icon">♧</span>
+
+                        <strong>Drop FICA documents</strong>
+
+                        <span>PDF, JPG or PNG up to 10MB</span>
+
+                    </label>
+
+                    <input id="ficaUpload"
+                           class="file-input"
+                           type="file"
+                           accept=".pdf,.jpg,.jpeg,.png"
+                           multiple />
+
+                </div>
+
+            </section>
+
         </aside>
-    </div>
-</NexusShell>
+
+    </main>
+
+</div>
+
+@code {
+
+    /// <summary>
+    /// Later, load institution, adviser and product options from
+    /// the application's service layer.
+    /// </summary>
+    protected override Task OnInitializedAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+}

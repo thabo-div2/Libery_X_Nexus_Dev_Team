@@ -1,33 +1,29 @@
-﻿/* ================================
-   LOGIN PAGE
-   ================================ */
-
-* {
+﻿* {
     box-sizing: border-box;
 }
 
 .login-page {
     width: 100%;
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    background: #f7f9fc;
     font-family: Inter, "Segoe UI", Arial, sans-serif;
-    background: #f6f8fb;
 }
 
 
-/* ================================
-   LEFT BRAND PANEL
-   ================================ */
+/* =========================
+   LEFT PANEL
+   ========================= */
 
-.brand-panel {
+.login-brand-panel {
+    width: 52%;
     min-height: 100vh;
-    background: #052844;
-    color: white;
+    position: relative;
     display: flex;
     flex-direction: column;
-    position: relative;
-    padding: 46px 48px 45px 48px;
+    padding: 48px 64px;
+    color: white;
+    background: radial-gradient( circle at 25% 45%, rgba(17, 78, 122, 0.22) 0%, transparent 50% ), linear-gradient( 145deg, #07345a 0%, #052b4c 35%, #031f38 100% );
 }
 
 
@@ -36,203 +32,207 @@
 .brand-logo {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.6px;
 }
 
-.brand-mark {
-    width: 34px;
-    height: 34px;
-    background: #ff8a32;
-    color: #10263a;
+.brand-icon {
+    width: 29px;
+    height: 29px;
     border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 17px;
-}
-
-.brand-name {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.1px;
+    background: #ff8b1f;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
 }
 
 
-/* Main left text */
+/* Main left content */
 
 .brand-content {
     margin-top: auto;
     margin-bottom: auto;
-    max-width: 470px;
+    max-width: 590px;
 }
 
     .brand-content h1 {
-        margin: 0 0 21px 0;
-        font-size: 38px;
-        line-height: 1.08;
-        letter-spacing: -1px;
-        font-weight: 450;
+        margin: 0 0 20px 0;
+        font-size: clamp(34px, 3.3vw, 58px);
+        line-height: 1.13;
+        letter-spacing: -1.8px;
+        font-weight: 500;
         color: #ffffff;
     }
 
 .brand-description {
-    max-width: 455px;
-    margin: 0;
-    color: #aebdca;
-    font-size: 13px;
-    line-height: 1.55;
+    max-width: 490px;
+    margin: 0 0 32px 0;
+    color: #c1cfdd;
+    font-size: 14px;
+    line-height: 1.7;
 }
 
 
-/* Benefits */
+/* Feature list */
 
-.benefits {
-    margin-top: 34px;
+.brand-features {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 14px;
 }
 
-.benefit-item {
+.feature-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #c7d0da;
+    color: #d6e0e9;
     font-size: 13px;
+    line-height: 1.4;
 }
 
-.benefit-icon {
-    color: #ff8a32;
-    font-size: 18px;
-    line-height: 1;
+.feature-icon {
+    width: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff8b1f;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
 
-/* Footer */
+/* Bottom left text */
 
 .brand-footer {
-    color: #8294a5;
-    font-size: 11px;
-    letter-spacing: 0.1px;
+    margin-top: auto;
+    color: rgba(255, 255, 255, 0.43);
+    font-size: 10px;
+    letter-spacing: 0.2px;
 }
 
 
-/* ================================
+/* =========================
    RIGHT PANEL
-   ================================ */
+   ========================= */
 
-.form-panel {
+.login-form-panel {
+    width: 48%;
     min-height: 100vh;
-    background: #f7f9fc;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 60px;
+    background: #f8fafd;
 }
 
-
-/* Login form container */
-
-.login-form {
+.login-card {
     width: 100%;
-    max-width: 390px;
-    transform: translateY(-10px);
+    max-width: 420px;
 }
 
 
 /* Heading */
 
 .login-heading {
-    margin-bottom: 30px;
+    margin-bottom: 31px;
 }
 
     .login-heading h2 {
-        margin: 0 0 6px 0;
-        color: #132a3e;
+        margin: 0 0 8px 0;
+        color: #10253e;
         font-size: 26px;
-        line-height: 1.2;
-        font-weight: 650;
+        font-weight: 700;
         letter-spacing: -0.5px;
     }
 
     .login-heading p {
         margin: 0;
-        color: #8996a2;
+        color: #8693a3;
         font-size: 13px;
     }
 
 
-/* ================================
+/* =========================
    FORM
-   ================================ */
+   ========================= */
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 18px;
+    margin-bottom: 19px;
 }
 
     .form-group label {
-        color: #53616c;
+        display: block;
+        margin-bottom: 7px;
+        color: #667587;
         font-size: 11px;
         font-weight: 500;
-        margin-bottom: 7px;
     }
 
     .form-group input {
         width: 100%;
-        height: 43px;
-        border: 1px solid #ced6dd;
+        height: 45px;
+        border: 1px solid #dce2e8;
         border-radius: 4px;
+        padding: 0 13px;
         background: #ffffff;
-        padding: 0 12px;
-        color: #44515c;
+        color: #23364b;
         font-family: inherit;
         font-size: 12px;
         outline: none;
         transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
+        .form-group input::placeholder {
+            color: #a6b0bb;
+        }
+
         .form-group input:focus {
-            border-color: #173d5d;
-            box-shadow: 0 0 0 2px rgba(23, 61, 93, 0.08);
+            border-color: #32698f;
+            box-shadow: 0 0 0 3px rgba(34, 91, 132, 0.08);
         }
 
 
-/* ================================
-   KEEP SIGNED IN / FORGOT PASSWORD
-   ================================ */
+/* =========================
+   FORM OPTIONS
+   ========================= */
 
 .form-options {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-top: -3px;
-    margin-bottom: 18px;
+    margin-bottom: 17px;
 }
 
 .remember-me {
     display: flex;
     align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    color: #84909a;
+    gap: 7px;
+    color: #728092;
     font-size: 11px;
+    cursor: pointer;
 }
 
     .remember-me input {
-        width: 15px;
-        height: 15px;
+        width: 13px;
+        height: 13px;
         margin: 0;
-        accent-color: #0b3555;
+        accent-color: #082e50;
     }
 
 .forgot-password {
-    color: #173a57;
+    border: none;
+    background: transparent;
+    padding: 0;
+    color: #173650;
+    font-family: inherit;
     font-size: 11px;
-    font-weight: 600;
-    text-decoration: none;
+    cursor: pointer;
 }
 
     .forgot-password:hover {
@@ -240,188 +240,189 @@
     }
 
 
-/* ================================
+/* =========================
    BUTTONS
-   ================================ */
+   ========================= */
 
-.sign-in-button {
+.sign-in-button,
+.client-button {
     width: 100%;
-    height: 44px;
-    border: none;
-    border-radius: 4px;
-    background: #0a3657;
-    color: white;
-    font-family: inherit;
-    font-size: 12px;
-    cursor: pointer;
-    position: relative;
+    min-height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s ease, transform 0.1s ease;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+
+/* Primary button */
+
+.sign-in-button {
+    position: relative;
+    margin-bottom: 14px;
+    background: #052f51;
+    border: 1px solid #052f51;
+    color: #ffffff;
 }
 
     .sign-in-button:hover {
-        background: #082f4d;
+        background: #073b63;
     }
 
     .sign-in-button:active {
         transform: translateY(1px);
     }
 
-.button-arrow {
-    position: absolute;
-    right: 45%;
-    transform: translateX(60px);
-    font-size: 15px;
-}
+    .sign-in-button .arrow {
+        position: absolute;
+        right: 42%;
+        margin-right: -45px;
+        font-size: 15px;
+    }
 
 
-/* Continue as client */
+/* Client button */
 
 .client-button {
-    width: 100%;
-    height: 44px;
-    margin-top: 15px;
-    border: 1px solid #d2d9df;
-    border-radius: 4px;
     background: #ffffff;
-    color: #152d40;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    border: 1px solid #d7dee6;
+    color: #20354b;
 }
 
     .client-button:hover {
-        background: #f4f6f8;
-        border-color: #bdc7cf;
+        background: #f3f6f9;
+        border-color: #c8d1da;
     }
 
 
-/* ================================
+/* =========================
    REGISTER
-   ================================ */
+   ========================= */
 
-.register-text {
+.register-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     margin-top: 18px;
-    text-align: center;
-    color: #9aa4ad;
+    color: #82909f;
     font-size: 10px;
 }
 
-    .register-text a {
-        color: #173a57;
+    .register-section a {
+        color: #173650;
         font-weight: 600;
         text-decoration: none;
-        margin-left: 2px;
     }
 
-        .register-text a:hover {
+        .register-section a:hover {
             text-decoration: underline;
         }
 
 
-/* ================================
-   LAPTOP / SMALLER DESKTOP
-   ================================ */
+/* =========================
+   TABLET
+   ========================= */
 
-@media (max-width: 1200px) {
+@media (max-width: 1000px) {
 
-    .brand-panel {
+    .login-brand-panel {
+        width: 45%;
         padding: 40px;
     }
 
-    .brand-content h1 {
-        font-size: 34px;
+    .login-form-panel {
+        width: 55%;
+        padding: 45px;
     }
 
-    .login-form {
-        max-width: 370px;
+    .brand-content h1 {
+        font-size: 36px;
+    }
+
+    .brand-description {
+        font-size: 13px;
     }
 }
 
 
-/* ================================
-   TABLET
-   ================================ */
+/* =========================
+   MOBILE
+   ========================= */
 
-@media (max-width: 850px) {
+@media (max-width: 760px) {
 
     .login-page {
-        grid-template-columns: 1fr;
+        flex-direction: column;
     }
 
-    .brand-panel {
+    .login-brand-panel {
+        width: 100%;
         min-height: auto;
-        padding: 28px 32px;
+        padding: 30px 28px 38px 28px;
     }
 
-    .brand-content {
-        margin-top: 70px;
+    .brand-logo {
         margin-bottom: 70px;
     }
 
+    .brand-content {
+        margin: 0;
+    }
+
         .brand-content h1 {
-            font-size: 32px;
+            font-size: 34px;
+            letter-spacing: -1px;
         }
 
+    .brand-description {
+        max-width: 100%;
+    }
+
     .brand-footer {
-        margin-top: 20px;
+        margin-top: 55px;
     }
 
-    .form-panel {
+    .login-form-panel {
+        width: 100%;
         min-height: auto;
-        padding: 80px 30px;
+        padding: 55px 28px 70px 28px;
     }
 
-    .login-form {
-        transform: none;
+    .login-card {
+        max-width: 500px;
     }
 }
 
 
-/* ================================
-   MOBILE
-   ================================ */
+/* =========================
+   SMALL MOBILE
+   ========================= */
 
-@media (max-width: 560px) {
+@media (max-width: 420px) {
 
-    .login-page {
-        display: block;
+    .login-brand-panel {
+        padding: 25px 22px 34px;
     }
 
-    .brand-panel {
-        padding: 22px 24px 35px;
+    .login-form-panel {
+        padding: 45px 22px 60px;
     }
 
-    .brand-content {
-        margin-top: 55px;
-        margin-bottom: 40px;
+    .brand-logo {
+        margin-bottom: 55px;
     }
 
-        .brand-content h1 {
-            font-size: 29px;
-        }
+    .brand-content h1 {
+        font-size: 30px;
+    }
 
-    .brand-description {
+    .feature-item {
         font-size: 12px;
-    }
-
-    .benefits {
-        gap: 14px;
-        margin-top: 25px;
-    }
-
-    .benefit-item {
-        font-size: 12px;
-    }
-
-    .form-panel {
-        padding: 60px 24px 80px;
     }
 
     .login-heading h2 {
