@@ -1,0 +1,285 @@
+﻿@page "/chatbot"
+@layout MainLayout
+
+<PageTitle>Nexus Assistant | Nexus</PageTitle>
+
+<div class="assistant-page">
+
+    <header class="assistant-header">
+
+        <div class="assistant-heading">
+            <h1>Nexus assistant</h1>
+            <p>Answers admin questions instantly · escalates advice to your adviser</p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       placeholder="Search clients, cases, documents" />
+            </div>
+
+            <button type="button"
+                    class="notification-button"
+                    aria-label="Notifications">
+                ♧
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main class="assistant-content">
+
+        <section class="chat-card">
+
+            <div class="chat-body">
+
+                <div class="message-row assistant-message-row">
+
+                    <div class="assistant-avatar">
+                        N
+                    </div>
+
+                    <div class="message-content">
+
+                        <div class="message-bubble assistant-bubble">
+                            Hi! 👋 I can help with your documents, case status
+                            and explain how the process works. What do you need?
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                @if (ConversationItems.Count > 0)
+                {
+                    @foreach (var message in ConversationItems)
+                    {
+                        @if (message.IsAssistant)
+                        {
+                            <div class="message-row assistant-message-row">
+
+                                <div class="assistant-avatar">
+                                    N
+                                </div>
+
+                                <div class="message-content">
+
+                                    <div class="message-bubble assistant-bubble">
+                                        @message.Text
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(message.TimeText))
+                                    {
+                                        <span class="message-time">
+                                            @message.TimeText
+                                        </span>
+                                    }
+
+                                </div>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="message-row user-message-row">
+
+                                <div class="message-content">
+
+                                    <div class="message-bubble user-bubble">
+                                        @message.Text
+                                    </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(message.TimeText))
+                                    {
+                                        <span class="message-time">
+                                            @message.TimeText
+                                        </span>
+                                    }
+
+                                </div>
+
+                            </div>
+                        }
+                    }
+                }
+
+
+                @if (IsHandedToAdviser)
+                {
+                    <div class="handoff-card">
+
+                        <div class="handoff-heading">
+
+                            <span class="handoff-icon">♧</span>
+
+                            <strong>HANDED TO YOUR ADVISER</strong>
+
+                        </div>
+
+                        <p>
+                            This question requires personalised financial advice.
+                            Your adviser can help you with the next step.
+                        </p>
+
+                        <a href="/calendar"
+                           class="book-call-button">
+                            Book a call
+                            <span>→</span>
+                        </a>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <div class="quick-prompts">
+
+                <button type="button" class="prompt-chip">
+                    Where is my application right now?
+                </button>
+
+                <button type="button" class="prompt-chip">
+                    What is FICA and why do you need it?
+                </button>
+
+                <button type="button" class="prompt-chip">
+                    How do I upload a document?
+                </button>
+
+                <a href="/calendar"
+                   class="prompt-chip prompt-link">
+                    Book a meeting with my adviser
+                </a>
+
+            </div>
+
+
+            <div class="message-input-area">
+
+                <input type="text"
+                       @bind="PromptText"
+                       placeholder="Ask about documents, status or next steps..." />
+
+                <button type="button"
+                        class="send-button"
+                        aria-label="Send message">
+
+                    ➤
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <aside class="assistant-side-column">
+
+            <section class="info-card">
+
+                <div class="info-card-header">
+                    <h2>What the assistant can do</h2>
+                </div>
+
+                <div class="info-card-body">
+
+                    <div class="capability-item">
+                        <span class="capability-dot"></span>
+                        <span>Explain required documents</span>
+                    </div>
+
+                    <div class="capability-item">
+                        <span class="capability-dot"></span>
+                        <span>Report live case status</span>
+                    </div>
+
+                    <div class="capability-item">
+                        <span class="capability-dot"></span>
+                        <span>Walk through uploads and signatures</span>
+                    </div>
+
+                    <div class="capability-item">
+                        <span class="capability-dot"></span>
+                        <span>Book or reschedule meetings</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="info-card">
+
+                <div class="info-card-header">
+                    <h2>Where it stops</h2>
+                </div>
+
+                <div class="info-card-body">
+
+                    <div class="restriction-item">
+                        <span class="restriction-dot"></span>
+                        <span>Product or contribution recommendations</span>
+                    </div>
+
+                    <div class="restriction-item">
+                        <span class="restriction-dot"></span>
+                        <span>Tax or estate advice</span>
+                    </div>
+
+                    <div class="restriction-item">
+                        <span class="restriction-dot"></span>
+                        <span>Anything requiring an FSP licence</span>
+                    </div>
+
+
+                    <div class="compliance-note">
+                        Every escalation is logged against the client case
+                        so the adviser has full context and an audit trail.
+                    </div>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </main>
+
+</div>
+
+
+@code {
+
+    private string PromptText { get; set; } = string.Empty;
+
+    private bool IsHandedToAdviser { get; set; }
+
+    private List<AssistantConversationItem> ConversationItems { get; set; } = new();
+
+
+    /// <summary>
+    /// Later, load the existing assistant conversation and escalation
+    /// status from the application's service layer.
+    /// </summary>
+    protected override Task OnInitializedAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+
+    public class AssistantConversationItem
+    {
+        public string Text { get; set; } = string.Empty;
+
+        public string TimeText { get; set; } = string.Empty;
+
+        public bool IsAssistant { get; set; }
+    }
+}
