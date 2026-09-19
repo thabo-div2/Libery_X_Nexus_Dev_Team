@@ -1,7 +1,7 @@
 ﻿using Shared.Models;
 using Shared.Models.Enums;
 
-namespace API.Services
+namespace API.Repositories.Interfaces
 {
     public interface IClientRepository : IGenericRepository<Client>
     {

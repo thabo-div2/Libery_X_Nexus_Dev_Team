@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace API.Repositories
+namespace API.Repositories.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {

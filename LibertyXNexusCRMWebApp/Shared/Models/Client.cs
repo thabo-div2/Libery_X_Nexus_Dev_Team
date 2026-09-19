@@ -28,7 +28,7 @@ namespace Shared.Models
         public string? Phone { get; set; }
 
         [MaxLength(50)]
-        public string? IdentityNumber { get; set; }
+        public string? IdentificationNumber { get; set; }
 
         [MaxLength(100)]
         public string? RiskProfile { get; set; }

@@ -18,7 +18,6 @@ namespace Shared.Models
         [ForeignKey(nameof(ClientId))]
         public Client Client { get; set; } = null;
 
-        [Required]
         public int? AdvisorId { get; set; }
 
         [ForeignKey(nameof(AdvisorId))]

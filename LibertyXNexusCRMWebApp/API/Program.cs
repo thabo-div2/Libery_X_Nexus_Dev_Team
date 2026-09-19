@@ -1,4 +1,6 @@
 using API.Data;
+using API.Repositories.Implementations;
+using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace API
@@ -22,6 +24,10 @@ namespace API
 
             builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
+            builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
+            builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
+            builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 
 
             var app = builder.Build();
@@ -31,6 +37,15 @@ namespace API
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                using (var scope = app.Services.CreateAsyncScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    await db.Database.MigrateAsync();
+                    await DbInitializer.SeedAsync(db);
+                }
+
+                await RunTest.SmokeTest(app.Services);
             }
 
             app.UseHttpsRedirection();
