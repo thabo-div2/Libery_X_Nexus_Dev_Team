@@ -1,0 +1,578 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+
+/* ===============================
+   PAGE
+   =============================== */
+
+.documents-page {
+    width: 100%;
+    min-height: 100vh;
+    background: #f6f8fb;
+    color: #172d42;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+
+/* ===============================
+   HEADER
+   =============================== */
+
+.documents-header {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 16px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #e1e6eb;
+}
+
+.documents-heading h1 {
+    margin: 0 0 4px;
+    color: #142a40;
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -0.2px;
+}
+
+.documents-heading p {
+    margin: 0;
+    color: #84919e;
+    font-size: 9px;
+}
+
+
+/* ===============================
+   HEADER ACTIONS
+   =============================== */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.search-box {
+    position: relative;
+    width: 285px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+    .search-box input {
+        width: 100%;
+        height: 100%;
+        padding: 0 13px 0 34px;
+        border: 1px solid #dbe2e8;
+        border-radius: 5px;
+        outline: none;
+        background: #fafbfd;
+        color: #263a4d;
+        font-family: inherit;
+        font-size: 10px;
+    }
+
+        .search-box input::placeholder {
+            color: #919ca7;
+        }
+
+        .search-box input:focus {
+            border-color: #738da4;
+            box-shadow: 0 0 0 3px rgba(17, 61, 94, 0.05);
+        }
+
+.search-icon {
+    position: absolute;
+    left: 11px;
+    z-index: 2;
+    color: #718496;
+    font-size: 15px;
+}
+
+.notification-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dbe2e8;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #123b5b;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+    .notification-button:hover {
+        background: #f4f7f9;
+    }
+
+
+/* ===============================
+   CONTENT
+   =============================== */
+
+.documents-content {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+    gap: 18px;
+    padding: 20px 24px 45px;
+}
+
+.main-column,
+.side-column {
+    min-width: 0;
+}
+
+.side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+/* ===============================
+   CARDS
+   =============================== */
+
+.documents-card,
+.side-card {
+    overflow: hidden;
+    border: 1px solid #d8dfe6;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(22, 48, 72, 0.04);
+}
+
+.documents-card {
+    min-height: 400px;
+}
+
+
+/* ===============================
+   CARD HEADERS
+   =============================== */
+
+.card-header,
+.side-card-header {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 16px;
+    border-bottom: 1px solid #e3e8ec;
+}
+
+    .card-header h2,
+    .side-card-header h2 {
+        margin: 0;
+        color: #172e43;
+        font-size: 10px;
+        font-weight: 650;
+    }
+
+
+/* ===============================
+   GENERATE DOCUMENT
+   =============================== */
+
+.generate-button {
+    min-height: 31px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 11px;
+    border: 1px solid #073253;
+    border-radius: 4px;
+    background: #073253;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+    .generate-button:hover {
+        background: #08416b;
+    }
+
+.generate-icon {
+    font-size: 9px;
+}
+
+
+/* ===============================
+   DOCUMENT LIST
+   =============================== */
+
+.documents-list {
+    padding: 10px 16px 16px;
+}
+
+.document-row {
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 0 11px;
+    margin-bottom: 8px;
+    border: 1px solid #dce3e8;
+    border-radius: 5px;
+    background: #ffffff;
+}
+
+    .document-row:last-child {
+        margin-bottom: 0;
+    }
+
+.document-main {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.document-icon {
+    width: 17px;
+    flex-shrink: 0;
+    color: #698092;
+    font-size: 12px;
+}
+
+.document-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+    .document-info strong {
+        overflow: hidden;
+        color: #243c51;
+        font-size: 9px;
+        font-weight: 600;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .document-info > span {
+        color: #909ba5;
+        font-size: 7px;
+    }
+
+.document-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+
+/* ===============================
+   DOCUMENT STATUS
+   =============================== */
+
+.document-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 7px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status-signed {
+    background: #e6f7ec;
+    color: #288251;
+}
+
+.status-awaiting {
+    background: #fff3db;
+    color: #886317;
+}
+
+.status-expired {
+    background: #ffe8e8;
+    color: #d34747;
+}
+
+.status-draft {
+    background: #edf1f4;
+    color: #6a7986;
+}
+
+.status-neutral {
+    background: #edf1f4;
+    color: #6a7986;
+}
+
+
+/* ===============================
+   DOWNLOAD BUTTON
+   =============================== */
+
+.download-button {
+    width: 27px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #dbe2e7;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #45647b;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+    .download-button:hover {
+        background: #f2f6f8;
+    }
+
+
+/* ===============================
+   TEMPLATES
+   =============================== */
+
+.template-list {
+    padding: 12px;
+}
+
+.template-row {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 10px;
+    margin-bottom: 8px;
+    border: 1px solid #dde4e9;
+    border-radius: 4px;
+    color: #3e5365;
+    font-size: 8px;
+}
+
+    .template-row:last-child {
+        margin-bottom: 0;
+    }
+
+.template-use-button {
+    border: none;
+    background: transparent;
+    color: #164867;
+    font-family: inherit;
+    font-size: 7px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .template-use-button:hover {
+        text-decoration: underline;
+    }
+
+
+/* ===============================
+   AWAITING SIGNATURE
+   =============================== */
+
+.signature-list {
+    padding: 12px;
+}
+
+.signature-row {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    background: #eaf2f7;
+}
+
+    .signature-row:last-child {
+        margin-bottom: 0;
+    }
+
+.signature-info {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #465c70;
+    font-size: 7.5px;
+}
+
+    .signature-info > span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+.signature-icon {
+    color: #688195;
+    flex-shrink: 0;
+}
+
+.remind-button {
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #234e6c;
+    font-family: inherit;
+    font-size: 7px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .remind-button:hover {
+        text-decoration: underline;
+    }
+
+
+/* ===============================
+   EMPTY STATES
+   =============================== */
+
+.empty-state {
+    min-height: 275px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 3px;
+    border-radius: 50%;
+    background: #eef3f6;
+    color: #708595;
+    font-size: 15px;
+}
+
+.empty-state strong {
+    color: #4e6273;
+    font-size: 10px;
+}
+
+.empty-state span {
+    color: #929ca5;
+    font-size: 8px;
+}
+
+.small-empty-state {
+    min-height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #929da6;
+    font-size: 8px;
+}
+
+
+/* ===============================
+   SMALL DESKTOP
+   =============================== */
+
+@media (max-width: 1100px) {
+
+    .documents-content {
+        grid-template-columns: 1fr;
+    }
+
+    .side-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+}
+
+
+/* ===============================
+   TABLET
+   =============================== */
+
+@media (max-width: 800px) {
+
+    .documents-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .search-box {
+        width: auto;
+        flex: 1;
+    }
+
+    .documents-content {
+        padding: 16px;
+    }
+}
+
+
+/* ===============================
+   MOBILE
+   =============================== */
+
+@media (max-width: 600px) {
+
+    .side-column {
+        display: flex;
+    }
+
+    .header-actions {
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    .document-row {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 11px;
+    }
+
+    .document-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .generate-button {
+        padding: 0 8px;
+    }
+}
