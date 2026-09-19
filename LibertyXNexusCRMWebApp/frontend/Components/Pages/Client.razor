@@ -1,79 +1,514 @@
 @page "/client"
+@layout MainLayout
 
-<NexusShell Title="Welcome back, Thandi"
-            Subtitle="Retirement Annuity · Liberty · Case # RA-20841">
-    <div class="client-grid">
-        <section class="left-stack">
-            <section class="card">
-                <div class="card-head">
-                    <h3>Application progress</h3>
-                    <span class="pill amber">Awaiting FICA</span>
+<PageTitle>Client View | Nexus</PageTitle>
+
+<div class="client-page">
+
+    <!-- PAGE HEADER -->
+    <header class="client-header">
+
+        <div class="client-heading">
+            <h1>
+                Welcome back@(string.IsNullOrWhiteSpace(ClientFirstName)
+                    ? "!"
+                    : $", {ClientFirstName}!")
+            </h1>
+
+            <p>
+                @if (!string.IsNullOrWhiteSpace(CurrentProduct))
+                {
+                    <span>
+                        @CurrentProduct
+                        @if (!string.IsNullOrWhiteSpace(CurrentInstitution))
+                        {
+                            <span> · @CurrentInstitution</span>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(CurrentCaseNumber))
+                        {
+                            <span> · Case #@CurrentCaseNumber</span>
+                        }
+                    </span>
+                }
+                else
+                {
+                    <span>Your financial planning overview</span>
+                }
+            </p>
+        </div>
+
+
+        <div class="header-actions">
+
+            <div class="search-box">
+
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       placeholder="Search clients, cases, documents" />
+
+            </div>
+
+            <button type="button"
+                    class="notification-button"
+                    aria-label="Notifications">
+
+                ♧
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- MAIN CLIENT CONTENT -->
+    <main class="client-content">
+
+        <!-- LEFT COLUMN -->
+        <div class="main-column">
+
+
+            <!-- ===============================
+                 APPLICATION PROGRESS
+                 =============================== -->
+            <section class="dashboard-card progress-card">
+
+                <div class="card-header">
+
+                    <h2>Application progress</h2>
+
+                    @if (!string.IsNullOrWhiteSpace(CurrentApplicationStatus))
+                    {
+                        <span class="overall-status">
+                            @CurrentApplicationStatus
+                        </span>
+                    }
+
                 </div>
 
-                <div class="timeline">
-                    <div class="timeline-item complete">
-                        <div class="dot">✓</div>
-                        <div><strong>Details submitted</strong><span>1 Aug 2026</span></div>
-                    </div>
-                    <div class="timeline-item complete">
-                        <div class="dot">✓</div>
-                        <div><strong>Advisor review</strong><span>1 Aug 2026</span></div>
-                    </div>
-                    <div class="timeline-item current">
-                        <div class="dot">!</div>
-                        <div><strong>FICA verification</strong><span>In progress</span></div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="dot">4</div>
-                        <div><strong>Submitted to Liberty</strong><span>Pending</span></div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="dot">5</div>
-                        <div><strong>Policy issued</strong><span>Pending</span></div>
-                    </div>
+
+                <div class="progress-body">
+
+                    @if (ApplicationSteps.Count > 0)
+                    {
+                        <div class="progress-list">
+
+                            @foreach (var step in ApplicationSteps)
+                            {
+                                <div class="progress-step">
+
+                                    <div class="progress-marker-column">
+
+                                        <span class="progress-marker @GetStepClass(step.Status)">
+                                            @GetStepIcon(step.Status)
+                                        </span>
+
+                                        @if (step != ApplicationSteps.Last())
+                                        {
+                                            <span class="progress-line"></span>
+                                        }
+
+                                    </div>
+
+
+                                    <div class="progress-details">
+
+                                        <strong>@step.Title</strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(step.DateText))
+                                        {
+                                            <span>@step.DateText</span>
+                                        }
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state large-empty">
+
+                            <strong>No application progress available</strong>
+
+                            <span>
+                                Your application progress will appear here.
+                            </span>
+
+                        </div>
+                    }
+
                 </div>
+
             </section>
 
-            <section class="card">
-                <div class="card-head">
-                    <h3>Outstanding documents</h3>
-                    <a class="text-link" href="/nexus/documents">View all</a>
+
+            <!-- ===============================
+                 OUTSTANDING DOCUMENTS
+                 =============================== -->
+            <section class="dashboard-card documents-card">
+
+                <div class="card-header">
+
+                    <h2>Outstanding documents</h2>
+
+                    <a href="/documents"
+                       class="view-all-link">
+
+                        View all
+
+                    </a>
+
                 </div>
 
-                <div class="doc-line"><span>Certified ID copy</span><span class="pill red">Required</span></div>
-                <div class="doc-line"><span>Proof of address (&lt; 3 months)</span><span class="pill amber">In review</span></div>
-                <div class="doc-line"><span>Bank statement</span><span class="pill green">Received</span></div>
 
-                <a href="/nexus/documents" class="btn btn-primary full">Upload a document</a>
-            </section>
-        </section>
+                <div class="documents-body">
 
-        <aside class="right-stack">
-            <section class="card">
-                <h3>My policies</h3>
-                <div class="policy-row"><div><strong>Retirement Annuity</strong><span>Active</span></div><strong>R 412 800</strong></div>
-                <div class="policy-row"><div><strong>Tax-Free Savings</strong><span>Active</span></div><strong>R 96 350</strong></div>
-                <div class="policy-row"><div><strong>Life Cover</strong><span>In progress</span></div><strong>R 2 000 000</strong></div>
-            </section>
+                    @if (Documents.Count > 0)
+                    {
+                        <div class="document-list">
 
-            <section class="card">
-                <h3>Market &amp; news updates</h3>
-                <div class="news-item">▥ SARB holds repo rate at 7.25% <span>1 Aug 2026</span></div>
-                <div class="news-item">▥ Two-pot retirement: what changed <span>1 Aug 2026</span></div>
-                <div class="news-item">▥ Rand strengthens against the dollar <span>2 Aug 2026</span></div>
-            </section>
+                            @foreach (var document in Documents)
+                            {
+                                <div class="document-row">
 
-            <section class="card">
-                <h3>Your advisor</h3>
-                <div class="advisor-card">
-                    <div class="avatar large">RB</div>
-                    <div><strong>Rudolf Beukes</strong><span>Financial Advisor · FSP 12345</span></div>
+                                    <span class="document-name">
+                                        @document.Name
+                                    </span>
+
+                                    <span class="document-status @GetDocumentStatusClass(document.Status)">
+                                        <span class="status-dot"></span>
+
+                                        @document.Status
+                                    </span>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state document-empty">
+
+                            <span>No document information available</span>
+
+                        </div>
+                    }
+
+
+                    <!-- Upload document -->
+                    <div class="upload-wrapper">
+
+                        <label for="documentUpload"
+                               class="upload-button">
+
+                            Upload a document
+
+                        </label>
+
+                        <input id="documentUpload"
+                               class="file-input"
+                               type="file"
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+
+                    </div>
+
                 </div>
-                <div class="advisor-actions">
-                    <a href="/nexus/messages" class="btn btn-primary">Message</a>
-                    <a href="/nexus/calendar" class="btn btn-secondary">Book meeting</a>
-                </div>
+
             </section>
+
+        </div>
+
+
+        <!-- RIGHT COLUMN -->
+        <aside class="side-column">
+
+
+            <!-- ===============================
+                 MY POLICIES
+                 =============================== -->
+            <section class="dashboard-card policies-card">
+
+                <div class="card-header">
+                    <h2>My policies</h2>
+                </div>
+
+
+                <div class="policies-body">
+
+                    @if (Policies.Count > 0)
+                    {
+                        @foreach (var policy in Policies)
+                        {
+                            <div class="policy-row">
+
+                                <div class="policy-details">
+
+                                    <strong>
+                                        @policy.Name
+                                    </strong>
+
+                                    @if (!string.IsNullOrWhiteSpace(policy.Status))
+                                    {
+                                        <span>
+                                            @policy.Status
+                                        </span>
+                                    }
+
+                                </div>
+
+
+                                @if (policy.Value.HasValue)
+                                {
+                                    <span class="policy-value">
+                                        R @policy.Value.Value.ToString("N0")
+                                    </span>
+                                }
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state small-empty">
+                            <span>No policies available</span>
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+
+            <!-- ===============================
+                 MARKET & NEXUS UPDATES
+                 =============================== -->
+            <section class="dashboard-card updates-card">
+
+                <div class="card-header">
+                    <h2>Market &amp; nexus updates</h2>
+                </div>
+
+
+                <div class="updates-body">
+
+                    @if (Updates.Count > 0)
+                    {
+                        @foreach (var update in Updates)
+                        {
+                            <div class="update-row">
+
+                                <div class="update-icon">
+                                    ▤
+                                </div>
+
+                                <div class="update-content">
+
+                                    <strong>
+                                        @update.Title
+                                    </strong>
+
+                                    @if (!string.IsNullOrWhiteSpace(update.DateText))
+                                    {
+                                        <span>
+                                            @update.DateText
+                                        </span>
+                                    }
+
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state small-empty">
+                            <span>No updates available</span>
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+
+            <!-- ===============================
+                 ADVISER
+                 =============================== -->
+            <section class="dashboard-card adviser-card">
+
+                <div class="card-header">
+                    <h2>Your adviser</h2>
+                </div>
+
+
+                <div class="adviser-body">
+
+                    <div class="adviser-information">
+
+                        <div class="adviser-avatar">
+                            @(string.IsNullOrWhiteSpace(AdviserInitials)
+                                ? "A"
+                                : AdviserInitials)
+                        </div>
+
+
+                        <div class="adviser-details">
+
+                            <strong>
+                                @(string.IsNullOrWhiteSpace(AdviserName)
+                                    ? "Adviser not assigned"
+                                    : AdviserName)
+                            </strong>
+
+                            <span>
+                                @(string.IsNullOrWhiteSpace(AdviserFspNumber)
+                                    ? "Financial Adviser"
+                                    : $"Financial Adviser · FSP {AdviserFspNumber}")
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="adviser-actions">
+
+                        <a href="/messages"
+                           class="message-button">
+
+                            <span>✉</span>
+                            Message
+
+                        </a>
+
+
+                        <a href="/calendar"
+                           class="meeting-button">
+
+                            <span>♙</span>
+                            Book meeting
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
         </aside>
-    </div>
-</NexusShell>
+
+    </main>
+
+</div>
+
+
+@code {
+
+    private string? ClientFirstName;
+
+    private string? CurrentProduct;
+    private string? CurrentInstitution;
+    private string? CurrentCaseNumber;
+    private string? CurrentApplicationStatus;
+
+    private string? AdviserName;
+    private string? AdviserInitials;
+    private string? AdviserFspNumber;
+
+
+    private List<ApplicationStep> ApplicationSteps { get; set; } = new();
+
+    private List<ClientDocument> Documents { get; set; } = new();
+
+    private List<ClientPolicy> Policies { get; set; } = new();
+
+    private List<ClientUpdate> Updates { get; set; } = new();
+
+
+    /// <summary>
+    /// Later, load the logged-in client's information,
+    /// policies, application progress, documents,
+    /// adviser information and updates from the service layer.
+    /// </summary>
+    protected override Task OnInitializedAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+
+    private static string GetStepClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "complete" => "step-complete",
+            "current" => "step-current",
+            _ => "step-pending"
+        };
+    }
+
+
+    private static string GetStepIcon(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "complete" => "✓",
+            "current" => "!",
+            _ => ""
+        };
+    }
+
+
+    private static string GetDocumentStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "required" => "document-required",
+            "in review" => "document-review",
+            "received" => "document-received",
+            _ => "document-neutral"
+        };
+    }
+
+
+    public class ApplicationStep
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string DateText { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+    }
+
+
+    public class ClientDocument
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+    }
+
+
+    public class ClientPolicy
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+
+        public decimal? Value { get; set; }
+    }
+
+
+    public class ClientUpdate
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string DateText { get; set; } = string.Empty;
+    }
+}
