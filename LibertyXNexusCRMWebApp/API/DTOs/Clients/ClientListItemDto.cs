@@ -7,6 +7,6 @@
         public string Email { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public int? AdvisorId { get; set; }
-        public string CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

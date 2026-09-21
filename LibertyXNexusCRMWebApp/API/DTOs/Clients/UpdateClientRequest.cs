@@ -1,4 +1,6 @@
-﻿namespace API.DTOs.Clients
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.DTOs.Clients
 {
     public class UpdateClientRequest
     {
