@@ -1,6 +1,7 @@
 ﻿using API.DTOs.Clients;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models.Enums;
 
 namespace API.Controllers
 {
