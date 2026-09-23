@@ -33,6 +33,8 @@ namespace API.Services.Implementations
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
+            claims.AddRange(roles.Select(r => new Claim("role", r)));
+
             if (extraClaims is not null)
             {
                 claims.AddRange(extraClaims);
