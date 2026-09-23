@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
-using API.DTOs.Auth;
+﻿using API.DTOs.Auth;
 
 namespace API.Services.Interfaces
 {

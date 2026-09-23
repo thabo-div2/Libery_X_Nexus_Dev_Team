@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using API.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API
 {
@@ -59,7 +61,7 @@ namespace API
             builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
                 .Configure<IOptions<JwtSettings>>((options, jwtOptions) =>
                 {
-                    var jwt = JwtOptions.Value;
+                    var jwt = jwtOptions.Value;
                     options.MapInboundClaims = false;
 
                 options.TokenValidationParameters = new TokenValidationParameters
