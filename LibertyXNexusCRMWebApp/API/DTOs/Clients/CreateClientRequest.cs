@@ -1,9 +1,11 @@
-﻿namespace API.DTOs.Clients
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.DTOs.Clients
 {
     public class CreateClientRequest
     {
         [Required, MaxLength(100)]
-        public string IdentityproviderSubjectId {  get; set; } = string.Empty;
+        public string IdentityProviderSubjectId {  get; set; } = string.Empty;
 
         [Required, MaxLength(100)]
         public string FirstName { get; set; } = string.Empty;

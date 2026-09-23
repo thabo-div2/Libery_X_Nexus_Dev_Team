@@ -13,6 +13,6 @@
         public string Status { get; set; } = string.Empty;
         public int? AdvisorId { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

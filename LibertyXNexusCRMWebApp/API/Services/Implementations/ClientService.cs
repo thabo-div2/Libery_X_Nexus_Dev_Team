@@ -1,6 +1,8 @@
 ﻿using API.DTOs.Clients;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
+using Shared.Models;
+using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
@@ -70,7 +72,7 @@ namespace API.Services.Implementations
         public async Task<bool> DeleteAsync(int clientId)
         {
             var exists = await _clientRepository.ExistsAsync(clientId);
-            if (exists != null)
+            if (!exists)
             {
                 return false;
             }
@@ -90,7 +92,7 @@ namespace API.Services.Implementations
             AdvisorId = client.AdvisorId,
             CreatedAt = client.CreatedAt,
             UpdatedAt = client.UpdatedAt,
-            Status = client.Status,
+            Status = client.Status.ToString(),
             FullName = client.FullName,
         };
 
