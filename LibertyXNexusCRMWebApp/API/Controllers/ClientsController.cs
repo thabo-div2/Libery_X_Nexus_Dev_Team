@@ -1,11 +1,14 @@
 ﻿using API.DTOs.Clients;
+using API.Identity;
 using API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = AppRoles.Advisor)]
     public class ClientsController : ControllerBase
     {
         private readonly IClientService _clientService;

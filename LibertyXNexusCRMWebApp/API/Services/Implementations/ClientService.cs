@@ -27,8 +27,8 @@ namespace API.Services.Implementations
         public async Task<ClientDetailDto> CreateAsync(CreateClientRequest request)
         { 
         var existing = await _clientRepository.GetByEmailAsync(request.Email);
-            if (existing != null) { 
-            throw new InvalidOperationException($"A client with email '{request.Email}' already exists")
+            if (existing != null) {
+                throw new InvalidOperationException($"A client with email '{request.Email}' already exists");
             }
 
             var client = new Client
