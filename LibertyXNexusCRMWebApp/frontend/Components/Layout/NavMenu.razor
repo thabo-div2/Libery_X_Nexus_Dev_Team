@@ -1,13 +1,13 @@
 ﻿<div class="nav-menu">
 
     <!-- BRAND -->
-    <a class="brand" href="/advisor">
+    <a class="brand" href="@(IsClientView ? "/client" : "/advisor")">
 
         <span class="brand-mark">N</span>
 
         <span class="brand-copy">
             <strong>Nexus</strong>
-            <small>Advisor Portal</small>
+            <small>@(IsClientView ? "Client Portal" : "Advisor Portal")</small>
         </span>
 
     </a>
@@ -16,68 +16,81 @@
     <!-- NAVIGATION -->
     <nav class="nav-links">
 
-        <NavLink class="nav-item"
-                 href="/advisor"
-                 Match="NavLinkMatch.All">
+        @if (IsClientView)
+        {
+            <NavLink class="nav-item"
+                     href="/client"
+                     Match="NavLinkMatch.All">
 
-            <span class="nav-icon dashboard-icon">▧</span>
-            <span class="nav-text">Dashboard</span>
+                <span class="nav-icon dashboard-icon">▧</span>
+                <span class="nav-text">Client view</span>
 
-        </NavLink>
+            </NavLink>
 
+            <NavLink class="nav-item"
+                     href="/client-messages">
 
-        <NavLink class="nav-item"
-                 href="/client">
+                <span class="nav-icon">▱</span>
+                <span class="nav-text">Messages</span>
 
-            <span class="nav-icon">♧</span>
-            <span class="nav-text">Client view</span>
+            </NavLink>
+        }
+        else
+        {
+            <NavLink class="nav-item"
+                     href="/advisor"
+                     Match="NavLinkMatch.All">
 
-        </NavLink>
+                <span class="nav-icon dashboard-icon">▧</span>
+                <span class="nav-text">Dashboard</span>
 
-
-        <NavLink class="nav-item"
-                 href="/new-client">
-
-            <span class="nav-icon">♙</span>
-            <span class="nav-text">New client</span>
-
-        </NavLink>
-
-
-        <NavLink class="nav-item"
-                 href="/documents">
-
-            <span class="nav-icon">♧</span>
-            <span class="nav-text">Documents</span>
-
-        </NavLink>
+            </NavLink>
 
 
-        <NavLink class="nav-item"
-                 href="/calendar">
+            <NavLink class="nav-item"
+                     href="/clients">
 
-            <span class="nav-icon">□</span>
-            <span class="nav-text">Calendar</span>
+                <span class="nav-icon">♧</span>
+                <span class="nav-text">Clients</span>
 
-        </NavLink>
-
-
-        <NavLink class="nav-item"
-                 href="/messages">
-
-            <span class="nav-icon">▱</span>
-            <span class="nav-text">Messages</span>
-
-        </NavLink>
+            </NavLink>
 
 
-        <NavLink class="nav-item"
-                 href="/chatbot">
+            <NavLink class="nav-item"
+                     href="/documents">
 
-            <span class="nav-icon">⌘</span>
-            <span class="nav-text">AI assistant</span>
+                <span class="nav-icon">♧</span>
+                <span class="nav-text">Documents</span>
 
-        </NavLink>
+            </NavLink>
+
+
+            <NavLink class="nav-item"
+                     href="/calendar">
+
+                <span class="nav-icon">□</span>
+                <span class="nav-text">Calendar</span>
+
+            </NavLink>
+
+
+            <NavLink class="nav-item"
+                     href="/messages">
+
+                <span class="nav-icon">▱</span>
+                <span class="nav-text">Messages</span>
+
+            </NavLink>
+
+
+            <NavLink class="nav-item"
+                     href="/chatbot">
+
+                <span class="nav-icon">⌘</span>
+                <span class="nav-text">AI assistant</span>
+
+            </NavLink>
+        }
 
     </nav>
 
@@ -89,12 +102,12 @@
     <div class="profile-section">
 
         <div class="profile-avatar">
-            RB
+            @ProfileInitials
         </div>
 
         <div class="profile-details">
-            <strong>Rudolf Bekker</strong>
-            <span>Financial Advisor</span>
+            <strong>@ProfileName</strong>
+            <span>@ProfileRole</span>
         </div>
 
         <a href="/"
@@ -109,3 +122,12 @@
     </div>
 
 </div>
+
+@code {
+    [Parameter]
+    public bool IsClientView { get; set; }
+
+    private string ProfileName => IsClientView ? "My Account" : "Rudolf Bekker";
+    private string ProfileRole => IsClientView ? "Client" : "Financial Advisor";
+    private string ProfileInitials => IsClientView ? "ME" : "RB";
+}

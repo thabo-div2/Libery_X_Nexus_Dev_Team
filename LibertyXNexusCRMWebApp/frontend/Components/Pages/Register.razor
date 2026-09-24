@@ -9,6 +9,8 @@
 
 <PageTitle>Register | Nexus</PageTitle>
 
+<ErrorBoundary>
+<ChildContent>
 <div class="register-page">
 
     <!-- LEFT SIDE -->
@@ -122,7 +124,6 @@
                 <input id="mobile"
                        type="tel"
                        placeholder="+27 82 000 0000"
-                       autocomplete="tel"
                        @bind="Mobile" />
             </div>
 
@@ -178,6 +179,13 @@
     </section>
 
 </div>
+</ChildContent>
+<ErrorContent>
+    <div class="register-page">
+        <p class="register-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
+</ErrorBoundary>
 
 @code {
     [Parameter]

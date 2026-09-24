@@ -1,0 +1,147 @@
+* {
+    box-sizing: border-box;
+}
+
+.clients-page {
+    min-height: 100vh;
+    width: 100%;
+    background: #f6f8fb;
+    color: #14263a;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    padding: 24px;
+}
+
+.clients-header h1 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    color: #12283e;
+}
+
+.clients-header p {
+    margin: 0 0 18px;
+    color: #83909d;
+    font-size: 13px;
+}
+
+.clients-search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    max-width: 480px;
+}
+
+.clients-search-row input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.clients-search-row button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #062946;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.clients-error {
+    color: #c0392b;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.clients-empty {
+    padding: 16px;
+    color: #83909d;
+    font-size: 13px;
+}
+
+.clients-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 18px;
+    align-items: start;
+}
+
+.clients-list {
+    background: #fff;
+    border: 1px solid #e2e7ed;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.client-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid #eef1f5;
+    background: #fff;
+    cursor: pointer;
+    font: inherit;
+}
+
+.client-row:hover {
+    background: #f6f8fb;
+}
+
+.client-row-active {
+    background: #eaf1fb;
+}
+
+.client-row span {
+    font-size: 12px;
+    color: #83909d;
+}
+
+.client-status {
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+}
+
+.client-detail {
+    background: #fff;
+    border: 1px solid #e2e7ed;
+    border-radius: 10px;
+    padding: 20px 22px;
+    min-height: 200px;
+}
+
+.client-detail h2 {
+    margin: 0 0 14px;
+    font-size: 17px;
+    color: #12283e;
+}
+
+.client-detail dl {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    row-gap: 10px;
+    margin: 0;
+}
+
+.client-detail dt {
+    color: #83909d;
+    font-size: 12px;
+}
+
+.client-detail dd {
+    margin: 0;
+    font-size: 13px;
+    color: #12283e;
+}
+
+@media (max-width: 800px) {
+    .clients-layout {
+        grid-template-columns: 1fr;
+    }
+}

@@ -20,16 +20,38 @@ namespace frontend.Services
 
         public async Task<InvitationResult> CreateAsync(string email)
         {
-            var response = await _http.PostAsJsonAsync("Invitation/create", new CreateInvitationRequest(email));
-            var result = await response.Content.ReadFromJsonAsync<InvitationResult>();
-            return result ?? new InvitationResult(false, "Unable to reach server", null, null);
+            try
+            {
+                var response = await _http.PostAsJsonAsync("Invitation/create", new CreateInvitationRequest(email));
+                var result = await response.Content.ReadFromJsonAsync<InvitationResult>();
+                return result ?? new InvitationResult(false, "The server sent back an unexpected response.", null, null);
+            }
+            catch (HttpRequestException)
+            {
+                return new InvitationResult(false, "Can't reach the server. Make sure the Backend project is running.", null, null);
+            }
+            catch (Exception ex)
+            {
+                return new InvitationResult(false, $"Something went wrong: {ex.Message}", null, null);
+            }
         }
 
         public async Task<InvitationDetails> ValidateAsync(string token)
         {
-            var response = await _http.GetAsync($"Invitation/validate/{token}");
-            var result = await response.Content.ReadFromJsonAsync<InvitationDetails>();
-            return result ?? new InvitationDetails(false, "Unable to reach server", string.Empty, 0, string.Empty);
+            try
+            {
+                var response = await _http.GetAsync($"Invitation/validate/{token}");
+                var result = await response.Content.ReadFromJsonAsync<InvitationDetails>();
+                return result ?? new InvitationDetails(false, "The server sent back an unexpected response.", string.Empty, 0, string.Empty);
+            }
+            catch (HttpRequestException)
+            {
+                return new InvitationDetails(false, "Can't reach the server. Make sure the Backend project is running.", string.Empty, 0, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                return new InvitationDetails(false, $"Something went wrong: {ex.Message}", string.Empty, 0, string.Empty);
+            }
         }
 
         public string BuildLink(string token)

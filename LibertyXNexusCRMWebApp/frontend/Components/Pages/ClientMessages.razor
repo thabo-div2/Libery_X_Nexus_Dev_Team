@@ -1,0 +1,79 @@
+@page "/client-messages"
+@layout MainLayout
+@rendermode InteractiveServer
+
+<PageTitle>Messages | Nexus</PageTitle>
+
+<ErrorBoundary>
+    <ChildContent>
+        <div class="client-messages-page">
+
+            <header class="client-messages-header">
+                <h1>Messages</h1>
+                <p>Your conversation with @AdvisorName.</p>
+            </header>
+
+            <div class="client-messages-thread">
+                @foreach (var message in Thread)
+                {
+                    <div class="message-bubble @(message.FromAdvisor ? "message-from-advisor" : "message-from-me")">
+                        <span class="message-author">@(message.FromAdvisor ? AdvisorName : "You")</span>
+                        <p>@message.Text</p>
+                        <span class="message-time">@message.SentAt</span>
+                    </div>
+                }
+            </div>
+
+            <div class="client-messages-composer">
+                <input type="text" @bind="Draft" placeholder="Write a message to your adviser…" />
+                <button type="button" @onclick="SendMessage">Send</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(SendError))
+            {
+                <p class="client-messages-error">@SendError</p>
+            }
+
+        </div>
+    </ChildContent>
+    <ErrorContent>
+        <div class="client-messages-page">
+            <p class="client-messages-error">Something went wrong loading your messages. Please refresh and try again.</p>
+        </div>
+    </ErrorContent>
+</ErrorBoundary>
+
+@code {
+    private const string AdvisorName = "Rudolf Bekker";
+
+    private List<ThreadMessage> Thread = new()
+    {
+        new ThreadMessage(true, "Welcome to Nexus! Let me know if you have any questions about your policies.", "Mon, 09:14"),
+        new ThreadMessage(false, "Thanks! I'll check my documents and get back to you.", "Mon, 09:20")
+    };
+
+    private string Draft = string.Empty;
+    private string? SendError;
+
+    private void SendMessage()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(Draft))
+            {
+                SendError = "Type a message before sending";
+                return;
+            }
+
+            Thread.Add(new ThreadMessage(false, Draft, "Just now"));
+            Draft = string.Empty;
+            SendError = null;
+        }
+        catch (Exception ex)
+        {
+            SendError = $"Something went wrong: {ex.Message}";
+        }
+    }
+
+    private record ThreadMessage(bool FromAdvisor, string Text, string SentAt);
+}

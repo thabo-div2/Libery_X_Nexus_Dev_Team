@@ -8,6 +8,8 @@
 
 <PageTitle>Login | Nexus</PageTitle>
 
+<ErrorBoundary>
+<ChildContent>
 <div class="login-page">
 
     <!-- LEFT SIDE -->
@@ -124,6 +126,13 @@
     </section>
 
 </div>
+</ChildContent>
+<ErrorContent>
+    <div class="login-page">
+        <p class="login-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
+</ErrorBoundary>
 
 @code {
     private string Email = string.Empty;

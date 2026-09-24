@@ -1,9 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
 <div class="nexus-app">
 
     <aside class="nexus-sidebar">
-        <NavMenu />
+        <NavMenu IsClientView="@IsClientRoute" />
     </aside>
 
     <main class="nexus-main">
@@ -11,3 +12,14 @@
     </main>
 
 </div>
+
+@code {
+    private bool IsClientRoute
+    {
+        get
+        {
+            var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?')[0].ToLowerInvariant();
+            return path == "client" || path == "client-messages";
+        }
+    }
+}

@@ -717,3 +717,11 @@
         padding: 10px 0;
     }
 }
+.dashboard-error {
+    margin: 24px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #fdecea;
+    color: #c0392b;
+    font-size: 13px;
+}

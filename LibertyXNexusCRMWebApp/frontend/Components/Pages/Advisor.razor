@@ -6,6 +6,8 @@
 
 <PageTitle>Advisor Dashboard | Nexus</PageTitle>
 
+<ErrorBoundary>
+<ChildContent>
 <div class="advisor-page">
 
     <!-- HEADER -->
@@ -407,6 +409,13 @@
     </main>
 
 </div>
+</ChildContent>
+<ErrorContent>
+    <div class="advisor-page">
+        <p class="dashboard-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
+</ErrorBoundary>
 
 
 @code {

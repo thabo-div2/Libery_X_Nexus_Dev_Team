@@ -1,8 +1,11 @@
 @page "/client"
 @layout MainLayout
+@rendermode InteractiveServer
 
 <PageTitle>Client View | Nexus</PageTitle>
 
+<ErrorBoundary>
+<ChildContent>
 <div class="client-page">
 
     <!-- PAGE HEADER -->
@@ -407,6 +410,13 @@
     </main>
 
 </div>
+</ChildContent>
+<ErrorContent>
+    <div class="client-page">
+        <p class="dashboard-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
+</ErrorBoundary>
 
 
 @code {

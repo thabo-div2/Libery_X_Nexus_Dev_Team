@@ -420,3 +420,12 @@
         gap: 0;
     }
 }
+
+.register-error {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fdecea;
+    color: #c0392b;
+    font-size: 13px;
+}

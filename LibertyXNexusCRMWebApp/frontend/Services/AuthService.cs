@@ -17,16 +17,42 @@ namespace frontend.Services
 
         public async Task<AuthResult> LoginAsync(string email, string password)
         {
-            var response = await _http.PostAsJsonAsync("Auth/login", new LoginRequest(email, password));
-            var result = await response.Content.ReadFromJsonAsync<AuthResult>();
-            return result ?? new AuthResult(false, "Unable to reach server", null, null, null, null, null);
+            try
+            {
+                var response = await _http.PostAsJsonAsync("Auth/login", new LoginRequest(email, password));
+                return await ReadResultAsync(response);
+            }
+            catch (HttpRequestException)
+            {
+                return new AuthResult(false, "Can't reach the server. Make sure the Backend project is running.", null, null, null, null, null);
+            }
+            catch (Exception ex)
+            {
+                return new AuthResult(false, $"Something went wrong: {ex.Message}", null, null, null, null, null);
+            }
         }
 
         public async Task<AuthResult> RegisterAsync(string firstName, string lastName, string email, string? phone, string? identityNumber, string password, string token)
         {
-            var response = await _http.PostAsJsonAsync("Auth/register", new RegisterRequest(firstName, lastName, email, phone, identityNumber, password, token));
+            try
+            {
+                var response = await _http.PostAsJsonAsync("Auth/register", new RegisterRequest(firstName, lastName, email, phone, identityNumber, password, token));
+                return await ReadResultAsync(response);
+            }
+            catch (HttpRequestException)
+            {
+                return new AuthResult(false, "Can't reach the server. Make sure the Backend project is running.", null, null, null, null, null);
+            }
+            catch (Exception ex)
+            {
+                return new AuthResult(false, $"Something went wrong: {ex.Message}", null, null, null, null, null);
+            }
+        }
+
+        private static async Task<AuthResult> ReadResultAsync(HttpResponseMessage response)
+        {
             var result = await response.Content.ReadFromJsonAsync<AuthResult>();
-            return result ?? new AuthResult(false, "Unable to reach server", null, null, null, null, null);
+            return result ?? new AuthResult(false, "The server sent back an unexpected response.", null, null, null, null, null);
         }
     }
 }
