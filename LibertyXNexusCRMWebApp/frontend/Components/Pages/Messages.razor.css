@@ -325,6 +325,96 @@
 
 
 /* ===============================
+   BOOK MEETING (advisor side)
+   =============================== */
+
+.meeting-toggle-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border: 1px solid #dbe2e8;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #073253;
+    font-size: 7.5px;
+    font-weight: 650;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+    .meeting-toggle-button:hover:not(:disabled) {
+        background: #f4f7f9;
+    }
+
+    .meeting-toggle-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+.meeting-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 11px 15px;
+    border-bottom: 1px solid #e3e8ec;
+    background: #fafbfd;
+}
+
+    .meeting-request-form label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: #536676;
+        font-size: 7.5px;
+        font-weight: 600;
+    }
+
+    .meeting-request-form input {
+        padding: 7px 9px;
+        border: 1px solid #dbe2e8;
+        border-radius: 5px;
+        outline: none;
+        background: #ffffff;
+        color: #263a4d;
+        font-family: inherit;
+        font-size: 8px;
+    }
+
+.meeting-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.meeting-cancel-button {
+    padding: 7px 12px;
+    border: 1px solid #dbe2e8;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #536676;
+    font-size: 7.5px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.meeting-send-button {
+    padding: 7px 12px;
+    border: none;
+    border-radius: 5px;
+    background: #073253;
+    color: #ffffff;
+    font-size: 7.5px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+    .meeting-send-button:hover {
+        background: #08416b;
+    }
+
+
+/* ===============================
    CHAT BODY
    =============================== */
 

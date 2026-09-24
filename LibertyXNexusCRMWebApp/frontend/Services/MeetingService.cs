@@ -61,11 +61,11 @@ namespace frontend.Services
             }
         }
 
-        public async Task<string?> RequestAsync(int clientId, int advisorId, DateTime meetingDate, string? notes)
+        public async Task<string?> RequestAsync(int clientId, int advisorId, bool fromAdvisor, DateTime meetingDate, string? notes)
         {
             try
             {
-                var response = await _http.PostAsJsonAsync("Meeting/request", new { ClientId = clientId, AdvisorId = advisorId, MeetingDate = meetingDate, Notes = notes });
+                var response = await _http.PostAsJsonAsync("Meeting/request", new { ClientId = clientId, AdvisorId = advisorId, FromAdvisor = fromAdvisor, MeetingDate = meetingDate, Notes = notes });
                 if (!response.IsSuccessStatusCode)
                 {
                     return $"The server reported an error (status {(int)response.StatusCode}).";

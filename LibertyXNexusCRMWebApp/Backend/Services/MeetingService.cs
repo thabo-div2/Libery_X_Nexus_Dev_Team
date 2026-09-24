@@ -4,7 +4,7 @@ using Shared.Models.Enums;
 
 namespace Backend.Services
 {
-    public record MeetingRequestDto(int ClientId, int AdvisorId, DateTime MeetingDate, string? Notes);
+    public record MeetingRequestDto(int ClientId, int AdvisorId, bool FromAdvisor, DateTime MeetingDate, string? Notes);
     public record MeetingResponseDto(bool Accept);
     public record MeetingSummary(int MeetingId, int ClientId, int AdvisorId, string ClientName, DateTime MeetingDate, string Status, string? Notes, DateTime CreatedAt);
 
@@ -33,7 +33,7 @@ namespace Backend.Services
                 ClientId = request.ClientId,
                 MeetingDate = request.MeetingDate,
                 Notes = request.Notes,
-                Status = MeetingStatus.Requested,
+                Status = request.FromAdvisor ? MeetingStatus.Confirmed : MeetingStatus.Requested,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

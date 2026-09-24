@@ -141,7 +141,37 @@
                     </span>
                 }
 
+                <button type="button" class="meeting-toggle-button" @onclick="ToggleMeetingForm" disabled="@(SelectedConversationId is null)">
+                    <span>♙</span>
+                    Book meeting
+                </button>
+
             </div>
+
+            @if (ShowMeetingForm)
+            {
+                <div class="meeting-request-form">
+                    <label>
+                        Date &amp; time
+                        <input type="datetime-local" @bind="MeetingDateTimeInput" />
+                    </label>
+
+                    <label>
+                        Notes (optional)
+                        <input type="text" @bind="MeetingNotes" placeholder="What's this meeting about?" />
+                    </label>
+
+                    <div class="meeting-form-actions">
+                        <button type="button" class="meeting-cancel-button" @onclick="ToggleMeetingForm">Cancel</button>
+                        <button type="button" class="meeting-send-button" @onclick="SendMeetingRequest">Schedule meeting</button>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(MeetingFormError))
+                    {
+                        <p class="messages-error">@MeetingFormError</p>
+                    }
+                </div>
+            }
 
 
             <div class="chat-body">
@@ -323,6 +353,11 @@
 
     private List<TimelineEntry> Timeline { get; set; } = new();
 
+    private bool ShowMeetingForm;
+    private DateTime? MeetingDateTimeInput;
+    private string MeetingNotes = string.Empty;
+    private string? MeetingFormError;
+
     private List<NotificationItem> NotificationItems { get; set; } = new();
 
 
@@ -379,7 +414,16 @@
 
     private async Task SelectConversationAsync(int conversationId)
     {
+        var isDifferentConversation = SelectedConversationId != conversationId;
         SelectedConversationId = conversationId;
+
+        if (isDifferentConversation)
+        {
+            ShowMeetingForm = false;
+            MeetingDateTimeInput = null;
+            MeetingNotes = string.Empty;
+            MeetingFormError = null;
+        }
 
         var selectedConversation =
             ConversationThreads.FirstOrDefault(x => x.Id == conversationId);
@@ -442,6 +486,45 @@
             SendError = error;
             return;
         }
+
+        await SelectConversationAsync(SelectedConversationId.Value);
+        await LoadConversations();
+    }
+
+    private void ToggleMeetingForm()
+    {
+        ShowMeetingForm = !ShowMeetingForm;
+        MeetingFormError = null;
+    }
+
+    private async Task SendMeetingRequest()
+    {
+        MeetingFormError = null;
+
+        if (SelectedConversationId is null)
+        {
+            MeetingFormError = "Select a conversation first.";
+            return;
+        }
+
+        if (MeetingDateTimeInput is null)
+        {
+            MeetingFormError = "Choose a date and time for the meeting.";
+            return;
+        }
+
+        var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
+
+        var error = await MeetingStore.RequestAsync(SelectedConversationId.Value, AdvisorId, fromAdvisor: true, meetingDateUtc, MeetingNotes);
+        if (error is not null)
+        {
+            MeetingFormError = error;
+            return;
+        }
+
+        MeetingDateTimeInput = null;
+        MeetingNotes = string.Empty;
+        ShowMeetingForm = false;
 
         await SelectConversationAsync(SelectedConversationId.Value);
         await LoadConversations();

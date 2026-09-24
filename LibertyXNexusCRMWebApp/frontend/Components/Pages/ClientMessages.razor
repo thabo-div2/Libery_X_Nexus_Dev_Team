@@ -263,7 +263,7 @@
 
         var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
 
-        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, meetingDateUtc, MeetingNotes);
+        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingNotes);
         if (error is not null)
         {
             MeetingError = error;
