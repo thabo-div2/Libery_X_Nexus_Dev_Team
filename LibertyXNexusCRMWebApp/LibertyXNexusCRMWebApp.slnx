@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Backend/Backend.csproj" Id="796f11b4-69b2-4a74-880b-4f8758340782" />
   <Project Path="frontend/frontend.csproj" Id="04bc52a1-0726-4827-b591-96f90d069645" />
   <Project Path="Shared/Shared.csproj" Id="76d5a132-171e-41cf-9dc7-b55cec7b2372" />
 </Solution>
