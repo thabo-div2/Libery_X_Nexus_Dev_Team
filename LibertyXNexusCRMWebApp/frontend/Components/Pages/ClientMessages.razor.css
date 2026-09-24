@@ -104,3 +104,9 @@
     font-size: 12px;
     margin-top: 8px;
 }
+
+.client-messages-empty {
+    color: #83909d;
+    font-size: 13px;
+    padding: 12px 0;
+}

@@ -1,8 +1,9 @@
+using System.Net;
 using System.Net.Http.Json;
 
 namespace frontend.Services
 {
-    public record ClientProfile(int ClientId, string FirstName, string LastName, string Email, string? Phone, string? IdentityNumber, string? RiskProfile, string Status, DateTime CreatedAt);
+    public record ClientProfile(int ClientId, string FirstName, string LastName, string Email, string? Phone, string? IdentityNumber, string? RiskProfile, string Status, DateTime CreatedAt, int? AdvisorId, string? AdvisorName);
 
     public class ClientService
     {
@@ -35,6 +36,35 @@ namespace frontend.Services
             catch (Exception ex)
             {
                 return (new List<ClientProfile>(), $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        public async Task<(ClientProfile? Client, string? Error)> GetByIdAsync(int id)
+        {
+            try
+            {
+                var response = await _http.GetAsync($"Client/{id}");
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return (null, "That client could not be found.");
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, $"The server reported an error (status {(int)response.StatusCode}).");
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<ClientProfile>();
+                return (result, result is null ? "The server sent back an unexpected response." : null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
             }
         }
     }

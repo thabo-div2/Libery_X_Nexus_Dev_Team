@@ -1,6 +1,9 @@
 @page "/client"
 @layout MainLayout
 @rendermode InteractiveServer
+@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject ClientService ClientDirectory
 
 <PageTitle>Client View | Nexus</PageTitle>
 
@@ -382,7 +385,7 @@
 
                     <div class="adviser-actions">
 
-                        <a href="/messages"
+                        <a href="/client-messages"
                            class="message-button">
 
                             <span>✉</span>
@@ -442,14 +445,28 @@
     private List<ClientUpdate> Updates { get; set; } = new();
 
 
-    /// <summary>
-    /// Later, load the logged-in client's information,
-    /// policies, application progress, documents,
-    /// adviser information and updates from the service layer.
-    /// </summary>
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return Task.CompletedTask;
+        if (CurrentUser.Id is null)
+        {
+            return;
+        }
+
+        var (client, _) = await ClientDirectory.GetByIdAsync(CurrentUser.Id.Value);
+        if (client is null)
+        {
+            return;
+        }
+
+        ClientFirstName = client.FirstName;
+
+        if (!string.IsNullOrWhiteSpace(client.AdvisorName))
+        {
+            AdviserName = client.AdvisorName;
+            AdviserInitials = string.Concat(client.AdvisorName
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(part => char.ToUpperInvariant(part[0])));
+        }
     }
 
 

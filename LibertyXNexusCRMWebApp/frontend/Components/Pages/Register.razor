@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components
 @inject AuthService Auth
 @inject InvitationService Invite
+@inject CurrentUserService CurrentUser
 @inject NavigationManager Navigation
 
 <PageTitle>Register | Nexus</PageTitle>
@@ -235,6 +236,7 @@
             return;
         }
 
+        CurrentUser.SignIn(result);
         Navigation.NavigateTo("/client");
     }
 }

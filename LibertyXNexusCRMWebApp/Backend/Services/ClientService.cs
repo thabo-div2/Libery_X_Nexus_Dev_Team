@@ -3,17 +3,19 @@ using Shared.Models;
 
 namespace Backend.Services
 {
-    public record ClientProfile(int ClientId, string FirstName, string LastName, string Email, string? Phone, string? IdentityNumber, string? RiskProfile, string Status, DateTime CreatedAt);
+    public record ClientProfile(int ClientId, string FirstName, string LastName, string Email, string? Phone, string? IdentityNumber, string? RiskProfile, string Status, DateTime CreatedAt, int? AdvisorId, string? AdvisorName);
 
     public class ClientService
     {
         private readonly string _clientsPath;
+        private readonly string _advisorsPath;
 
         public ClientService(IWebHostEnvironment env)
         {
             var dataDirectory = Path.Combine(env.ContentRootPath, "Data");
             Directory.CreateDirectory(dataDirectory);
             _clientsPath = Path.Combine(dataDirectory, "clients.json");
+            _advisorsPath = Path.Combine(dataDirectory, "advisors.json");
         }
 
         public async Task<List<ClientProfile>> SearchAsync(string? search)
@@ -29,19 +31,27 @@ namespace Backend.Services
                     c.Status.ToString().Contains(search, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
-            return matches.Select(ToProfile).ToList();
+            var advisors = await ReadAsync<Advisor>(_advisorsPath);
+            return matches.Select(c => ToProfile(c, advisors)).ToList();
         }
 
         public async Task<ClientProfile?> GetByIdAsync(int id)
         {
             var clients = await ReadAsync<Client>(_clientsPath);
             var client = clients.FirstOrDefault(c => c.ClientId == id);
-            return client is null ? null : ToProfile(client);
+            if (client is null)
+            {
+                return null;
+            }
+
+            var advisors = await ReadAsync<Advisor>(_advisorsPath);
+            return ToProfile(client, advisors);
         }
 
-        private static ClientProfile ToProfile(Client client)
+        private static ClientProfile ToProfile(Client client, List<Advisor> advisors)
         {
-            return new ClientProfile(client.ClientId, client.FirstName, client.LastName, client.Email, client.Phone, client.IdentityNumber, client.RiskProfile, client.Status.ToString(), client.CreatedAt);
+            var advisor = advisors.FirstOrDefault(a => a.AdvisorId == client.AdvisorId);
+            return new ClientProfile(client.ClientId, client.FirstName, client.LastName, client.Email, client.Phone, client.IdentityNumber, client.RiskProfile, client.Status.ToString(), client.CreatedAt, client.AdvisorId, advisor?.FullName);
         }
 
         private static async Task<List<T>> ReadAsync<T>(string path)

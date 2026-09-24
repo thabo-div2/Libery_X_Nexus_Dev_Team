@@ -162,8 +162,7 @@
               "RelativeToolTip": "frontend\\Components\\Pages\\Clients.razor",
               "ViewState": "AgIAAHkAAAAAAAAAAAAAAGMAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-24T12:47:27.487Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-24T12:47:27.487Z"
             },
             {
               "$type": "Document",
@@ -199,8 +198,7 @@
               "RelativeToolTip": "Backend\\Program.cs",
               "ViewState": "AgIAAC0AAAAAAAAAAAAAAAcAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-24T12:53:05.975Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-24T12:53:05.975Z"
             },
             {
               "$type": "Document",
@@ -212,8 +210,7 @@
               "RelativeToolTip": "Backend\\Controllers\\ClientController.cs",
               "ViewState": "AgIAAAoAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-24T12:53:22.905Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-24T12:53:22.905Z"
             },
             {
               "$type": "Document",
@@ -225,8 +222,7 @@
               "RelativeToolTip": "Backend\\Controllers\\AuthController.cs",
               "ViewState": "AgIAABcAAAAAAAAAAAAgwAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-24T12:53:26.938Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-24T12:53:26.938Z"
             },
             {
               "$type": "Document",
@@ -236,7 +232,7 @@
               "RelativeDocumentMoniker": "Shared\\Models\\Advisor.cs",
               "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
               "RelativeToolTip": "Shared\\Models\\Advisor.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAwAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-24T12:54:34.533Z",
               "EditorCaption": ""
@@ -263,8 +259,7 @@
               "RelativeToolTip": "frontend\\Program.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-24T12:53:34.876Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-24T12:53:34.876Z"
             },
             {
               "$type": "Document",

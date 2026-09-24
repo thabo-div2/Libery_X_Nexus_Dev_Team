@@ -4,6 +4,7 @@
 @using frontend.Services
 @using Microsoft.AspNetCore.Components
 @inject AuthService Auth
+@inject CurrentUserService CurrentUser
 @inject NavigationManager Navigation
 
 <PageTitle>Login | Nexus</PageTitle>
@@ -148,6 +149,7 @@
             return;
         }
 
+        CurrentUser.SignIn(result);
         Navigation.NavigateTo(result.Role == "FinancialAdviser" ? "/advisor" : "/client");
     }
 }

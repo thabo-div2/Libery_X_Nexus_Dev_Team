@@ -11,6 +11,8 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<InvitationService>();
 builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<CurrentUserService>();
 
 var app = builder.Build();
 

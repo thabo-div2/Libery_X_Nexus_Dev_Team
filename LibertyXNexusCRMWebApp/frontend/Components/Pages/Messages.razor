@@ -1,8 +1,14 @@
 ﻿@page "/messages"
 @layout MainLayout
+@rendermode InteractiveServer
+@using frontend.Services
+@inject MessageService MessageStore
+@inject CurrentUserService CurrentUser
 
 <PageTitle>Messages | Nexus</PageTitle>
 
+<ErrorBoundary>
+<ChildContent>
 <div class="messages-page">
 
     <header class="messages-header">
@@ -45,6 +51,11 @@
     </header>
 
 
+    @if (!string.IsNullOrEmpty(LoadError))
+    {
+        <p class="messages-error">@LoadError</p>
+    }
+
     <main class="messages-content">
 
         <section class="conversation-panel">
@@ -61,7 +72,7 @@
                     {
                         <button type="button"
                                 class="conversation-item @(conversation.Id == SelectedConversationId ? "selected" : "")"
-                                @onclick="() => SelectConversation(conversation.Id)">
+                                @onclick="() => SelectConversationAsync(conversation.Id)">
 
                             <div class="conversation-top">
 
@@ -184,13 +195,19 @@
                 <button type="button"
                         class="send-button"
                         disabled="@string.IsNullOrWhiteSpace(SelectedClientName)"
-                        aria-label="Send message">
+                        aria-label="Send message"
+                        @onclick="SendReply">
 
                     ➤
 
                 </button>
 
             </div>
+
+            @if (!string.IsNullOrEmpty(SendError))
+            {
+                <p class="messages-error">@SendError</p>
+            }
 
         </section>
 
@@ -245,6 +262,13 @@
     </main>
 
 </div>
+</ChildContent>
+<ErrorContent>
+    <div class="messages-page">
+        <p class="messages-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
+</ErrorBoundary>
 
 
 @code {
@@ -266,21 +290,34 @@
     private List<NotificationItem> NotificationItems { get; set; } = new();
 
 
-    /// <summary>
-    /// Later, load the adviser's conversations, unread counts,
-    /// notifications and selected conversation from the service layer.
-    /// </summary>
-    protected override Task OnInitializedAsync()
+    private const int DefaultAdvisorId = 1;
+    private int AdvisorId => CurrentUser.Id ?? DefaultAdvisorId;
+
+    private string? LoadError;
+    private string? SendError;
+
+    protected override async Task OnInitializedAsync()
     {
-        return Task.CompletedTask;
+        await LoadConversations();
     }
 
+    private async Task LoadConversations()
+    {
+        var (conversations, error) = await MessageStore.GetConversationsForAdvisorAsync(AdvisorId);
+        LoadError = error;
 
-    /// <summary>
-    /// Later, load the selected client's conversation from the
-    /// application's messaging service.
-    /// </summary>
-    private void SelectConversation(int conversationId)
+        ConversationThreads = conversations.Select(c => new ConversationThread
+        {
+            Id = c.ClientId,
+            ClientName = c.ClientName,
+            Preview = c.LastMessage ?? "No messages yet",
+            TimeText = c.LastMessageAt.HasValue ? c.LastMessageAt.Value.ToLocalTime().ToString("d MMM, HH:mm") : string.Empty,
+            CaseStatus = string.Empty,
+            UnreadCount = 0
+        }).ToList();
+    }
+
+    private async Task SelectConversationAsync(int conversationId)
     {
         SelectedConversationId = conversationId;
 
@@ -294,6 +331,43 @@
 
         SelectedClientName = selectedConversation.ClientName;
         SelectedCaseStatus = selectedConversation.CaseStatus;
+
+        var (messages, error) = await MessageStore.GetConversationAsync(conversationId);
+        LoadError = error;
+
+        ChatMessages = messages.Select(m => new ChatMessageItem
+        {
+            Text = m.Text,
+            TimeText = m.SentAt.ToLocalTime().ToString("d MMM, HH:mm"),
+            IsAdvisor = m.FromAdvisor
+        }).ToList();
+    }
+
+    private async Task SendReply()
+    {
+        SendError = null;
+
+        if (SelectedConversationId is null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ReplyText))
+        {
+            SendError = "Type a message before sending";
+            return;
+        }
+
+        var error = await MessageStore.SendAsync(SelectedConversationId.Value, AdvisorId, fromAdvisor: true, ReplyText);
+        if (error is not null)
+        {
+            SendError = error;
+            return;
+        }
+
+        ReplyText = string.Empty;
+        await SelectConversationAsync(SelectedConversationId.Value);
+        await LoadConversations();
     }
 
 
