@@ -1,5 +1,11 @@
 ﻿@page "/calendar"
 @layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
+@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject MeetingService MeetingStore
+@inject MessageNotifier Notifier
 
 <PageTitle>Calendar | Nexus</PageTitle>
 
@@ -260,13 +266,59 @@
     private List<CalendarDay> CalendarDays => BuildCalendarDays();
 
 
-    /// <summary>
-    /// Later, load the adviser's meetings, calendar events,
-    /// weekly meeting count and booking link from the service layer.
-    /// </summary>
-    protected override Task OnInitializedAsync()
+    private const int DefaultAdvisorId = 1;
+    private int AdvisorId => CurrentUser.Id ?? DefaultAdvisorId;
+
+    protected override async Task OnInitializedAsync()
     {
-        return Task.CompletedTask;
+        await CurrentUser.EnsureRestoredAsync();
+
+        await LoadMeetings();
+
+        Notifier.MessageSent += OnMeetingChanged;
+    }
+
+    private void OnMeetingChanged(int clientId)
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await LoadMeetings();
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        Notifier.MessageSent -= OnMeetingChanged;
+    }
+
+    private async Task LoadMeetings()
+    {
+        var (meetings, _) = await MeetingStore.GetForAdvisorAsync(AdvisorId);
+
+        var confirmed = meetings.Where(m => string.Equals(m.Status, "Confirmed", StringComparison.OrdinalIgnoreCase)).ToList();
+
+        Events = confirmed.Select(m => new CalendarEvent
+        {
+            Title = m.ClientName,
+            Date = m.MeetingDate.ToLocalTime(),
+            Type = "meeting"
+        }).ToList();
+
+        TodayMeetings = confirmed
+            .Where(m => m.MeetingDate.ToLocalTime().Date == DateTime.Today)
+            .OrderBy(m => m.MeetingDate)
+            .Select(m => new MeetingItem
+            {
+                Time = m.MeetingDate.ToLocalTime().ToString("HH:mm"),
+                Title = $"Meeting with {m.ClientName}",
+                Method = string.Empty,
+                Status = "Confirmed"
+            }).ToList();
+
+        var weekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+        var weekEnd = weekStart.AddDays(7);
+        MeetingsThisWeek = confirmed.Count(m => m.MeetingDate.ToLocalTime() >= weekStart && m.MeetingDate.ToLocalTime() < weekEnd);
     }
 
 

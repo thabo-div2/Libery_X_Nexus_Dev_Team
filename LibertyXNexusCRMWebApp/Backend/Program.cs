@@ -11,6 +11,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<InvitationService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<MeetingService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>

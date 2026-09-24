@@ -13,6 +13,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<InvitationService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<MeetingService>();
 builder.Services.AddScoped<CurrentUserService>();
 builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddSingleton<MessageNotifier>();

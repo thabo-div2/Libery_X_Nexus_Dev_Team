@@ -167,12 +167,19 @@
    =============================== */
 
 .conversation-panel {
+    height: 70vh;
     min-height: 365px;
+    display: flex;
+    flex-direction: column;
 }
 
 .conversation-list {
-    padding: 7px;
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
 }
+
+
 
 .conversation-item {
     width: 100%;
@@ -267,6 +274,7 @@
    =============================== */
 
 .chat-panel {
+    height: 70vh;
     min-height: 365px;
     display: flex;
     flex-direction: column;
@@ -321,7 +329,7 @@
    =============================== */
 
 .chat-body {
-    min-height: 255px;
+    min-height: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -374,6 +382,106 @@
     color: #9aa4ad;
     font-size: 6px;
 }
+
+
+/* ===============================
+   MEETING CARD (inline in the thread)
+   =============================== */
+
+.meeting-card {
+    align-self: center;
+    width: 80%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 11px 13px;
+    border: 1px solid #dbe2e8;
+    border-radius: 8px;
+    background: #fafbfd;
+    text-align: center;
+}
+
+    .meeting-card strong {
+        color: #172e43;
+        font-size: 8.5px;
+    }
+
+    .meeting-card span {
+        color: #536676;
+        font-size: 7.5px;
+    }
+
+.meeting-card-notes {
+    font-style: italic;
+}
+
+.meeting-status-label {
+    margin-top: 3px;
+    font-weight: 650;
+}
+
+.meeting-response-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.meeting-accept-button,
+.meeting-deny-button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 7.5px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.meeting-accept-button {
+    background: #2d8b59;
+    color: #ffffff;
+}
+
+    .meeting-accept-button:hover {
+        background: #256f47;
+    }
+
+.meeting-deny-button {
+    background: #c0392b;
+    color: #ffffff;
+}
+
+    .meeting-deny-button:hover {
+        background: #a3301f;
+    }
+
+.meeting-pending {
+    border-color: #f0c775;
+    background: #fff8ea;
+}
+
+    .meeting-pending .meeting-status-label {
+        color: #8a6712;
+    }
+
+.meeting-confirmed {
+    border-color: #8fc7a4;
+    background: #eefaf1;
+}
+
+    .meeting-confirmed .meeting-status-label {
+        color: #2d8b59;
+    }
+
+.meeting-denied {
+    border-color: #e3a3a3;
+    background: #fdecea;
+}
+
+    .meeting-denied .meeting-status-label {
+        color: #c0392b;
+    }
 
 
 /* ===============================
@@ -486,10 +594,16 @@
    =============================== */
 
 .notifications-panel {
+    height: 70vh;
     min-height: 365px;
+    display: flex;
+    flex-direction: column;
 }
 
 .notification-list {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 9px;
@@ -615,12 +729,12 @@
 
     .conversation-panel,
     .notifications-panel {
+        height: auto;
         min-height: auto;
     }
 
     .conversation-list {
         max-height: 260px;
-        overflow-y: auto;
     }
 }
 
