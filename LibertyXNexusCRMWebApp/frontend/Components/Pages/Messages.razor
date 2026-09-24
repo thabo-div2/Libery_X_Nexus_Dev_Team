@@ -1,9 +1,11 @@
 ﻿@page "/messages"
 @layout MainLayout
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
 @using frontend.Services
 @inject MessageService MessageStore
 @inject CurrentUserService CurrentUser
+@inject MessageNotifier Notifier
 
 <PageTitle>Messages | Nexus</PageTitle>
 
@@ -298,7 +300,31 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CurrentUser.EnsureRestoredAsync();
+
         await LoadConversations();
+
+        Notifier.MessageSent += OnMessageSent;
+    }
+
+    private void OnMessageSent(int clientId)
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await LoadConversations();
+
+            if (SelectedConversationId is not null && SelectedConversationId.Value == clientId)
+            {
+                await SelectConversationAsync(clientId);
+            }
+
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        Notifier.MessageSent -= OnMessageSent;
     }
 
     private async Task LoadConversations()

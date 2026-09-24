@@ -8,10 +8,12 @@ namespace frontend.Services
     public class MessageService
     {
         private readonly HttpClient _http;
+        private readonly MessageNotifier _notifier;
 
-        public MessageService(HttpClient http)
+        public MessageService(HttpClient http, MessageNotifier notifier)
         {
             _http = http;
+            _notifier = notifier;
         }
 
         public async Task<(List<ChatMessage> Messages, string? Error)> GetConversationAsync(int clientId)
@@ -65,7 +67,13 @@ namespace frontend.Services
             try
             {
                 var response = await _http.PostAsJsonAsync("Message", new { ClientId = clientId, AdvisorId = advisorId, FromAdvisor = fromAdvisor, Text = text });
-                return response.IsSuccessStatusCode ? null : $"The server reported an error (status {(int)response.StatusCode}).";
+                if (!response.IsSuccessStatusCode)
+                {
+                    return $"The server reported an error (status {(int)response.StatusCode}).";
+                }
+
+                _notifier.NotifyMessageSent(clientId);
+                return null;
             }
             catch (HttpRequestException)
             {

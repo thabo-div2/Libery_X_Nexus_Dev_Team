@@ -1,10 +1,12 @@
 @page "/client-messages"
 @layout MainLayout
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
 @using frontend.Services
 @inject CurrentUserService CurrentUser
 @inject ClientService ClientDirectory
 @inject MessageService MessageStore
+@inject MessageNotifier Notifier
 
 <PageTitle>Messages | Nexus</PageTitle>
 
@@ -91,6 +93,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CurrentUser.EnsureRestoredAsync();
+
         if (CurrentUser.Id is null)
         {
             LoadError = "Please log in to view your messages.";
@@ -119,6 +123,29 @@
         }
 
         IsLoading = false;
+
+        Notifier.MessageSent += OnMessageSent;
+    }
+
+    private void OnMessageSent(int clientId)
+    {
+        if (ClientId is null || clientId != ClientId.Value)
+        {
+            return;
+        }
+
+        _ = InvokeAsync(async () =>
+        {
+            var (messages, messageError) = await MessageStore.GetConversationAsync(ClientId.Value);
+            Thread = messages;
+            LoadError = messageError;
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        Notifier.MessageSent -= OnMessageSent;
     }
 
     private async Task SendMessage()

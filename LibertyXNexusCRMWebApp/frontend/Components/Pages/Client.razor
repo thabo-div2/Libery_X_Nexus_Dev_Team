@@ -1,6 +1,6 @@
 @page "/client"
 @layout MainLayout
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
 @inject CurrentUserService CurrentUser
 @inject ClientService ClientDirectory
@@ -447,6 +447,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CurrentUser.EnsureRestoredAsync();
+
         if (CurrentUser.Id is null)
         {
             return;

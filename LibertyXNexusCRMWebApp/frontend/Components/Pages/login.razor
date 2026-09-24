@@ -149,7 +149,7 @@
             return;
         }
 
-        CurrentUser.SignIn(result);
+        await CurrentUser.SignInAsync(result);
         Navigation.NavigateTo(result.Role == "FinancialAdviser" ? "/advisor" : "/client");
     }
 }

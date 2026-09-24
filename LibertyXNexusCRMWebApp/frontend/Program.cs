@@ -1,5 +1,6 @@
 using frontend.Components;
 using frontend.Services;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddScoped<InvitationService>();
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<CurrentUserService>();
+builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddSingleton<MessageNotifier>();
 
 var app = builder.Build();
 
