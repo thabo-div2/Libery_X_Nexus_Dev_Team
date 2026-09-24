@@ -1,5 +1,11 @@
 @page "/register"
 @layout EmptyLayout
+@rendermode InteractiveServer
+@using frontend.Services
+@using Microsoft.AspNetCore.Components
+@inject AuthService Auth
+@inject InvitationService Invite
+@inject NavigationManager Navigation
 
 <PageTitle>Register | Nexus</PageTitle>
 
@@ -64,6 +70,11 @@
                 <p>Your adviser invited you to Nexus. Takes about two minutes.</p>
             </div>
 
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <p class="register-error">@ErrorMessage</p>
+            }
+
 
             <!-- NAME ROW -->
             <div class="name-row">
@@ -74,7 +85,8 @@
                     <input id="firstName"
                            type="text"
                            placeholder="Thandi"
-                           autocomplete="given-name" />
+                           autocomplete="given-name"
+                           @bind="FirstName" />
                 </div>
 
                 <div class="form-group">
@@ -83,7 +95,8 @@
                     <input id="lastName"
                            type="text"
                            placeholder="Mokoena"
-                           autocomplete="family-name" />
+                           autocomplete="family-name"
+                           @bind="LastName" />
                 </div>
 
             </div>
@@ -96,7 +109,9 @@
                 <input id="email"
                        type="email"
                        placeholder="you@example.co.za"
-                       autocomplete="email" />
+                       autocomplete="email"
+                       readonly="@InviteValid"
+                       @bind="Email" />
             </div>
 
 
@@ -107,7 +122,8 @@
                 <input id="mobile"
                        type="tel"
                        placeholder="+27 82 000 0000"
-                       autocomplete="tel" />
+                       autocomplete="tel"
+                       @bind="Mobile" />
             </div>
 
 
@@ -117,7 +133,8 @@
 
                 <input id="idNumber"
                        type="text"
-                       placeholder="9001015800086" />
+                       placeholder="9001015800086"
+                       @bind="IdNumber" />
             </div>
 
 
@@ -128,7 +145,8 @@
                 <input id="password"
                        type="password"
                        placeholder="Minimum 8 characters"
-                       autocomplete="new-password" />
+                       autocomplete="new-password"
+                       @bind="Password" />
             </div>
 
 
@@ -145,9 +163,9 @@
             </label>
 
 
-            <a href="/" class="create-account-button">
+            <button type="button" class="create-account-button" @onclick="HandleRegister" disabled="@(!InviteValid)">
                 Create account
-            </a>
+            </button>
 
 
             <div class="sign-in-section">
@@ -160,3 +178,55 @@
     </section>
 
 </div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Token { get; set; }
+
+    private string FirstName = string.Empty;
+    private string LastName = string.Empty;
+    private string Email = string.Empty;
+    private string Mobile = string.Empty;
+    private string IdNumber = string.Empty;
+    private string Password = string.Empty;
+    private string? ErrorMessage;
+    private bool InviteValid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Token))
+        {
+            ErrorMessage = "This registration link is missing an invite token. Ask your adviser for a new link.";
+            return;
+        }
+
+        var invitation = await Invite.ValidateAsync(Token);
+        InviteValid = invitation.Valid;
+        if (!invitation.Valid)
+        {
+            ErrorMessage = invitation.Message;
+            return;
+        }
+
+        Email = invitation.Email;
+    }
+
+    private async Task HandleRegister()
+    {
+        if (!InviteValid || Token is null)
+        {
+            ErrorMessage = "This registration link is invalid.";
+            return;
+        }
+
+        var result = await Auth.RegisterAsync(FirstName, LastName, Email, Mobile, IdNumber, Password, Token);
+        if (!result.Success)
+        {
+            ErrorMessage = result.Message;
+            return;
+        }
+
+        Navigation.NavigateTo("/client");
+    }
+}

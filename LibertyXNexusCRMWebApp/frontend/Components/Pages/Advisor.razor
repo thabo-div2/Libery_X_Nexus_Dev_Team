@@ -1,5 +1,8 @@
 ﻿@page "/advisor"
 @layout MainLayout
+@rendermode InteractiveServer
+@using frontend.Services
+@inject InvitationService Invite
 
 <PageTitle>Advisor Dashboard | Nexus</PageTitle>
 
@@ -51,9 +54,44 @@
                 New client
             </a>
 
+            <button type="button" class="new-client-button" @onclick="ToggleInvitePanel">
+                <span class="plus-icon">↗</span>
+                Invite client
+            </button>
+
         </div>
 
     </header>
+
+    @if (ShowInvitePanel)
+    {
+        <section class="invite-panel">
+            <div class="invite-panel-card">
+                <h3>Invite a client</h3>
+                <p>Generate a registration link and send it to your client. They fill in their own details and land straight on their dashboard.</p>
+
+                <div class="invite-panel-row">
+                    <input type="email"
+                           @bind="InviteEmail"
+                           placeholder="client@example.co.za" />
+
+                    <button type="button" class="new-client-button" @onclick="GenerateInviteLink">
+                        Generate link
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(InviteLink))
+                {
+                    <input class="invite-link-output" readonly value="@InviteLink" onfocus="this.select()" />
+                }
+
+                @if (!string.IsNullOrEmpty(InviteError))
+                {
+                    <p class="invite-error">@InviteError</p>
+                }
+            </div>
+        </section>
+    }
 
 
     <!-- DASHBOARD CONTENT -->
@@ -395,6 +433,39 @@
 
     private List<InstitutionItem> Institutions { get; set; } = new();
 
+
+    private bool ShowInvitePanel;
+    private string InviteEmail = string.Empty;
+    private string? InviteLink;
+    private string? InviteError;
+
+    private void ToggleInvitePanel()
+    {
+        ShowInvitePanel = !ShowInvitePanel;
+        InviteLink = null;
+        InviteError = null;
+    }
+
+    private async Task GenerateInviteLink()
+    {
+        InviteError = null;
+        InviteLink = null;
+
+        if (string.IsNullOrWhiteSpace(InviteEmail))
+        {
+            InviteError = "Enter the client's email address";
+            return;
+        }
+
+        var result = await Invite.CreateAsync(InviteEmail);
+        if (!result.Success || result.Token is null)
+        {
+            InviteError = result.Message;
+            return;
+        }
+
+        InviteLink = Invite.BuildLink(result.Token);
+    }
 
     /// <summary>
     /// Later, load the logged-in advisor's dashboard information

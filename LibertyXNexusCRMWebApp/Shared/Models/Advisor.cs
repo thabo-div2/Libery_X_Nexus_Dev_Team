@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,8 +28,10 @@ namespace Shared.Models
 
         [MaxLength(30)]
         public string? Phone { get; set; }
-        
-        
+
+        [Required, MaxLength(200)]
+        public string PasswordHash { get; set; } = string.Empty;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation properties

@@ -1,0 +1,15 @@
+[
+  {
+    "InvitationId": 1,
+    "AdvisorId": 1,
+    "Advisor": null,
+    "Email": "ethan@email.com",
+    "Token": "B6993C088C4FEC51311ED05B872495F9",
+    "Status": 1,
+    "RedeemedByIdClient": 1,
+    "CreatedAt": "2026-09-24T12:27:03.5968088Z",
+    "ExpiresAt": "2026-10-08T12:27:03.5968093Z",
+    "RedeemedAt": "2026-09-24T12:28:47.3577874Z",
+    "IsValid": false
+  }
+]
