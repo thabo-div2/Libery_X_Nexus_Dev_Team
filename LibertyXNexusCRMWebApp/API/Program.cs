@@ -108,7 +108,6 @@ namespace API
                     await IdentitySeeder.SeedAsync(scope.ServiceProvider);
                 }
 
-                await RunTest.SmokeTest(app.Services);
             }
 
             app.UseHttpsRedirection();

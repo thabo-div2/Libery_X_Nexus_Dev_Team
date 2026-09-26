@@ -25,3 +25,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJMaWJlcnR5W
 
 GET https://localhost:7143/api/auth/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJMaWJlcnR5WE5leHVzLkNsaWVudHMiLCJpc3MiOiJMaWJlcnR5WE5leHVzLkFQSSIsImV4cCI6MTc5MDE2NTY3OSwibmJmIjoxNzkwMTYyMDc5LCJzdWIiOiIyY2FiOTU1ZS0wZmYwLTQ4ZmEtYjFlNi0yM2JmY2YwYjA4YmUiLCJlbWFpbCI6InJhdHVsLnNpbmdoQGxpYmxpbmsuY28uemEiLCJqdGkiOiI2ZTVjODg5Yy02NjA0LTRlNDAtODQzZC04Y2QzZWE1ZjI1NzQiLCJyb2xlIjoiQWR2aXNvciIsImlhdCI6MTc5MDE2MjA3OX0.lQGQt2yefjHHPzECOjVjZKyc5ZuomfPfHwddiNtTDrs
+
+###
+POST https://localhost:7143/api/auth/register
+Content-Type: application/json
+
+{
+  "invitationToken": "test-invite-token-001",
+  "firstName": "Test",
+  "lastName": "Client",
+  "phone": "+27820000000",
+  "password": "TestPassword123"
+}
