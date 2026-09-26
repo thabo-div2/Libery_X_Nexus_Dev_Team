@@ -32,6 +32,19 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request)
+        {
+            var result = await _authService.RegisterAsync(request);
+
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Error });
+            }
+            return Ok(result.Response);
+        }
+
         // Shows what API sees in token
         [HttpGet("me")]
         public ActionResult Me()
@@ -40,6 +53,8 @@ namespace API.Controllers
             {
                 userId = User.FindFirstValue("sub"),
                 email = User.FindFirstValue("email"),
+                advisorId = User.FindFirstValue("advisorId"),
+                clientId = User.FindFirstValue("clientId"),
                 roles = User.FindAll("role").Select(c => c.Value)
             });
         }

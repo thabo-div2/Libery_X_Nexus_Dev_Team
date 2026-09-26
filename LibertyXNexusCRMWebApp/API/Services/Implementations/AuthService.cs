@@ -91,7 +91,7 @@ namespace API.Services.Implementations
                 userRole = UserRole.RegisteredClient;
             }
 
-            var (token, expiresAtUtc) = _jwtTokenService.CreateToken(user, roles);
+            var (token, expiresAtUtc) = _jwtTokenService.CreateToken(user, roles, extraClaims);
 
             await _auditLogRepository.LogAsync(
                 userId: domainUserId,
