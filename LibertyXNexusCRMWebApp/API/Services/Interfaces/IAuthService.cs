@@ -6,6 +6,6 @@ namespace API.Services.Interfaces
     {
         Task<AuthResponse?> LoginAsync(LoginRequest request);
 
-        Task<RegisterResult> RegisterAsync(RegisterRequest request)
+        Task<RegisterResult> RegisterAsync(RegisterRequest request);
     }
 }
