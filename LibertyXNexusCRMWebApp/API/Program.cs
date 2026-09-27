@@ -3,6 +3,7 @@ using API.Repositories.Implementations;
 using API.Repositories.Interfaces;
 using API.Services.Implementations;
 using API.Services.Interfaces;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 
 namespace API
@@ -20,11 +21,13 @@ namespace API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            var containerName = builder.Configuration["BlobStorage:ContainerName"];
+
             var dataDirectory = Path.Combine(builder.Environment.ContentRootPath, "Data");
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")?.Replace("[DataPath]", dataDirectory);
 
-            builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+            builder.Services.AddDataAccessLayer(connectionString!);
 
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
             builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
@@ -33,6 +36,10 @@ namespace API
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IMeetingService, MeetingService>();
             builder.Services.AddScoped<IPolicyService, PolicyService>();
+            builder.Services.AddBlobStorage(
+                builder.Configuration.GetConnectionString("BlobStorage")!, 
+                builder.Configuration["BlobStorage:ContainerName"]);
+
 
             var app = builder.Build();
 
@@ -50,6 +57,15 @@ namespace API
                 }
 
                 await RunTest.SmokeTest(app.Services);
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var blobService = scope.ServiceProvider.GetRequiredService<IBlobStorageService>();
+                if (blobService is BlobStorageService concreteBlobService)
+                {
+                    await concreteBlobService.EnsureContainerExistsAsync();
+                }
             }
 
             app.UseHttpsRedirection();
