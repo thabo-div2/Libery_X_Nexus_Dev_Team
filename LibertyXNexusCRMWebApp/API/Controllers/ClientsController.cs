@@ -9,23 +9,23 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ClientsController : ControllerBase
     {
-        private readonly IClientService _clientService;
+        private readonly IClientService clientService_;
         public ClientsController(IClientService clientService)
         {
-            _clientService = clientService;
+            clientService_ = clientService;
         }
 
         [HttpGet]
         public async Task <ActionResult<IEnumerable<ClientListItemDto>>> Search([FromQuery] string? searchTerm, [FromQuery] ClientStatus? status, [FromQuery] int? advisorId)
         {
-            var results = await _clientService.SearchAsync(searchTerm, status, advisorId);
+            var results = await clientService_.SearchAsync(searchTerm, status, advisorId);
             return Ok(results);
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ClientDetailDto>> GetById(int id)
         {
-            var client = await _clientService.GetByIdAsync(id);
+            var client = await clientService_.GetByIdAsync(id);
             if (client is null)
             {
                 return NotFound(new { message = $"Client {id} was not found" });
@@ -38,7 +38,7 @@ namespace API.Controllers
         {
             try
             {
-                var created = await _clientService.CreateAsync(request);
+                var created = await clientService_.CreateAsync(request);
                 return CreatedAtAction(nameof(GetById), new { id = created.ClientId }, created);
 
             }
@@ -51,7 +51,7 @@ namespace API.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult<ClientDetailDto>> Update(int id, [FromBody] UpdateClientRequest request)
         {
-            var updated = await _clientService.UpdateAsync(id, request);
+            var updated = await clientService_.UpdateAsync(id, request);
             if (updated is null)
             {
                 return NotFound(new { message = $"Client {id} was not found" });
@@ -62,7 +62,7 @@ namespace API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var deleted = await _clientService.DeleteAsync(id);
+            var deleted = await clientService_.DeleteAsync(id);
             if (!deleted)
             {
                 return NotFound(new { message = $"Client {id} was not found" });

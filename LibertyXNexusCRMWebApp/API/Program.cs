@@ -31,7 +31,8 @@ namespace API
             builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
             builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             builder.Services.AddScoped<IClientService, ClientService>();
-
+            builder.Services.AddScoped<IMeetingService, MeetingService>();
+            builder.Services.AddScoped<IPolicyService, PolicyService>();
 
             var app = builder.Build();
 

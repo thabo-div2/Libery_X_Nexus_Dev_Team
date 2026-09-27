@@ -1,4 +1,5 @@
-﻿using API.DTOs.Clients;
+using API.DTOs.Clients;
+using API.Repositories.Implementations;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Shared.Models;
@@ -8,28 +9,30 @@ namespace API.Services.Implementations
 {
     public class ClientService : IClientService
     {
-        private readonly IClientRepository _clientRepository;
+        private readonly IClientRepository clientRepository_;
 
         public ClientService(IClientRepository clientRepository) 
         {
-          _clientRepository = clientRepository;
+            clientRepository_ = clientRepository;
         }
 
-        public async Task<ClientDetailDto?> GetByIdAsync(int clientId) { 
-            var client = await _clientRepository.GetWithDetailsAsync(clientId);
-            return client is null ? null: MapToDetailDto(client);
+        public async Task<ClientDetailDto?> GetByIdAsync(int clientId)
+        {
+            var client = await clientRepository_.GetWithDetailsAsync(clientId);
+            return client is null ? null : MapToDetailDto(client);
         }
 
         public async Task<IEnumerable<ClientListItemDto>> SearchAsync(string? searchTerm, ClientStatus? status, int? advisorId)
-        { 
-        var clients = await _clientRepository.SearchAsync(searchTerm, status, advisorId);
+        {
+            var clients = await clientRepository_.SearchAsync(searchTerm, status, advisorId);
             return clients.Select(MapToListItemDto);
         }
 
         public async Task<ClientDetailDto> CreateAsync(CreateClientRequest request)
-        { 
-        var existing = await _clientRepository.GetByEmailAsync(request.Email);
-            if (existing != null) {
+        {
+            var existing = await clientRepository_.GetByEmailAsync(request.Email);
+            if (existing != null)
+            {
                 throw new InvalidOperationException($"A client with email '{request.Email}' already exists");
             }
 
@@ -47,14 +50,17 @@ namespace API.Services.Implementations
                 CreatedAt = DateTime.UtcNow
             };
 
-            var created = await _clientRepository.AddAsync(client);
+            var created = await clientRepository_.AddAsync(client);
             return MapToDetailDto(created);
         }
 
-        public async Task<ClientDetailDto?> UpdateAsync(int clientId, UpdateClientRequest request) 
+        public async Task<ClientDetailDto?> UpdateAsync(int clientId, UpdateClientRequest request)
         {
-        var client = await _clientRepository.GetByIdAsync(clientId);
-            if (client != null) {
+
+            var client = await clientRepository_.GetByIdAsync(clientId);
+
+            if (client is null)
+            {
                 return null;
             }
 
@@ -65,19 +71,18 @@ namespace API.Services.Implementations
             client.RiskProfile = request.RiskProfile;
             client.UpdatedAt = DateTime.UtcNow;
 
-            await _clientRepository.UpdateAsync(client);
+            await clientRepository_.UpdateAsync(client);
             return MapToDetailDto(client);
         }
 
         public async Task<bool> DeleteAsync(int clientId)
         {
-            var exists = await _clientRepository.ExistsAsync(clientId);
+            var exists = await clientRepository_.ExistsAsync(clientId);
             if (!exists)
             {
                 return false;
             }
-
-            await _clientRepository.DeleteAsync(clientId);
+            await clientRepository_.DeleteAsync(clientId);
             return true;
         }
 
@@ -86,6 +91,7 @@ namespace API.Services.Implementations
             ClientId = client.ClientId,
             FirstName = client.FirstName,
             LastName = client.LastName,
+            Email = client.Email,
             Phone = client.Phone,
             IdentificationNumber = client.IdentificationNumber,
             RiskProfile = client.RiskProfile,
@@ -105,5 +111,6 @@ namespace API.Services.Implementations
             AdvisorId = client.AdvisorId,
             CreatedAt = client.CreatedAt,
         };
+
     }
 }
