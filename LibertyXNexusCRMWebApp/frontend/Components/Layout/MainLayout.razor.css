@@ -1,0 +1,86 @@
+* {
+    box-sizing: border-box;
+}
+
+/* ===============================
+   FULL APPLICATION
+   =============================== */
+
+.nexus-app {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+    margin: 0;
+    padding: 0;
+    background: #f6f8fb;
+}
+
+
+/* ===============================
+   SIDEBAR AREA
+   =============================== */
+
+.nexus-sidebar {
+    width: 220px;
+    min-width: 220px;
+    height: 100vh;
+    flex: 0 0 220px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    overflow: hidden;
+    background: #062946;
+}
+
+
+/* ===============================
+   MAIN PAGE AREA
+   =============================== */
+
+.nexus-main {
+    flex: 1;
+    width: calc(100% - 220px);
+    min-width: 0;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background: #f6f8fb;
+}
+
+
+/* ===============================
+   TABLET
+   =============================== */
+
+@media (max-width: 900px) {
+
+    .nexus-sidebar {
+        width: 190px;
+        min-width: 190px;
+        flex-basis: 190px;
+    }
+
+    .nexus-main {
+        width: calc(100% - 190px);
+    }
+}
+
+
+/* ===============================
+   MOBILE
+   =============================== */
+
+@media (max-width: 650px) {
+
+    .nexus-sidebar {
+        width: 64px;
+        min-width: 64px;
+        flex-basis: 64px;
+    }
+
+    .nexus-main {
+        width: calc(100% - 64px);
+    }
+}
