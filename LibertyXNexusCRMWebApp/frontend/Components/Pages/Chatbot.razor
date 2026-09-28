@@ -273,6 +273,8 @@
         await SendMessage();
     }
 
+    private const int TypingDelayMs = 15;
+
     private async Task SendMessage()
     {
         var text = PromptText.Trim();
@@ -289,6 +291,7 @@
         });
 
         PromptText = string.Empty;
+        StateHasChanged();
 
         var (matches, error) = await FaqStore.SearchAsync(text);
 
@@ -311,12 +314,20 @@
             handoff = true;
         }
 
-        ConversationItems.Add(new AssistantConversationItem
+        var assistantMessage = new AssistantConversationItem
         {
-            Text = replyText,
+            Text = string.Empty,
             TimeText = DateTime.Now.ToString("HH:mm"),
             IsAssistant = true
-        });
+        };
+        ConversationItems.Add(assistantMessage);
+
+        foreach (var character in replyText)
+        {
+            assistantMessage.Text += character;
+            StateHasChanged();
+            await Task.Delay(TypingDelayMs);
+        }
 
         IsHandedToAdviser = handoff;
     }
