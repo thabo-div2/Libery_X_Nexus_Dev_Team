@@ -468,10 +468,12 @@
     private ClientProfile? FindClientByName(string text)
     {
         var lower = text.ToLowerInvariant();
+        var words = lower.Split(new[] { ' ', ',', '.', '?', '!', ':', ';' }, StringSplitOptions.RemoveEmptyEntries);
 
         return AdvisorClients.FirstOrDefault(c =>
             lower.Contains($"{c.FirstName} {c.LastName}".ToLowerInvariant()) ||
-            (lower.Contains(c.FirstName.ToLowerInvariant()) && lower.Contains(c.LastName.ToLowerInvariant())));
+            words.Contains(c.FirstName.ToLowerInvariant()) ||
+            words.Contains(c.LastName.ToLowerInvariant()));
     }
 
     private void CloseMeetingForm()
