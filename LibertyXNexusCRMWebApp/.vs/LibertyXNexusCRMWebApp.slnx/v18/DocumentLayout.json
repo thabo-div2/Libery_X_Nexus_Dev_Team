@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{796F11B4-69B2-4A74-880B-4F8758340782}|Backend\\Backend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{796F11B4-69B2-4A74-880B-4F8758340782}|Backend\\Backend.csproj|solutionrelative:backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{04BC52A1-0726-4827-B591-96F90D069645}|frontend\\frontend.csproj|solutionrelative:frontend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\ethan\\documents\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -146,19 +146,20 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Program.cs",
               "RelativeDocumentMoniker": "Backend\\Program.cs",
               "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Program.cs",
               "RelativeToolTip": "Backend\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAACgAAAAAAAAAAAAawDQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-24T12:53:05.975Z"
+              "WhenOpened": "2026-09-24T12:53:05.975Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -234,7 +235,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Program.cs",
               "RelativeDocumentMoniker": "frontend\\Program.cs",
@@ -242,8 +243,7 @@
               "RelativeToolTip": "frontend\\Program.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAABAAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-24T12:53:34.876Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-24T12:53:34.876Z"
             },
             {
               "$type": "Document",

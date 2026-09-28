@@ -42,5 +42,27 @@
     "Queries": [],
     "Notifications": [],
     "FullName": "Sam Sossen"
+  },
+  {
+    "ClientId": 3,
+    "IdentityProviderSubjectId": "",
+    "FirstName": "Adam",
+    "LastName": "Landler",
+    "Email": "adam@email.com",
+    "Phone": "\u002B2745678909876",
+    "IdentityNumber": "1234567890",
+    "PasswordHash": "01CB92DFFF4091C2BEE0F343B2AF049FB39B45C08A1E5132B834E12E037D919D",
+    "RiskProfile": null,
+    "Status": 1,
+    "AdvisorId": 1,
+    "Advisor": null,
+    "CreatedAt": "2026-09-28T14:51:12.7376294Z",
+    "UpdatedAt": null,
+    "Policies": [],
+    "Meetings": [],
+    "Documents": [],
+    "Queries": [],
+    "Notifications": [],
+    "FullName": "Adam Landler"
   }
 ]
