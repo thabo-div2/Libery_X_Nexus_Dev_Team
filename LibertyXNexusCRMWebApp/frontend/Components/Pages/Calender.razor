@@ -1,0 +1,445 @@
+﻿@page "/calendar"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
+@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject MeetingService MeetingStore
+@inject MessageNotifier Notifier
+
+<PageTitle>Calendar | Nexus</PageTitle>
+
+<div class="calendar-page">
+
+    <!-- PAGE HEADER -->
+    <header class="calendar-header">
+
+        <div class="calendar-heading">
+            <h1>Calendar</h1>
+
+            <p>
+                @CurrentMonth.ToString("MMMM yyyy")
+                @if (MeetingsThisWeek.HasValue)
+                {
+                    <span> · @MeetingsThisWeek meetings this week</span>
+                }
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       placeholder="Search clients, cases, documents" />
+            </div>
+
+            <button type="button"
+                    class="notification-button"
+                    aria-label="Notifications">
+                ♧
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- PAGE CONTENT -->
+    <main class="calendar-content">
+
+        <!-- LEFT COLUMN -->
+        <section class="calendar-main-column">
+
+            <!-- CALENDAR CARD -->
+            <article class="calendar-card">
+
+                <div class="calendar-card-header">
+
+                    <button type="button"
+                            class="month-button"
+                            @onclick="PreviousMonth"
+                            aria-label="Previous month">
+                        ‹
+                    </button>
+
+                    <h2>@CurrentMonth.ToString("MMMM yyyy")</h2>
+
+                    <button type="button"
+                            class="month-button"
+                            @onclick="NextMonth"
+                            aria-label="Next month">
+                        ›
+                    </button>
+
+                </div>
+
+
+                <!-- DAYS OF WEEK -->
+                <div class="week-header">
+
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                    <div>Sun</div>
+
+                </div>
+
+
+                <!-- CALENDAR GRID -->
+                <div class="calendar-grid">
+
+                    @foreach (var day in CalendarDays)
+                    {
+                        <div class="calendar-day
+                            @(day.IsCurrentMonth ? "" : "other-month")
+                            @(day.IsToday ? "today" : "")">
+
+                            <div class="day-number">
+                                <span>@day.Date.Day</span>
+                            </div>
+
+
+                            <div class="day-events">
+
+                                @foreach (var calendarEvent in GetEventsForDate(day.Date))
+                                {
+                                    <button type="button"
+                                            class="calendar-event @GetEventClass(calendarEvent.Type)">
+
+                                        @calendarEvent.Title
+
+                                    </button>
+                                }
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- RIGHT COLUMN -->
+        <aside class="calendar-side-column">
+
+
+            <!-- TODAY -->
+            <section class="side-card today-card">
+
+                <div class="side-card-header">
+
+                    <h2>
+                        Today · @DateTime.Today.ToString("d MMMM")
+                    </h2>
+
+                </div>
+
+
+                <div class="today-body">
+
+                    @if (TodayMeetings.Count > 0)
+                    {
+                        @foreach (var meeting in TodayMeetings)
+                        {
+                            <article class="meeting-card">
+
+                                <div class="meeting-top">
+
+                                    <div class="meeting-time">
+                                        <span class="clock-icon">◷</span>
+                                        <span>@meeting.Time</span>
+                                    </div>
+
+                                    <span class="meeting-status @GetMeetingStatusClass(meeting.Status)">
+                                        <span class="status-dot"></span>
+                                        @meeting.Status
+                                    </span>
+
+                                </div>
+
+
+                                <strong class="meeting-title">
+                                    @meeting.Title
+                                </strong>
+
+
+                                @if (!string.IsNullOrWhiteSpace(meeting.Method))
+                                {
+                                    <div class="meeting-method">
+                                        <span class="method-icon">
+                                            @GetMeetingMethodIcon(meeting.Method)
+                                        </span>
+
+                                        <span>@meeting.Method</span>
+                                    </div>
+                                }
+
+                            </article>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-meetings">
+
+                            <span class="empty-calendar-icon">□</span>
+
+                            <strong>No meetings today</strong>
+
+                            <span>
+                                Your scheduled meetings will appear here.
+                            </span>
+
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+
+            <!-- CLIENT BOOKING LINK -->
+            <section class="side-card booking-card">
+
+                <div class="side-card-header">
+                    <h2>Client booking link</h2>
+                </div>
+
+
+                <div class="booking-body">
+
+                    <p>
+                        Clients book straight into your open slots
+                        from their portal.
+                    </p>
+
+
+                    <div class="booking-link-container">
+
+                        <span class="booking-link">
+                            @(string.IsNullOrWhiteSpace(ClientBookingLink)
+                                ? "Booking link not configured"
+                                : ClientBookingLink)
+                        </span>
+
+
+                        <button type="button"
+                                class="copy-button"
+                                disabled="@string.IsNullOrWhiteSpace(ClientBookingLink)">
+                            Copy
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </main>
+
+</div>
+
+
+@code {
+
+    private DateTime CurrentMonth { get; set; } =
+        new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+
+    private int? MeetingsThisWeek;
+
+    private string? ClientBookingLink;
+
+    private List<CalendarEvent> Events { get; set; } = new();
+
+    private List<MeetingItem> TodayMeetings { get; set; } = new();
+
+    private List<CalendarDay> CalendarDays => BuildCalendarDays();
+
+
+    private const int DefaultAdvisorId = 1;
+    private int AdvisorId => CurrentUser.Id ?? DefaultAdvisorId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+
+        await LoadMeetings();
+
+        Notifier.MessageSent += OnMeetingChanged;
+    }
+
+    private void OnMeetingChanged(int clientId)
+    {
+        _ = InvokeAsync(async () =>
+        {
+            await LoadMeetings();
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        Notifier.MessageSent -= OnMeetingChanged;
+    }
+
+    private async Task LoadMeetings()
+    {
+        var (meetings, _) = await MeetingStore.GetForAdvisorAsync(AdvisorId);
+
+        var confirmed = meetings.Where(m => string.Equals(m.Status, "Confirmed", StringComparison.OrdinalIgnoreCase)).ToList();
+
+        Events = confirmed.Select(m => new CalendarEvent
+        {
+            Title = m.ClientName,
+            Date = m.MeetingDate.ToLocalTime(),
+            Type = "meeting"
+        }).ToList();
+
+        TodayMeetings = confirmed
+            .Where(m => m.MeetingDate.ToLocalTime().Date == DateTime.Today)
+            .OrderBy(m => m.MeetingDate)
+            .Select(m => new MeetingItem
+            {
+                Time = m.MeetingDate.ToLocalTime().ToString("HH:mm"),
+                Title = $"Meeting with {m.ClientName}",
+                Method = string.Empty,
+                Status = "Confirmed"
+            }).ToList();
+
+        var weekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+        var weekEnd = weekStart.AddDays(7);
+        MeetingsThisWeek = confirmed.Count(m => m.MeetingDate.ToLocalTime() >= weekStart && m.MeetingDate.ToLocalTime() < weekEnd);
+    }
+
+
+    private void PreviousMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(-1);
+    }
+
+
+    private void NextMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(1);
+    }
+
+
+    private List<CalendarDay> BuildCalendarDays()
+    {
+        var firstDay = new DateTime(
+            CurrentMonth.Year,
+            CurrentMonth.Month,
+            1);
+
+        int daysFromMonday =
+            ((int)firstDay.DayOfWeek + 6) % 7;
+
+        var calendarStart =
+            firstDay.AddDays(-daysFromMonday);
+
+        var days = new List<CalendarDay>();
+
+        for (int i = 0; i < 42; i++)
+        {
+            var date = calendarStart.AddDays(i);
+
+            days.Add(new CalendarDay
+            {
+                Date = date,
+                IsCurrentMonth =
+                    date.Month == CurrentMonth.Month &&
+                    date.Year == CurrentMonth.Year,
+
+                IsToday =
+                    date.Date == DateTime.Today
+            });
+        }
+
+        return days;
+    }
+
+
+    private IEnumerable<CalendarEvent> GetEventsForDate(DateTime date)
+    {
+        return Events.Where(x => x.Date.Date == date.Date);
+    }
+
+
+    private static string GetEventClass(string? type)
+    {
+        return type?.ToLowerInvariant() switch
+        {
+            "meeting" => "event-green",
+            "review" => "event-yellow",
+            "urgent" => "event-red",
+            "personal" => "event-blue",
+            _ => "event-neutral"
+        };
+    }
+
+
+    private static string GetMeetingStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "confirmed" => "status-confirmed",
+            "urgent" => "status-urgent",
+            "pending" => "status-pending",
+            _ => "status-neutral"
+        };
+    }
+
+
+    private static string GetMeetingMethodIcon(string? method)
+    {
+        return method?.ToLowerInvariant() switch
+        {
+            "teams" => "▣",
+            "call" => "◔",
+            "office" => "⌂",
+            _ => "•"
+        };
+    }
+
+
+    public class CalendarDay
+    {
+        public DateTime Date { get; set; }
+
+        public bool IsCurrentMonth { get; set; }
+
+        public bool IsToday { get; set; }
+    }
+
+
+    public class CalendarEvent
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public DateTime Date { get; set; }
+
+        public string Type { get; set; } = string.Empty;
+    }
+
+
+    public class MeetingItem
+    {
+        public string Time { get; set; } = string.Empty;
+
+        public string Title { get; set; } = string.Empty;
+
+        public string Method { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+    }
+}

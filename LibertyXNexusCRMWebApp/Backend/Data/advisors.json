@@ -1,0 +1,12 @@
+[
+  {
+    "AdvisorId": 1,
+    "IdentityProviderSubjectId": "",
+    "FirstName": "Ratul",
+    "LastName": "Admin",
+    "Email": "Ratul@email.com",
+    "Phone": null,
+    "PasswordHash": "01CB92DFFF4091C2BEE0F343B2AF049FB39B45C08A1E5132B834E12E037D919D",
+    "CreatedAt": "2026-09-24T00:00:00Z"
+  }
+]

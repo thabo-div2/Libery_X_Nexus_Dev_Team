@@ -1,0 +1,543 @@
+@page "/client"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject ClientService ClientDirectory
+
+<PageTitle>Client View | Nexus</PageTitle>
+
+<ErrorBoundary>
+<ChildContent>
+<div class="client-page">
+
+    <!-- PAGE HEADER -->
+    <header class="client-header">
+
+        <div class="client-heading">
+            <h1>
+                Welcome back@(string.IsNullOrWhiteSpace(ClientFirstName)
+                    ? "!"
+                    : $", {ClientFirstName}!")
+            </h1>
+
+            <p>
+                @if (!string.IsNullOrWhiteSpace(CurrentProduct))
+                {
+                    <span>
+                        @CurrentProduct
+                        @if (!string.IsNullOrWhiteSpace(CurrentInstitution))
+                        {
+                            <span> · @CurrentInstitution</span>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(CurrentCaseNumber))
+                        {
+                            <span> · Case #@CurrentCaseNumber</span>
+                        }
+                    </span>
+                }
+                else
+                {
+                    <span>Your financial planning overview</span>
+                }
+            </p>
+        </div>
+
+
+        <div class="header-actions">
+
+            <div class="search-box">
+
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       placeholder="Search clients, cases, documents" />
+
+            </div>
+
+            <button type="button"
+                    class="notification-button"
+                    aria-label="Notifications">
+
+                ♧
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- MAIN CLIENT CONTENT -->
+    <main class="client-content">
+
+        <!-- LEFT COLUMN -->
+        <div class="main-column">
+
+
+            <!-- ===============================
+                 APPLICATION PROGRESS
+                 =============================== -->
+            <section class="dashboard-card progress-card">
+
+                <div class="card-header">
+
+                    <h2>Application progress</h2>
+
+                    @if (!string.IsNullOrWhiteSpace(CurrentApplicationStatus))
+                    {
+                        <span class="overall-status">
+                            @CurrentApplicationStatus
+                        </span>
+                    }
+
+                </div>
+
+
+                <div class="progress-body">
+
+                    @if (ApplicationSteps.Count > 0)
+                    {
+                        <div class="progress-list">
+
+                            @foreach (var step in ApplicationSteps)
+                            {
+                                <div class="progress-step">
+
+                                    <div class="progress-marker-column">
+
+                                        <span class="progress-marker @GetStepClass(step.Status)">
+                                            @GetStepIcon(step.Status)
+                                        </span>
+
+                                        @if (step != ApplicationSteps.Last())
+                                        {
+                                            <span class="progress-line"></span>
+                                        }
+
+                                    </div>
+
+
+                                    <div class="progress-details">
+
+                                        <strong>@step.Title</strong>
+
+                                        @if (!string.IsNullOrWhiteSpace(step.DateText))
+                                        {
+                                            <span>@step.DateText</span>
+                                        }
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state large-empty">
+
+                            <strong>No application progress available</strong>
+
+                            <span>
+                                Your application progress will appear here.
+                            </span>
+
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+
+            <!-- ===============================
+                 OUTSTANDING DOCUMENTS
+                 =============================== -->
+            <section class="dashboard-card documents-card">
+
+                <div class="card-header">
+
+                    <h2>Outstanding documents</h2>
+
+                    <a href="/documents"
+                       class="view-all-link">
+
+                        View all
+
+                    </a>
+
+                </div>
+
+
+                <div class="documents-body">
+
+                    @if (Documents.Count > 0)
+                    {
+                        <div class="document-list">
+
+                            @foreach (var document in Documents)
+                            {
+                                <div class="document-row">
+
+                                    <span class="document-name">
+                                        @document.Name
+                                    </span>
+
+                                    <span class="document-status @GetDocumentStatusClass(document.Status)">
+                                        <span class="status-dot"></span>
+
+                                        @document.Status
+                                    </span>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state document-empty">
+
+                            <span>No document information available</span>
+
+                        </div>
+                    }
+
+
+                    <!-- Upload document -->
+                    <div class="upload-wrapper">
+
+                        <label for="documentUpload"
+                               class="upload-button">
+
+                            Upload a document
+
+                        </label>
+
+                        <input id="documentUpload"
+                               class="file-input"
+                               type="file"
+                               accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- RIGHT COLUMN -->
+        <aside class="side-column">
+
+
+            <!-- ===============================
+                 MY POLICIES
+                 =============================== -->
+            <section class="dashboard-card policies-card">
+
+                <div class="card-header">
+                    <h2>My policies</h2>
+                </div>
+
+
+                <div class="policies-body">
+
+                    @if (Policies.Count > 0)
+                    {
+                        @foreach (var policy in Policies)
+                        {
+                            <div class="policy-row">
+
+                                <div class="policy-details">
+
+                                    <strong>
+                                        @policy.Name
+                                    </strong>
+
+                                    @if (!string.IsNullOrWhiteSpace(policy.Status))
+                                    {
+                                        <span>
+                                            @policy.Status
+                                        </span>
+                                    }
+
+                                </div>
+
+
+                                @if (policy.Value.HasValue)
+                                {
+                                    <span class="policy-value">
+                                        R @policy.Value.Value.ToString("N0")
+                                    </span>
+                                }
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state small-empty">
+                            <span>No policies available</span>
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+
+            <!-- ===============================
+                 MARKET & NEXUS UPDATES
+                 =============================== -->
+            <section class="dashboard-card updates-card">
+
+                <div class="card-header">
+                    <h2>Market &amp; nexus updates</h2>
+                </div>
+
+
+                <div class="updates-body">
+
+                    @if (Updates.Count > 0)
+                    {
+                        @foreach (var update in Updates)
+                        {
+                            <div class="update-row">
+
+                                <div class="update-icon">
+                                    ▤
+                                </div>
+
+                                <div class="update-content">
+
+                                    <strong>
+                                        @update.Title
+                                    </strong>
+
+                                    @if (!string.IsNullOrWhiteSpace(update.DateText))
+                                    {
+                                        <span>
+                                            @update.DateText
+                                        </span>
+                                    }
+
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state small-empty">
+                            <span>No updates available</span>
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+
+            <!-- ===============================
+                 ADVISER
+                 =============================== -->
+            <section class="dashboard-card adviser-card">
+
+                <div class="card-header">
+                    <h2>Your adviser</h2>
+                </div>
+
+
+                <div class="adviser-body">
+
+                    <div class="adviser-information">
+
+                        <div class="adviser-avatar">
+                            @(string.IsNullOrWhiteSpace(AdviserInitials)
+                                ? "A"
+                                : AdviserInitials)
+                        </div>
+
+
+                        <div class="adviser-details">
+
+                            <strong>
+                                @(string.IsNullOrWhiteSpace(AdviserName)
+                                    ? "Adviser not assigned"
+                                    : AdviserName)
+                            </strong>
+
+                            <span>
+                                @(string.IsNullOrWhiteSpace(AdviserFspNumber)
+                                    ? "Financial Adviser"
+                                    : $"Financial Adviser · FSP {AdviserFspNumber}")
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="adviser-actions">
+
+                        <a href="/client-messages"
+                           class="message-button">
+
+                            <span>✉</span>
+                            Message
+
+                        </a>
+
+
+                        <a href="/client-messages"
+                           class="meeting-button">
+
+                            <span>♙</span>
+                            Book meeting
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </main>
+
+</div>
+</ChildContent>
+<ErrorContent>
+    <div class="client-page">
+        <p class="dashboard-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
+</ErrorBoundary>
+
+
+@code {
+
+    private string? ClientFirstName;
+
+    private string? CurrentProduct;
+    private string? CurrentInstitution;
+    private string? CurrentCaseNumber;
+    private string? CurrentApplicationStatus;
+
+    private string? AdviserName;
+    private string? AdviserInitials;
+    private string? AdviserFspNumber;
+
+
+    private List<ApplicationStep> ApplicationSteps { get; set; } = new();
+
+    private List<ClientDocument> Documents { get; set; } = new();
+
+    private List<ClientPolicy> Policies { get; set; } = new();
+
+    private List<ClientUpdate> Updates { get; set; } = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+
+        if (CurrentUser.Id is null)
+        {
+            return;
+        }
+
+        var (client, _) = await ClientDirectory.GetByIdAsync(CurrentUser.Id.Value);
+        if (client is null)
+        {
+            return;
+        }
+
+        ClientFirstName = client.FirstName;
+
+        if (!string.IsNullOrWhiteSpace(client.AdvisorName))
+        {
+            AdviserName = client.AdvisorName;
+            AdviserInitials = string.Concat(client.AdvisorName
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(part => char.ToUpperInvariant(part[0])));
+        }
+    }
+
+
+    private static string GetStepClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "complete" => "step-complete",
+            "current" => "step-current",
+            _ => "step-pending"
+        };
+    }
+
+
+    private static string GetStepIcon(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "complete" => "✓",
+            "current" => "!",
+            _ => ""
+        };
+    }
+
+
+    private static string GetDocumentStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "required" => "document-required",
+            "in review" => "document-review",
+            "received" => "document-received",
+            _ => "document-neutral"
+        };
+    }
+
+
+    public class ApplicationStep
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string DateText { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+    }
+
+
+    public class ClientDocument
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+    }
+
+
+    public class ClientPolicy
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+
+        public decimal? Value { get; set; }
+    }
+
+
+    public class ClientUpdate
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string DateText { get; set; } = string.Empty;
+    }
+}

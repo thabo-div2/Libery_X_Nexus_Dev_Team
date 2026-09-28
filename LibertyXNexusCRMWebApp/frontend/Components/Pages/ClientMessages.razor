@@ -1,0 +1,344 @@
+@page "/client-messages"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
+@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject ClientService ClientDirectory
+@inject MessageService MessageStore
+@inject MeetingService MeetingStore
+@inject MessageNotifier Notifier
+
+<PageTitle>Messages | Nexus</PageTitle>
+
+<ErrorBoundary>
+    <ChildContent>
+        <div class="client-messages-page">
+
+            <header class="client-messages-header">
+                <h1>Messages</h1>
+                <p>
+                    @if (AdvisorId is null)
+                    {
+                        <span>You don't have an adviser assigned yet.</span>
+                    }
+                    else
+                    {
+                        <span>Your conversation with @AdvisorName.</span>
+                    }
+                </p>
+            </header>
+
+            @if (!string.IsNullOrEmpty(LoadError))
+            {
+                <p class="client-messages-error">@LoadError</p>
+            }
+            else if (IsLoading)
+            {
+                <p class="client-messages-error">Loading your messages…</p>
+            }
+            else
+            {
+                <section class="chat-panel">
+
+                    <div class="chat-header">
+                        <div class="chat-client">
+                            <span class="adviser-avatar">@AdviserInitials</span>
+                            <h2>@AdvisorName</h2>
+                        </div>
+
+                        <button type="button" class="meeting-toggle-button" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
+                            <span>♙</span>
+                            Book meeting
+                        </button>
+                    </div>
+
+                    @if (ShowMeetingForm)
+                    {
+                        <div class="meeting-request-form">
+                            <label>
+                                Date &amp; time
+                                <input type="datetime-local" @bind="MeetingDateTimeInput" />
+                            </label>
+
+                            <label>
+                                Notes (optional)
+                                <input type="text" @bind="MeetingNotes" placeholder="What would you like to discuss?" />
+                            </label>
+
+                            <div class="meeting-form-actions">
+                                <button type="button" class="meeting-cancel-button" @onclick="ToggleMeetingForm">Cancel</button>
+                                <button type="button" class="meeting-send-button" @onclick="SendMeetingRequest">Request meeting</button>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(MeetingError))
+                            {
+                                <p class="client-messages-error">@MeetingError</p>
+                            }
+                        </div>
+                    }
+
+                    <div class="chat-body">
+                        @if (TimelineItems.Count == 0)
+                        {
+                            <p class="client-messages-empty">No messages yet. Say hello to @AdvisorName.</p>
+                        }
+                        else
+                        {
+                            @foreach (var item in TimelineItems)
+                            {
+                                @if (item.Meeting is not null)
+                                {
+                                    <div class="meeting-card @GetMeetingStatusClass(item.Meeting.Status)">
+                                        <strong>Meeting request</strong>
+                                        <span>@item.Meeting.MeetingDate.ToLocalTime().ToString("d MMM yyyy, HH:mm")</span>
+
+                                        @if (!string.IsNullOrWhiteSpace(item.Meeting.Notes))
+                                        {
+                                            <span class="meeting-card-notes">@item.Meeting.Notes</span>
+                                        }
+
+                                        <span class="meeting-status-label">@GetMeetingStatusText(item.Meeting.Status)</span>
+                                    </div>
+                                }
+                                else if (item.Message is not null)
+                                {
+                                    <div class="message-bubble @(item.Message.FromAdvisor ? "message-from-advisor" : "message-from-me")">
+                                        <span class="message-author">@(item.Message.FromAdvisor ? AdvisorName : "You")</span>
+                                        <p>@item.Message.Text</p>
+                                        <span class="message-time">@item.Message.SentAt.ToLocalTime().ToString("d MMM, HH:mm")</span>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div class="client-messages-composer">
+                        <input type="text"
+                               @bind="Draft"
+                               placeholder="Write a message to your adviser…"
+                               disabled="@(AdvisorId is null)" />
+
+                        <button type="button" @onclick="SendMessage" disabled="@(AdvisorId is null)">Send</button>
+                    </div>
+                </section>
+            }
+
+            @if (!string.IsNullOrEmpty(SendError))
+            {
+                <p class="client-messages-error">@SendError</p>
+            }
+
+        </div>
+    </ChildContent>
+    <ErrorContent>
+        <div class="client-messages-page">
+            <p class="client-messages-error">Something went wrong loading your messages. Please refresh and try again.</p>
+        </div>
+    </ErrorContent>
+</ErrorBoundary>
+
+@code {
+    private int? ClientId;
+    private int? AdvisorId;
+    private string AdvisorName = "your adviser";
+    private string AdviserInitials = "A";
+
+    private List<ChatMessage> Thread = new();
+    private List<MeetingSummary> Meetings = new();
+    private List<TimelineItem> TimelineItems = new();
+
+    private string Draft = string.Empty;
+    private string? LoadError;
+    private string? SendError;
+    private bool IsLoading = true;
+
+    private bool ShowMeetingForm;
+    private DateTime? MeetingDateTimeInput;
+    private string MeetingNotes = string.Empty;
+    private string? MeetingError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+
+        if (CurrentUser.Id is null)
+        {
+            LoadError = "Please log in to view your messages.";
+            IsLoading = false;
+            return;
+        }
+
+        ClientId = CurrentUser.Id;
+
+        var (client, clientError) = await ClientDirectory.GetByIdAsync(ClientId.Value);
+        if (client is null)
+        {
+            LoadError = clientError ?? "Could not load your profile.";
+            IsLoading = false;
+            return;
+        }
+
+        AdvisorId = client.AdvisorId;
+        AdvisorName = client.AdvisorName ?? "your adviser";
+        AdviserInitials = BuildInitials(AdvisorName);
+
+        if (AdvisorId is not null)
+        {
+            await RefreshThreadAsync();
+        }
+
+        IsLoading = false;
+
+        Notifier.MessageSent += OnMessageSent;
+    }
+
+    private void OnMessageSent(int clientId)
+    {
+        if (ClientId is null || clientId != ClientId.Value)
+        {
+            return;
+        }
+
+        _ = InvokeAsync(async () =>
+        {
+            await RefreshThreadAsync();
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        Notifier.MessageSent -= OnMessageSent;
+    }
+
+    private async Task RefreshThreadAsync()
+    {
+        if (ClientId is null)
+        {
+            return;
+        }
+
+        var (messages, messageError) = await MessageStore.GetConversationAsync(ClientId.Value);
+        Thread = messages;
+
+        var (meetings, meetingError) = await MeetingStore.GetForClientAsync(ClientId.Value);
+        Meetings = meetings;
+
+        LoadError = messageError ?? meetingError;
+        BuildTimeline();
+    }
+
+    private void BuildTimeline()
+    {
+        var items = new List<TimelineItem>();
+
+        items.AddRange(Thread.Select(m => new TimelineItem { Timestamp = m.SentAt, Message = m }));
+        items.AddRange(Meetings.Select(m => new TimelineItem { Timestamp = m.CreatedAt, Meeting = m }));
+
+        TimelineItems = items.OrderBy(i => i.Timestamp).ToList();
+    }
+
+    private void ToggleMeetingForm()
+    {
+        ShowMeetingForm = !ShowMeetingForm;
+        MeetingError = null;
+    }
+
+    private async Task SendMeetingRequest()
+    {
+        MeetingError = null;
+
+        if (ClientId is null || AdvisorId is null)
+        {
+            MeetingError = "You don't have an adviser assigned yet.";
+            return;
+        }
+
+        if (MeetingDateTimeInput is null)
+        {
+            MeetingError = "Choose a date and time for the meeting.";
+            return;
+        }
+
+        var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
+
+        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingNotes);
+        if (error is not null)
+        {
+            MeetingError = error;
+            return;
+        }
+
+        MeetingDateTimeInput = null;
+        MeetingNotes = string.Empty;
+        ShowMeetingForm = false;
+
+        await RefreshThreadAsync();
+    }
+
+    private async Task SendMessage()
+    {
+        SendError = null;
+
+        if (ClientId is null || AdvisorId is null)
+        {
+            SendError = "You don't have an adviser assigned yet.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Draft))
+        {
+            SendError = "Type a message before sending";
+            return;
+        }
+
+        var error = await MessageStore.SendAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, Draft);
+        if (error is not null)
+        {
+            SendError = error;
+            return;
+        }
+
+        Draft = string.Empty;
+        await RefreshThreadAsync();
+    }
+
+    private static string BuildInitials(string name)
+    {
+        var initials = string.Concat(name
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select(part => char.ToUpperInvariant(part[0])));
+
+        return string.IsNullOrWhiteSpace(initials) ? "A" : initials;
+    }
+
+    private static string GetMeetingStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "confirmed" => "meeting-confirmed",
+            "cancelled" => "meeting-denied",
+            _ => "meeting-pending"
+        };
+    }
+
+    private static string GetMeetingStatusText(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "confirmed" => "Meeting confirmed",
+            "cancelled" => "Meeting request denied",
+            _ => "Waiting for your adviser to confirm"
+        };
+    }
+
+    private class TimelineItem
+    {
+        public DateTime Timestamp { get; set; }
+
+        public ChatMessage? Message { get; set; }
+
+        public MeetingSummary? Meeting { get; set; }
+    }
+}

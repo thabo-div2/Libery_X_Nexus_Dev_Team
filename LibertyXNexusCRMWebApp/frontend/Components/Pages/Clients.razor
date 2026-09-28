@@ -1,0 +1,121 @@
+@page "/clients"
+@layout MainLayout
+@rendermode InteractiveServer
+@using frontend.Services
+@inject ClientService ClientDirectory
+
+<PageTitle>Clients | Nexus</PageTitle>
+
+<ErrorBoundary>
+    <ChildContent>
+        <div class="clients-page">
+
+            <header class="clients-header">
+                <h1>Clients</h1>
+                <p>Search your client base and open a profile for the full picture.</p>
+            </header>
+
+            <div class="clients-search-row">
+                <input type="text"
+                       @bind="SearchText"
+                       placeholder="Search by name, email or status" />
+
+                <button type="button" @onclick="Search">Search</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(LoadError))
+            {
+                <p class="clients-error">@LoadError</p>
+            }
+
+            <div class="clients-layout">
+
+                <div class="clients-list">
+                    @if (IsLoading)
+                    {
+                        <p class="clients-empty">Loading clients…</p>
+                    }
+                    else if (ClientResults.Count == 0)
+                    {
+                        <p class="clients-empty">No clients found.</p>
+                    }
+                    else
+                    {
+                        @foreach (var client in ClientResults)
+                        {
+                            <button type="button"
+                                    class="client-row @(SelectedClient?.ClientId == client.ClientId ? "client-row-active" : "")"
+                                    @onclick="() => SelectedClient = client">
+                                <strong>@client.FirstName @client.LastName</strong>
+                                <span>@client.Email</span>
+                                <span class="client-status">@client.Status</span>
+                            </button>
+                        }
+                    }
+                </div>
+
+                <div class="client-detail">
+                    @if (SelectedClient is null)
+                    {
+                        <p class="clients-empty">Select a client to see their details.</p>
+                    }
+                    else
+                    {
+                        <h2>@SelectedClient.FirstName @SelectedClient.LastName</h2>
+
+                        <dl>
+                            <dt>Email</dt>
+                            <dd>@SelectedClient.Email</dd>
+
+                            <dt>Phone</dt>
+                            <dd>@(SelectedClient.Phone ?? "—")</dd>
+
+                            <dt>ID number</dt>
+                            <dd>@(SelectedClient.IdentityNumber ?? "—")</dd>
+
+                            <dt>Risk profile</dt>
+                            <dd>@(SelectedClient.RiskProfile ?? "—")</dd>
+
+                            <dt>Status</dt>
+                            <dd>@SelectedClient.Status</dd>
+
+                            <dt>Client since</dt>
+                            <dd>@SelectedClient.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</dd>
+                        </dl>
+                    }
+                </div>
+
+            </div>
+
+        </div>
+    </ChildContent>
+    <ErrorContent>
+        <div class="clients-page">
+            <p class="clients-error">Something went wrong loading this page. Please refresh and try again.</p>
+        </div>
+    </ErrorContent>
+</ErrorBoundary>
+
+@code {
+    private List<ClientProfile> ClientResults = new();
+    private ClientProfile? SelectedClient;
+    private string SearchText = string.Empty;
+    private string? LoadError;
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Search();
+    }
+
+    private async Task Search()
+    {
+        IsLoading = true;
+        LoadError = null;
+
+        var (clients, error) = await ClientDirectory.SearchAsync(SearchText);
+        ClientResults = clients;
+        LoadError = error;
+        IsLoading = false;
+    }
+}
