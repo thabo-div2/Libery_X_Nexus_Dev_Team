@@ -14,11 +14,21 @@ namespace frontend.Services
             _http = http;
         }
 
-        public async Task<(List<ClientProfile> Clients, string? Error)> SearchAsync(string? search)
+        public async Task<(List<ClientProfile> Clients, string? Error)> SearchAsync(string? search, int? advisorId = null)
         {
             try
             {
-                var url = string.IsNullOrWhiteSpace(search) ? "Client" : $"Client?search={Uri.EscapeDataString(search)}";
+                var queryParts = new List<string>();
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    queryParts.Add($"search={Uri.EscapeDataString(search)}");
+                }
+                if (advisorId is not null)
+                {
+                    queryParts.Add($"advisorId={advisorId.Value}");
+                }
+
+                var url = queryParts.Count == 0 ? "Client" : $"Client?{string.Join("&", queryParts)}";
                 var response = await _http.GetAsync(url);
 
                 if (!response.IsSuccessStatusCode)

@@ -284,6 +284,86 @@
     text-decoration: none;
 }
 
+
+/* ===============================
+   MEETING REQUEST PANEL
+   =============================== */
+
+.meeting-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 11px 16px;
+    border-top: 1px solid #edf0f2;
+    background: #fafbfd;
+}
+
+    .meeting-request-form label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: #536676;
+        font-size: 7.5px;
+        font-weight: 600;
+    }
+
+    .meeting-request-form input,
+    .meeting-request-form select {
+        padding: 7px 9px;
+        border: 1px solid #dbe2e8;
+        border-radius: 5px;
+        outline: none;
+        background: #ffffff;
+        color: #263a4d;
+        font-family: inherit;
+        font-size: 8px;
+    }
+
+.meeting-match-note {
+    margin: 0;
+    color: #536676;
+    font-size: 7px;
+    font-style: italic;
+}
+
+.meeting-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.meeting-cancel-button {
+    padding: 7px 12px;
+    border: 1px solid #dbe2e8;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #536676;
+    font-size: 7.5px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.meeting-send-button {
+    padding: 7px 12px;
+    border: none;
+    border-radius: 5px;
+    background: #073253;
+    color: #ffffff;
+    font-size: 7.5px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+    .meeting-send-button:hover {
+        background: #08416b;
+    }
+
+.assistant-form-error {
+    margin: 0;
+    color: #c0392b;
+    font-size: 7.5px;
+}
+
 .message-input-area {
     min-height: 58px;
     position: relative;

@@ -18,9 +18,14 @@ namespace Backend.Services
             _advisorsPath = Path.Combine(dataDirectory, "advisors.json");
         }
 
-        public async Task<List<ClientProfile>> SearchAsync(string? search)
+        public async Task<List<ClientProfile>> SearchAsync(string? search, int? advisorId = null)
         {
             var clients = await ReadAsync<Client>(_clientsPath);
+
+            if (advisorId is not null)
+            {
+                clients = clients.Where(c => c.AdvisorId == advisorId.Value).ToList();
+            }
 
             var matches = string.IsNullOrWhiteSpace(search)
                 ? clients

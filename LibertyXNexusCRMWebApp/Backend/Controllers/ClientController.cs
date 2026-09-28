@@ -15,9 +15,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search([FromQuery] string? search)
+        public async Task<IActionResult> Search([FromQuery] string? search, [FromQuery] int? advisorId)
         {
-            var results = await _clientService.SearchAsync(search);
+            var results = await _clientService.SearchAsync(search, advisorId);
             return Ok(results);
         }
 

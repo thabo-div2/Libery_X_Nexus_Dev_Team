@@ -3,6 +3,9 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
 @inject FaqService FaqStore
+@inject MeetingService MeetingStore
+@inject ClientService ClientDirectory
+@inject CurrentUserService CurrentUser
 
 <PageTitle>Nexus Assistant | Nexus</PageTitle>
 
@@ -142,6 +145,53 @@
             </div>
 
 
+            @if (ShowMeetingForm)
+            {
+                <div class="meeting-request-form">
+
+                    @if (IsAdvisorView)
+                    {
+                        <label>
+                            Client
+                            <select @bind="SelectedClientId">
+                                <option value="">Select a client…</option>
+                                @foreach (var client in AdvisorClients)
+                                {
+                                    <option value="@client.ClientId">@client.FirstName @client.LastName</option>
+                                }
+                            </select>
+                        </label>
+
+                        @if (!string.IsNullOrWhiteSpace(MatchedClientName))
+                        {
+                            <p class="meeting-match-note">Booking with @MatchedClientName — change above if that's not who you meant.</p>
+                        }
+                    }
+
+                    <label>
+                        Date &amp; time
+                        <input type="datetime-local" @bind="MeetingDateTimeInput" />
+                    </label>
+
+                    <label>
+                        Notes (optional)
+                        <input type="text" @bind="MeetingNotes" placeholder="What would you like to discuss?" />
+                    </label>
+
+                    <div class="meeting-form-actions">
+                        <button type="button" class="meeting-cancel-button" @onclick="CloseMeetingForm">Cancel</button>
+                        <button type="button" class="meeting-send-button" @onclick="SendMeetingRequest">Request meeting</button>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(MeetingError))
+                    {
+                        <p class="assistant-form-error">@MeetingError</p>
+                    }
+
+                </div>
+            }
+
+
             <div class="quick-prompts">
 
                 <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is FICA and why do you need it?")'>
@@ -156,10 +206,9 @@
                     How do I message my adviser?
                 </button>
 
-                <a href="/client-messages"
-                   class="prompt-chip prompt-link">
-                    Book a meeting with my adviser
-                </a>
+                <button type="button" class="prompt-chip prompt-link" @onclick='() => SendQuickPrompt(IsAdvisorView ? "Book a meeting with a client" : "Book a meeting with my adviser")'>
+                    @(IsAdvisorView ? "Book a meeting with a client" : "Book a meeting with my adviser")
+                </button>
 
             </div>
 
@@ -261,19 +310,62 @@
 
 @code {
 
+    private const int TypingDelayMs = 15;
+    private const int DefaultAdvisorId = 1;
+
+    private static readonly string[] MeetingKeywords =
+    {
+        "book a meeting", "book meeting", "schedule a meeting", "schedule meeting",
+        "set up a meeting", "arrange a meeting", "request a meeting"
+    };
+
     private string PromptText { get; set; } = string.Empty;
 
     private bool IsHandedToAdviser { get; set; }
 
     private List<AssistantConversationItem> ConversationItems { get; set; } = new();
 
+    private bool IsAdvisorView => CurrentUser.IsAdvisor;
+
+    private int? ClientId;
+    private int? AdvisorId;
+
+    private List<ClientProfile> AdvisorClients = new();
+    private int? SelectedClientId;
+    private string? MatchedClientName;
+
+    private bool ShowMeetingForm;
+    private DateTime? MeetingDateTimeInput;
+    private string MeetingNotes = string.Empty;
+    private string? MeetingError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+
+        if (CurrentUser.IsAdvisor)
+        {
+            AdvisorId = CurrentUser.Id ?? DefaultAdvisorId;
+            var (clients, _) = await ClientDirectory.SearchAsync(null, AdvisorId);
+            AdvisorClients = clients;
+        }
+        else if (CurrentUser.IsClient)
+        {
+            ClientId = CurrentUser.Id;
+
+            if (ClientId is not null)
+            {
+                var (client, _) = await ClientDirectory.GetByIdAsync(ClientId.Value);
+                AdvisorId = client?.AdvisorId;
+            }
+        }
+    }
+
     private async Task SendQuickPrompt(string text)
     {
         PromptText = text;
         await SendMessage();
     }
-
-    private const int TypingDelayMs = 15;
 
     private async Task SendMessage()
     {
@@ -292,6 +384,16 @@
 
         PromptText = string.Empty;
         StateHasChanged();
+
+        if (LooksLikeMeetingRequest(text))
+        {
+            await TypeAssistantReply(IsAdvisorView
+                ? "Sure — pick a client and a time below."
+                : "Sure — let's get that booked with your adviser. Fill in the details below.");
+
+            OpenMeetingPanel(IsAdvisorView ? text : null);
+            return;
+        }
 
         var (matches, error) = await FaqStore.SearchAsync(text);
 
@@ -314,22 +416,123 @@
             handoff = true;
         }
 
-        var assistantMessage = new AssistantConversationItem
+        await TypeAssistantReply(replyText);
+        IsHandedToAdviser = handoff;
+    }
+
+    private async Task TypeAssistantReply(string text)
+    {
+        var message = new AssistantConversationItem
         {
             Text = string.Empty,
             TimeText = DateTime.Now.ToString("HH:mm"),
             IsAssistant = true
         };
-        ConversationItems.Add(assistantMessage);
 
-        foreach (var character in replyText)
+        ConversationItems.Add(message);
+
+        foreach (var character in text)
         {
-            assistantMessage.Text += character;
+            message.Text += character;
             StateHasChanged();
             await Task.Delay(TypingDelayMs);
         }
+    }
 
-        IsHandedToAdviser = handoff;
+    private static bool LooksLikeMeetingRequest(string text)
+    {
+        var lower = text.ToLowerInvariant();
+        return MeetingKeywords.Any(keyword => lower.Contains(keyword));
+    }
+
+    private void OpenMeetingPanel(string? clientNameHint)
+    {
+        ShowMeetingForm = true;
+        MeetingError = null;
+        MeetingDateTimeInput = null;
+        MeetingNotes = string.Empty;
+        SelectedClientId = null;
+        MatchedClientName = null;
+
+        if (IsAdvisorView && !string.IsNullOrWhiteSpace(clientNameHint))
+        {
+            var match = FindClientByName(clientNameHint);
+            if (match is not null)
+            {
+                SelectedClientId = match.ClientId;
+                MatchedClientName = $"{match.FirstName} {match.LastName}";
+            }
+        }
+    }
+
+    private ClientProfile? FindClientByName(string text)
+    {
+        var lower = text.ToLowerInvariant();
+
+        return AdvisorClients.FirstOrDefault(c =>
+            lower.Contains($"{c.FirstName} {c.LastName}".ToLowerInvariant()) ||
+            (lower.Contains(c.FirstName.ToLowerInvariant()) && lower.Contains(c.LastName.ToLowerInvariant())));
+    }
+
+    private void CloseMeetingForm()
+    {
+        ShowMeetingForm = false;
+        MeetingError = null;
+    }
+
+    private async Task SendMeetingRequest()
+    {
+        MeetingError = null;
+
+        if (MeetingDateTimeInput is null)
+        {
+            MeetingError = "Choose a date and time for the meeting.";
+            return;
+        }
+
+        var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
+
+        string? error;
+        string confirmationText;
+
+        if (IsAdvisorView)
+        {
+            if (SelectedClientId is null)
+            {
+                MeetingError = "Select a client for this meeting.";
+                return;
+            }
+
+            error = await MeetingStore.RequestAsync(SelectedClientId.Value, AdvisorId ?? DefaultAdvisorId, fromAdvisor: true, meetingDateUtc, MeetingNotes);
+
+            var client = AdvisorClients.FirstOrDefault(c => c.ClientId == SelectedClientId.Value);
+            confirmationText = $"Meeting booked with {client?.FirstName} {client?.LastName} for {meetingDateUtc.ToLocalTime():d MMM yyyy, HH:mm}.";
+        }
+        else
+        {
+            if (ClientId is null || AdvisorId is null)
+            {
+                MeetingError = "You don't have an adviser assigned yet.";
+                return;
+            }
+
+            error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingNotes);
+            confirmationText = "Your meeting request has been sent to your adviser.";
+        }
+
+        if (error is not null)
+        {
+            MeetingError = error;
+            return;
+        }
+
+        ShowMeetingForm = false;
+        MeetingDateTimeInput = null;
+        MeetingNotes = string.Empty;
+        SelectedClientId = null;
+        MatchedClientName = null;
+
+        await TypeAssistantReply(confirmationText);
     }
 
     public class AssistantConversationItem
