@@ -217,6 +217,8 @@
 
                 <input type="text"
                        @bind="PromptText"
+                       @bind:event="oninput"
+                       @onkeydown="HandlePromptKeyDown"
                        placeholder="Ask about documents, status or next steps..." />
 
                 <button type="button"
@@ -365,6 +367,14 @@
     {
         PromptText = text;
         await SendMessage();
+    }
+
+    private async Task HandlePromptKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
     }
 
     private async Task SendMessage()

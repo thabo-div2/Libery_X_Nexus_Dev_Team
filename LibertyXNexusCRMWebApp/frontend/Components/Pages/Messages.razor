@@ -251,6 +251,8 @@
 
                 <input type="text"
                        @bind="ReplyText"
+                       @bind:event="oninput"
+                       @onkeydown="HandleReplyKeyDown"
                        placeholder="Write a reply..."
                        disabled="@string.IsNullOrWhiteSpace(SelectedClientName)" />
 
@@ -548,6 +550,14 @@
             "cancelled" => "Meeting request denied",
             _ => "Waiting for your response"
         };
+    }
+
+    private async Task HandleReplyKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendReply();
+        }
     }
 
     private async Task SendReply()

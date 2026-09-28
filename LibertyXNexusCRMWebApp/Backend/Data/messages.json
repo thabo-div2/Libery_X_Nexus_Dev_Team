@@ -110,5 +110,13 @@
     "FromAdvisor": true,
     "Text": "yo",
     "SentAt": "2026-09-24T20:12:49.2162043Z"
+  },
+  {
+    "Id": 15,
+    "ClientId": 2,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "yo",
+    "SentAt": "2026-09-28T14:17:54.0117807Z"
   }
 ]

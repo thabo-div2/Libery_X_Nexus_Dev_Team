@@ -116,6 +116,8 @@
                     <div class="client-messages-composer">
                         <input type="text"
                                @bind="Draft"
+                               @bind:event="oninput"
+                               @onkeydown="HandleComposerKeyDown"
                                placeholder="Write a message to your adviser…"
                                disabled="@(AdvisorId is null)" />
 
@@ -275,6 +277,14 @@
         ShowMeetingForm = false;
 
         await RefreshThreadAsync();
+    }
+
+    private async Task HandleComposerKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
     }
 
     private async Task SendMessage()
