@@ -11,5 +11,18 @@
     "ExpiresAt": "2026-10-08T12:27:03.5968093Z",
     "RedeemedAt": "2026-09-24T12:28:47.3577874Z",
     "IsValid": false
+  },
+  {
+    "InvitationId": 2,
+    "AdvisorId": 1,
+    "Advisor": null,
+    "Email": "sam@email.com",
+    "Token": "6ACCF14670029838A5028EDBC8D326F7",
+    "Status": 1,
+    "RedeemedByIdClient": 2,
+    "CreatedAt": "2026-09-24T20:11:56.0316022Z",
+    "ExpiresAt": "2026-10-08T20:11:56.0316025Z",
+    "RedeemedAt": "2026-09-24T20:12:28.7736286Z",
+    "IsValid": false
   }
 ]

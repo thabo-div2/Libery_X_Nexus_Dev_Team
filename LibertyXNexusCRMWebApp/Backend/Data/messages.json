@@ -78,5 +78,37 @@
     "FromAdvisor": true,
     "Text": "tes",
     "SentAt": "2026-09-24T13:19:44.9356762Z"
+  },
+  {
+    "Id": 11,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "hello",
+    "SentAt": "2026-09-24T20:11:06.6811958Z"
+  },
+  {
+    "Id": 12,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "hello",
+    "SentAt": "2026-09-24T20:11:16.9760402Z"
+  },
+  {
+    "Id": 13,
+    "ClientId": 2,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "yo",
+    "SentAt": "2026-09-24T20:12:42.4483885Z"
+  },
+  {
+    "Id": 14,
+    "ClientId": 2,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "yo",
+    "SentAt": "2026-09-24T20:12:49.2162043Z"
   }
 ]

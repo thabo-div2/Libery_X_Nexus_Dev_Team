@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
+@using frontend.Services
+@inject CurrentUserService CurrentUser
 
 <div class="nexus-app">
 
@@ -14,12 +16,31 @@
 </div>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        // The /chatbot route is shared by clients and advisors, so the
+        // sidebar for it is decided by who's actually logged in rather
+        // than the URL alone.
+        await CurrentUser.EnsureRestoredAsync();
+    }
+
     private bool IsClientRoute
     {
         get
         {
             var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?')[0].ToLowerInvariant();
-            return path == "client" || path == "client-messages";
+
+            if (path == "client" || path == "client-messages")
+            {
+                return true;
+            }
+
+            if (path == "chatbot")
+            {
+                return CurrentUser.IsClient;
+            }
+
+            return false;
         }
     }
 }

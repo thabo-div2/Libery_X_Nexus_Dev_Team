@@ -20,5 +20,27 @@
     "Queries": [],
     "Notifications": [],
     "FullName": "Ethan Jansen"
+  },
+  {
+    "ClientId": 2,
+    "IdentityProviderSubjectId": "",
+    "FirstName": "Sam",
+    "LastName": "Sossen",
+    "Email": "sam@email.com",
+    "Phone": "\u002B27 123456789",
+    "IdentityNumber": "1234567890",
+    "PasswordHash": "01CB92DFFF4091C2BEE0F343B2AF049FB39B45C08A1E5132B834E12E037D919D",
+    "RiskProfile": null,
+    "Status": 1,
+    "AdvisorId": 1,
+    "Advisor": null,
+    "CreatedAt": "2026-09-24T20:12:28.7519591Z",
+    "UpdatedAt": null,
+    "Policies": [],
+    "Meetings": [],
+    "Documents": [],
+    "Queries": [],
+    "Notifications": [],
+    "FullName": "Sam Sossen"
   }
 ]

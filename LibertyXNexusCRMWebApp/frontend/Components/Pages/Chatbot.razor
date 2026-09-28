@@ -1,5 +1,8 @@
 ﻿@page "/chatbot"
 @layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject FaqService FaqStore
 
 <PageTitle>Nexus Assistant | Nexus</PageTitle>
 
@@ -141,19 +144,19 @@
 
             <div class="quick-prompts">
 
-                <button type="button" class="prompt-chip">
-                    Where is my application right now?
-                </button>
-
-                <button type="button" class="prompt-chip">
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is FICA and why do you need it?")'>
                     What is FICA and why do you need it?
                 </button>
 
-                <button type="button" class="prompt-chip">
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I upload a document?")'>
                     How do I upload a document?
                 </button>
 
-                <a href="/calendar"
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I message my adviser?")'>
+                    How do I message my adviser?
+                </button>
+
+                <a href="/client-messages"
                    class="prompt-chip prompt-link">
                     Book a meeting with my adviser
                 </a>
@@ -169,7 +172,8 @@
 
                 <button type="button"
                         class="send-button"
-                        aria-label="Send message">
+                        aria-label="Send message"
+                        @onclick="SendMessage">
 
                     ➤
 
@@ -263,16 +267,59 @@
 
     private List<AssistantConversationItem> ConversationItems { get; set; } = new();
 
-
-    /// <summary>
-    /// Later, load the existing assistant conversation and escalation
-    /// status from the application's service layer.
-    /// </summary>
-    protected override Task OnInitializedAsync()
+    private async Task SendQuickPrompt(string text)
     {
-        return Task.CompletedTask;
+        PromptText = text;
+        await SendMessage();
     }
 
+    private async Task SendMessage()
+    {
+        var text = PromptText.Trim();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        ConversationItems.Add(new AssistantConversationItem
+        {
+            Text = text,
+            TimeText = DateTime.Now.ToString("HH:mm"),
+            IsAssistant = false
+        });
+
+        PromptText = string.Empty;
+
+        var (matches, error) = await FaqStore.SearchAsync(text);
+
+        string replyText;
+        var handoff = false;
+
+        if (error is not null)
+        {
+            replyText = error;
+        }
+        else if (matches.Count > 0)
+        {
+            var bestMatch = matches[0];
+            replyText = bestMatch.Answer;
+            handoff = bestMatch.RequiresHandoff;
+        }
+        else
+        {
+            replyText = "I don't have an answer for that one on file — I'll pass it along to your adviser so they can help.";
+            handoff = true;
+        }
+
+        ConversationItems.Add(new AssistantConversationItem
+        {
+            Text = replyText,
+            TimeText = DateTime.Now.ToString("HH:mm"),
+            IsAssistant = true
+        });
+
+        IsHandedToAdviser = handoff;
+    }
 
     public class AssistantConversationItem
     {
