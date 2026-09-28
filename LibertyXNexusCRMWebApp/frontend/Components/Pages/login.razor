@@ -150,6 +150,17 @@
         }
 
         await CurrentUser.SignInAsync(result);
-        Navigation.NavigateTo(result.Role == "FinancialAdviser" ? "/advisor" : "/client");
+        if (result.Role == "Advisor")
+        {
+            Navigation.NavigateTo("/advisor");
+        }
+        else if (result.Role == "Client")
+        {
+            Navigation.NavigateTo("/client");
+        }
+        else
+        {
+            ErrorMessage = $"Unknown user role: {result.Role}";
+        }
     }
 }

@@ -30,6 +30,25 @@ namespace API.Services.Implementations
 
         public async Task<DocumentDto?> GetByIdAsync(int documentId) 
         {
+            var document = await _documentRepository.GetByIdAsync(documentId) ?? new Document();
+
+            return new DocumentDto
+            {
+                DocumentId = document.DocumentId,
+                ClientId = document.ClientId,
+                PolicyId = document.PolicyId,
+                FileName = document.FileName,
+                ContentType = document.ContentType,
+                FileSizeBytes = document.FileSizeBytes,
+                DocumentType = document.DocumentType.ToString(),
+                VisibleToClient = document.VisibleToClient,
+                UploadedBy = document.UploadedBy,
+                UpdateAt = document.UpdateAt
+            };
+        }
+
+        public async Task<IEnumerable<DocumentDto>> GetForClientAsync(int clientId)
+        {
             var documents = await _documentRepository.GetByClientIdAsync(clientId);
             return documents.Select(MapToDto);
         }
