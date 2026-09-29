@@ -2,6 +2,7 @@
 using API.DTOs.Advisor;
 using API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
@@ -32,7 +33,7 @@ namespace API.Services.Implementations
                 .Include(c => c.Policy)
                 .ThenInclude(p => p.Documents)
                 .Where(c =>
-                    c.Policy.Client != null && 
+                    c.Policy.Client != null &&
                     c.Policy.Client.AdvisorId == advisorId)
                 .OrderByDescending(c => c.UpdatedAt)
                 .ToListAsync();
@@ -53,6 +54,9 @@ namespace API.Services.Implementations
 
             var endOfWeek = startOfWeek.AddDays(7);
 
+            var previousWeekStart = startOfWeek.AddDays(-7);
+            var previousWeekEnd = startOfWeek;
+
             var meetingsThisWeek = await context.Meetings
                 .AsNoTracking()
                 .Where(m =>
@@ -62,15 +66,84 @@ namespace API.Services.Implementations
                 m.Status != Shared.Models.Enums.MeetingStatus.Cancelled)
                 .CountAsync();
 
+            var meetingsLastWeek = await context.Meetings
+                .AsNoTracking()
+                .Where(m =>
+                m.Client.AdvisorId == advisorId &&
+                m.MeetingDate >= previousWeekStart &&
+                m.MeetingDate < previousWeekEnd &&
+                m.Status != Shared.Models.Enums.MeetingStatus.Cancelled)
+                .CountAsync();
+
+            var meetingsChange = CalculatePercentageChange(meetingsThisWeek, meetingsLastWeek);
+
             var pipelineValue = await context.Policies
                 .AsNoTracking()
                 .Where(p =>
-                p.Client != null &&
-                p.Client.AdvisorId == advisorId &&
-                !p.IsCatalogueItem &&
-                p.Status != Shared.Models.Enums.PolicyStatus.Cancelled &&
-                p.Status != Shared.Models.Enums.PolicyStatus.Matured)
+                    p.Client != null &&
+                    p.Client.AdvisorId == advisorId &&
+                    !p.IsCatalogueItem &&
+                    p.Status != PolicyStatus.Cancelled &&
+                    p.Status != PolicyStatus.Matured)
                 .SumAsync(p => p.PremiumAmount ?? 0);
+
+            var pipelineThisWeek = await context.Policies
+                .AsNoTracking()
+                .Where(p =>
+                    p.Client != null &&
+                    p.Client.AdvisorId == advisorId &&
+                    !p.IsCatalogueItem &&
+                    p.Status != PolicyStatus.Cancelled &&
+                    p.Status != PolicyStatus.Matured &&
+                    p.CreatedAt >= startOfWeek &&
+                    p.CreatedAt < endOfWeek)
+                .SumAsync(p => p.PremiumAmount ?? 0);
+
+            var pipelineLastWeek = await context.Policies
+                .AsNoTracking()
+                .Where(p =>
+                    p.Client != null &&
+                    p.Client.AdvisorId == advisorId &&
+                    !p.IsCatalogueItem &&
+                    p.Status != PolicyStatus.Cancelled &&
+                    p.Status != PolicyStatus.Matured &&
+                    p.CreatedAt >= previousWeekStart &&
+                    p.CreatedAt < previousWeekEnd)
+                .SumAsync(p => p.PremiumAmount ?? 0);
+
+            var pipelineValueChange = CalculatePercentageChange(
+                pipelineThisWeek,
+                pipelineLastWeek);
+
+            var activeCasesThisWeek = cases.Count(c =>
+                (c.Status == CaseStatus.InProgress ||
+                 c.Status == CaseStatus.AwaitingApproval) &&
+                c.UpdatedAt >= startOfWeek &&
+                c.UpdatedAt < endOfWeek);
+
+            var activeCasesLastWeek = cases.Count(c =>
+                (c.Status == CaseStatus.InProgress ||
+                    c.Status == CaseStatus.AwaitingApproval) &&
+                c.UpdatedAt >= previousWeekStart &&
+                c.UpdatedAt < previousWeekEnd);
+
+            var activeCasesChange = CalculatePercentageChange(
+                activeCasesThisWeek,
+                activeCasesLastWeek);
+
+            var awaitingDocumentsThisWeek = cases.Count(c =>
+                c.Policy.Documents.Count == 0 &&
+                c.UpdatedAt >= startOfWeek &&
+                c.UpdatedAt < endOfWeek);
+
+            var awaitingDocumentsLastWeek = cases.Count(c =>
+                c.Policy.Documents.Count == 0 &&
+                c.UpdatedAt >= previousWeekStart &&
+                c.UpdatedAt < previousWeekEnd);
+
+            var awaitingDocumentsChange = CalculatePercentageChange(
+                awaitingDocumentsThisWeek,
+                awaitingDocumentsLastWeek);
 
             var caseItems = cases
                 .Take(10)
@@ -137,6 +210,10 @@ namespace API.Services.Implementations
                 AwaitingDocuments = awaitingDocuments,
                 MeetingsThisWeek = meetingsThisWeek,
                 PipelineValue = pipelineValue,
+                ActiveCasesChange = activeCasesChange,
+                AwaitingDocumentsChange = awaitingDocumentsChange,
+                MeetingsChange = meetingsChange,
+                PipelineValueChange = pipelineValueChange,
                 Cases = caseItems,
                 Deadlines = deadlines,
                 Institutions = institutions
@@ -144,5 +221,19 @@ namespace API.Services.Implementations
 
             return dashboard;
         }
+
+        private static string CalculatePercentageChange(double current, double previous)
+        {
+            if (previous == 0)
+            {
+                return current == 0 ? "No change" : "+100%";
+            }
+
+            var change = ((current - previous) / previous) * 100;
+
+            return $"{(change >= 0 ? "+" : "")}{change:D0}%";
+        }
     }
+
+
 }

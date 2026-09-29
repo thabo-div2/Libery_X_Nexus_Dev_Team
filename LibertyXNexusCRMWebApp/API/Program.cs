@@ -86,6 +86,7 @@ namespace API
 
             builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAdvisorService, AdvisorService>();
             builder.Services.AddScoped<IAdvisorRepository, AdvisorRepository>();
             builder.Services.AddScoped<IInvitationRepository, InvitationRepository>();
             builder.Services.AddScoped<IClientRepository, ClientRepository>();

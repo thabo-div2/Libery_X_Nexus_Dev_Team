@@ -40,7 +40,7 @@ public partial class Program
 
         builder.Services.AddScoped<AuthService>();
         builder.Services.AddScoped<CurrentUserService>();
-
+        builder.Services.AddScoped<AdvisorService>();
         builder.Services.AddScoped<InvitationService>();
         builder.Services.AddScoped<ClientService>();
         builder.Services.AddScoped<MessageService>();

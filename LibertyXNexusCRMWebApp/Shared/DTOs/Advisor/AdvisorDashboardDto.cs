@@ -1,4 +1,4 @@
-﻿namespace API.DTOs.Advisor
+﻿namespace Shared.DTOs.Advisor
 {
     public class AdvisorDashboardDto
     {
