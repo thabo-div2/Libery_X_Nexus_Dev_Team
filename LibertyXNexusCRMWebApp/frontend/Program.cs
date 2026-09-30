@@ -12,6 +12,7 @@ public partial class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        builder.Services.AddScoped<ProtectedSessionStorage>();
         builder.Services.AddScoped<TokenStorageService>();
 
         builder.Services.AddScoped<JwtAuthenticationHandler>();

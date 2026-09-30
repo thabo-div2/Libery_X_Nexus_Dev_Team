@@ -20,7 +20,7 @@ namespace frontend.Services
         public string? Email { get; private set; }
 
         public bool IsClient => Role == "Client";
-        public bool IsAdvisor => Role == "Adviser";
+        public bool IsAdvisor => Role == "Advisor";
 
         public async Task SignInAsync(AuthResult result)
         {

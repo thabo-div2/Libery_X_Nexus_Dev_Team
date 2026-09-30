@@ -190,7 +190,7 @@ namespace frontend.Services
                 var fileContent = new StreamContent(stream);
 
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(
-                        string.IsNullOrWhiteSpace(file.ContentType) 
+                        string.IsNullOrWhiteSpace(file.ContentType)
                             ? "application/octet-stream"
                             : file.ContentType
                     );
@@ -266,8 +266,9 @@ namespace frontend.Services
         {
             try
             {
-                var request = new { 
-                    VisibleToClient = visibleToClient 
+                var request = new
+                {
+                    VisibleToClient = visibleToClient
                 };
 
                 var response = await _http.PutAsJsonAsync($"documents/{documentId}/visibility", request);
@@ -314,8 +315,6 @@ namespace frontend.Services
                 {
                     return await ReadErrorAsync(response);
                 }
-
-                var document = await response.Content.ReadFromJsonAsync<DocumentSummary>();
 
                 return null;
             }

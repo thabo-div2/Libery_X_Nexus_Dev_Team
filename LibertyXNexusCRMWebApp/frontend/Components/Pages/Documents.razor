@@ -4,6 +4,7 @@
 @using frontend.Services
 @inject DocumentService Document
 @inject CurrentUserService CurrentUser
+@inject NavigationManager Navigation
 
 <PageTitle>Documents | Nexus</PageTitle>
 
@@ -367,7 +368,7 @@
 
         if (!string.IsNullOrWhiteSpace(result.Url))
         {
-            // Navigation to be added when the download is confirmed to be working.
+            Navigation.NavigateTo(result.Url, forceLoad: true);
         }
     }
 

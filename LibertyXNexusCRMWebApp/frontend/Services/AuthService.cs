@@ -125,7 +125,7 @@ namespace frontend.Services
                 if (int.TryParse(currentUser.ClientId, out var clientId))
                 {
                     domainId = clientId;
-                } 
+                }
                 else if (int.TryParse(currentUser.AdvisorId, out var advisorId))
                 {
                     domainId = advisorId;
@@ -237,7 +237,7 @@ namespace frontend.Services
             {
                 return null;
             }
-        } 
+        }
 
         public async Task LogoutAsync()
         {
