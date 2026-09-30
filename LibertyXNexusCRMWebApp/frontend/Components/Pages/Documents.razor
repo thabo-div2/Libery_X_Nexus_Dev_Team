@@ -1,5 +1,9 @@
 ﻿@page "/documents"
 @layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject DocumentService Document
+@inject CurrentUserService CurrentUser
 
 <PageTitle>Documents | Nexus</PageTitle>
 
@@ -52,10 +56,22 @@
 
                 </div>
 
-
                 <div class="documents-list">
-
-                    @if (DocumentItems.Count > 0)
+                    @if (IsLoading)
+                    {
+                        <div class="empty-state">
+                            <strong>Loading...</strong>
+                            <span>Please wait while your documents are retrieved.</span>
+                        </div>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <div class="empty-state">
+                            <strong>Unable to load documents</strong>
+                            <span>@ErrorMessage</span>
+                        </div>
+                    }
+                    else if (DocumentItems.Count > 0)
                     {
                         @foreach (var document in DocumentItems)
                         {
@@ -98,7 +114,8 @@
 
                                     <button type="button"
                                             class="download-button"
-                                            aria-label="Download document">
+                                            aria-label="Download document"
+                                            @onclick="() => DownloadDocumentAsync(document.Id)">
 
                                         ↓
 
@@ -108,23 +125,24 @@
 
                             </div>
                         }
+                        
                     }
                     else
-                    {
-                        <div class="empty-state">
+                        {
+                            <div class="empty-state">
 
-                            <div class="empty-icon">▤</div>
+                                <div class="empty-icon">▤</div>
 
-                            <strong>No documents available</strong>
+                                <strong>No documents available</strong>
 
-                            <span>
-                                Generated and uploaded documents will appear here.
-                            </span>
+                                <span>
+                                    Generated and uploaded documents will appear here.
+                                </span>
 
-                        </div>
-                    }
-
+                            </div>
+                        }
                 </div>
+                
 
             </article>
 
@@ -237,16 +255,91 @@
 
     private List<SignatureItem> AwaitingSignatures { get; set; } = new();
 
+    private bool IsLoading { get; set; }
+
+    private string? ErrorMessage { get; set; }
+
 
     /// <summary>
     /// Later, load documents, templates and documents awaiting
     /// signature from the application's service layer.
     /// </summary>
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return Task.CompletedTask;
+        await LoadDocumentsAsync();
     }
 
+    private async Task LoadDocumentsAsync()
+    {
+        IsLoading = true;
+        ErrorMessage = null;
+
+        try
+        {
+            await CurrentUser.EnsureRestoredAsync();
+
+            if (CurrentUser.Id is null)
+            {
+                ErrorMessage = "You need to be signed in to view your documents.";
+                return;
+            }
+
+            if (!CurrentUser.IsClient)
+            {
+                ErrorMessage = "Documents are currently loaded for the signed-in client. " +
+                "Advisor-wide document access will be connected separately.";
+                return;
+            }
+
+            var result = await Document.GetForClientAsync(CurrentUser.Id.Value);
+
+            if (!string.IsNullOrWhiteSpace(result.Error))
+            {
+                ErrorMessage = result.Error;
+                return;
+            }
+
+            DocumentItems = result.Documents
+                .Select(document => new DocumentItem
+                    {
+                        Id = document.DocumentId,
+                        Name = document.FileName,
+                        Type = document.DocumentType,
+                        DateText = FormatDate(document.UpdatedAt),
+                        Status = GetDocumentStatus(document)
+                    })
+                .ToList();
+
+
+            Templates.Clear();
+            AwaitingSignatures.Clear();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"unable to load documents: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private static string FormatDate(DateTime? date)
+    {
+        return date.HasValue
+            ? date.Value.ToLocalTime().ToString("dd MMM yyyy")
+            : string.Empty;
+    }
+
+    private static string GetDocumentStatus(DocumentSummary document)
+    {
+        if (document.VisibleToClient)
+        {
+            return "Available";
+        }
+
+        return "Private";
+    }
 
     private static string GetStatusClass(string? status)
     {
@@ -256,13 +349,33 @@
             "awaiting signature" => "status-awaiting",
             "expired" => "status-expired",
             "draft" => "status-draft",
+            "available" => "status-signed",
+            "private" => "status-neutral",
             _ => "status-neutral"
         };
+    }
+
+    private async Task DownloadDocumentAsync(int documentId)
+    {
+        var result = await Document.GetDownloadUrlAsync(documentId);
+
+        if (!string.IsNullOrWhiteSpace(result.Error))
+        {
+            ErrorMessage = result.Error;
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(result.Url))
+        {
+            // Navigation to be added when the download is confirmed to be working.
+        }
     }
 
 
     public class DocumentItem
     {
+        public int Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
 
         public string Type { get; set; } = string.Empty;

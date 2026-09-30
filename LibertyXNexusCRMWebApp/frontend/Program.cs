@@ -45,6 +45,7 @@ public partial class Program
         builder.Services.AddScoped<ClientService>();
         builder.Services.AddScoped<MessageService>();
         builder.Services.AddScoped<MeetingService>();
+        builder.Services.AddScoped<DocumentService>();
 
         builder.Services.AddSingleton<MessageNotifier>();
 
