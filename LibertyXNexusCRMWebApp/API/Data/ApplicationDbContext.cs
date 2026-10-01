@@ -26,6 +26,17 @@ namespace API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Client>(entity =>
+            {
+                entity.Property(c => c.GrossMonthlyIncome).HasPrecision(18, 2);
+                entity.Property(c => c.NetMonthlyIncome).HasPrecision(18, 2);
+                entity.Property(c => c.MonthlyExpenses).HasPrecision(18, 2);
+                entity.Property(c => c.PropertyValue).HasPrecision(18, 2);
+                entity.Property(c => c.ExistingInvestments).HasPrecision(18, 2);
+                entity.Property(c => c.RetirementSavings).HasPrecision(18, 2);
+                entity.Property(c => c.OutstandingDebt).HasPrecision(18, 2);
+            });
+
             modelBuilder.Entity<Advisor>(entity =>
             {
                 entity.HasIndex(a => a.Email).IsUnique();

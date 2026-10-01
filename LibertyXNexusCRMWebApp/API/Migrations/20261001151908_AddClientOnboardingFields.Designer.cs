@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261001151908_AddClientOnboardingFields")]
+    partial class AddClientOnboardingFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,7 +391,6 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(40)");
 
                     b.Property<decimal?>("ExistingInvestments")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("FirstName")
@@ -397,7 +399,6 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal?>("GrossMonthlyIncome")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("IdentificationNumber")
@@ -405,6 +406,7 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("IdentityProviderSubjectId")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -421,11 +423,9 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(60)");
 
                     b.Property<decimal?>("MonthlyExpenses")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("NetMonthlyIncome")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Occupation")
@@ -433,7 +433,6 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal?>("OutstandingDebt")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Phone")
@@ -451,7 +450,6 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(60)");
 
                     b.Property<decimal?>("PropertyValue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ResidentialAddress")
@@ -459,7 +457,6 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(300)");
 
                     b.Property<decimal?>("RetirementSavings")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("RiskProfile")
@@ -488,8 +485,7 @@ namespace API.Migrations
                         .IsUnique();
 
                     b.HasIndex("IdentityProviderSubjectId")
-                        .IsUnique()
-                        .HasFilter("[IdentityProviderSubjectId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("Status");
 
