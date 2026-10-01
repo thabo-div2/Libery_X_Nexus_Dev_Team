@@ -23,7 +23,7 @@ namespace API.Services.Implementations
 
         public async Task EnsureContainerExistsAsync()
         {
-            //await _containerClient.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.None);
+            await _containerClient.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.None);
         }
 
         public async Task<string> UploadAsync(Stream content, string fileName, string contentType)

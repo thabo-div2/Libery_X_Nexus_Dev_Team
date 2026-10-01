@@ -463,7 +463,8 @@
         new() { Type = DocumentType.TaxCertificate, Label = "Tax certificate (IRP5)", Hint = "Optional", Required = false },
     };
 
-    private readonly Dictionary<DocumentType, IBrowserFile> PickedFiles = new();
+    private sealed record PickedFile(string Name, string ContentType, byte[] Content);
+    private readonly Dictionary<DocumentType, PickedFile> PickedFiles = new();
 
     private sealed class NewClientModel
     {
@@ -527,10 +528,27 @@
         await CurrentUser.EnsureRestoredAsync();
     }
 
-    private void OnFileSelected(InputFileChangeEventArgs e, DocumentType type)
+    private async Task OnFileSelected(InputFileChangeEventArgs e, DocumentType type)
+{
+    var file = e.File;
+    const long maxFileSize = 30_000_000;
+
+    try
     {
-        PickedFiles[type] = e.File;
+        await using var stream = file.OpenReadStream(maxFileSize);
+        using var memory = new MemoryStream();
+        await stream.CopyToAsync(memory);
+
+        PickedFiles[type] = new PickedFile(
+            file.Name,
+            string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
+            memory.ToArray());
     }
+    catch (IOException)
+    {
+        StepError = $"'{file.Name}' couldn't be read — try a smaller file (max 30MB).";
+    }
+}
 
     private void TryJumpToStep(int step)
     {
@@ -651,7 +669,7 @@
 
             foreach (var (type, file) in PickedFiles)
             {
-                await Documents.UploadAsync(client.ClientId, policyId.Value, type, uploaderName, file);
+              await Documents.UploadAsync(client.ClientId, policyId.Value, type, uploaderName, file.Name, file.ContentType, file.Content);
             }
         }
 
