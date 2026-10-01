@@ -22,6 +22,8 @@ namespace API.Data
                 });
             });
 
+            services.AddScoped<ApplicationDbContext>(sp => sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+
             // Scoped: one instance per HTTP request, matching DbContext lifetime.
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IClientRepository, ClientRepository>();
