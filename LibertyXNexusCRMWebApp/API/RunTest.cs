@@ -1,7 +1,7 @@
 ﻿using API.Data;
 using API.Repositories.Implementations;
 using API.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore; // Required if using DbContext directly
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Models.Enums;
@@ -51,7 +51,7 @@ namespace API
             var upcoming = await meetingRepo.GetUpcomingMeetingAsync();
             Console.WriteLine($"\n[5] Upcoming meetings: {upcoming.Count()} (expect 2)");
 
-            // 6. Write path — confirms INSERT + SaveChanges works, not just reads
+            // 6. Write path: It Confirms INSERT + SaveChanges works, not just reads
             await auditRepo.LogAsync(
                 userId: null,
                 userRole: UserRole.FinancialAdviser,
