@@ -28,7 +28,7 @@ namespace frontend.Services
             }
             catch (HttpRequestException)
             {
-                return (new List<Faq>(), "Can't reach the server. Make sure the Backend project is running.");
+                return (new List<Faq>(), "Can't reach the server. Make sure the API project is running.");
             }
             catch (Exception ex)
             {
@@ -51,7 +51,7 @@ namespace frontend.Services
             }
             catch (HttpRequestException)
             {
-                return (new List<Faq>(), "Can't reach the server. Make sure the Backend project is running.");
+                return (new List<Faq>(), "Can't reach the server. Make sure the API project is running.");
             }
             catch (Exception ex)
             {

@@ -165,9 +165,6 @@
     private string? LoadError;
     private bool IsLoading = true;
 
-    private const int DefaultAdvisorId = 1;
-    private int AdvisorId => CurrentUser.Id ?? DefaultAdvisorId;
-
     protected override async Task OnInitializedAsync()
     {
         await CurrentUser.EnsureRestoredAsync();
@@ -185,7 +182,7 @@
         IsLoading = true;
         LoadError = null;
 
-        var (clients, error) = await ClientDirectory.SearchAsync(SearchText, AdvisorId);
+        var (clients, error) = await ClientDirectory.SearchAsync(SearchText);
         ClientResults = clients;
         LoadError = error;
         IsLoading = false;
