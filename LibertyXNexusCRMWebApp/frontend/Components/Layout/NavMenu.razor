@@ -127,7 +127,31 @@
     [Parameter]
     public bool IsClientView { get; set; }
 
-    private string ProfileName => IsClientView ? "My Account" : "Rudolf Bekker";
+    private string ProfileName => !string.IsNullOrWhiteSpace(CurrentUser.FirstName) || !string.IsNullOrWhiteSpace(CurrentUser.LastName)
+            ? $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim()
+            : (IsClientView ? "My Account" : "Financial Advisor");
+
     private string ProfileRole => IsClientView ? "Client" : "Financial Advisor";
-    private string ProfileInitials => IsClientView ? "ME" : "RB";
+
+    private string ProfileInitials
+    {
+        get
+        {
+            var first = CurrentUser.FirstName?.Trim();
+            var last = CurrentUser.LastName?.Trim();
+
+            if (string.IsNullOrEmpty(first) && string.IsNullOrEmpty(last)))
+    {
+                return IsClientView ? "ME" : "FA";
+            }
+
+            var initials = $"{(first?.Length > 0 ? first[0] : ' ')}{(last?.Length > 0 ? last[0] : ' ')}".Trim();
+            return initials.Length > 0 ? initials.ToUpperInvariant() : (IsClientView ? "ME" : "FA");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+    }
 }
