@@ -16,11 +16,16 @@ namespace API.Data
                 options.UseSqlServer(connectionString, sql =>
                 {
                     sql.EnableRetryOnFailure(
-                        maxRetryCount: 5,
-                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        maxRetryCount: 8,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
                         errorNumbersToAdd: null);
+
+                    sql.CommandTimeout(60); // Set command timeout to 60 seconds
                 });
             });
+
+            services.AddScoped<ApplicationDbContext>(sp =>
+                sp.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
 
             // Scoped: one instance per HTTP request, matching DbContext lifetime.
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
