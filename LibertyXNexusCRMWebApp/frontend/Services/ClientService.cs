@@ -122,6 +122,32 @@ namespace frontend.Services
             }
         }
 
+        public async Task<(ClientProfile? Client, string? Error)> CreateAsync(CreateClientRequest request)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("clients", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, await ReadErrorAsync(response));
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<ClientProfile>();
+                result?.NormalizeName();
+
+                return (result, result is null ? "The server sent back an unexpected response." : null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
         public async Task<(ClientProfile? Client, string? Error)> GetByIdAsync(int id)
         {
             try

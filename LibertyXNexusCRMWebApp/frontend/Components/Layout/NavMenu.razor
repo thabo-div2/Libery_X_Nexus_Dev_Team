@@ -1,4 +1,7 @@
-﻿<div class="nav-menu">
+﻿@using frontend.Services
+@inject CurrentUserService CurrentUser
+
+<div class="nav-menu">
 
     <!-- BRAND -->
     <a class="brand" href="@(IsClientView ? "/client" : "/advisor")">
@@ -140,8 +143,8 @@
             var first = CurrentUser.FirstName?.Trim();
             var last = CurrentUser.LastName?.Trim();
 
-            if (string.IsNullOrEmpty(first) && string.IsNullOrEmpty(last)))
-    {
+            if (string.IsNullOrEmpty(first) && string.IsNullOrEmpty(last))
+            {
                 return IsClientView ? "ME" : "FA";
             }
 

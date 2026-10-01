@@ -52,7 +52,7 @@ namespace API.Services.Implementations
                 RiskProfile = request.RiskProfile,
                 AdvisorId = request.AdvisorId,
                 Status = ClientStatus.Registered,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
 
                 DateOfBirth = request.DateOfBirth,
                 ResidentialAddress = request.ResidentialAddress,

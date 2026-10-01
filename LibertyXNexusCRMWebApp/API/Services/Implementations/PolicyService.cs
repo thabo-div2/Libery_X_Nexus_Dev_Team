@@ -104,7 +104,7 @@ namespace API.Services.Implementations
                 PolicyId = created.PolicyId,
                 Status = CaseStatus.InProgress,
                 TargetSubmissionDate = request.TargetSubmissionDate,
-                CreatedAt = DateTime.UtcNow,,
+                CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             });
 

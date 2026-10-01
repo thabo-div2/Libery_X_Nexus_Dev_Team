@@ -1,5 +1,14 @@
 @page "/new-client"
 @layout MainLayout
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@using Shared.Models.Enums
+@using frontend.Services
+@inject ClientService Clients
+@inject PolicyService Policies
+@inject DocumentService Documents
+@inject CurrentUserService CurrentUser
+@inject NavigationManager Nav
 
 <PageTitle>New Client | Nexus</PageTitle>
 
@@ -10,23 +19,17 @@
 
         <div class="page-heading">
             <h1>New client</h1>
-            <p>Step 1 of 4 · Details captured here populate every document</p>
+            <p>Step @CurrentStep of 4 · @StepNames[CurrentStep - 1] · Details captured here populate every document</p>
         </div>
 
         <div class="header-actions">
 
             <div class="search-box">
                 <span class="search-icon">⌕</span>
-
-                <input type="text"
-                       placeholder="Search clients, cases, documents" />
+                <input type="text" placeholder="Search clients, cases, documents" />
             </div>
 
-            <button type="button"
-                    class="notification-button"
-                    aria-label="Notifications">
-                ♧
-            </button>
+            <button type="button" class="notification-button" aria-label="Notifications">♧</button>
 
         </div>
 
@@ -38,314 +41,400 @@
 
         <div class="content-column">
 
-            <!-- =========================
-                 STEP INDICATOR
-                 ========================= -->
+            <!-- STEP INDICATOR -->
             <section class="stepper-card">
-
-                <div class="step active">
-                    <span class="step-number">1</span>
-                    <span class="step-name">Personal details</span>
-                </div>
-
-                <div class="step-line"></div>
-
-                <div class="step">
-                    <span class="step-number">2</span>
-                    <span class="step-name">Financial profile</span>
-                </div>
-
-                <div class="step-line"></div>
-
-                <div class="step">
-                    <span class="step-number">3</span>
-                    <span class="step-name">Documents</span>
-                </div>
-
-                <div class="step-line"></div>
-
-                <div class="step">
-                    <span class="step-number">4</span>
-                    <span class="step-name">Service package</span>
-                </div>
-
+                @for (var i = 1; i <= 4; i++)
+                {
+                    var stepIndex = i;
+                    <div class="step @(stepIndex == CurrentStep ? "active" : "") @(stepIndex < CurrentStep ? "complete" : "")"
+                         @onclick="() => TryJumpToStep(stepIndex)" style="cursor:pointer">
+                        <span class="step-number">@(stepIndex < CurrentStep ? "✓" : stepIndex.ToString())</span>
+                        <span class="step-name">@StepNames[stepIndex - 1]</span>
+                    </div>
+                    if (i < 4)
+                    {
+                        <div class="step-line"></div>
+                    }
+                }
             </section>
 
+            @if (!string.IsNullOrEmpty(StepError))
+            {
+                <p class="invite-error">@StepError</p>
+            }
 
-            <!-- =========================
-                 PERSONAL DETAILS
-                 ========================= -->
-            <section class="form-card">
+            @if (CurrentStep == 1)
+            {
+                <!-- PERSONAL DETAILS -->
+                <section class="form-card">
+                    <div class="card-heading"><h2>Personal details</h2></div>
+                    <div class="form-body">
+                        <div class="form-grid">
 
-                <div class="card-heading">
-                    <h2>Personal details</h2>
-                </div>
+                            <div class="form-group">
+                                <label for="firstName">First name</label>
+                                <input id="firstName" type="text" @bind="Model.FirstName" placeholder="Thandi" />
+                            </div>
 
-                <div class="form-body">
+                            <div class="form-group">
+                                <label for="lastName">Last name</label>
+                                <input id="lastName" type="text" @bind="Model.LastName" placeholder="Mokoena" />
+                            </div>
 
-                    <div class="form-grid">
+                            <div class="form-group">
+                                <label for="idNumber">ID number</label>
+                                <input id="idNumber" type="text" @bind="Model.IdentificationNumber" placeholder="9001015800086" />
+                            </div>
 
-                        <!-- FIRST NAME -->
-                        <div class="form-group">
-                            <label for="firstName">First name</label>
+                            <div class="form-group">
+                                <label for="dateOfBirth">Date of birth</label>
+                                <input id="dateOfBirth" type="date" @bind="Model.DateOfBirth" />
+                            </div>
 
-                            <input id="firstName"
-                                   type="text"
-                                   placeholder="Thandi" />
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input id="email" type="email" @bind="Model.Email" placeholder="thandi@example.co.za" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mobile">Mobile</label>
+                                <input id="mobile" type="tel" @bind="Model.Phone" placeholder="+27 82 000 0000" />
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="address">Residential address</label>
+                                <input id="address" type="text" @bind="Model.ResidentialAddress" placeholder="12 Rivonia Road, Sandton" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maritalStatus">Marital status</label>
+                                <select id="maritalStatus" @bind="Model.MaritalStatus">
+                                    <option value="">Select marital status</option>
+                                    <option>Single</option>
+                                    <option>Married in community of property</option>
+                                    <option>Married out of community of property</option>
+                                    <option>Divorced</option>
+                                    <option>Widowed</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dependants">Dependants</label>
+                                <input id="dependants" type="number" min="0" @bind="Model.Dependants" placeholder="0" />
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ASSIGN CASE -->
+                <section class="form-card assign-card">
+                    <div class="card-heading"><h2>Assign case</h2></div>
+                    <div class="form-body">
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="institution">Institution</label>
+                                <select id="institution" @bind="Model.Institution">
+                                    <option value="">Select institution</option>
+                                    <option>Liberty</option>
+                                    <option>Standard Bank</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="product">Product</label>
+                                <select id="product" @bind="Model.Product">
+                                    <option value="">Select product</option>
+                                    <option>Retirement Annuity</option>
+                                    <option>Life Cover</option>
+                                    <option>Investment Plan</option>
+                                    <option>Tax-Free Savings</option>
+                                    <option>Disability Cover</option>
+                                    <option>Estate Review</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="adviser">Adviser</label>
+                                <select id="adviser" disabled>
+                                    <option>@(string.IsNullOrWhiteSpace(CurrentUser.FirstName) ? "You" : $"{CurrentUser.FirstName} {CurrentUser.LastName}") (you)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="submissionDate">Target submission date</label>
+                                <input id="submissionDate" type="date" @bind="Model.TargetSubmissionDate" />
+                            </div>
+
                         </div>
 
+                        <div class="form-actions">
+                            <button type="button" class="secondary-button" @onclick="SaveDraft">Save draft</button>
+                            <button type="button" class="primary-button" @onclick="() => GoToStep(2)">Continue to financial profile</button>
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (CurrentStep == 2)
+            {
+                <!-- FINANCIAL PROFILE -->
+                <section class="form-card">
+                    <div class="card-heading"><h2>Employment &amp; income</h2></div>
+                    <div class="form-body">
+                        <div class="form-grid">
 
-                        <!-- LAST NAME -->
-                        <div class="form-group">
-                            <label for="lastName">Last name</label>
+                            <div class="form-group">
+                                <label for="employmentStatus">Employment status</label>
+                                <select id="employmentStatus" @bind="Model.EmploymentStatus">
+                                    <option value="">Select status</option>
+                                    <option>Employed</option>
+                                    <option>Self-employed</option>
+                                    <option>Unemployed</option>
+                                    <option>Retired</option>
+                                    <option>Student</option>
+                                </select>
+                            </div>
 
-                            <input id="lastName"
-                                   type="text"
-                                   placeholder="Mokoena" />
+                            <div class="form-group">
+                                <label for="occupation">Occupation</label>
+                                <input id="occupation" type="text" @bind="Model.Occupation" placeholder="Engineer" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="employer">Employer</label>
+                                <input id="employer" type="text" @bind="Model.Employer" placeholder="Sasol Ltd" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="grossIncome">Gross monthly income</label>
+                                <input id="grossIncome" type="number" step="0.01" @bind="Model.GrossMonthlyIncome" placeholder="65000" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="netIncome">Net monthly income</label>
+                                <input id="netIncome" type="number" step="0.01" @bind="Model.NetMonthlyIncome" placeholder="46500" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="monthlyExpenses">Monthly expenses</label>
+                                <input id="monthlyExpenses" type="number" step="0.01" @bind="Model.MonthlyExpenses" placeholder="32000" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sourceOfFunds">Source of funds</label>
+                                <select id="sourceOfFunds" @bind="Model.SourceOfFunds">
+                                    <option value="">Select source</option>
+                                    <option>Salary</option>
+                                    <option>Business income</option>
+                                    <option>Investments</option>
+                                    <option>Inheritance</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="taxNumber">Tax number</label>
+                                <input id="taxNumber" type="text" @bind="Model.TaxNumber" placeholder="0123456789" />
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-card">
+                    <div class="card-heading"><h2>Assets &amp; liabilities</h2></div>
+                    <div class="form-body">
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="propertyValue">Property value</label>
+                                <input id="propertyValue" type="number" step="0.01" @bind="Model.PropertyValue" placeholder="2400000" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="existingInvestments">Existing investments</label>
+                                <input id="existingInvestments" type="number" step="0.01" @bind="Model.ExistingInvestments" placeholder="380000" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="retirementSavings">Retirement savings</label>
+                                <input id="retirementSavings" type="number" step="0.01" @bind="Model.RetirementSavings" placeholder="412800" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="outstandingDebt">Outstanding debt</label>
+                                <input id="outstandingDebt" type="number" step="0.01" @bind="Model.OutstandingDebt" placeholder="1150000" />
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-card">
+                    <div class="card-heading"><h2>Goals &amp; risk profile</h2></div>
+                    <div class="form-body">
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label for="primaryGoal">Primary goal</label>
+                                <select id="primaryGoal" @bind="Model.PrimaryGoal">
+                                    <option value="">Select goal</option>
+                                    <option>Retirement</option>
+                                    <option>Education</option>
+                                    <option>Wealth growth</option>
+                                    <option>Protection</option>
+                                    <option>Estate planning</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="investmentHorizon">Investment horizon (years)</label>
+                                <input id="investmentHorizon" type="number" min="0" @bind="Model.InvestmentHorizonYears" placeholder="25" />
+                            </div>
+
                         </div>
 
-
-                        <!-- ID NUMBER -->
-                        <div class="form-group">
-                            <label for="idNumber">ID number</label>
-
-                            <input id="idNumber"
-                                   type="text"
-                                   placeholder="9001015800086" />
-                        </div>
-
-
-                        <!-- DATE OF BIRTH -->
-                        <div class="form-group">
-                            <label for="dateOfBirth">Date of birth</label>
-
-                            <input id="dateOfBirth"
-                                   type="text"
-                                   placeholder="01/01/1990" />
-                        </div>
-
-
-                        <!-- EMAIL -->
-                        <div class="form-group">
-                            <label for="email">Email</label>
-
-                            <input id="email"
-                                   type="email"
-                                   placeholder="thandi@example.co.za" />
-                        </div>
-
-
-                        <!-- MOBILE -->
-                        <div class="form-group">
-                            <label for="mobile">Mobile</label>
-
-                            <input id="mobile"
-                                   type="tel"
-                                   placeholder="+27 82 000 0000" />
-                        </div>
-
-
-                        <!-- ADDRESS -->
                         <div class="form-group full-width">
-                            <label for="address">Residential address</label>
-
-                            <input id="address"
-                                   type="text"
-                                   placeholder="12 Rivonia Road, Sandton" />
+                            <label>Risk appetite</label>
+                            <div class="pipeline-filters">
+                                @foreach (var option in RiskOptions)
+                                {
+                                    <button type="button"
+                                            class="filter-pill @(Model.RiskProfile == option ? "active" : "")"
+                                            @onclick="() => Model.RiskProfile = option">
+                                        @option
+                                    </button>
+                                }
+                            </div>
                         </div>
 
-
-                        <!-- MARITAL STATUS -->
-                        <div class="form-group">
-                            <label for="maritalStatus">Marital status</label>
-
-                            <select id="maritalStatus">
-                                <option value="">Select marital status</option>
-                                <option>Single</option>
-                                <option>Married in community of property</option>
-                                <option>Married out of community of property</option>
-                                <option>Divorced</option>
-                                <option>Widowed</option>
-                            </select>
+                        <div class="form-actions">
+                            <button type="button" class="secondary-button" @onclick="() => GoToStep(1)">Back</button>
+                            <button type="button" class="primary-button" @onclick="() => GoToStep(3)">Continue to documents</button>
                         </div>
+                    </div>
+                </section>
+            }
+            else if (CurrentStep == 3)
+            {
+                <!-- DOCUMENTS -->
+                <section class="form-card">
+                    <div class="card-heading"><h2>Document checklist</h2></div>
+                    <div class="form-body">
 
+                        @foreach (var slot in DocumentSlots)
+                        {
+                            <div class="deadline-item">
+                                <div class="deadline-details">
+                                    <span class="deadline-title">@slot.Label @(slot.Required ? "" : "(optional)")</span>
+                                    <span class="deadline-client">@slot.Hint</span>
+                                </div>
 
-                        <!-- DEPENDANTS -->
-                        <div class="form-group">
-                            <label for="dependants">Dependants</label>
-
-                            <input id="dependants"
-                                   type="number"
-                                   min="0"
-                                   placeholder="0" />
-                        </div>
+                                @if (PickedFiles.ContainsKey(slot.Type))
+                                {
+                                    <span class="requirement complete">
+                                        <span class="requirement-icon">✓</span>
+                                        <span>@PickedFiles[slot.Type].Name</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <InputFile OnChange="@(e => OnFileSelected(e, slot.Type))" accept=".pdf,.jpg,.jpeg,.png" />
+                                }
+                            </div>
+                        }
 
                     </div>
+                </section>
 
+                <div class="form-actions">
+                    <button type="button" class="secondary-button" @onclick="() => GoToStep(2)">Back</button>
+                    <button type="button" class="primary-button" @onclick="() => GoToStep(4)">Continue to summary</button>
                 </div>
+            }
+            else if (CurrentStep == 4)
+            {
+                <!-- SUMMARY -->
+                <section class="form-card">
+                    <div class="card-heading"><h2>Review &amp; submit</h2></div>
+                    <div class="form-body">
 
-            </section>
-
-
-            <!-- =========================
-                 ASSIGN CASE
-                 ========================= -->
-            <section class="form-card assign-card">
-
-                <div class="card-heading">
-                    <h2>Assign case</h2>
-                </div>
-
-                <div class="form-body">
-
-                    <div class="form-grid">
-
-                        <!-- INSTITUTION -->
-                        <div class="form-group">
-                            <label for="institution">Institution</label>
-
-                            <select id="institution">
-                                <option value="">Select institution</option>
-                                <option>Liberty</option>
-                                <option>Standard Bank</option>
-                            </select>
+                        <div class="summary-grid form-grid">
+                            <div class="form-group">
+                                <label>Client</label>
+                                <strong>@Model.FirstName @Model.LastName</strong>
+                            </div>
+                            <div class="form-group">
+                                <label>Contact</label>
+                                <span>@Model.Email · @Model.Phone</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Product</label>
+                                <span>@(string.IsNullOrWhiteSpace(Model.Product) ? "Not assigned" : $"{Model.Product} · {Model.Institution}")</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Risk profile</label>
+                                <span>@(string.IsNullOrWhiteSpace(Model.RiskProfile) ? "Not set" : Model.RiskProfile)</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Documents</label>
+                                <span>@PickedFiles.Count of @DocumentSlots.Count uploaded</span>
+                            </div>
                         </div>
 
-
-                        <!-- PRODUCT -->
-                        <div class="form-group">
-                            <label for="product">Product</label>
-
-                            <select id="product">
-                                <option value="">Select product</option>
-                                <option>Retirement Annuity</option>
-                                <option>Life Cover</option>
-                                <option>Investment Plan</option>
-                                <option>Tax-Free Savings</option>
-                                <option>Disability Cover</option>
-                                <option>Estate Review</option>
-                            </select>
-                        </div>
-
-
-                        <!-- ADVISER -->
-                        <div class="form-group">
-                            <label for="adviser">Adviser</label>
-
-                            <select id="adviser">
-                                <option value="">Select adviser</option>
-                            </select>
-                        </div>
-
-
-                        <!-- TARGET SUBMISSION -->
-                        <div class="form-group">
-                            <label for="submissionDate">
-                                Target submission date
+                        <div class="form-group full-width" style="margin-top:1rem">
+                            <label style="display:flex;align-items:flex-start;gap:0.5rem">
+                                <input type="checkbox" @bind="Model.PopiaConsent" />
+                                <span>Client consents to processing of personal information (POPIA) and receipt of the service package for digital signature.</span>
                             </label>
-
-                            <input id="submissionDate"
-                                   type="date" />
                         </div>
 
+                        @if (!string.IsNullOrEmpty(SubmitError))
+                        {
+                            <p class="invite-error">@SubmitError</p>
+                        }
+
+                        <div class="form-actions">
+                            <button type="button" class="secondary-button" @onclick="() => GoToStep(3)" disabled="@IsSubmitting">Back</button>
+                            <button type="button" class="primary-button" @onclick="SubmitAsync" disabled="@IsSubmitting">
+                                @(IsSubmitting ? "Creating client…" : "Create client")
+                            </button>
+                        </div>
                     </div>
-
-
-                    <div class="form-actions">
-
-                        <button type="button"
-                                class="secondary-button">
-                            Save draft
-                        </button>
-
-                        <button type="button"
-                                class="primary-button">
-                            Continue to financial profile
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </section>
+                </section>
+            }
 
         </div>
 
 
-        <!-- =========================
-             RIGHT SIDEBAR
-             ========================= -->
+        <!-- RIGHT SIDEBAR -->
         <aside class="side-column">
-
-            <!-- REQUIRED TO SUBMIT -->
             <section class="side-card">
-
-                <div class="side-card-heading">
-                    <h2>Required to submit</h2>
-                </div>
-
+                <div class="side-card-heading"><h2>Required to submit</h2></div>
                 <div class="requirements-list">
-
-                    <div class="requirement complete">
-                        <span class="requirement-icon">✓</span>
+                    <div class="requirement @(HasIdentityDetails ? "complete" : "pending")">
+                        <span class="requirement-icon">@(HasIdentityDetails ? "✓" : "")</span>
                         <span>Identity details</span>
                     </div>
-
-                    <div class="requirement complete">
-                        <span class="requirement-icon">✓</span>
+                    <div class="requirement @(HasContactDetails ? "complete" : "pending")">
+                        <span class="requirement-icon">@(HasContactDetails ? "✓" : "")</span>
                         <span>Contact details</span>
                     </div>
-
-                    <div class="requirement pending">
-                        <span class="requirement-icon"></span>
+                    <div class="requirement @(HasAddress ? "complete" : "pending")">
+                        <span class="requirement-icon">@(HasAddress ? "✓" : "")</span>
                         <span>Address</span>
                     </div>
-
-                    <div class="requirement pending">
-                        <span class="requirement-icon"></span>
+                    <div class="requirement @(HasRequiredDocuments ? "complete" : "pending")">
+                        <span class="requirement-icon">@(HasRequiredDocuments ? "✓" : "")</span>
                         <span>FICA documents</span>
                     </div>
-
-                    <div class="requirement pending">
-                        <span class="requirement-icon"></span>
+                    <div class="requirement @(HasRiskProfile ? "complete" : "pending")">
+                        <span class="requirement-icon">@(HasRiskProfile ? "✓" : "")</span>
                         <span>Risk profile</span>
                     </div>
-
                 </div>
-
             </section>
-
-
-            <!-- QUICK UPLOAD -->
-            <section class="side-card upload-card">
-
-                <div class="side-card-heading">
-                    <h2>Quick upload</h2>
-                </div>
-
-                <div class="upload-wrapper">
-
-                    <label for="ficaUpload"
-                           class="upload-area">
-
-                        <span class="upload-icon">♧</span>
-
-                        <strong>Drop FICA documents</strong>
-
-                        <span>PDF, JPG or PNG up to 10MB</span>
-
-                    </label>
-
-                    <input id="ficaUpload"
-                           class="file-input"
-                           type="file"
-                           accept=".pdf,.jpg,.jpeg,.png"
-                           multiple />
-
-                </div>
-
-            </section>
-
         </aside>
 
     </main>
@@ -354,13 +443,218 @@
 
 @code {
 
-    /// <summary>
-    /// Later, load institution, adviser and product options from
-    /// the application's service layer.
-    /// </summary>
-    protected override Task OnInitializedAsync()
+    private sealed class DocumentSlot
     {
-        return Task.CompletedTask;
+        public DocumentType Type { get; init; }
+        public string Label { get; init; } = string.Empty;
+        public string Hint { get; init; } = string.Empty;
+        public bool Required { get; init; }
     }
 
+    private readonly string[] StepNames = { "Personal details", "Financial profile", "Documents", "Summary" };
+    private readonly string[] RiskOptions = { "Conservative", "Moderate", "Balanced", "Aggressive" };
+
+    private readonly List<DocumentSlot> DocumentSlots = new()
+    {
+        new() { Type = DocumentType.CertifiedIdCopy, Label = "Certified ID copy", Hint = "Not older than 3 months", Required = true },
+        new() { Type = DocumentType.ProofOfAddress, Label = "Proof of address", Hint = "Utility bill or bank letter, last 3 months", Required = true },
+        new() { Type = DocumentType.BankStatement, Label = "Latest bank statement", Hint = "3 months", Required = false },
+        new() { Type = DocumentType.Payslip, Label = "Latest payslip", Hint = "Most recent month", Required = false },
+        new() { Type = DocumentType.TaxCertificate, Label = "Tax certificate (IRP5)", Hint = "Optional", Required = false },
+    };
+
+    private readonly Dictionary<DocumentType, IBrowserFile> PickedFiles = new();
+
+    private sealed class NewClientModel
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public string? IdentificationNumber { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? ResidentialAddress { get; set; }
+        public string? MaritalStatus { get; set; }
+        public int? Dependants { get; set; }
+
+        public string? Institution { get; set; }
+        public string? Product { get; set; }
+        public DateTime? TargetSubmissionDate { get; set; }
+
+        public string? EmploymentStatus { get; set; }
+        public string? Occupation { get; set; }
+        public string? Employer { get; set; }
+        public decimal? GrossMonthlyIncome { get; set; }
+        public decimal? NetMonthlyIncome { get; set; }
+        public decimal? MonthlyExpenses { get; set; }
+        public string? SourceOfFunds { get; set; }
+        public string? TaxNumber { get; set; }
+        public decimal? PropertyValue { get; set; }
+        public decimal? ExistingInvestments { get; set; }
+        public decimal? RetirementSavings { get; set; }
+        public decimal? OutstandingDebt { get; set; }
+        public string? PrimaryGoal { get; set; }
+        public int? InvestmentHorizonYears { get; set; }
+
+        public string RiskProfile { get; set; } = string.Empty;
+        public bool PopiaConsent { get; set; }
+    }
+
+    private readonly NewClientModel Model = new();
+
+    private int CurrentStep = 1;
+    private string? StepError;
+    private string? SubmitError;
+    private bool IsSubmitting;
+
+    private bool HasIdentityDetails =>
+        !string.IsNullOrWhiteSpace(Model.FirstName) &&
+        !string.IsNullOrWhiteSpace(Model.LastName) &&
+        !string.IsNullOrWhiteSpace(Model.IdentificationNumber);
+
+    private bool HasContactDetails =>
+        !string.IsNullOrWhiteSpace(Model.Email) && !string.IsNullOrWhiteSpace(Model.Phone);
+
+    private bool HasAddress => !string.IsNullOrWhiteSpace(Model.ResidentialAddress);
+
+    private bool HasRiskProfile => !string.IsNullOrWhiteSpace(Model.RiskProfile);
+
+    private bool HasRequiredDocuments =>
+        DocumentSlots.Where(s => s.Required).All(s => PickedFiles.ContainsKey(s.Type));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e, DocumentType type)
+    {
+        PickedFiles[type] = e.File;
+    }
+
+    private void TryJumpToStep(int step)
+    {
+        // Only allow jumping backwards freely; forward jumps go through GoToStep's validation.
+        if (step <= CurrentStep)
+        {
+            CurrentStep = step;
+            StepError = null;
+        }
+    }
+
+    private void GoToStep(int step)
+    {
+        StepError = null;
+
+        if (step > CurrentStep && CurrentStep == 1)
+        {
+            if (!HasIdentityDetails || string.IsNullOrWhiteSpace(Model.Email))
+            {
+                StepError = "First name, last name, ID number and email are required before continuing.";
+                return;
+            }
+        }
+
+        CurrentStep = step;
+    }
+
+    private void SaveDraft()
+    {
+        // TODO: persist as a draft client record once the API exposes a draft/status endpoint.
+        StepError = "Draft saving isn't wired up yet — continue through the wizard to create the client.";
+    }
+
+    private async Task SubmitAsync()
+    {
+        SubmitError = null;
+
+        if (!Model.PopiaConsent)
+        {
+            SubmitError = "The client's POPIA consent is required before this profile can be created.";
+            return;
+        }
+
+        IsSubmitting = true;
+
+        var request = new CreateClientRequest
+        {
+            FirstName = Model.FirstName,
+            LastName = Model.LastName,
+            Email = Model.Email,
+            Phone = Model.Phone,
+            IdentificationNumber = Model.IdentificationNumber,
+            DateOfBirth = Model.DateOfBirth,
+            ResidentialAddress = Model.ResidentialAddress,
+            MaritalStatus = Model.MaritalStatus,
+            Dependants = Model.Dependants,
+            EmploymentStatus = Model.EmploymentStatus,
+            Occupation = Model.Occupation,
+            Employer = Model.Employer,
+            GrossMonthlyIncome = Model.GrossMonthlyIncome,
+            NetMonthlyIncome = Model.NetMonthlyIncome,
+            MonthlyExpenses = Model.MonthlyExpenses,
+            SourceOfFunds = Model.SourceOfFunds,
+            TaxNumber = Model.TaxNumber,
+            PropertyValue = Model.PropertyValue,
+            ExistingInvestments = Model.ExistingInvestments,
+            RetirementSavings = Model.RetirementSavings,
+            OutstandingDebt = Model.OutstandingDebt,
+            PrimaryGoal = Model.PrimaryGoal,
+            InvestmentHorizonYears = Model.InvestmentHorizonYears,
+            RiskProfile = Model.RiskProfile,
+            PopiaConsent = Model.PopiaConsent
+        };
+
+        var (client, clientError) = await Clients.CreateAsync(request);
+
+        if (client is null)
+        {
+            SubmitError = clientError ?? "Something went wrong creating this client.";
+            IsSubmitting = false;
+            return;
+        }
+
+        int? policyId = null;
+
+        if (!string.IsNullOrWhiteSpace(Model.Institution) && !string.IsNullOrWhiteSpace(Model.Product))
+        {
+            var policyRequest = new CreateClientPolicyRequest(
+                PolicyName: Model.Product!,
+                Provider: Model.Institution!,
+                Description: null,
+                PremiumAmount: null,
+                CoverAmount: null,
+                StartDate: null,
+                EndDate: null,
+                TargetSubmissionDate: Model.TargetSubmissionDate);
+
+            var (policy, policyError) = await Policies.CreateClientPolicyAsync(client.ClientId, policyRequest);
+
+            if (policy is not null)
+            {
+                policyId = policy.PolicyId;
+            }
+            else
+            {
+                // The client record is already saved — don't block on this, just surface it.
+                SubmitError = $"Client was created, but the case couldn't be assigned: {policyError}";
+            }
+        }
+
+        if (policyId is not null)
+        {
+            var uploaderName = $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim();
+            if (string.IsNullOrWhiteSpace(uploaderName))
+            {
+                uploaderName = CurrentUser.Email ?? "Advisor";
+            }
+
+            foreach (var (type, file) in PickedFiles)
+            {
+                await Documents.UploadAsync(client.ClientId, policyId.Value, type, uploaderName, file);
+            }
+        }
+
+        Nav.NavigateTo("/clients");
+    }
 }

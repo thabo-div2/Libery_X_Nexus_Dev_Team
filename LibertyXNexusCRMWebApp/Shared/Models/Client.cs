@@ -12,7 +12,7 @@ namespace Shared.Models
         [Key]
         public int ClientId { get; set; }
 
-        [Required, MaxLength(100)]
+        [MaxLength(100)]
         public string IdentityProviderSubjectId { get; set; }
 
         [Required, MaxLength(100)]
@@ -51,7 +51,7 @@ namespace Shared.Models
 
         public decimal? GrossMonthlyIncome { get; set; }
         public decimal? NetMonthlyIncome { get; set; }
-        public decimal? MonthlyExpense { get; set; }
+        public decimal? MonthlyExpenses { get; set; }
 
         [MaxLength(60)]
         public string? SourceOfFunds { get; set; }
@@ -59,7 +59,7 @@ namespace Shared.Models
         public string? TaxNumber { get; set; }
         public decimal? PropertyValue { get; set; }
         public decimal? ExistingInvestments { get; set; }
-        public decimal? RetirmentSavings { get; set; }
+        public decimal? RetirementSavings { get; set; }
         public decimal? OutstandingDebt { get; set; }
         [MaxLength(60)]
         public string? PrimaryGoal { get; set; }
