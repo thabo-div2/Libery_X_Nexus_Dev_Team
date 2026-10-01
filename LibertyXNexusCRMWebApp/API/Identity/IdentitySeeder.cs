@@ -29,6 +29,9 @@ namespace API.Identity
             var email = config["Seed:AdvisorEmail"];
             var password = config["Seed:AdvisorPassword"];
 
+            var cEmail = config["Seed:ClientEmail"];
+            var cPassword = config["Seed:ClientPassword"];
+
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 return; // There is nothing to seed
@@ -47,6 +50,20 @@ namespace API.Identity
                 await userManager.AddToRoleAsync(user, AppRoles.Advisor);
             }
 
+            var cUser = await userManager.FindByEmailAsync(cEmail);
+
+            if (cUser is null)
+            {
+                cUser = new ApplicationUser { UserName = cEmail, Email = cEmail, EmailConfirmed = true };
+                var created = await userManager.CreateAsync(cUser, cPassword);
+
+                if (!created.Succeeded)
+                {
+                    throw new InvalidOperationException("Could not seed client login: " + string.Join("; ", created.Errors.Select(e => e.Description)));
+                }
+                await userManager.AddToRoleAsync(cUser, AppRoles.Client);
+            }
+
             var advisor = await db.Advisors.FirstOrDefaultAsync(a => a.Email == email);
 
             if (advisor is null)
@@ -62,6 +79,26 @@ namespace API.Identity
             else
             {
                 advisor.IdentityProviderSubjectId = user.Id;
+            }
+
+            var client = await db.Clients.FirstOrDefaultAsync(c => c.Email == cEmail);
+
+            if (client is null)
+            {
+                db.Clients.Add(new Client
+                {
+                    Email = cEmail,
+                    FirstName = "Test",
+                    LastName = "Test",
+                    IdentityProviderSubjectId = cUser.Id,
+                    IdentificationNumber = "9001015009087",
+                    AdvisorId = advisor?.AdvisorId
+                });
+            }
+            else
+            {
+                client.IdentityProviderSubjectId = cUser.Id;
+                client.AdvisorId = advisor?.AdvisorId;
             }
 
             await db.SaveChangesAsync();

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260923104714_AddIdentity")]
-    partial class AddIdentity
+    [Migration("20260930191938_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -622,6 +622,40 @@ namespace API.Migrations
                     b.ToTable("Meetings");
                 });
 
+            modelBuilder.Entity("Shared.Models.Message", b =>
+                {
+                    b.Property<int>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
+
+                    b.Property<int>("AdvisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("FromAdvisor")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.HasKey("MessageId");
+
+                    b.HasIndex("AdvisorId", "SentAt");
+
+                    b.HasIndex("ClientId", "SentAt");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("Shared.Models.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
@@ -857,6 +891,25 @@ namespace API.Migrations
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Shared.Models.Message", b =>
+                {
+                    b.HasOne("Shared.Models.Advisor", "Advisor")
+                        .WithMany()
+                        .HasForeignKey("AdvisorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advisor");
 
                     b.Navigation("Client");
                 });

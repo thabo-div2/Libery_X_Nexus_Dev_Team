@@ -97,6 +97,7 @@ namespace API
             builder.Services.AddScoped<IMeetingService, MeetingService>();
             builder.Services.AddScoped<IPolicyService, PolicyService>();
             builder.Services.AddScoped<IInvitationService, InvitationService>();
+            builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddBlobStorage(
                 builder.Configuration.GetConnectionString("BlobStorage")!, 
                 builder.Configuration["BlobStorage:ContainerName"]);

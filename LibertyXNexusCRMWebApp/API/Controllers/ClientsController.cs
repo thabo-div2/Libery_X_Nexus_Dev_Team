@@ -11,7 +11,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = AppRoles.Advisor)]
+    [Authorize]
     public class ClientsController : ControllerBase
     {
         private readonly IClientService _clientService;
@@ -28,8 +28,13 @@ namespace API.Controllers
             ? id
             : throw new InvalidOperationException("Token has no advisorId Claim. Was it issued before this claim existed?");
 
+        private int CurrentClientId => int.TryParse(User.FindFirstValue("clientId"), out var id)
+            ? id
+            : throw new InvalidOperationException("Token has no clientId claim.");
+
         [HttpGet]
-        public async Task <ActionResult<IEnumerable<ClientListItemDto>>> Search([FromQuery] string? searchTerm, [FromQuery] ClientStatus? status)
+        [Authorize(Roles = AppRoles.Advisor)]
+        public async Task<ActionResult<IEnumerable<ClientListItemDto>>> Search([FromQuery] string? searchTerm, [FromQuery] ClientStatus? status)
         {
             var results = await _clientService.SearchAsync(searchTerm, status, CurrentAdvisorId);
             return Ok(results);
@@ -39,14 +44,37 @@ namespace API.Controllers
         public async Task<ActionResult<ClientDetailDto>> GetById(int id)
         {
             var client = await _clientService.GetByIdAsync(id);
-            if (client is null || client.AdvisorId != CurrentAdvisorId)
+
+            if (client is null)
             {
                 return NotFound(new { message = $"Client {id} was not found" });
             }
-            return Ok(client);
+
+            var role = User.FindFirstValue("role");
+
+            if (role == AppRoles.Client)
+            {
+                // Clients may only retrieve their own profile.
+                if (id != CurrentClientId)
+                    return Forbid();
+
+                return Ok(client);
+            }
+
+            if (role == AppRoles.Advisor)
+            {
+                // Advisors may only retrieve clients assigned to them.
+                if (client.AdvisorId != CurrentAdvisorId)
+                    return NotFound(new { message = $"Client {id} was not found" });
+
+                return Ok(client);
+            }
+
+            return Forbid();
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<ClientDetailDto>> Create([FromBody] CreateClientRequest request)
         {
             try
@@ -70,6 +98,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<ClientDetailDto>> Update(int id, [FromBody] UpdateClientRequest request)
         {
             var existing = await _clientService.GetByIdAsync(id);
@@ -92,6 +121,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult> Delete(int id)
         {
             var existing = await _clientService.GetByIdAsync(id);

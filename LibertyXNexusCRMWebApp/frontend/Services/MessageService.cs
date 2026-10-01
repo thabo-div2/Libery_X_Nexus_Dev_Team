@@ -31,7 +31,7 @@ namespace frontend.Services
             }
             catch (HttpRequestException)
             {
-                return (new List<ChatMessage>(), "Can't reach the server. Make sure the Backend project is running.");
+                return (new List<ChatMessage>(), "Can't reach the API. Make sure the API project is running.");
             }
             catch (Exception ex)
             {
@@ -54,7 +54,7 @@ namespace frontend.Services
             }
             catch (HttpRequestException)
             {
-                return (new List<ConversationSummary>(), "Can't reach the server. Make sure the Backend project is running.");
+                return (new List<ConversationSummary>(), "Can't reach the API. Make sure the API project is running.");
             }
             catch (Exception ex)
             {
@@ -66,7 +66,7 @@ namespace frontend.Services
         {
             try
             {
-                var response = await _http.PostAsJsonAsync("Message", new { ClientId = clientId, AdvisorId = advisorId, FromAdvisor = fromAdvisor, Text = text });
+                var response = await _http.PostAsJsonAsync("Message", new { ClientId = clientId, AdvisorId = advisorId, Text = text });
                 if (!response.IsSuccessStatusCode)
                 {
                     return $"The server reported an error (status {(int)response.StatusCode}).";
@@ -77,7 +77,7 @@ namespace frontend.Services
             }
             catch (HttpRequestException)
             {
-                return "Can't reach the server. Make sure the Backend project is running.";
+                return "Can't reach the API. Make sure the API project is running.";
             }
             catch (Exception ex)
             {

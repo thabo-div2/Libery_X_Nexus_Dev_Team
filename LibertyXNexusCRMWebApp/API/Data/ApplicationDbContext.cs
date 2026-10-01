@@ -20,6 +20,7 @@ namespace API.Data
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<Invitation> Invitations => Set<Invitation>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+        public DbSet<Message> Messages => Set<Message>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -171,6 +172,22 @@ namespace API.Data
 
                 entity.Property(i => i.Status)
                     .HasConversion<int>();
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.HasOne(m => m.Client)
+                    .WithMany()
+                    .HasForeignKey(m => m.ClientId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(m => m.Advisor)
+                    .WithMany()
+                    .HasForeignKey(m => m.AdvisorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(m => new { m.ClientId, m.SentAt });
+                entity.HasIndex(m => new { m.AdvisorId, m.SentAt });
             });
 
             modelBuilder.Entity<AuditLog>(entity =>
