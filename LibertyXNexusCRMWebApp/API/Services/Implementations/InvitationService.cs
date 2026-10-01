@@ -1,4 +1,5 @@
-﻿using API.Identity;
+﻿using API.DTOs.Invitations;
+using API.Identity;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -12,72 +13,97 @@ namespace API.Services.Implementations
 {
     public class InvitationService : IInvitationService
     {
-        private readonly IInvitationRepository _invitations;
-        private readonly IAdvisorRepository _advisors;
+        private readonly IInvitationRepository _invitationRepository;
+        private readonly IAdvisorRepository _advisorRepository;
+        private readonly IAuditLogRepository _auditLogRepository;
 
-        public InvitationService(IInvitationRepository invitations, IAdvisorRepository advisors)
+        public InvitationService(
+            IInvitationRepository invitationRepository,
+            IAdvisorRepository advisorRepository,
+            IAuditLogRepository auditLogRepository)
         {
-            _invitations = invitations;
-            _advisors = advisors;
+            _invitationRepository = invitationRepository;
+            _advisorRepository = advisorRepository;
+            _auditLogRepository = auditLogRepository;
         }
 
-        public async Task<InvitationResult> CreateInvitation(CreateInvitationRequest request, int advisorId) 
+        public async Task<InvitationResponse> CreateAsync(int advisorId, string email)
         {
-            var advisor = await _advisors.GetByIdAsync(advisorId);
-            if (advisor is null)
-                return new InvitationResult(
-                        false,
-                        "Invitation failed",
-                        "",
-                        null
-                    );
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return new InvitationResponse { Success = false, Message = "An email address is required." };
+            }
 
             var invitation = new Invitation
             {
                 AdvisorId = advisorId,
-                Email = request.Email.Trim(),
-                Token = Convert.ToHexString(RandomNumberGenerator.GetBytes(16)),
+                Email = email.Trim(),
+                Token = GenerateToken(),
                 Status = InvitationStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddDays(14)
             };
 
-            await _invitations.AddAsync(invitation);
+            await _invitationRepository.AddAsync(invitation);
 
-            return new InvitationResult(
-                true,
-                "Invitation created",
-                invitation.Token,
-                invitation.ExpiresAt);
+            await _auditLogRepository.LogAsync(
+                userId: advisorId,
+                userRole: UserRole.FinancialAdviser,
+                actionType: AuditActionType.Create,
+                entityAffected: "Invitation",
+                details: $"Advisor invited {invitation.Email}.");
+
+            return new InvitationResponse
+            {
+                Success = true,
+                Message = "Invitation created.",
+                Token = invitation.Token,
+                ExpiresAt = invitation.ExpiresAt
+            };
         }
 
-        public async Task<InvitationDetails> Validate(string token) 
+        public async Task<InvitationValidationResponse> ValidateAsync(string token)
         {
-            var invitation = await _invitations.GetValidByTokenAsync(token);
-
-            if (invitation is null)
+            if (string.IsNullOrWhiteSpace(token))
             {
-                return new InvitationDetails(
-                        false,
-                        "Invalid invitaion",
-                        "",
-                        0,
-                        ""
-                    );
+                return new InvitationValidationResponse { Valid = false, Message = "No invitation token was provided." };
             }
 
-            var advisor = await _advisors.GetByIdAsync(invitation.AdvisorId);
+            var invitation = await _invitationRepository.GetValidByTokenAsync(token);
+            if (invitation is null)
+            {
+                return new InvitationValidationResponse
+                {
+                    Valid = false,
+                    Message = "This invitation link is invalid, expired, or has already been used."
+                };
+            }
 
-            return new InvitationDetails(
-                true,
-                "Valid invitation",
-                invitation.Email,
-                invitation.AdvisorId,
-                advisor?.FullName ?? string.Empty);
+            var advisor = await _advisorRepository.GetByIdAsync(invitation.AdvisorId);
+
+            return new InvitationValidationResponse
+            {
+                Valid = true,
+                Message = "Invitation is valid.",
+                Email = invitation.Email,
+                AdvisorId = invitation.AdvisorId,
+                AdvisorName = advisor?.FullName ?? string.Empty
+            };
         }
 
-        public sealed record CreateInvitationRequest(string Email);
-        public sealed record InvitationResult(bool Success, string Message, string? Token, DateTime? ExpiresAt);
-        public sealed record InvitationDetails(bool Valid, string Message, string Email, int AdvisorId, string AdvisorName);
+        /// <summary>
+        /// URL-safe, cryptographically random token. 32 bytes (256 bits) is
+        /// comfortably enough entropy that guessing a valid token is
+        /// infeasible — this token is effectively a bearer credential for
+        /// registration, so it needs the same strength as a session token.
+        /// </summary>
+        private static string GenerateToken()
+        {
+            var bytes = RandomNumberGenerator.GetBytes(32);
+            return Convert.ToBase64String(bytes)
+                .Replace("+", "-")
+                .Replace("/", "_")
+                .TrimEnd('=');
+        }
     }
 }
