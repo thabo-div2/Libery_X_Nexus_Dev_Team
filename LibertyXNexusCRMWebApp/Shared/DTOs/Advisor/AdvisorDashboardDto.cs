@@ -3,10 +3,13 @@
     public class AdvisorDashboardDto
     {
         public string AdvisorFirstName { get; set; } = string.Empty;
+        public string AdvisorLastName { get; set; } = string.Empty;
+        public int TotalClients { get; set; }
         public int ActiveCases { get; set; }
         public int WaitingOnClient { get; set; }
         public int AwaitingDocuments { get; set; }
         public int MeetingsThisWeek { get; set; }
+        public int MeetingsToday { get; set; }
         public double PipelineValue { get; set; }
         public string AwaitingDocumentsChange { get; set; } = string.Empty;
         public string MeetingsChange { get; set; } = string.Empty;
