@@ -13,7 +13,7 @@ namespace Shared.Models
         public int ClientId { get; set; }
 
         [Required, MaxLength(100)]
-        public string IdentityProviderSubjectId { get; set; } = string.Empty;
+        public string IdentityProviderSubjectId { get; set; }
 
         [Required, MaxLength(100)]
         public string FirstName { get; set; } = string.Empty;
@@ -32,6 +32,41 @@ namespace Shared.Models
 
         [MaxLength(100)]
         public string? RiskProfile { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        [MaxLength(300)]
+        public string? ResidentialAddress { get; set; }
+        [MaxLength(60)]
+        public string? MaritalStatus { get; set; }
+
+        public int? Dependants { get; set; }
+
+        [MaxLength(40)]
+        public string EmploymentStatus { get; set; }
+
+        [MaxLength(100)]
+        public string? Occupation { get; set; }
+
+        [MaxLength(150)]
+        public String? Employer { get; set; }
+
+        public decimal? GrossMonthlyIncome { get; set; }
+        public decimal? NetMonthlyIncome { get; set; }
+        public decimal? MonthlyExpense { get; set; }
+
+        [MaxLength(60)]
+        public string? SourceOfFunds { get; set; }
+        [MaxLength(30)]
+        public string? TaxNumber { get; set; }
+        public decimal? PropertyValue { get; set; }
+        public decimal? ExistingInvestments { get; set; }
+        public decimal? RetirmentSavings { get; set; }
+        public decimal? OutstandingDebt { get; set; }
+        [MaxLength(60)]
+        public string? PrimaryGoal { get; set; }
+        public int? InvestmentHorizonYears { get; set; }
+
+        public bool PopiaConsent { get; set; }
+        public DateTime? PopiaConsentAt { get; set; }
 
         public ClientStatus Status { get; set; } = ClientStatus.Registered;
 

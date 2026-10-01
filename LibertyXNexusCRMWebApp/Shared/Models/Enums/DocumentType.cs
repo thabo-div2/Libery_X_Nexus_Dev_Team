@@ -12,6 +12,11 @@ namespace Shared.Models.Enums
         ServicePackageSummary,
         PolicyStatement,
         AmendmentForm,
-        Other
+        Other,
+        CertifiedIdCopy,
+        ProofOfAddress,
+        BankStatement,
+        Payslip,
+        TaxCertificate
     }
 }
