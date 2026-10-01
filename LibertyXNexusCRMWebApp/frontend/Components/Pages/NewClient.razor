@@ -4,11 +4,13 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Shared.Models.Enums
 @using frontend.Services
+@using System.Text.Json
 @inject ClientService Clients
 @inject PolicyService Policies
 @inject DocumentService Documents
 @inject CurrentUserService CurrentUser
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <PageTitle>New Client | Nexus</PageTitle>
 
@@ -61,6 +63,31 @@
             @if (!string.IsNullOrEmpty(StepError))
             {
                 <p class="invite-error">@StepError</p>
+            }
+
+            @if (ShowDraftBanner && PendingDraft is not null)
+            {
+                <div class="draft-banner">
+                    <div class="draft-banner-text">
+                        <strong>Unfinished client intake found</strong>
+                        <span>
+                            @(string.IsNullOrWhiteSpace(PendingDraft.FirstName) && string.IsNullOrWhiteSpace(PendingDraft.LastName)
+                                ? "You have a saved draft"
+                                : $"Draft for {PendingDraft.FirstName} {PendingDraft.LastName}") ·
+                            saved @PendingDraft.SavedAt.ToLocalTime().ToString("d MMM, HH:mm")
+                            @(PendingDraft.HadDocuments ? " · documents will need to be re-attached" : "")
+                        </span>
+                    </div>
+                    <div class="draft-banner-actions">
+                        <button type="button" class="secondary-button" @onclick="DiscardDraftAsync">Start over</button>
+                        <button type="button" class="primary-button" @onclick="ResumeDraft">Resume</button>
+                    </div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(DraftSavedMessage))
+            {
+                <p class="draft-saved-message">@DraftSavedMessage</p>
             }
 
             @if (CurrentStep == 1)
@@ -170,7 +197,7 @@
                         </div>
 
                         <div class="form-actions">
-                            <button type="button" class="secondary-button" @onclick="SaveDraft">Save draft</button>
+                            <button type="button" class="secondary-button" @onclick="SaveDraftAsync">Save draft</button>
                             <button type="button" class="primary-button" @onclick="() => GoToStep(2)">Continue to financial profile</button>
                         </div>
                     </div>
@@ -523,9 +550,192 @@
     private bool HasRequiredDocuments =>
         DocumentSlots.Where(s => s.Required).All(s => PickedFiles.ContainsKey(s.Type));
 
+        private const string DraftStorageKey = "nexus-new-client-draft";
+
+    private bool ShowDraftBanner;
+    private DraftPayload? PendingDraft;
+    private string? DraftSavedMessage;
+
     protected override async Task OnInitializedAsync()
     {
         await CurrentUser.EnsureRestoredAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckForDraftAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckForDraftAsync()
+    {
+        try
+        {
+            var json = await JS.InvokeAsync<string?>("localStorage.getItem", DraftStorageKey);
+
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                var draft = JsonSerializer.Deserialize<DraftPayload>(json);
+
+                if (draft is not null)
+                {
+                    PendingDraft = draft;
+                    ShowDraftBanner = true;
+                }
+            }
+        }
+        catch
+        {
+            // Local storage may be unavailable (private browsing, blocked storage) — just skip the prompt.
+        }
+    }
+
+    private void ResumeDraft()
+    {
+        if (PendingDraft is null) return;
+
+        Model.FirstName = PendingDraft.FirstName;
+        Model.LastName = PendingDraft.LastName;
+        Model.Email = PendingDraft.Email;
+        Model.Phone = PendingDraft.Phone;
+        Model.IdentificationNumber = PendingDraft.IdentificationNumber;
+        Model.DateOfBirth = PendingDraft.DateOfBirth;
+        Model.ResidentialAddress = PendingDraft.ResidentialAddress;
+        Model.MaritalStatus = PendingDraft.MaritalStatus;
+        Model.Dependants = PendingDraft.Dependants;
+        Model.Institution = PendingDraft.Institution;
+        Model.Product = PendingDraft.Product;
+        Model.TargetSubmissionDate = PendingDraft.TargetSubmissionDate;
+        Model.EmploymentStatus = PendingDraft.EmploymentStatus;
+        Model.Occupation = PendingDraft.Occupation;
+        Model.Employer = PendingDraft.Employer;
+        Model.GrossMonthlyIncome = PendingDraft.GrossMonthlyIncome;
+        Model.NetMonthlyIncome = PendingDraft.NetMonthlyIncome;
+        Model.MonthlyExpenses = PendingDraft.MonthlyExpenses;
+        Model.SourceOfFunds = PendingDraft.SourceOfFunds;
+        Model.TaxNumber = PendingDraft.TaxNumber;
+        Model.PropertyValue = PendingDraft.PropertyValue;
+        Model.ExistingInvestments = PendingDraft.ExistingInvestments;
+        Model.RetirementSavings = PendingDraft.RetirementSavings;
+        Model.OutstandingDebt = PendingDraft.OutstandingDebt;
+        Model.PrimaryGoal = PendingDraft.PrimaryGoal;
+        Model.InvestmentHorizonYears = PendingDraft.InvestmentHorizonYears;
+        Model.RiskProfile = PendingDraft.RiskProfile;
+
+        CurrentStep = PendingDraft.CurrentStep is >= 1 and <= 4 ? PendingDraft.CurrentStep : 1;
+
+        if (PendingDraft.HadDocuments)
+        {
+            StepError = "This draft had documents attached — please re-select them before submitting; files aren't saved in a draft.";
+        }
+
+        ShowDraftBanner = false;
+        PendingDraft = null;
+    }
+
+    private async Task DiscardDraftAsync()
+    {
+        ShowDraftBanner = false;
+        PendingDraft = null;
+        await ClearDraftStorageAsync();
+    }
+
+    private DraftPayload BuildDraftPayload() => new()
+    {
+        CurrentStep = CurrentStep,
+        FirstName = Model.FirstName,
+        LastName = Model.LastName,
+        Email = Model.Email,
+        Phone = Model.Phone,
+        IdentificationNumber = Model.IdentificationNumber,
+        DateOfBirth = Model.DateOfBirth,
+        ResidentialAddress = Model.ResidentialAddress,
+        MaritalStatus = Model.MaritalStatus,
+        Dependants = Model.Dependants,
+        Institution = Model.Institution,
+        Product = Model.Product,
+        TargetSubmissionDate = Model.TargetSubmissionDate,
+        EmploymentStatus = Model.EmploymentStatus,
+        Occupation = Model.Occupation,
+        Employer = Model.Employer,
+        GrossMonthlyIncome = Model.GrossMonthlyIncome,
+        NetMonthlyIncome = Model.NetMonthlyIncome,
+        MonthlyExpenses = Model.MonthlyExpenses,
+        SourceOfFunds = Model.SourceOfFunds,
+        TaxNumber = Model.TaxNumber,
+        PropertyValue = Model.PropertyValue,
+        ExistingInvestments = Model.ExistingInvestments,
+        RetirementSavings = Model.RetirementSavings,
+        OutstandingDebt = Model.OutstandingDebt,
+        PrimaryGoal = Model.PrimaryGoal,
+        InvestmentHorizonYears = Model.InvestmentHorizonYears,
+        RiskProfile = Model.RiskProfile,
+        HadDocuments = PickedFiles.Count > 0,
+        SavedAt = DateTime.UtcNow
+    };
+
+    private async Task SaveDraftAsync()
+    {
+        try
+        {
+            var payload = BuildDraftPayload();
+            var json = JsonSerializer.Serialize(payload);
+            await JS.InvokeVoidAsync("localStorage.setItem", DraftStorageKey, json);
+            DraftSavedMessage = $"Draft saved at {DateTime.Now:HH:mm} — you can safely come back to this later.";
+        }
+        catch
+        {
+            StepError = "Couldn't save a draft on this device — your browser may be blocking local storage.";
+        }
+    }
+
+    private async Task ClearDraftStorageAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.removeItem", DraftStorageKey);
+        }
+        catch
+        {
+            // Nothing to do — the draft will just sit there unused.
+        }
+    }
+
+    private sealed class DraftPayload
+    {
+        public int CurrentStep { get; set; } = 1;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public string? IdentificationNumber { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? ResidentialAddress { get; set; }
+        public string? MaritalStatus { get; set; }
+        public int? Dependants { get; set; }
+        public string? Institution { get; set; }
+        public string? Product { get; set; }
+        public DateTime? TargetSubmissionDate { get; set; }
+        public string? EmploymentStatus { get; set; }
+        public string? Occupation { get; set; }
+        public string? Employer { get; set; }
+        public decimal? GrossMonthlyIncome { get; set; }
+        public decimal? NetMonthlyIncome { get; set; }
+        public decimal? MonthlyExpenses { get; set; }
+        public string? SourceOfFunds { get; set; }
+        public string? TaxNumber { get; set; }
+        public decimal? PropertyValue { get; set; }
+        public decimal? ExistingInvestments { get; set; }
+        public decimal? RetirementSavings { get; set; }
+        public decimal? OutstandingDebt { get; set; }
+        public string? PrimaryGoal { get; set; }
+        public int? InvestmentHorizonYears { get; set; }
+        public string RiskProfile { get; set; } = string.Empty;
+        public bool HadDocuments { get; set; }
+        public DateTime SavedAt { get; set; }
     }
 
     private async Task OnFileSelected(InputFileChangeEventArgs e, DocumentType type)
@@ -560,9 +770,10 @@
         }
     }
 
-    private void GoToStep(int step)
+        private async Task GoToStep(int step)
     {
         StepError = null;
+        DraftSavedMessage = null;
 
         if (step > CurrentStep && CurrentStep == 1)
         {
@@ -574,12 +785,10 @@
         }
 
         CurrentStep = step;
-    }
 
-    private void SaveDraft()
-    {
-        // TODO: persist as a draft client record once the API exposes a draft/status endpoint.
-        StepError = "Draft saving isn't wired up yet — continue through the wizard to create the client.";
+        // Auto-save progress on every step change so a closed tab or crash doesn't lose the form.
+        await SaveDraftAsync();
+        DraftSavedMessage = null;
     }
 
     private async Task SubmitAsync()
@@ -672,6 +881,8 @@
               await Documents.UploadAsync(client.ClientId, policyId.Value, type, uploaderName, file.Name, file.ContentType, file.Content);
             }
         }
+        // Clear the draft from local storage after successful submission.
+        await ClearDraftStorageAsync();
 
         Nav.NavigateTo("/clients");
     }
