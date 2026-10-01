@@ -2,7 +2,18 @@ using System.Net.Http.Json;
 
 namespace frontend.Services
 {
-    public record MeetingSummary(int MeetingId, int ClientId, int AdvisorId, string ClientName, DateTime MeetingDate, string Status, string? Notes, DateTime CreatedAt);
+    public record MeetingSummary(
+        int MeetingId,
+        int ClientId,
+        string ClientName,
+        DateTime MeetingDate,
+        int DurationMinutes,
+        string? MeetingType,
+        string? Location,
+        string Status,
+        string? Notes,
+        DateTime CreatedAt,
+        DateTime UpdatedAt);
 
     public class MeetingService
     {
@@ -19,7 +30,7 @@ namespace frontend.Services
         {
             try
             {
-                var response = await _http.GetAsync($"Meeting/client/{clientId}");
+                var response = await _http.GetAsync($"meetings/client/{clientId}");
                 if (!response.IsSuccessStatusCode)
                 {
                     return (new List<MeetingSummary>(), $"The server reported an error (status {(int)response.StatusCode}).");
@@ -42,7 +53,7 @@ namespace frontend.Services
         {
             try
             {
-                var response = await _http.GetAsync($"Meeting/advisor/{advisorId}");
+                var response = await _http.GetAsync($"meetings/upcoming");
                 if (!response.IsSuccessStatusCode)
                 {
                     return (new List<MeetingSummary>(), $"The server reported an error (status {(int)response.StatusCode}).");
@@ -65,7 +76,17 @@ namespace frontend.Services
         {
             try
             {
-                var response = await _http.PostAsJsonAsync("Meeting/request", new { ClientId = clientId, AdvisorId = advisorId, FromAdvisor = fromAdvisor, MeetingDate = meetingDate, Notes = notes });
+                var request = new
+                {
+                    ClientId = clientId,
+                    MeetingDate =  meetingDate,
+                    DurationMinutes = 60,
+                    MeetingType = "Consulation",
+                    Location = (string?)null,
+                    Notes = notes
+                };
+                var response = await _http.PostAsJsonAsync("meetings", request);
+
                 if (!response.IsSuccessStatusCode)
                 {
                     return $"The server reported an error (status {(int)response.StatusCode}).";
@@ -88,7 +109,8 @@ namespace frontend.Services
         {
             try
             {
-                var response = await _http.PostAsJsonAsync($"Meeting/{meetingId}/respond", new { Accept = accept });
+                var action = accept ? "confirm" : "cancel"; 
+                var response = await _http.PutAsync($"meetings/{meetingId}/{action}", null);
                 if (!response.IsSuccessStatusCode)
                 {
                     return $"The server reported an error (status {(int)response.StatusCode}).";
@@ -105,6 +127,85 @@ namespace frontend.Services
             {
                 return $"Something went wrong: {ex.Message}";
             }
+        }
+
+        public async Task<(MeetingSummary? Meeting, string? Error)> GetByIdAsync(int meetingId)
+        {
+            try
+            {
+                var response = await _http.GetAsync($"meetings/{meetingId}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, $"The server reported an error (status {(int)response.StatusCode}).");
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<MeetingSummary>();
+
+                return result is null
+                    ? (null, "The API returned an empty meeting.")
+                    : (result, null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        public async Task<string?> CancelAsync(int meetingId) 
+        { 
+            try 
+            { 
+                var response = await _http.PutAsync( $"Meetings/{meetingId}/cancel", null); 
+                if (!response.IsSuccessStatusCode) 
+                {
+                    return await ReadErrorAsync(response); 
+                } 
+                return null; 
+            } 
+            catch (HttpRequestException) 
+            { 
+                return "Can't reach the server. Make sure the Backend project is running."; 
+            } 
+            catch (Exception ex) 
+            { return $"Something went wrong: {ex.Message}"; 
+            } 
+        } 
+        
+        public async Task<string?> ConfirmAsync(int meetingId) 
+        { 
+            try 
+            { 
+                var response = await _http.PutAsync( $"Meetings/{meetingId}/confirm", null); 
+                if (!response.IsSuccessStatusCode) 
+                { 
+                    return await ReadErrorAsync(response); 
+                } 
+                return null; 
+            } 
+            catch (HttpRequestException) 
+            { 
+                return "Can't reach the server. Make sure the Backend project is running."; 
+            } 
+            catch (Exception ex) 
+            { 
+                return $"Something went wrong: {ex.Message}"; 
+            } 
+        } 
+        
+        private static async Task<string> ReadErrorAsync(HttpResponseMessage response) 
+        { 
+            var body = await response.Content.ReadAsStringAsync();
+            
+            if (!string.IsNullOrWhiteSpace(body)) 
+            { 
+                return $"API returned HTTP {(int)response.StatusCode}: {body}"; 
+            } 
+            return $"The server reported an error " + $"(status {(int)response.StatusCode})."; 
         }
     }
 }

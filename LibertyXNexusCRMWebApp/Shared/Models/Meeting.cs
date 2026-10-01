@@ -21,7 +21,7 @@ namespace Shared.Models
         [Required]
         public DateTime MeetingDate { get; set; }
 
-        public int DurationNotes { get; set; } = 60;
+        public int DurationMinutes { get; set; } = 60;
 
         [MaxLength(100)]
         public string? MeetingType { get; set; }

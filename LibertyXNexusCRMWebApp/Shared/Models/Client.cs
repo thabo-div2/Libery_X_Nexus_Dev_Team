@@ -1,4 +1,4 @@
-using Shared.Models.Enums;
+﻿using Shared.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -28,10 +28,7 @@ namespace Shared.Models
         public string? Phone { get; set; }
 
         [MaxLength(50)]
-        public string? IdentityNumber { get; set; }
-
-        [Required, MaxLength(200)]
-        public string PasswordHash { get; set; } = string.Empty;
+        public string? IdentificationNumber { get; set; }
 
         [MaxLength(100)]
         public string? RiskProfile { get; set; }

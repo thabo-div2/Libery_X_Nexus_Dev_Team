@@ -1,0 +1,15 @@
+﻿using Shared.Models;
+using Shared.Models.Enums;
+
+namespace API.Repositories.Interfaces
+{
+    public interface IMeetingRepository : IGenericRepository<Meeting>
+    {
+        Task<IEnumerable<Meeting>> GetClientIdAsync(int clientId);
+        Task<IEnumerable<Meeting>> GetUpcomingMeetingAsync(int? clientId = null);
+        Task<IEnumerable<Meeting>> GetByDateRangeAsync(DateTime from, DateTime to);
+        Task<IEnumerable<Meeting>> GetByStatusAsync(MeetingStatus status);
+        Task<bool> HasConflictAsync(DateTime start, int durationMinutes, int? excludeMeetingId = null);
+        Task<bool> BelongsToClientAsync(int meetingId, int clientId);
+    }
+}

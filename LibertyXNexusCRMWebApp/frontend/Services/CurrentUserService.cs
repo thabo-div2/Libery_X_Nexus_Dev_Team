@@ -19,8 +19,8 @@ namespace frontend.Services
         public string? LastName { get; private set; }
         public string? Email { get; private set; }
 
-        public bool IsClient => Role == "RegisteredClient";
-        public bool IsAdvisor => Role == "FinancialAdviser";
+        public bool IsClient => Role == "Client";
+        public bool IsAdvisor => Role == "Advisor";
 
         public async Task SignInAsync(AuthResult result)
         {

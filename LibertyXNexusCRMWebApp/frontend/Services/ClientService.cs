@@ -3,7 +3,33 @@ using System.Net.Http.Json;
 
 namespace frontend.Services
 {
-    public record ClientProfile(int ClientId, string FirstName, string LastName, string Email, string? Phone, string? IdentityNumber, string? RiskProfile, string Status, DateTime CreatedAt, int? AdvisorId, string? AdvisorName);
+    public sealed class ClientProfile
+    {
+        public int ClientId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public string? IdentificationNumber { get; set; }
+        public string? RiskProfile { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public int? AdvisorId { get; set; }
+        public string? AdvisorName { get; set; }
+
+        public string IdentityNumber => IdentificationNumber ?? string.Empty;
+
+        public void NormalizeName()
+        {
+            if (string.IsNullOrWhiteSpace(FirstName) && string.IsNullOrWhiteSpace(LastName) && !string.IsNullOrWhiteSpace(FullName))
+            {
+                var parts = FullName.Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                FirstName = parts.ElementAtOrDefault(0) ?? string.Empty;
+                LastName = parts.ElementAtOrDefault(1) ?? string.Empty;
+            }
+        }
+    }
 
     public class ClientService
     {
@@ -14,21 +40,11 @@ namespace frontend.Services
             _http = http;
         }
 
-        public async Task<(List<ClientProfile> Clients, string? Error)> SearchAsync(string? search, int? advisorId = null)
+        public async Task<(List<ClientProfile> Clients, string? Error)> SearchAsync(string? search)
         {
             try
             {
-                var queryParts = new List<string>();
-                if (!string.IsNullOrWhiteSpace(search))
-                {
-                    queryParts.Add($"search={Uri.EscapeDataString(search)}");
-                }
-                if (advisorId is not null)
-                {
-                    queryParts.Add($"advisorId={advisorId.Value}");
-                }
-
-                var url = queryParts.Count == 0 ? "Client" : $"Client?{string.Join("&", queryParts)}";
+                var url = string.IsNullOrWhiteSpace(search) ? "clients" : $"clients?searchTerm={Uri.EscapeDataString(search)}";
                 var response = await _http.GetAsync(url);
 
                 if (!response.IsSuccessStatusCode)
@@ -36,8 +52,10 @@ namespace frontend.Services
                     return (new List<ClientProfile>(), $"The server reported an error (status {(int)response.StatusCode}).");
                 }
 
-                var result = await response.Content.ReadFromJsonAsync<List<ClientProfile>>();
-                return (result ?? new List<ClientProfile>(), null);
+                var result = await response.Content.ReadFromJsonAsync<List<ClientProfile>>() ?? new List<ClientProfile>();
+                foreach (var client in result)
+                    client.NormalizeName();
+                return (result, null);
             }
             catch (HttpRequestException)
             {
@@ -53,7 +71,7 @@ namespace frontend.Services
         {
             try
             {
-                var response = await _http.GetAsync($"Client/{id}");
+                var response = await _http.GetAsync($"clients/{id}");
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -62,10 +80,13 @@ namespace frontend.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return (null, $"The server reported an error (status {(int)response.StatusCode}).");
+                    var error = await ReadErrorAsync(response);
+                    return (null, error);
                 }
 
                 var result = await response.Content.ReadFromJsonAsync<ClientProfile>();
+                result?.NormalizeName();
+
                 return (result, result is null ? "The server sent back an unexpected response." : null);
             }
             catch (HttpRequestException)
@@ -76,6 +97,18 @@ namespace frontend.Services
             {
                 return (null, $"Something went wrong: {ex.Message}");
             }
+        }
+
+        private static async Task<string> ReadErrorAsync(HttpResponseMessage response)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                return $"API returned HTTP {(int)response.StatusCode}: {body}";
+            }
+
+            return $"The server reported an error (status {(int)response.StatusCode}.";
         }
     }
 }
