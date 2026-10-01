@@ -2,7 +2,10 @@
 
 namespace API.DTOs.Policies
 {
-    public class CreateClientPolicyRequest  //for the advisor to assign a policy to a client
+    /// <summary>
+    /// For the advisor to assign a policy to a client
+    /// </summary>
+    public class CreateClientPolicyRequest  
     {
         [Required, MaxLength(200)]
         public string PolicyName { get; set; } = string.Empty;
@@ -21,5 +24,6 @@ namespace API.DTOs.Policies
 
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public DateTime? TargetSubmissionDate { get; set; }
     }
 }

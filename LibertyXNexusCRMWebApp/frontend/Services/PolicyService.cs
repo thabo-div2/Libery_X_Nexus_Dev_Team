@@ -34,7 +34,8 @@ namespace frontend.Services
             double? PremiumAmount,
             double? CoverAmount,
             DateTime? StartDate,
-            DateTime? EndDate
+            DateTime? EndDate,
+            DateTime? TargetSubmissionDate = null
         );
 
     public record UpdatePolicyRequest(

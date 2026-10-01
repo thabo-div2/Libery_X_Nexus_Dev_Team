@@ -18,6 +18,27 @@ namespace frontend.Services
         public int? AdvisorId { get; set; }
         public string? AdvisorName { get; set; }
 
+        public DateTime? DateOfBirth { get; set; }
+        public string? ResidentialAddress { get; set; }
+        public string? MaritalStatus { get; set; }
+        public int? Dependants { get; set; }
+
+        public string? EmploymentStatus { get; set; }
+        public string? Occupation { get; set; }
+        public string? Employer { get; set; }
+        public decimal? GrossMonthlyIncome { get; set; }
+        public decimal? NetMonthlyIncome { get; set; }
+        public decimal? MonthlyExpenses { get; set; }
+        public string? SourceOfFunds { get; set; }
+        public string? TaxNumber { get; set; }
+        public decimal? PropertyValue { get; set; }
+        public decimal? ExistingInvestments { get; set; }
+        public decimal? RetirementSavings { get; set; }
+        public decimal? OutstandingDebt { get; set; }
+        public string? PrimaryGoal { get; set; }
+        public int? InvestmentHorizonYears { get; set; }
+        public bool PopiaConsent { get; set; }
+
         public string IdentityNumber => IdentificationNumber ?? string.Empty;
 
         public void NormalizeName()
@@ -30,6 +51,40 @@ namespace frontend.Services
             }
         }
     }
+    /// <summary>
+    /// DTO containing personal, financial, and compliance data required to register a client.
+    /// </summary>
+    public sealed class CreateClientRequest
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public string? IdentificationNumber { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? ResidentialAddress { get; set; }
+        public string? MaritalStatus { get; set; }
+        public int? Dependants { get; set; }
+
+        public string? EmploymentStatus { get; set; }
+        public string? Occupation { get; set; }
+        public string? Employer { get; set; }
+        public decimal? GrossMonthlyIncome { get; set; }
+        public decimal? NetMonthlyIncome { get; set; }
+        public decimal? MonthlyExpenses { get; set; }
+        public string? SourceOfFunds { get; set; }
+        public string? TaxNumber { get; set; }
+        public decimal? PropertyValue { get; set; }
+        public decimal? ExistingInvestments { get; set; }
+        public decimal? RetirementSavings { get; set; }
+        public decimal? OutstandingDebt { get; set; }
+        public string? PrimaryGoal { get; set; }
+        public int? InvestmentHorizonYears { get; set; }
+
+        public string RiskProfile { get; set; } = string.Empty;
+        public bool PopiaConsent { get; set; }
+    }
+
 
     public class ClientService
     {
@@ -64,6 +119,32 @@ namespace frontend.Services
             catch (Exception ex)
             {
                 return (new List<ClientProfile>(), $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        public async Task<(ClientProfile? Client, string? Error)> CreateAsync(CreateClientRequest request)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("clients", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, await ReadErrorAsync(response));
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<ClientProfile>();
+                result?.NormalizeName();
+
+                return (result, result is null ? "The server sent back an unexpected response." : null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
             }
         }
 

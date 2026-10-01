@@ -1,7 +1,5 @@
 ﻿@using frontend.Services
 @inject CurrentUserService CurrentUser
-@inject AuthService Auth
-@inject NavigationManager Navigation
 
 <div class="nav-menu">
 
@@ -131,8 +129,7 @@
     [Parameter]
     public bool IsClientView { get; set; }
 
-    private string ProfileName =>
-        !string.IsNullOrWhiteSpace(CurrentUser.FirstName)
+    private string ProfileName => !string.IsNullOrWhiteSpace(CurrentUser.FirstName) || !string.IsNullOrWhiteSpace(CurrentUser.LastName)
             ? $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim()
             : (IsClientView ? "My Account" : "Financial Advisor");
 
@@ -142,21 +139,21 @@
     {
         get
         {
-            var first = CurrentUser.FirstName?.FirstOrDefault();
-            var last = CurrentUser.LastName?.FirstOrDefault();
-            if (first.HasValue && last.HasValue) return $"{first}{last}".ToUpperInvariant();
-            return IsClientView ? "ME" : "FA";
+            var first = CurrentUser.FirstName?.Trim();
+            var last = CurrentUser.LastName?.Trim();
+
+            if (string.IsNullOrEmpty(first) && string.IsNullOrEmpty(last))
+            {
+                return IsClientView ? "ME" : "FA";
+            }
+
+            var initials = $"{(first?.Length > 0 ? first[0] : ' ')}{(last?.Length > 0 ? last[0] : ' ')}".Trim();
+            return initials.Length > 0 ? initials.ToUpperInvariant() : (IsClientView ? "ME" : "FA");
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
         await CurrentUser.EnsureRestoredAsync();
-    }
-
-    private async Task LogoutAsync()
-    {
-        await Auth.LogoutAsync();
-        Navigation.NavigateTo("/", forceLoad: true);
     }
 }

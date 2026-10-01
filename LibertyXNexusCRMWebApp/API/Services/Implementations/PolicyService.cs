@@ -11,11 +11,13 @@ namespace API.Services.Implementations
     {
         private readonly IPolicyRepository policyRepository_;
         private readonly IClientRepository clientRepository_;
+        private readonly ICaseRepository caseRepository_;
 
-        public PolicyService(IPolicyRepository policyRepository, IClientRepository clientRepository)
+        public PolicyService(IPolicyRepository policyRepository, IClientRepository clientRepository, ICaseRepository caseRepository)
         {
             policyRepository_ = policyRepository;
             clientRepository_ = clientRepository;
+            caseRepository_ = caseRepository;
         }
 
         public async Task<PolicyDto?> GetByIdAsync(int policyId)
@@ -96,6 +98,16 @@ namespace API.Services.Implementations
             };
 
             var created = await policyRepository_.AddAsync(policy);
+
+            await caseRepository_.AddAsync(new Case
+            {
+                PolicyId = created.PolicyId,
+                Status = CaseStatus.InProgress,
+                TargetSubmissionDate = request.TargetSubmissionDate,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+
             return MapToDto(created);
         }
 

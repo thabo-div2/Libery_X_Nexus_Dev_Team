@@ -12,8 +12,8 @@ namespace Shared.Models
         [Key]
         public int ClientId { get; set; }
 
-        [Required, MaxLength(100)]
-        public string IdentityProviderSubjectId { get; set; }
+        [MaxLength(100)]
+        public string? IdentityProviderSubjectId { get; set; }
 
         [Required, MaxLength(100)]
         public string FirstName { get; set; } = string.Empty;
@@ -41,7 +41,7 @@ namespace Shared.Models
         public int? Dependants { get; set; }
 
         [MaxLength(40)]
-        public string EmploymentStatus { get; set; }
+        public string? EmploymentStatus { get; set; }
 
         [MaxLength(100)]
         public string? Occupation { get; set; }
@@ -50,16 +50,22 @@ namespace Shared.Models
         public String? Employer { get; set; }
 
         public decimal? GrossMonthlyIncome { get; set; }
+        
         public decimal? NetMonthlyIncome { get; set; }
-        public decimal? MonthlyExpense { get; set; }
+        
+        public decimal? MonthlyExpenses { get; set; }
 
         [MaxLength(60)]
         public string? SourceOfFunds { get; set; }
         [MaxLength(30)]
         public string? TaxNumber { get; set; }
+        
         public decimal? PropertyValue { get; set; }
+        
         public decimal? ExistingInvestments { get; set; }
-        public decimal? RetirmentSavings { get; set; }
+        
+        public decimal? RetirementSavings { get; set; }
+        
         public decimal? OutstandingDebt { get; set; }
         [MaxLength(60)]
         public string? PrimaryGoal { get; set; }
