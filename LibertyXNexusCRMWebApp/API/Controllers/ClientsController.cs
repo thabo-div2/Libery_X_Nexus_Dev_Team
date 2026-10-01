@@ -77,6 +77,8 @@ namespace API.Controllers
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<ClientDetailDto>> Create([FromBody] CreateClientRequest request)
         {
+            request.AdvisorId = CurrentAdvisorId;
+
             try
             {
                 var created = await _clientService.CreateAsync(request);
@@ -94,6 +96,10 @@ namespace API.Controllers
             catch (InvalidOperationException ex)
             {
                 return Conflict(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 
