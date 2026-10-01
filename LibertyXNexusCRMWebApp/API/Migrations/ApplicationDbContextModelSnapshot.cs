@@ -337,6 +337,9 @@ namespace API.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("TargetSubmissionDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -364,15 +367,36 @@ namespace API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Dependants")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("Employer")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("EmploymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<decimal?>("ExistingInvestments")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("GrossMonthlyIncome")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("IdentificationNumber")
                         .HasMaxLength(50)
@@ -383,21 +407,69 @@ namespace API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int?>("InvestmentHorizonYears")
+                        .HasColumnType("int");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("MaritalStatus")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<decimal?>("MonthlyExpense")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("NetMonthlyIncome")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Occupation")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("OutstandingDebt")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
+
+                    b.Property<bool>("PopiaConsent")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("PopiaConsentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PrimaryGoal")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<decimal?>("PropertyValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ResidentialAddress")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<decimal?>("RetirmentSavings")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("RiskProfile")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("SourceOfFunds")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("TaxNumber")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");

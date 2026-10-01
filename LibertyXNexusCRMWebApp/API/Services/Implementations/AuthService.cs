@@ -75,6 +75,8 @@ namespace API.Services.Implementations
                 if (advisor is not null)
                 {
                     extraClaims.Add(new Claim("advisorId", advisor.AdvisorId.ToString()));
+                    extraClaims.Add(new Claim("firstName", advisor.FirstName ?? string.Empty));
+                    extraClaims.Add(new Claim("lastName", advisor.LastName ?? string.Empty));
                     domainUserId = advisor.AdvisorId;
                 }
                 userRole = UserRole.FinancialAdviser;
@@ -86,6 +88,8 @@ namespace API.Services.Implementations
                 if (client is not null)
                 {
                     extraClaims.Add(new Claim("clientId", client.ClientId.ToString()));
+                    extraClaims.Add(new Claim("firstName", client.FirstName ?? string.Empty));
+                    extraClaims.Add(new Claim("lastName", client.LastName ?? string.Empty));
                     domainUserId = client.ClientId;
                 }
                 userRole = UserRole.RegisteredClient;

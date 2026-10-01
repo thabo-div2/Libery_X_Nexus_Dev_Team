@@ -205,6 +205,7 @@ namespace API.Services.Implementations
             var dashboard = new AdvisorDashboardDto
             {
                 AdvisorFirstName = advisor.FirstName,
+                AdvisorLastName = advisor.LastName,
                 ActiveCases = activeCases,
                 WaitingOnClient = waitingOnClient,
                 AwaitingDocuments = awaitingDocuments,
@@ -231,7 +232,7 @@ namespace API.Services.Implementations
 
             var change = ((current - previous) / previous) * 100;
 
-            return $"{(change >= 0 ? "+" : "")}{change:D0}%";
+            return $"{(change >= 0 ? "+" : "")}{change:F0}%";
         }
     }
 

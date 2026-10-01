@@ -30,9 +30,7 @@ namespace API.Services.Implementations
             {
                 new(JwtRegisteredClaimNames.Sub, user.Id),
                 new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new("firstName", user.UserName ?? string.Empty),
-                new("lastName", user.NormalizedUserName ?? string.Empty)
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             claims.AddRange(roles.Select(r => new Claim("role", r)));

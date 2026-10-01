@@ -2,6 +2,7 @@
 using API.Repositories.Interfaces;
 using API.Services.Implementations;
 using API.Services.Interfaces;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,7 +51,11 @@ namespace API.Data
         /// <param name="connectionString"></param>
         /// <param name="containerName"></param>
         /// <returns></returns>
-        public static IServiceCollection AddBlobStorage(this IServiceCollection services, string connectionString, string? containerName = null)
+        public static IServiceCollection AddBlobStorage(
+            this IServiceCollection services,
+            string? connectionString,
+            string? accountUrl,
+            string? containerName = null)
         {
             services.Configure<BlobStorageOptions>(options =>
             {
@@ -58,7 +63,29 @@ namespace API.Data
                     options.ContainerName = containerName;
             });
 
-            services.AddSingleton(_ => new BlobServiceClient(connectionString));
+            services.AddSingleton(sp =>
+            {
+                if (!string.IsNullOrWhiteSpace(accountUrl))
+                {
+                    var credential = new DefaultAzureCredential();
+
+                    var blobServiceClient = new BlobServiceClient(
+                        new Uri(accountUrl),
+                        credential);
+
+                    return blobServiceClient;
+                }
+
+                if (!string.IsNullOrWhiteSpace(connectionString))
+                {
+                    return new BlobServiceClient(connectionString);
+                }
+
+                throw new InvalidOperationException(
+                    "Blob Storage is not configured. Set BlobStorage:AccountUrl for Azure managed identity " +
+                    "or ConnectionStrings:BlobStorage for local development.");
+            });
+
             services.AddSingleton<IBlobStorageService, BlobStorageService>();
 
             return services;

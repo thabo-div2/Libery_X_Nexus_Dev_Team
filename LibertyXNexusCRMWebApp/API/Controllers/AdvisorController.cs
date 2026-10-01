@@ -20,14 +20,13 @@ namespace API.Controllers
             _advisorService = advisorService;
         }
 
-        private int CurrentAdvisorId => int.TryParse(User.FindFirstValue("advisorId"), out var id)
-            ? id
-            : throw new InvalidOperationException("Token has no advisorId claim.");
-
         [HttpGet("dashboard")]
         public async Task<ActionResult<AdvisorDashboardDto>> GetDashboard()
         {
-            var advisorId = CurrentAdvisorId;
+            if (!int.TryParse(User.FindFirstValue("advisorId"), out var advisorId))
+            {
+                return Unauthorized(new { message = "The authenticated advisor is not linked to an advisor record." });
+            }
 
             var dashboard = await _advisorService.GetDashboardAsync(advisorId);
             return Ok(dashboard);

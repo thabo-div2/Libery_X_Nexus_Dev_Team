@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 @using frontend.Services
 @inject ClientService ClientDirectory
+@using Microsoft.AspNetCore.Components
 
 <PageTitle>Clients | Nexus</PageTitle>
 
@@ -103,9 +104,23 @@
     private string? LoadError;
     private bool IsLoading = true;
 
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "search")]
+    public string? SearchQuery { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        SearchText = SearchQuery ?? string.Empty;
         await Search();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (SearchQuery is not null && SearchQuery != SearchText)
+        {
+            SearchText = SearchQuery;
+            await Search();
+        }
     }
 
     private async Task Search()

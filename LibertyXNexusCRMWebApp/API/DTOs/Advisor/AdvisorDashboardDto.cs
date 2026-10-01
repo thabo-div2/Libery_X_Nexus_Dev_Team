@@ -3,6 +3,7 @@
     public class AdvisorDashboardDto
     {
         public string AdvisorFirstName { get; set; } = string.Empty;
+        public string AdvisorLastName { get; set; } = string.Empty;
         public int ActiveCases { get; set; }
         public int WaitingOnClient { get; set; }
         public int AwaitingDocuments { get; set; }

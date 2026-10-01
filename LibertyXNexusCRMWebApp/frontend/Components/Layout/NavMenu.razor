@@ -1,4 +1,9 @@
-﻿<div class="nav-menu">
+﻿@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject AuthService Auth
+@inject NavigationManager Navigation
+
+<div class="nav-menu">
 
     <!-- BRAND -->
     <a class="brand" href="@(IsClientView ? "/client" : "/advisor")">
@@ -110,14 +115,13 @@
             <span>@ProfileRole</span>
         </div>
 
-        <a href="/"
-           class="logout-button"
-           title="Sign out"
-           aria-label="Sign out">
-
+        <button type="button"
+                class="logout-button"
+                title="Sign out"
+                aria-label="Sign out"
+                @onclick="LogoutAsync">
             ↪
-
-        </a>
+        </button>
 
     </div>
 
@@ -127,7 +131,32 @@
     [Parameter]
     public bool IsClientView { get; set; }
 
-    private string ProfileName => IsClientView ? "My Account" : "Rudolf Bekker";
+    private string ProfileName =>
+        !string.IsNullOrWhiteSpace(CurrentUser.FirstName)
+            ? $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim()
+            : (IsClientView ? "My Account" : "Financial Advisor");
+
     private string ProfileRole => IsClientView ? "Client" : "Financial Advisor";
-    private string ProfileInitials => IsClientView ? "ME" : "RB";
+
+    private string ProfileInitials
+    {
+        get
+        {
+            var first = CurrentUser.FirstName?.FirstOrDefault();
+            var last = CurrentUser.LastName?.FirstOrDefault();
+            if (first.HasValue && last.HasValue) return $"{first}{last}".ToUpperInvariant();
+            return IsClientView ? "ME" : "FA";
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+    }
+
+    private async Task LogoutAsync()
+    {
+        await Auth.LogoutAsync();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
 }

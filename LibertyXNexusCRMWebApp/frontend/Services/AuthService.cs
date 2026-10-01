@@ -6,7 +6,7 @@ namespace frontend.Services
     public record LoginRequest(string Email, string Password);
     public record RegisterRequest(string InvitationToken, string FirstName, string LastName, string Email, string? Phone, string Password);
     public record ApiAuthResponse(string AccessToken, string TokenType, DateTime ExpiresAtUtc, string Email, string Role);
-    public record CurrentUserResponse(string? UserId, string? Email, string? AdvisorId, string? ClientId, List<string> Roles);
+    public record CurrentUserResponse(string? UserId, string? Email, string? AdvisorId, string? ClientId, string? FirstName, string? LastName, List<string> Roles);
     public record AuthResult(bool Success, string Message, string? Role, int? Id, string? FirstName, string? LastName, string? Email);
 
     public class AuthService
@@ -136,8 +136,8 @@ namespace frontend.Services
                             "Login successful.",
                             role,
                             domainId,
-                            null,
-                            null,
+                            currentUser.FirstName,
+                            currentUser.LastName,
                             currentUser.Email ?? authResponse.Email
                     );
             }

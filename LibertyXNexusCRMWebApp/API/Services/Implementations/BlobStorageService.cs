@@ -1,5 +1,7 @@
 ﻿using API.Services.Interfaces;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
 using Microsoft.Extensions.Options;
 
@@ -23,7 +25,7 @@ namespace API.Services.Implementations
 
         public async Task EnsureContainerExistsAsync()
         {
-            //await _containerClient.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.None);
+            await _containerClient.CreateIfNotExistsAsync(PublicAccessType.None);
         }
 
         public async Task<string> UploadAsync(Stream content, string fileName, string contentType)
@@ -49,16 +51,9 @@ namespace API.Services.Implementations
             return $"{_options.ContainerName}/{blobName}";
         }
 
-        public async Task<Uri> GetReadSasUriAsync(string blobReference, TimeSpan? validFor = null) 
+        public async Task<Uri> GetReadSasUriAsync(string blobReference, TimeSpan? validFor = null)
         {
             var blobClient = GetBlobClient(blobReference);
-
-            if(!blobClient.CanGenerateSasUri)
-            {
-                throw new InvalidOperationException("Blob client cannot generate SAS URIs. Ensure the storage " +
-                    "was configured with a shared key credential, not just a connection " +
-                    "string missing account key permissions.");
-            }
 
             var expiry = DateTimeOffset.UtcNow.Add(validFor ?? TimeSpan.FromMinutes(15));
 
@@ -72,16 +67,37 @@ namespace API.Services.Implementations
 
             sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
-            return blobClient.GenerateSasUri(sasBuilder);
+            if (blobClient.CanGenerateSasUri)
+            {
+                return blobClient.GenerateSasUri(sasBuilder);
+            }
+
+            // Azure App Service / managed identity path.
+            // Requires Storage Blob Data Contributor (or equivalent) on the storage account.
+            var now = DateTimeOffset.UtcNow;
+
+            var userDelegationKeyOptions = new BlobGetUserDelegationKeyOptions(expiry)
+            {
+                StartsOn = now.AddMinutes(-5)
+            };
+
+            var userDelegationKey = await _containerClient
+                .GetParentBlobServiceClient()
+                .GetUserDelegationKeyAsync(userDelegationKeyOptions);
+
+            return new UriBuilder(blobClient.Uri)
+            {
+                Query = sasBuilder.ToSasQueryParameters(userDelegationKey.Value, _containerClient.GetParentBlobServiceClient().AccountName).ToString()
+            }.Uri;
         }
 
-        public async Task DeleteAsync(string blobReference) 
+        public async Task DeleteAsync(string blobReference)
         {
             var blobClient = GetBlobClient(blobReference);
             await blobClient.DeleteIfExistsAsync();
         }
-        
-        public async Task<bool> ExistsAsync(string blobReference) 
+
+        public async Task<bool> ExistsAsync(string blobReference)
         {
             var blobClient = GetBlobClient(blobReference);
             var response = await blobClient.ExistsAsync();

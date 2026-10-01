@@ -60,6 +60,7 @@ namespace API.Data
                 Status = ClientStatus.Active,
                 RiskProfile = "Moderate",
                 AdvisorId = advisor.AdvisorId,
+                EmploymentStatus = "Employed",
                 CreatedAt = DateTime.UtcNow.AddMonths(-30)
             };
             var sipho = new Client
@@ -72,6 +73,7 @@ namespace API.Data
                 Status = ClientStatus.Active,
                 RiskProfile = "Conservative",
                 AdvisorId = advisor.AdvisorId,
+                EmploymentStatus = "Employed",
                 CreatedAt = DateTime.UtcNow.AddMonths(-18)
             };
             var naledi = new Client
@@ -84,6 +86,7 @@ namespace API.Data
                 Status = ClientStatus.Active,
                 RiskProfile = "Aggressive",
                 AdvisorId = advisor.AdvisorId,
+                EmploymentStatus = "Unemployed",
                 CreatedAt = DateTime.UtcNow.AddMonths(-8)
             };
             await context.Clients.AddRangeAsync(thandiwe, sipho, naledi);

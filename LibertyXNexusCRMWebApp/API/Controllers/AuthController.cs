@@ -55,6 +55,8 @@ namespace API.Controllers
                 email = User.FindFirstValue("email"),
                 advisorId = User.FindFirstValue("advisorId"),
                 clientId = User.FindFirstValue("clientId"),
+                firstName = User.FindFirstValue("firstName"),
+                lastName = User.FindFirstValue("lastName"),
                 roles = User.FindAll("role").Select(c => c.Value)
             });
         }
