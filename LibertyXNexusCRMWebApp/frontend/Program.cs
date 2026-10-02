@@ -49,6 +49,7 @@ public partial class Program
         builder.Services.AddScoped<DocumentService>();
         builder.Services.AddScoped<PolicyService>();
         builder.Services.AddScoped<FaqService>();
+        builder.Services.AddScoped<MarketInformationService>();
 
         builder.Services.AddSingleton<MessageNotifier>();
 

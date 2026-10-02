@@ -110,6 +110,8 @@ namespace API
                 builder.Configuration["BlobStorage:AccountUrl"],
                 builder.Configuration["BlobStorage:ContainerName"]);
             builder.Services.AddScoped<IDocumentService, DocumentService>();
+            builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
+            builder.Services.AddHttpClient<IMarketInformationService, MarketInformationService>();
             builder.Services.AddScoped<IFaqService, FaqService>();
 
 

@@ -3,6 +3,7 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
 @inject FaqService FaqStore
+@inject MarketInformationService MarketStore
 @inject MeetingService MeetingStore
 @inject ClientService ClientDirectory
 @inject CurrentUserService CurrentUser
@@ -207,6 +208,10 @@
                     How do I message my adviser?
                 </button>
 
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is happening in the global markets today?")'>
+                    What is happening in the markets today?
+                </button>
+
                 <button type="button" class="prompt-chip prompt-link" @onclick='() => SendQuickPrompt("Book a meeting with a client")'>
                     Book a meeting with a client
                 </button>
@@ -264,6 +269,11 @@
                     <div class="capability-item">
                         <span class="capability-dot"></span>
                         <span>Book or reschedule meetings</span>
+                    </div>
+
+                    <div class="capability-item">
+                        <span class="capability-dot"></span>
+                        <span>Provide current market and economic information</span>
                     </div>
 
                 </div>
@@ -387,6 +397,25 @@
             return;
         }
 
+        if (LooksLikeMarketQuestion(text))
+        {
+            var (marketInfo, marketError) = await MarketStore.GetAsync(text);
+
+            if (marketError is not null)
+            {
+                await TypeAssistantReply(marketError);
+                IsHandedToAdviser = false;
+                return;
+            }
+
+            if (marketInfo is not null)
+            {
+                await TypeAssistantReply(BuildMarketReply(marketInfo));
+                IsHandedToAdviser = false;
+                return;
+            }
+        }
+
         var (matches, error) = await FaqStore.SearchAsync(text);
 
         string replyText;
@@ -429,6 +458,82 @@
             StateHasChanged();
             await Task.Delay(TypingDelayMs);
         }
+    }
+
+    private static bool LooksLikeMarketQuestion(string text)
+    {
+        var lower = text.ToLowerInvariant();
+
+        var marketTerms = new[]
+        {
+            "market", "markets", "jse", "rand", "zar", "usd/zar", "exchange rate",
+            "stock", "stocks", "share price", "shares", "s&p", "nasdaq", "dow jones",
+            "interest rate", "interest rates", "inflation", "economy", "economic",
+            "economic news", "financial news", "monetary policy", "federal reserve", "fed",
+            "sarb", "oil price", "oil prices", "gold price", "gold prices", "commodity",
+            "commodities", "global finance", "financial markets", "recession"
+        };
+
+        return marketTerms.Any(term => lower.Contains(term));
+    }
+
+    private static string BuildMarketReply(MarketInformationResult result)
+    {
+        var lines = new List<string>
+        {
+            "Here is the latest market and financial-news information I could retrieve:",
+            string.Empty
+        };
+
+        if (!string.IsNullOrWhiteSpace(result.UsdZarRate))
+        {
+            lines.Add($"USD/ZAR: {result.UsdZarRate}");
+            lines.Add(string.Empty);
+        }
+
+        if (result.News.Count > 0)
+        {
+            lines.Add("Latest relevant financial news:");
+
+            foreach (var item in result.News.Take(5))
+            {
+                var published = FormatPublishedTime(item.PublishedAt);
+                var source = string.IsNullOrWhiteSpace(item.Source) ? "Unknown source" : item.Source;
+                var sentiment = string.IsNullOrWhiteSpace(item.Sentiment) ? string.Empty : $" ({item.Sentiment})";
+
+                lines.Add($"• {item.Title}");
+                lines.Add($"  Source: {source}{sentiment}{published}");
+                if (!string.IsNullOrWhiteSpace(item.Summary))
+                {
+                    lines.Add($"  {item.Summary}");
+                }
+                if (!string.IsNullOrWhiteSpace(item.Url))
+                {
+                    lines.Add($"  {item.Url}");
+                }
+            }
+        }
+
+        lines.Add(string.Empty);
+        lines.Add($"Information retrieved: {result.RetrievedAtUtc.ToLocalTime():d MMM yyyy, HH:mm} SAST.");
+        lines.Add("This is general market information, not personalised investment advice.");
+
+        return string.Join("", lines);
+    }
+
+    private static string FormatPublishedTime(string publishedAt)
+    {
+        if (DateTime.TryParseExact(
+                publishedAt,
+                "yyyyMMdd'T'HHmmss",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.AssumeUniversal,
+                out var parsed))
+        {
+            return $" · {parsed.ToLocalTime():d MMM yyyy, HH:mm} SAST";
+        }
+
+        return string.Empty;
     }
 
     private static bool LooksLikeMeetingRequest(string text)
