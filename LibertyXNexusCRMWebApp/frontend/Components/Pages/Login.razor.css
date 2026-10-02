@@ -198,6 +198,45 @@
 
 
 /* =========================
+   PASSWORD TOGGLE
+   ========================= */
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .password-input-wrapper input {
+        padding-right: 42px;
+    }
+
+.password-toggle-button {
+    position: absolute;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: #7c8a99;
+    cursor: pointer;
+}
+
+    .password-toggle-button:hover {
+        background: #f1f4f7;
+        color: #45566a;
+    }
+
+    .password-toggle-button svg {
+        display: block;
+    }
+
+
+/* =========================
    FORM OPTIONS
    ========================= */
 

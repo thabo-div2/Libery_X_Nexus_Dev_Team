@@ -198,5 +198,63 @@ namespace API.Services.Implementations
                 }
             };
         }
+
+        public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null || !user.IsActive)
+            {
+                // Deliberately distinguishable from the "exists" case: the
+                // client explicitly asked to tell the user whether the email
+                // is on file, rather than returning a generic message either
+                // way (the more conservative, information-hiding approach).
+                return new ForgotPasswordResponse
+                {
+                    Exists = false,
+                    ResetToken = null
+                };
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return new ForgotPasswordResponse
+            {
+                Exists = true,
+                ResetToken = resetToken
+            };
+        }
+
+        public async Task<ResetPasswordResult> ResetPasswordAsync(ResetPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null || !user.IsActive)
+            {
+                return new ResetPasswordResult
+                {
+                    Success = false,
+                    Error = "No account was found for that email."
+                };
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, request.ResetToken, request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return new ResetPasswordResult
+                {
+                    Success = false,
+                    Error = string.Join("; ", result.Errors.Select(e => e.Description))
+                };
+            }
+
+            // A successful reset clears any lockout, same as a successful login would.
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            _logger.LogInformation("Password reset completed for {UserId}", user.Id);
+
+            return new ResetPasswordResult { Success = true };
+        }
     }
 }
