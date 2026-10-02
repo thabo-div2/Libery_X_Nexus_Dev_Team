@@ -97,7 +97,8 @@ namespace API.Tests.Services
                 LastName = "Doe",
                 Email = "new@nexus.test",
                 RiskProfile = "Moderate",
-                AdvisorId = 3
+                AdvisorId = 3,
+                PopiaConsent = true
             };
 
             var result = await _sut.CreateAsync(request);

@@ -16,15 +16,24 @@ namespace API.Services.Implementations
         private readonly IInvitationRepository _invitationRepository;
         private readonly IAdvisorRepository _advisorRepository;
         private readonly IAuditLogRepository _auditLogRepository;
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<InvitationService> _logger;
 
         public InvitationService(
             IInvitationRepository invitationRepository,
             IAdvisorRepository advisorRepository,
-            IAuditLogRepository auditLogRepository)
+            IAuditLogRepository auditLogRepository,
+            IEmailService emailService,
+            IConfiguration configuration,
+            ILogger<InvitationService> logger)
         {
             _invitationRepository = invitationRepository;
             _advisorRepository = advisorRepository;
             _auditLogRepository = auditLogRepository;
+            _emailService = emailService;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<InvitationResponse> CreateAsync(int advisorId, string email)
@@ -34,10 +43,18 @@ namespace API.Services.Implementations
                 return new InvitationResponse { Success = false, Message = "An email address is required." };
             }
 
+            email = email.Trim();
+
+            var advisor = await _advisorRepository.GetByIdAsync(advisorId);
+            if (advisor is null)
+            {
+                return new InvitationResponse { Success = false, Message = "The advisor could not be found." };
+            }
+
             var invitation = new Invitation
             {
                 AdvisorId = advisorId,
-                Email = email.Trim(),
+                Email = email,
                 Token = GenerateToken(),
                 Status = InvitationStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
@@ -53,10 +70,51 @@ namespace API.Services.Implementations
                 entityAffected: "Invitation",
                 details: $"Advisor invited {invitation.Email}.");
 
+            var frontendBaseUrl = _configuration["Frontend:BaseUrl"];
+            if (string.IsNullOrWhiteSpace(frontendBaseUrl))
+            {
+                return new InvitationResponse
+                {
+                    Success = true,
+                    Message = "Invitation created, but the frontend URL is not configured. The registration link could not be emailed.",
+                    Token = invitation.Token,
+                    ExpiresAt = invitation.ExpiresAt
+                };
+            }
+
+            var invitationLink = $"{frontendBaseUrl.TrimEnd('/')}/register?token={Uri.EscapeDataString(invitation.Token)}";
+
+            try
+            {
+                await _emailService.SendInvitationAsync(
+                    invitation.Email,
+                    advisor.FullName,
+                    invitationLink,
+                    invitation.ExpiresAt);
+            }
+            catch (Exception ex)
+            {
+                // Keep the invitation valid so the advisor can still copy/use the
+                // generated link if email delivery is temporarily unavailable.
+                _logger.LogError(
+                    ex,
+                    "Invitation {InvitationId} was created but could not be emailed to {Email}.",
+                    invitation.InvitationId,
+                    invitation.Email);
+
+                return new InvitationResponse
+                {
+                    Success = true,
+                    Message = "Invitation created, but the email could not be sent. You can use the generated registration link instead.",
+                    Token = invitation.Token,
+                    ExpiresAt = invitation.ExpiresAt
+                };
+            }
+
             return new InvitationResponse
             {
                 Success = true,
-                Message = "Invitation created.",
+                Message = "Invitation created and sent by email.",
                 Token = invitation.Token,
                 ExpiresAt = invitation.ExpiresAt
             };

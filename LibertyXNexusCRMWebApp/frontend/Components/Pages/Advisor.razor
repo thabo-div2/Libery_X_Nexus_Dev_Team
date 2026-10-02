@@ -19,8 +19,8 @@
                 <div class="header-greeting">
                     <h1>
                         Good afternoon@(string.IsNullOrWhiteSpace(AdvisorFirstName)
-                                                                    ? "!"
-                                                                    : $", {AdvisorFirstName}!")
+                                                                                            ? "!"
+                                                                                            : $", {AdvisorFirstName}!")
                     </h1>
 
                     <p>
@@ -75,7 +75,7 @@
                 <section class="invite-panel">
                     <div class="invite-panel-card">
                         <h3>Invite a client</h3>
-                        <p>Generate a registration link and send it to your client. They fill in their own details and land straight on their dashboard.</p>
+                        <p>Enter your client's email address and Nexus will send them a registration link.</p>
 
                         <div class="invite-panel-row">
                             <input type="email"
@@ -83,13 +83,18 @@
                                    placeholder="client@example.co.za" />
 
                             <button type="button" class="new-client-button" @onclick="GenerateInviteLink">
-                                Generate link
+                                Send invitation
                             </button>
                         </div>
 
                         @if (!string.IsNullOrEmpty(InviteLink))
                         {
                             <input class="invite-link-output" readonly value="@InviteLink" onfocus="this.select()" />
+                        }
+
+                        @if (!string.IsNullOrEmpty(InviteMessage))
+                        {
+                            <p class="invite-success">@InviteMessage</p>
                         }
 
                         @if (!string.IsNullOrEmpty(InviteError))
@@ -436,17 +441,20 @@
     private string InviteEmail = string.Empty;
     private string? InviteLink;
     private string? InviteError;
+    private string? InviteMessage;
 
     private void ToggleInvitePanel()
     {
         ShowInvitePanel = !ShowInvitePanel;
         InviteLink = null;
         InviteError = null;
+        InviteMessage = null;
     }
 
     private async Task GenerateInviteLink()
     {
         InviteError = null;
+        InviteMessage = null;
         InviteLink = null;
 
         if (string.IsNullOrWhiteSpace(InviteEmail))
@@ -463,6 +471,7 @@
         }
 
         InviteLink = Invite.BuildLink(result.Token);
+        InviteMessage = result.Message;
     }
 
     [Inject]

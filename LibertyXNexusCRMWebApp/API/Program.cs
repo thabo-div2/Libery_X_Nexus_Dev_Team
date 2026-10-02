@@ -100,6 +100,10 @@ namespace API
             builder.Services.AddScoped<IMeetingService, MeetingService>();
             builder.Services.AddScoped<IPolicyService, PolicyService>();
             builder.Services.AddScoped<IInvitationService, InvitationService>();
+            builder.Services.AddOptions<SmtpEmailOptions>()
+                .Bind(builder.Configuration.GetSection(SmtpEmailOptions.SectionName))
+                .ValidateOnStart();
+            builder.Services.AddScoped<IEmailService, SmtpEmailService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddBlobStorage(
                 builder.Configuration.GetConnectionString("BlobStorage"),
