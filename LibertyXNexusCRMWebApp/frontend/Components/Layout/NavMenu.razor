@@ -1,5 +1,6 @@
 ﻿@using frontend.Services
 @inject CurrentUserService CurrentUser
+@inject NavigationManager NavigationManager
 
 <div class="nav-menu">
 
@@ -180,5 +181,11 @@
     protected override async Task OnInitializedAsync()
     {
         await CurrentUser.EnsureRestoredAsync();
+    }
+
+    private async Task LogoutAsync()
+    {
+        await CurrentUser.SignOutAsync();
+        NavigationManager.NavigateTo("/");
     }
 }

@@ -4,7 +4,7 @@ namespace API.DTOs.Clients
 {
     public class CreateClientRequest
     {
-        [MaxLength(100)]
+        [Required, MaxLength(100)]
         public string? IdentityProviderSubjectId { get; set; }
 
         [Required, MaxLength(100)]
@@ -42,7 +42,7 @@ namespace API.DTOs.Clients
 
         public decimal? GrossMonthlyIncome { get; set; }
         public decimal? NetMonthlyIncome { get; set; }
-        public decimal? MonthlyExpenses { get; set; }
+        public decimal? MonthlyExpense { get; set; }
 
         [MaxLength(60)]
         public string? SourceOfFunds { get; set; }
@@ -52,7 +52,7 @@ namespace API.DTOs.Clients
 
         public decimal? PropertyValue { get; set; }
         public decimal? ExistingInvestments { get; set; }
-        public decimal? RetirementSavings { get; set; }
+        public decimal? RetirmentSavings { get; set; }
         public decimal? OutstandingDebt { get; set; }
 
         [MaxLength(60)]

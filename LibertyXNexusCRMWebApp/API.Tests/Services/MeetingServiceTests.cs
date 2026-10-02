@@ -1,10 +1,11 @@
 using API.Repositories.Interfaces;
 using API.Services.Implementations;
 using Moq;
-using Shared.DTOs.Meetings;
+using API.DTOs.Clients;
 using Shared.Models;
 using Shared.Models.Enums;
 using Xunit;
+using API.DTOs.Meetings;
 
 namespace API.Tests.Services
 {

@@ -1,7 +1,7 @@
 using API.Repositories.Interfaces;
 using API.Services.Implementations;
 using Moq;
-using Shared.DTOs.Policies;
+using API.DTOs.Policies;
 using Shared.Models;
 using Shared.Models.Enums;
 using Xunit;
@@ -12,11 +12,12 @@ namespace API.Tests.Services
     {
         private readonly Mock<IPolicyRepository> _policyRepository = new();
         private readonly Mock<IClientRepository> _clientRepository = new();
+        private readonly Mock<ICaseRepository> _caseRepository = new();
         private readonly PolicyService _sut;
 
         public PolicyServiceTests()
         {
-            _sut = new PolicyService(_policyRepository.Object, _clientRepository.Object);
+            _sut = new PolicyService(_policyRepository.Object, _clientRepository.Object, _caseRepository.Object);
         }
 
         [Fact]

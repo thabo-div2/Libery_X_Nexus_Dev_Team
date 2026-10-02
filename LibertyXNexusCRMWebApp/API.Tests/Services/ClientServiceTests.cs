@@ -1,7 +1,7 @@
 using API.Repositories.Interfaces;
 using API.Services.Implementations;
+using API.DTOs.Clients;
 using Moq;
-using Shared.DTOs.Clients;
 using Shared.Models;
 using Shared.Models.Enums;
 using Xunit;
