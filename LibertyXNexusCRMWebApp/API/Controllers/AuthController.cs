@@ -45,6 +45,28 @@ namespace API.Controllers
             return Ok(result.Response);
         }
 
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var result = await _authService.ForgotPasswordAsync(request);
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var result = await _authService.ResetPasswordAsync(request);
+
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.Error });
+            }
+
+            return Ok();
+        }
+
         // Shows what API sees in token
         [HttpGet("me")]
         public ActionResult Me()

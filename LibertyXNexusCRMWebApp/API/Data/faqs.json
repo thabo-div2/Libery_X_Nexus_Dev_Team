@@ -1,0 +1,650 @@
+[
+  {
+    "Id": 1,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "How do I create my Nexus account?",
+    "Answer": "You need an invite link from your financial adviser — Nexus doesn't support open self-registration. Click the link, fill in your details, and set a password to activate your account.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 2,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "What is FICA and why do you need my ID and proof of address?",
+    "Answer": "FICA (the Financial Intelligence Centre Act) requires financial services providers to verify who their clients are to prevent money laundering and fraud. Your ID and proof of address confirm your identity and residence.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 3,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "What documents do I need to provide when I sign up?",
+    "Answer": "Typically a certified copy of your ID or passport, a recent proof of residential address (no older than 3 months), and your tax number if applicable. Your adviser will confirm exactly what's needed.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 4,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "How long does onboarding usually take?",
+    "Answer": "Most onboarding is completed within a few business days once all required documents are submitted and verified, though it can take longer if documents need to be resubmitted.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 5,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "What happens after I submit my documents?",
+    "Answer": "Your adviser reviews them for completeness and compliance and will contact you if anything further is needed. Once approved, your profile is marked active.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 6,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "Can I update my personal details after registering?",
+    "Answer": "Yes — message your adviser through the Messages tab to update details like your phone number or address, since changes to verified information go through them.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 7,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "What is a risk profile and why do I need one?",
+    "Answer": "A risk profile reflects how much investment risk you're comfortable with and able to take on, based on your goals, timeline, and financial situation. It helps your adviser recommend suitable products.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 8,
+    "Section": 1,
+    "Category": "Onboarding & Getting Started",
+    "Question": "How is my risk profile determined?",
+    "Answer": "It's usually built from a short questionnaire covering your goals, time horizon, income stability, and comfort with market ups and downs, discussed together with your adviser.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 9,
+    "Section": 1,
+    "Category": "Documents & Security",
+    "Question": "How do I upload a document?",
+    "Answer": "On your Client Dashboard, go to the \"Outstanding documents\" section and use the \"Upload a document\" button to select a file from your device.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 10,
+    "Section": 1,
+    "Category": "Documents & Security",
+    "Question": "What file types can I upload?",
+    "Answer": "Nexus currently accepts PDF, JPG, JPEG, PNG, DOC, and DOCX files.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 11,
+    "Section": 1,
+    "Category": "Documents & Security",
+    "Question": "How do I know if my document was received or approved?",
+    "Answer": "Your document appears in your dashboard's document list with a status tag (Required, In Review, or Received) that updates once your adviser reviews it.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 12,
+    "Section": 1,
+    "Category": "Documents & Security",
+    "Question": "Why do you need a certified copy of my ID?",
+    "Answer": "A certified copy has been verified as a true copy of the original by an authorised person, which is a FICA requirement to confirm your identity can't be forged.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 13,
+    "Section": 1,
+    "Category": "Documents & Security",
+    "Question": "How long do you keep my documents on file?",
+    "Answer": "Documents are retained for as long as required by financial services record-keeping regulations, typically several years after your relationship with the firm ends. Ask your adviser for the exact period.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 14,
+    "Section": 1,
+    "Category": "Documents & Security",
+    "Question": "Is my personal information secure with Nexus?",
+    "Answer": "Yes — your login is password-protected, your session data is encrypted, and only your assigned adviser can view your profile and documents.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 15,
+    "Section": 1,
+    "Category": "Documents & Security",
+    "Question": "What is POPIA and how does it apply to my data?",
+    "Answer": "POPIA (the Protection of Personal Information Act) is South Africa's data privacy law. It means Nexus can only use your information for agreed purposes, and you have rights to access, correct, or request deletion of your data.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 16,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "How are advisor fees calculated?",
+    "Answer": "Fee structures vary by product and service level, so this is best discussed directly with your adviser — I'll pass this question along to them.",
+    "RequiresHandoff": true
+  },
+  {
+    "Id": 17,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "What's the difference between the products you offer?",
+    "Answer": "Product suitability depends on your goals and risk profile, so I'll connect you with your adviser to go through the options that fit your situation.",
+    "RequiresHandoff": true
+  },
+  {
+    "Id": 18,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "How often will my portfolio or policy be reviewed?",
+    "Answer": "Reviews are typically scheduled annually, or sooner if there's a major change in your circumstances. Your adviser can confirm your specific schedule.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 19,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "What happens if I miss a premium payment?",
+    "Answer": "Most policies have a grace period before cover lapses. Contact your adviser as soon as possible if you're going to miss a payment.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 20,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "Can I cancel or change my policy?",
+    "Answer": "Yes, but cancelling or changing cover can have real consequences, like losing accumulated benefits — please speak to your adviser before making changes.",
+    "RequiresHandoff": true
+  },
+  {
+    "Id": 21,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "How do I make a claim?",
+    "Answer": "Message your adviser to start a claim — they'll guide you through the required documents and forms for your specific policy type.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 22,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "What is a beneficiary and how do I nominate one?",
+    "Answer": "A beneficiary is the person or entity who receives your policy's proceeds if a claim is paid out. Message your adviser with their full details to nominate or update one.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 23,
+    "Section": 1,
+    "Category": "Fees, Products & Policies",
+    "Question": "Will I be notified about changes affecting my investments?",
+    "Answer": "Yes, your adviser will reach out about material changes, and you can always message them directly with questions about your portfolio.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 24,
+    "Section": 1,
+    "Category": "Meetings & Communication",
+    "Question": "How do I book a meeting with my adviser?",
+    "Answer": "Go to your Messages tab and click \"Book meeting,\" then choose a date and time and add any notes about what you'd like to discuss.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 25,
+    "Section": 1,
+    "Category": "Meetings & Communication",
+    "Question": "Can I reschedule or cancel a meeting?",
+    "Answer": "Message your adviser directly to reschedule or cancel — just let them know as early as possible.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 26,
+    "Section": 1,
+    "Category": "Meetings & Communication",
+    "Question": "How do I message my adviser?",
+    "Answer": "Open the Messages tab from your dashboard — your assigned adviser is already loaded there, so you can type and send a message right away.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 27,
+    "Section": 1,
+    "Category": "Meetings & Communication",
+    "Question": "How long does it usually take my adviser to respond?",
+    "Answer": "Response times vary, but advisers typically aim to reply within one business day.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 28,
+    "Section": 1,
+    "Category": "Meetings & Communication",
+    "Question": "Can I have a virtual meeting instead of in-person?",
+    "Answer": "Yes — mention your preference in the notes when booking, or message your adviser to confirm the format.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 29,
+    "Section": 1,
+    "Category": "Meetings & Communication",
+    "Question": "What should I bring to my first meeting?",
+    "Answer": "Your ID, proof of address, and any documents about your current policies, income, or financial goals will help your adviser get started.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 30,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "Where can I see who my assigned adviser is?",
+    "Answer": "Your assigned adviser's name and initials are shown on the \"Your adviser\" card on your Client Dashboard, and at the top of your Messages tab.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 31,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "How do I check the status of my application?",
+    "Answer": "This isn't tracked automatically in the app yet — ask your adviser directly for an update on where your application stands.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 32,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "Where do I find my messages?",
+    "Answer": "Click the Messages tab in your dashboard's navigation menu.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 33,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "How do I request a meeting through the app?",
+    "Answer": "In the Messages tab, click \"Book meeting,\" pick a date and time, add optional notes, and click \"Request meeting.\"",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 34,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "Do I need to wait for approval after requesting a meeting?",
+    "Answer": "Yes — your request shows as \"Waiting for your adviser to confirm\" until they accept or deny it.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 35,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "How will I know if my adviser accepted or denied my meeting request?",
+    "Answer": "The meeting card in your Messages tab updates automatically to show \"Meeting confirmed\" or \"Meeting request denied\" — no need to refresh the page.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 36,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "Where can I see my upcoming confirmed meetings?",
+    "Answer": "Confirmed meetings appear as a card in your Messages tab; a dedicated view of all upcoming meetings for clients is planned but not yet built.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 37,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "Can I view my policy or portfolio details in the app?",
+    "Answer": "Not yet — this is on the roadmap. For now, ask your adviser for details on your current policies or portfolio.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 38,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "What do I do if I forgot my password?",
+    "Answer": "There's currently no self-service password reset — message your adviser to have your account access restored.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 39,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "Is my session secure if I close the tab without logging out?",
+    "Answer": "Your login session is tied to your browser and clears over time, but it's best practice to log out when done, especially on a shared device.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 40,
+    "Section": 1,
+    "Category": "App How-Tos & Troubleshooting",
+    "Question": "Who do I contact if something isn't working in the app?",
+    "Answer": "Message your adviser directly, and they can escalate technical issues on your behalf.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 41,
+    "Section": 2,
+    "Category": "Life Events",
+    "Question": "I'm getting married — do I need to update my policy or beneficiaries?",
+    "Answer": "Yes — message your adviser to update your beneficiary nominations and review your cover, since marriage often changes who depends on you financially.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 42,
+    "Section": 2,
+    "Category": "Life Events",
+    "Question": "I just had a baby — what should I add or change?",
+    "Answer": "Talk to your adviser about dependant or education savings, reviewing your life cover, and updating your beneficiary nominations.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 43,
+    "Section": 2,
+    "Category": "Life Events",
+    "Question": "I'm buying a house — does this affect my financial plan?",
+    "Answer": "Yes — a bond changes your monthly budget and usually raises the case for life and disability cover to protect that debt; your adviser can reassess your plan.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 44,
+    "Section": 2,
+    "Category": "Life Events",
+    "Question": "I'm changing jobs — what happens to my retirement annuity?",
+    "Answer": "Your RA stays yours and keeps growing no matter who you work for. If you also have a pension or provident fund with your old employer, ask your adviser about preserving or transferring it tax-efficiently.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 45,
+    "Section": 2,
+    "Category": "Life Events",
+    "Question": "I'm nearing retirement — what should I be doing now?",
+    "Answer": "Review whether your savings will support the income you'll need, and talk to your adviser about converting your savings into a sustainable retirement income shortly before you retire.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 46,
+    "Section": 2,
+    "Category": "Life Events",
+    "Question": "Someone named on my policy passed away — what do I do?",
+    "Answer": "Contact your adviser as soon as possible with a certified death certificate — they'll guide you through the claim and any beneficiary updates needed.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 47,
+    "Section": 2,
+    "Category": "Investments & Performance",
+    "Question": "Why did my investment value go down this month?",
+    "Answer": "Markets move up and down, so short-term dips in unit trusts and similar investments are normal. Your adviser can explain what's driving it and whether it changes your long-term outlook.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 48,
+    "Section": 2,
+    "Category": "Investments & Performance",
+    "Question": "What's the difference between a unit trust and a retirement annuity?",
+    "Answer": "A unit trust is flexible and accessible anytime; a retirement annuity is a tax-advantaged product locked in until retirement age (55) and built specifically for retirement savings.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 49,
+    "Section": 2,
+    "Category": "Investments & Performance",
+    "Question": "How is investment risk measured?",
+    "Answer": "Mainly by volatility — how much returns swing — and by the mix of underlying assets (equities, bonds, cash); more equity exposure usually means higher potential returns and higher risk.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 50,
+    "Section": 2,
+    "Category": "Investments & Performance",
+    "Question": "What does \"diversification\" mean?",
+    "Answer": "Spreading your money across different asset classes, sectors, or regions so a poor performer in one area doesn't sink your whole portfolio.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 51,
+    "Section": 2,
+    "Category": "Investments & Performance",
+    "Question": "How often should I check my investment performance?",
+    "Answer": "Every few months, or at your scheduled adviser meetings, is usually enough — checking too often can lead to reacting to normal short-term noise.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 52,
+    "Section": 2,
+    "Category": "Investments & Performance",
+    "Question": "What's the difference between active and passive investing?",
+    "Answer": "Active investing means a manager picks investments to try to beat the market (higher fees); passive investing tracks a market index as closely as possible (lower fees).",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 53,
+    "Section": 2,
+    "Category": "Insurance-Specific",
+    "Question": "What's the difference between life cover and disability cover?",
+    "Answer": "Life cover pays a lump sum to your beneficiaries if you die; disability cover pays out (as a lump sum or income) if you become unable to work due to injury or illness.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 54,
+    "Section": 2,
+    "Category": "Insurance-Specific",
+    "Question": "Am I covered if I'm diagnosed with a critical illness?",
+    "Answer": "Only if your policy includes a critical illness (dread disease) benefit — check your policy schedule or ask your adviser which conditions are covered.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 55,
+    "Section": 2,
+    "Category": "Insurance-Specific",
+    "Question": "Does my cover reduce as I get older?",
+    "Answer": "It depends on the policy type — level cover stays the same, while some policies (like certain funeral or decreasing-term cover) reduce over time. Your adviser can confirm which applies to you.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 56,
+    "Section": 2,
+    "Category": "Insurance-Specific",
+    "Question": "What's not covered under my policy (exclusions)?",
+    "Answer": "Common exclusions include self-inflicted harm, certain pre-existing or undeclared conditions, and high-risk activities not disclosed upfront. Your policy document lists your specific exclusions.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 57,
+    "Section": 2,
+    "Category": "Insurance-Specific",
+    "Question": "How long does a claim typically take to pay out?",
+    "Answer": "It varies by insurer and claim type, but straightforward claims with complete documentation are usually processed within a few weeks. Your adviser can track the status for you.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 58,
+    "Section": 2,
+    "Category": "Insurance-Specific",
+    "Question": "Do I need to redo my medical underwriting if I increase my cover?",
+    "Answer": "Often yes, for the increased portion — insurers may ask for updated health information before approving the extra cover. Your adviser can confirm what's needed.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 59,
+    "Section": 2,
+    "Category": "Retirement & Tax",
+    "Question": "What's the difference between an RA, a pension fund, and a provident fund?",
+    "Answer": "An RA is one you set up yourself; pension and provident funds are employer-sponsored. Rules on cash withdrawal at retirement have changed and now largely align across all three — ask your adviser what applies to your specific fund.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 60,
+    "Section": 2,
+    "Category": "Retirement & Tax",
+    "Question": "How much can I contribute to a tax-free savings account each year?",
+    "Answer": "Roughly R36,000 per tax year, with a R500,000 lifetime limit. These limits can change, so confirm the current figures with your adviser or SARS.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 61,
+    "Section": 2,
+    "Category": "Retirement & Tax",
+    "Question": "What tax benefits do I get from retirement contributions?",
+    "Answer": "Contributions to RAs, pension, and provident funds are tax-deductible up to a set percentage of your taxable income (currently 27.5%, capped annually), reducing what you're taxed on each year.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 62,
+    "Section": 2,
+    "Category": "Retirement & Tax",
+    "Question": "Can I access my retirement savings before retirement age?",
+    "Answer": "Generally not for an RA, except in limited cases like formal emigration or a very small fund value. Pension and provident funds may allow withdrawal on resignation, subject to tax. Ask your adviser about your situation.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 63,
+    "Section": 2,
+    "Category": "Retirement & Tax",
+    "Question": "What happens to my RA if I emigrate?",
+    "Answer": "If you formally emigrate, you may be able to access your RA early, subject to South African Reserve Bank rules and tax. Your adviser can guide you through the current process.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 64,
+    "Section": 2,
+    "Category": "Account, Security & Privacy",
+    "Question": "How do I enable two-factor authentication?",
+    "Answer": "Two-factor authentication isn't built into the app yet — for now, use a strong, unique password. Let your adviser know if you'd like to see this added.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 65,
+    "Section": 2,
+    "Category": "Account, Security & Privacy",
+    "Question": "Can I request a copy of all the personal data you hold on me? (POPIA access request)",
+    "Answer": "Yes — under POPIA you can request a copy of your personal data at any time. Contact your adviser or the firm's information officer to submit the request.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 66,
+    "Section": 2,
+    "Category": "Account, Security & Privacy",
+    "Question": "How do I opt out of marketing communications?",
+    "Answer": "Message your adviser or the firm directly — under POPIA you can object to direct marketing at any time.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 67,
+    "Section": 2,
+    "Category": "Account, Security & Privacy",
+    "Question": "Can I access my account from my phone?",
+    "Answer": "Yes — you can log in through your phone's browser using the same details. A dedicated mobile app isn't available yet.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 68,
+    "Section": 2,
+    "Category": "Account, Security & Privacy",
+    "Question": "What happens to my data if I close my account?",
+    "Answer": "Your data is kept only as long as legally required (for example, FICA and tax record-keeping rules), then deleted or anonymised in line with the firm's data retention policy. Ask your adviser for specifics.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 69,
+    "Section": 2,
+    "Category": "Account, Security & Privacy",
+    "Question": "Who else at the firm can see my information?",
+    "Answer": "Only authorised staff who need it to service your account, such as your adviser and relevant compliance or admin staff. Your information isn't shared with third parties without your consent, in line with POPIA.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 70,
+    "Section": 2,
+    "Category": "Complaints, Compliance & Switching Advisers",
+    "Question": "What do I do if I'm unhappy with advice I've received?",
+    "Answer": "Raise it with your adviser first — most concerns can be sorted out directly. If it isn't resolved, you can escalate it through the firm's formal complaints process.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 71,
+    "Section": 2,
+    "Category": "Complaints, Compliance & Switching Advisers",
+    "Question": "How do I lodge a formal complaint?",
+    "Answer": "Submit it in writing to the firm, via your adviser or the firm's compliance contact — they're required to acknowledge and investigate it within set timeframes.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 72,
+    "Section": 2,
+    "Category": "Complaints, Compliance & Switching Advisers",
+    "Question": "What is the FAIS Ombud and when would I contact them?",
+    "Answer": "The FAIS Ombud is an independent, free body that resolves disputes about financial advice. Contact them if a complaint isn't resolved to your satisfaction by the firm.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 73,
+    "Section": 2,
+    "Category": "Complaints, Compliance & Switching Advisers",
+    "Question": "Can I switch to a different adviser within the firm?",
+    "Answer": "Yes — message the firm to request a different adviser. Your account and history stay with the firm regardless of who's assigned.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 74,
+    "Section": 2,
+    "Category": "Complaints, Compliance & Switching Advisers",
+    "Question": "Is my adviser regulated, and how can I verify their licence?",
+    "Answer": "Yes — advisers must be licensed under FAIS. You can verify any adviser's registration on the FSCA's website using their name or FSP number.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 75,
+    "Section": 2,
+    "Category": "Billing & Payments",
+    "Question": "How do I change my debit order date or bank details?",
+    "Answer": "Message your adviser with your new details or preferred date, and they'll update it or point you to the right form.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 76,
+    "Section": 2,
+    "Category": "Billing & Payments",
+    "Question": "What happens if my payment fails?",
+    "Answer": "Most insurers allow a grace period before cover lapses. Contact your adviser right away to arrange payment and avoid a gap in cover.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 77,
+    "Section": 2,
+    "Category": "Billing & Payments",
+    "Question": "Can I pay annually instead of monthly?",
+    "Answer": "Many policies offer an annual option, often at a discount. Ask your adviser if it's available for your specific policy.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 78,
+    "Section": 2,
+    "Category": "Billing & Payments",
+    "Question": "Will I get a tax certificate for my contributions?",
+    "Answer": "Yes — a tax certificate is issued each year for qualifying contributions, which you can use for your tax return. Your adviser or the insurer can send you a copy.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 79,
+    "Section": 2,
+    "Category": "General / About the Firm",
+    "Question": "What happens if my adviser leaves the company?",
+    "Answer": "Your policies and account stay with the firm, and you'll be reassigned to another adviser who picks up where things left off.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 80,
+    "Section": 2,
+    "Category": "General / About the Firm",
+    "Question": "Can I refer a friend or family member?",
+    "Answer": "Yes — mention it to your adviser, who can help set up an introduction. Ask what, if any, referral incentives apply.",
+    "RequiresHandoff": false
+  },
+  {
+    "Id": 81,
+    "Section": 2,
+    "Category": "General / About the Firm",
+    "Question": "What are your office hours / how do I contact you outside the app?",
+    "Answer": "Reach out to your adviser directly by phone or email for anything urgent — check your welcome documents or the firm's website for standard office hours.",
+    "RequiresHandoff": false
+  }
+]

@@ -8,6 +8,11 @@ namespace frontend.Services
     public record ApiAuthResponse(string AccessToken, string TokenType, DateTime ExpiresAtUtc, string Email, string Role);
     public record CurrentUserResponse(string? UserId, string? Email, string? AdvisorId, string? ClientId, string? FirstName, string? LastName, List<string> Roles);
     public record AuthResult(bool Success, string Message, string? Role, int? Id, string? FirstName, string? LastName, string? Email);
+    public record ForgotPasswordApiRequest(string Email);
+    public record ForgotPasswordApiResponse(bool Exists, string? ResetToken);
+    public record ResetPasswordApiRequest(string Email, string ResetToken, string NewPassword);
+    public record ForgotPasswordResult(bool Exists, string? ResetToken, string? Error);
+    public record ResetPasswordResult(bool Success, string? Error);
 
     public class AuthService
     {
@@ -236,6 +241,61 @@ namespace frontend.Services
             catch
             {
                 return null;
+            }
+        }
+
+        public async Task<ForgotPasswordResult> ForgotPasswordAsync(string email)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("auth/forgot-password", new ForgotPasswordApiRequest(email));
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorMessage = await ReadErrorMessageAsync(response);
+                    return new ForgotPasswordResult(false, null, errorMessage);
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<ForgotPasswordApiResponse>();
+
+                if (result is null)
+                {
+                    return new ForgotPasswordResult(false, null, "The server did not return a valid response.");
+                }
+
+                return new ForgotPasswordResult(result.Exists, result.ResetToken, null);
+            }
+            catch (HttpRequestException)
+            {
+                return new ForgotPasswordResult(false, null, "Can't reach the server. Make sure the API project is running.");
+            }
+            catch (Exception ex)
+            {
+                return new ForgotPasswordResult(false, null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        public async Task<ResetPasswordResult> ResetPasswordAsync(string email, string resetToken, string newPassword)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("auth/reset-password", new ResetPasswordApiRequest(email, resetToken, newPassword));
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorMessage = await ReadErrorMessageAsync(response);
+                    return new ResetPasswordResult(false, errorMessage);
+                }
+
+                return new ResetPasswordResult(true, null);
+            }
+            catch (HttpRequestException)
+            {
+                return new ResetPasswordResult(false, "Can't reach the server. Make sure the API project is running.");
+            }
+            catch (Exception ex)
+            {
+                return new ResetPasswordResult(false, $"Something went wrong: {ex.Message}");
             }
         }
 

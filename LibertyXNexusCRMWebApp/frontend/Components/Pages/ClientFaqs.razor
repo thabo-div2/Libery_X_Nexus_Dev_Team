@@ -1,0 +1,174 @@
+@page "/client-faqs"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject FaqService FaqStore
+@inject CurrentUserService CurrentUser
+
+<PageTitle>FAQs | Nexus</PageTitle>
+
+<ErrorBoundary>
+<ChildContent>
+<div class="faqs-page">
+
+    <header class="faqs-header">
+
+        <div class="faqs-heading">
+            <h1>FAQs</h1>
+            <p>Browse common questions and answers, or ask the assistant directly.</p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       value="@SearchText"
+                       @oninput="OnSearchInput"
+                       placeholder="Search FAQs" />
+            </div>
+
+            <a href="/client-chatbot" class="ask-assistant-button">
+                Ask the assistant
+                <span>→</span>
+            </a>
+
+        </div>
+
+    </header>
+
+    @if (!string.IsNullOrEmpty(LoadError))
+    {
+        <p class="faqs-error">@LoadError</p>
+    }
+
+    <main class="faqs-content">
+
+        @if (IsLoading)
+        {
+            <div class="faqs-empty-state">
+                <span>Loading FAQs…</span>
+            </div>
+        }
+        else if (FilteredCategories.Count == 0)
+        {
+            <div class="faqs-empty-state">
+                <span>No FAQs match your search.</span>
+                <a href="/client-chatbot" class="ask-assistant-link">Ask the assistant instead →</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var category in FilteredCategories)
+            {
+                <section class="faq-category">
+
+                    <h2 class="faq-category-title">@category.Name</h2>
+
+                    <div class="faq-list">
+
+                        @foreach (var faq in category.Faqs)
+                        {
+                            <div class="faq-item @(ExpandedFaqId == faq.Id ? "expanded" : "")">
+
+                                <button type="button"
+                                        class="faq-question-button"
+                                        @onclick="() => ToggleFaq(faq.Id)">
+
+                                    <span>@faq.Question</span>
+                                    <span class="faq-toggle-icon">@(ExpandedFaqId == faq.Id ? "−" : "+")</span>
+
+                                </button>
+
+                                @if (ExpandedFaqId == faq.Id)
+                                {
+                                    <div class="faq-answer">
+                                        <p>@faq.Answer</p>
+
+                                        @if (faq.RequiresHandoff)
+                                        {
+                                            <a href="/client-chatbot" class="faq-handoff-link">Discuss this with the assistant →</a>
+                                        }
+                                    </div>
+                                }
+
+                            </div>
+                        }
+
+                    </div>
+
+                </section>
+            }
+        }
+
+    </main>
+
+</div>
+</ChildContent>
+<ErrorContent>
+    <div class="faqs-page">
+        <p class="faqs-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
+</ErrorBoundary>
+
+@code {
+    private List<Faq> AllFaqs = new();
+    private string SearchText = string.Empty;
+    private string? LoadError;
+    private bool IsLoading = true;
+    private int? ExpandedFaqId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+
+        var (faqs, error) = await FaqStore.GetAllAsync();
+        AllFaqs = faqs;
+        LoadError = error;
+        IsLoading = false;
+    }
+
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString() ?? string.Empty;
+        await Task.CompletedTask;
+    }
+
+    private void ToggleFaq(int faqId)
+    {
+        ExpandedFaqId = ExpandedFaqId == faqId ? null : faqId;
+    }
+
+    private List<FaqCategoryGroup> FilteredCategories
+    {
+        get
+        {
+            var query = SearchText.Trim();
+
+            var source = string.IsNullOrWhiteSpace(query)
+                ? AllFaqs
+                : AllFaqs.Where(f =>
+                    f.Question.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    f.Answer.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    f.Category.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            return source
+                .GroupBy(f => f.Category)
+                .OrderBy(g => g.Min(f => f.Id))
+                .Select(g => new FaqCategoryGroup
+                {
+                    Name = g.Key,
+                    Faqs = g.OrderBy(f => f.Id).ToList()
+                })
+                .ToList();
+        }
+    }
+
+    private class FaqCategoryGroup
+    {
+        public string Name { get; set; } = string.Empty;
+        public List<Faq> Faqs { get; set; } = new();
+    }
+}

@@ -1,4 +1,4 @@
-@page "/chatbot"
+@page "/client-chatbot"
 @layout MainLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
@@ -27,7 +27,7 @@
                        placeholder="Search clients, cases, documents" />
             </div>
 
-            <a href="/faqs" class="browse-faqs-button">
+            <a href="/client-faqs" class="browse-faqs-button">
                 Browse FAQs
             </a>
 
@@ -154,22 +154,6 @@
                 <div class="meeting-request-form">
 
                     <label>
-                        Client
-                        <select @bind="SelectedClientId">
-                            <option value="">Select a client…</option>
-                            @foreach (var client in AdvisorClients)
-                            {
-                                <option value="@client.ClientId">@client.FirstName @client.LastName</option>
-                            }
-                        </select>
-                    </label>
-
-                    @if (!string.IsNullOrWhiteSpace(MatchedClientName))
-                    {
-                        <p class="meeting-match-note">Booking with @MatchedClientName — change above if that's not who you meant.</p>
-                    }
-
-                    <label>
                         Date &amp; time
                         <input type="datetime-local" @bind="MeetingDateTimeInput" />
                     </label>
@@ -207,8 +191,8 @@
                     How do I message my adviser?
                 </button>
 
-                <button type="button" class="prompt-chip prompt-link" @onclick='() => SendQuickPrompt("Book a meeting with a client")'>
-                    Book a meeting with a client
+                <button type="button" class="prompt-chip prompt-link" @onclick='() => SendQuickPrompt("Book a meeting with my adviser")'>
+                    Book a meeting with my adviser
                 </button>
 
             </div>
@@ -314,7 +298,6 @@
 @code {
 
     private const int TypingDelayMs = 15;
-    private const int DefaultAdvisorId = 1;
 
     private static readonly string[] MeetingKeywords =
     {
@@ -328,11 +311,8 @@
 
     private List<AssistantConversationItem> ConversationItems { get; set; } = new();
 
-    private int AdvisorId;
-
-    private List<ClientProfile> AdvisorClients = new();
-    private int? SelectedClientId;
-    private string? MatchedClientName;
+    private int? ClientId;
+    private int? AdvisorId;
 
     private bool ShowMeetingForm;
     private DateTime? MeetingDateTimeInput;
@@ -343,9 +323,13 @@
     {
         await CurrentUser.EnsureRestoredAsync();
 
-        AdvisorId = CurrentUser.Id ?? DefaultAdvisorId;
-        var (clients, _) = await ClientDirectory.SearchAsync(null);
-        AdvisorClients = clients;
+        ClientId = CurrentUser.Id;
+
+        if (ClientId is not null)
+        {
+            var (client, _) = await ClientDirectory.GetByIdAsync(ClientId.Value);
+            AdvisorId = client?.AdvisorId;
+        }
     }
 
     private async Task SendQuickPrompt(string text)
@@ -382,8 +366,8 @@
 
         if (LooksLikeMeetingRequest(text))
         {
-            await TypeAssistantReply("Sure — pick a client and a time below.");
-            OpenMeetingPanel(text);
+            await TypeAssistantReply("Sure — let's get that booked with your adviser. Fill in the details below.");
+            OpenMeetingPanel();
             return;
         }
 
@@ -437,35 +421,12 @@
         return MeetingKeywords.Any(keyword => lower.Contains(keyword));
     }
 
-    private void OpenMeetingPanel(string? clientNameHint)
+    private void OpenMeetingPanel()
     {
         ShowMeetingForm = true;
         MeetingError = null;
         MeetingDateTimeInput = null;
         MeetingNotes = string.Empty;
-        SelectedClientId = null;
-        MatchedClientName = null;
-
-        if (!string.IsNullOrWhiteSpace(clientNameHint))
-        {
-            var match = FindClientByName(clientNameHint);
-            if (match is not null)
-            {
-                SelectedClientId = match.ClientId;
-                MatchedClientName = $"{match.FirstName} {match.LastName}";
-            }
-        }
-    }
-
-    private ClientProfile? FindClientByName(string text)
-    {
-        var lower = text.ToLowerInvariant();
-        var words = lower.Split(new[] { ' ', ',', '.', '?', '!', ':', ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-        return AdvisorClients.FirstOrDefault(c =>
-            lower.Contains($"{c.FirstName} {c.LastName}".ToLowerInvariant()) ||
-            words.Contains(c.FirstName.ToLowerInvariant()) ||
-            words.Contains(c.LastName.ToLowerInvariant()));
     }
 
     private void CloseMeetingForm()
@@ -484,15 +445,15 @@
             return;
         }
 
-        if (SelectedClientId is null)
+        if (ClientId is null || AdvisorId is null)
         {
-            MeetingError = "Select a client for this meeting.";
+            MeetingError = "You don't have an adviser assigned yet.";
             return;
         }
 
         var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
 
-        var error = await MeetingStore.RequestAsync(SelectedClientId.Value, AdvisorId, fromAdvisor: true, meetingDateUtc, MeetingNotes);
+        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingNotes);
 
         if (error is not null)
         {
@@ -500,16 +461,11 @@
             return;
         }
 
-        var client = AdvisorClients.FirstOrDefault(c => c.ClientId == SelectedClientId.Value);
-        var confirmationText = $"Meeting booked with {client?.FirstName} {client?.LastName} for {meetingDateUtc.ToLocalTime():d MMM yyyy, HH:mm}.";
-
         ShowMeetingForm = false;
         MeetingDateTimeInput = null;
         MeetingNotes = string.Empty;
-        SelectedClientId = null;
-        MatchedClientName = null;
 
-        await TypeAssistantReply(confirmationText);
+        await TypeAssistantReply("Your meeting request has been sent to your adviser.");
     }
 
     public class AssistantConversationItem

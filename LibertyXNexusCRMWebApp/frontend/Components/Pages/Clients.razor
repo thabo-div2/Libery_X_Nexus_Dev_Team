@@ -1,100 +1,162 @@
 @page "/clients"
 @layout MainLayout
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
 @inject ClientService ClientDirectory
+@inject CurrentUserService CurrentUser
 @using Microsoft.AspNetCore.Components
 
 <PageTitle>Clients | Nexus</PageTitle>
 
 <ErrorBoundary>
-    <ChildContent>
-        <div class="clients-page">
+<ChildContent>
+<div class="clients-page">
 
-            <header class="clients-header">
-                <h1>Clients</h1>
-                <p>Search your client base and open a profile for the full picture.</p>
-            </header>
+    <header class="clients-header">
 
-            <div class="clients-search-row">
+        <div class="clients-heading">
+            <h1>Clients</h1>
+            <p>Search your client base and open a profile for the full picture.</p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+
                 <input type="text"
-                       @bind="SearchText"
+                       value="@SearchText"
+                       @oninput="OnSearchInput"
                        placeholder="Search by name, email or status" />
-
-                <button type="button" @onclick="Search">Search</button>
             </div>
 
-            @if (!string.IsNullOrEmpty(LoadError))
+            <button type="button"
+                    class="notification-button"
+                    aria-label="Notifications">
+                ♧
+            </button>
+
+        </div>
+
+    </header>
+
+    @if (!string.IsNullOrEmpty(LoadError))
+    {
+        <p class="clients-error">@LoadError</p>
+    }
+
+    <main class="clients-content">
+
+        <section class="clients-list-panel">
+
+            <div class="panel-heading">
+                <h2>@(IsLoading ? "Clients" : $"Clients ({ClientResults.Count})")</h2>
+            </div>
+
+            <div class="clients-list">
+
+                @if (IsLoading)
+                {
+                    <div class="clients-empty-state">
+                        <span>Loading clients…</span>
+                    </div>
+                }
+                else if (ClientResults.Count == 0)
+                {
+                    <div class="clients-empty-state">
+                        <span>No clients found.</span>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var client in ClientResults)
+                    {
+                        <button type="button"
+                                class="client-item @(SelectedClient?.ClientId == client.ClientId ? "selected" : "")"
+                                @onclick="() => SelectedClient = client">
+
+                            <div class="client-item-top">
+                                <strong>@client.FirstName @client.LastName</strong>
+                                <span class="client-status-badge">@client.Status</span>
+                            </div>
+
+                            <span class="client-item-email">@client.Email</span>
+
+                        </button>
+                    }
+                }
+
+            </div>
+
+        </section>
+
+        <section class="client-detail-panel">
+
+            @if (SelectedClient is null)
             {
-                <p class="clients-error">@LoadError</p>
+                <div class="client-empty-state">
+                    <div class="empty-client-icon">◍</div>
+                    <strong>No client selected</strong>
+                    <span>Choose a client from the list to see their profile.</span>
+                </div>
+            }
+            else
+            {
+                <div class="client-detail-header">
+
+                    <div class="client-detail-heading">
+                        <h2>@SelectedClient.FirstName @SelectedClient.LastName</h2>
+                    </div>
+
+                    <span class="case-status">
+                        <span class="status-dot"></span>
+                        @SelectedClient.Status
+                    </span>
+
+                </div>
+
+                <div class="client-detail-body">
+
+                    <div class="detail-field">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">@SelectedClient.Email</span>
+                    </div>
+
+                    <div class="detail-field">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">@(SelectedClient.Phone ?? "—")</span>
+                    </div>
+
+                    <div class="detail-field">
+                        <span class="detail-label">ID number</span>
+                        <span class="detail-value">@(SelectedClient.IdentityNumber ?? "—")</span>
+                    </div>
+
+                    <div class="detail-field">
+                        <span class="detail-label">Risk profile</span>
+                        <span class="detail-value">@(SelectedClient.RiskProfile ?? "—")</span>
+                    </div>
+
+                    <div class="detail-field">
+                        <span class="detail-label">Client since</span>
+                        <span class="detail-value">@SelectedClient.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</span>
+                    </div>
+
+                </div>
+
             }
 
-            <div class="clients-layout">
+        </section>
 
-                <div class="clients-list">
-                    @if (IsLoading)
-                    {
-                        <p class="clients-empty">Loading clients…</p>
-                    }
-                    else if (ClientResults.Count == 0)
-                    {
-                        <p class="clients-empty">No clients found.</p>
-                    }
-                    else
-                    {
-                        @foreach (var client in ClientResults)
-                        {
-                            <button type="button"
-                                    class="client-row @(SelectedClient?.ClientId == client.ClientId ? "client-row-active" : "")"
-                                    @onclick="() => SelectedClient = client">
-                                <strong>@client.FirstName @client.LastName</strong>
-                                <span>@client.Email</span>
-                                <span class="client-status">@client.Status</span>
-                            </button>
-                        }
-                    }
-                </div>
+    </main>
 
-                <div class="client-detail">
-                    @if (SelectedClient is null)
-                    {
-                        <p class="clients-empty">Select a client to see their details.</p>
-                    }
-                    else
-                    {
-                        <h2>@SelectedClient.FirstName @SelectedClient.LastName</h2>
-
-                        <dl>
-                            <dt>Email</dt>
-                            <dd>@SelectedClient.Email</dd>
-
-                            <dt>Phone</dt>
-                            <dd>@(SelectedClient.Phone ?? "—")</dd>
-
-                            <dt>ID number</dt>
-                            <dd>@(SelectedClient.IdentityNumber ?? "—")</dd>
-
-                            <dt>Risk profile</dt>
-                            <dd>@(SelectedClient.RiskProfile ?? "—")</dd>
-
-                            <dt>Status</dt>
-                            <dd>@SelectedClient.Status</dd>
-
-                            <dt>Client since</dt>
-                            <dd>@SelectedClient.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</dd>
-                        </dl>
-                    }
-                </div>
-
-            </div>
-
-        </div>
-    </ChildContent>
-    <ErrorContent>
-        <div class="clients-page">
-            <p class="clients-error">Something went wrong loading this page. Please refresh and try again.</p>
-        </div>
-    </ErrorContent>
+</div>
+</ChildContent>
+<ErrorContent>
+    <div class="clients-page">
+        <p class="clients-error">Something went wrong loading this page. Please refresh and try again.</p>
+    </div>
+</ErrorContent>
 </ErrorBoundary>
 
 @code {
@@ -110,6 +172,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CurrentUser.EnsureRestoredAsync();
+        await Search();
+    }
+
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString() ?? string.Empty;
         SearchText = SearchQuery ?? string.Empty;
         await Search();
     }
@@ -132,5 +201,10 @@
         ClientResults = clients;
         LoadError = error;
         IsLoading = false;
+
+        if (SelectedClient is not null && ClientResults.All(c => c.ClientId != SelectedClient.ClientId))
+        {
+            SelectedClient = null;
+        }
     }
 }

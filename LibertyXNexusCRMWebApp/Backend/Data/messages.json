@@ -1,0 +1,138 @@
+[
+  {
+    "Id": 1,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "hi",
+    "SentAt": "2026-09-24T13:04:13.2471991Z"
+  },
+  {
+    "Id": 2,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "hi",
+    "SentAt": "2026-09-24T13:04:22.9381792Z"
+  },
+  {
+    "Id": 3,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "testing",
+    "SentAt": "2026-09-24T13:04:54.3208347Z"
+  },
+  {
+    "Id": 4,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "please work",
+    "SentAt": "2026-09-24T13:05:42.6223696Z"
+  },
+  {
+    "Id": 5,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "test",
+    "SentAt": "2026-09-24T13:05:52.0560778Z"
+  },
+  {
+    "Id": 6,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "test 2",
+    "SentAt": "2026-09-24T13:18:31.251133Z"
+  },
+  {
+    "Id": 7,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "test3 ",
+    "SentAt": "2026-09-24T13:18:38.8891137Z"
+  },
+  {
+    "Id": 8,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "testes",
+    "SentAt": "2026-09-24T13:19:35.763829Z"
+  },
+  {
+    "Id": 9,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "test",
+    "SentAt": "2026-09-24T13:19:39.123423Z"
+  },
+  {
+    "Id": 10,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "tes",
+    "SentAt": "2026-09-24T13:19:44.9356762Z"
+  },
+  {
+    "Id": 11,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "hello",
+    "SentAt": "2026-09-24T20:11:06.6811958Z"
+  },
+  {
+    "Id": 12,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "hello",
+    "SentAt": "2026-09-24T20:11:16.9760402Z"
+  },
+  {
+    "Id": 13,
+    "ClientId": 2,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "yo",
+    "SentAt": "2026-09-24T20:12:42.4483885Z"
+  },
+  {
+    "Id": 14,
+    "ClientId": 2,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "yo",
+    "SentAt": "2026-09-24T20:12:49.2162043Z"
+  },
+  {
+    "Id": 15,
+    "ClientId": 2,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "yo",
+    "SentAt": "2026-09-28T14:17:54.0117807Z"
+  },
+  {
+    "Id": 16,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": true,
+    "Text": "uahfebfeaf",
+    "SentAt": "2026-09-28T14:49:03.2936189Z"
+  },
+  {
+    "Id": 17,
+    "ClientId": 1,
+    "AdvisorId": 1,
+    "FromAdvisor": false,
+    "Text": "fefweg",
+    "SentAt": "2026-09-28T14:49:08.5466818Z"
+  }
+]
