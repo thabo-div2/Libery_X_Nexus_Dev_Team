@@ -22,8 +22,9 @@ namespace API.Services.Implementations
         private readonly IClientRepository _clientRepository;
         private readonly IInvitationRepository _invitationRepository;
         private readonly IAuditLogRepository _auditLogRepository;
+        private readonly INotificationService _notificationService;
 
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtTokenService jwtTokenService, ILogger<AuthService> logger, IAdvisorRepository advisorRepository, IClientRepository clientRepository, IInvitationRepository invitationRepository, IAuditLogRepository auditLogRepository)
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtTokenService jwtTokenService, ILogger<AuthService> logger, IAdvisorRepository advisorRepository, IClientRepository clientRepository, IInvitationRepository invitationRepository, IAuditLogRepository auditLogRepository, INotificationService notificationService)
         {
             _userManager = userManager;
             _jwtTokenService = jwtTokenService;
@@ -32,6 +33,7 @@ namespace API.Services.Implementations
             _clientRepository = clientRepository;
             _invitationRepository = invitationRepository;
             _auditLogRepository = auditLogRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)
@@ -182,6 +184,13 @@ namespace API.Services.Implementations
                 actionType: AuditActionType.Create,
                 entityAffected: "Client",
                 details: $"Client self-registered from a invitation {invitation.InvitationId}");
+
+            await _notificationService.NotifyAdvisorAsync(
+                invitation.AdvisorId,
+                NotificationType.ClientRegistered,
+                $"{createdClient.FirstName} {createdClient.LastName} has accepted the invitation.",
+                "/clients",
+                createdClient.ClientId);
 
             var extraClaims = new[]
             {

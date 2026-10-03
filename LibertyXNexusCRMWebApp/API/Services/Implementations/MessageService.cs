@@ -3,16 +3,18 @@ using API.DTOs.Messages;
 using API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shared.Models;
+using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
     public class MessageService : IMessageService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
-
-        public MessageService(IDbContextFactory<ApplicationDbContext> contextFactory)
+        private readonly INotificationService _notificationService;
+        public MessageService(IDbContextFactory<ApplicationDbContext> contextFactory, INotificationService notificationService)
         {
             _contextFactory = contextFactory;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<MessageDto>> GetConversationForClientAsync(int clientId)
@@ -115,6 +117,16 @@ namespace API.Services.Implementations
 
             db.Messages.Add(message);
             await db.SaveChangesAsync();
+
+            if (!fromAdvisor)
+            {
+                await _notificationService.NotifyAdvisorAsync(
+                    request.AdvisorId,
+                    NotificationType.MessageReceived,
+                    $"{client.FullName} sent you a new message.",
+                    "/messages",
+                    client.ClientId);
+            }
 
             return new MessageDto(
                 message.MessageId,
