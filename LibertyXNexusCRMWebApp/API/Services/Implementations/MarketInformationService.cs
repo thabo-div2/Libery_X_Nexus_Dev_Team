@@ -5,18 +5,32 @@ using System.Text.Json;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// Options for configuring the Alpha Vantage API integration.
+    /// </summary>
     public sealed class AlphaVantageOptions
     {
         public string BaseUrl { get; set; } = "https://www.alphavantage.co/query";
         public string ApiKey { get; set; } = string.Empty;
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// Service for retrieving market information such as news and exchange rates from the Alpha Vantage API.
+    /// </summary>
     public sealed class MarketInformationService : IMarketInformationService
     {
         private readonly HttpClient _httpClient;
         private readonly AlphaVantageOptions _options;
         private readonly ILogger<MarketInformationService> _logger;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MarketInformationService"/> class.
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
         public MarketInformationService(
             HttpClient httpClient,
             IOptions<AlphaVantageOptions> options,
@@ -27,6 +41,14 @@ namespace API.Services.Implementations
             _logger = logger;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves market information based on the provided query, including news and USD/ZAR exchange rate.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<MarketInformationResult> GetAsync(
             string query,
             CancellationToken cancellationToken = default)
@@ -128,6 +150,13 @@ namespace API.Services.Implementations
             return result;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Builds a URL for the Alpha Vantage API request with the specified function and parameters.
+        /// </summary>
+        /// <param name="function"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         private string BuildUrl(string function, params (string Name, string Value)[] parameters)
         {
             var query = new List<string>
@@ -142,6 +171,13 @@ namespace API.Services.Implementations
             return $"{_options.BaseUrl}?{string.Join("&", query)}";
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets a string property from a JsonElement, returning an empty string if the property does not exist or is null.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         private static string GetString(JsonElement element, string propertyName)
         {
             return element.TryGetProperty(propertyName, out var value)
@@ -149,6 +185,12 @@ namespace API.Services.Implementations
                 : string.Empty;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets the sentiment label from a news item JsonElement, returning null if the property does not exist.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         private static string? GetSentiment(JsonElement item)
         {
             if (!item.TryGetProperty("overall_sentiment_label", out var label))
@@ -160,3 +202,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

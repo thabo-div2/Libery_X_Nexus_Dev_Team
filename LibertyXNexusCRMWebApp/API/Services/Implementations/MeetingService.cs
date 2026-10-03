@@ -6,12 +6,22 @@ using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// Service for managing meetings between clients and advisors, including booking, rescheduling, confirming, and cancelling meetings.
+    /// </summary>
     public class MeetingService : IMeetingService
     {
         private readonly IMeetingRepository meetingRepository_;
         private readonly IClientRepository clientRepository_;
         private readonly INotificationService notificationService_;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MeetingService"/> class with the specified repositories and notification service.
+        /// </summary>
+        /// <param name="meetingRepository"></param>
+        /// <param name="clientRepository"></param>
+        /// <param name="notificationService"></param>
         public MeetingService(IMeetingRepository meetingRepository, IClientRepository clientRepository, INotificationService notificationService)
         {
             meetingRepository_ = meetingRepository;
@@ -19,24 +29,50 @@ namespace API.Services.Implementations
             notificationService_ = notificationService;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves a meeting by its unique identifier and maps it to a MeetingDto.
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <returns></returns>
         public async Task<MeetingDto?> GetByIdAsync(int meetingId)
         {
             var meeting = await meetingRepository_.GetByIdAsync(meetingId);
             return meeting is null ? null : await MapToDtoAsync(meeting);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves all meetings associated with a specific client and maps them to a collection of MeetingDto objects.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<MeetingDto>> GetForClientAsync(int clientId)
         {
             var meetings = await meetingRepository_.GetClientIdAsync(clientId);
             return await MapManyAsync(meetings);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves all upcoming meetings, optionally filtered by a specific client, and maps them to a collection of MeetingDto objects.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<MeetingDto>> GetUpcomingAsync(int? clientId)
         {
             var meetings = await meetingRepository_.GetUpcomingMeetingAsync(clientId);
             return await MapManyAsync(meetings);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves meetings that fall within a specified date range and maps them to a collection of MeetingDto objects.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<IEnumerable<MeetingDto>> GetByDateRangeAsync(DateTime from, DateTime to)
         {
             if (from > to)
@@ -48,12 +84,26 @@ namespace API.Services.Implementations
             return await MapManyAsync(meetings);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves meetings based on their status (e.g., Requested, Confirmed, Completed, Cancelled) and maps them to a collection of MeetingDto objects.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status)
         {
             var meetings = await meetingRepository_.GetByStatusAsync(status);
             return await MapManyAsync(meetings);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Books a new meeting for a client, ensuring that the meeting date is in the future and that there are no scheduling conflicts. If successful, it notifies the advisor of the new meeting request.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<MeetingDto> BookAsync(BookMeetingRequest request) 
         {
             ValidateFutureDate(request.MeetingDate);
@@ -97,6 +147,16 @@ namespace API.Services.Implementations
             return await MapToDtoAsync(created);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Reschedules an existing meeting to a new date and time, ensuring that the new date is in the future and that there are no scheduling conflicts.
+        /// If successful, it notifies the advisor of the rescheduled meeting.
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request) 
         {
           var meeting = await meetingRepository_.GetByIdAsync(meetingId) ?? throw new KeyNotFoundException($"Meeting {meetingId} does not exist");
@@ -138,6 +198,14 @@ namespace API.Services.Implementations
             return await MapToDtoAsync(meeting);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Cancels an existing meeting, ensuring that completed meetings cannot be cancelled. If successful, it notifies the advisor of the cancelled meeting.
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<MeetingDto> CancelAsync(int meetingId)
         {
             var meeting = await meetingRepository_.GetByIdAsync(meetingId) ?? throw new KeyNotFoundException($"Meeting {meetingId} was not found.");
@@ -153,6 +221,14 @@ namespace API.Services.Implementations
             return await MapToDtoAsync(meeting);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Confirms a meeting that is currently in the 'Requested' status, changing its status to 'Confirmed'. If successful, it notifies the advisor of the confirmed meeting.
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<MeetingDto> ConfirmAsync(int meetingId)
         {
             var meeting = await meetingRepository_.GetByIdAsync(meetingId) ?? throw new KeyNotFoundException($"Meeting {meetingId} was not found.");
@@ -169,6 +245,12 @@ namespace API.Services.Implementations
             return await MapToDtoAsync(meeting);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Validates that the provided meeting date is in the future. If the date is in the past or present, it throws an ArgumentException.
+        /// </summary>
+        /// <param name="date"></param>
+        /// <exception cref="ArgumentException"></exception>
         private static void ValidateFutureDate(DateTime date)
         {
             if (date <= DateTime.UtcNow)
@@ -177,6 +259,12 @@ namespace API.Services.Implementations
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Maps a Meeting entity to a MeetingDto, including fetching the associated client's full name for display purposes.
+        /// </summary>
+        /// <param name="meeting"></param>
+        /// <returns></returns>
         private async Task<MeetingDto> MapToDtoAsync(Meeting meeting)
         {
 
@@ -198,6 +286,12 @@ namespace API.Services.Implementations
             };
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Maps a collection of Meeting entities to a collection of MeetingDto objects by iterating through each meeting and mapping it individually.
+        /// </summary>
+        /// <param name="meetings"></param>
+        /// <returns></returns>
         private async Task<IEnumerable<MeetingDto>> MapManyAsync(IEnumerable<Meeting> meetings)
         {
             var dtos = new List<MeetingDto>();
@@ -209,3 +303,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

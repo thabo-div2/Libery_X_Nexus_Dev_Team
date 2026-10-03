@@ -7,16 +7,32 @@ using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// Service for managing messages between clients and advisors.
+    /// </summary>
     public class MessageService : IMessageService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly INotificationService _notificationService;
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageService"/> class.
+        /// </summary>
+        /// <param name="contextFactory"></param>
+        /// <param name="notificationService"></param>
         public MessageService(IDbContextFactory<ApplicationDbContext> contextFactory, INotificationService notificationService)
         {
             _contextFactory = contextFactory;
             _notificationService = notificationService;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves the conversation messages for a specific client.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<MessageDto>> GetConversationForClientAsync(int clientId)
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
@@ -35,6 +51,13 @@ namespace API.Services.Implementations
                 .ToListAsync();
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves the conversation messages for a specific advisor and client.
+        /// </summary>
+        /// <param name="advisorId"></param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<MessageDto>> GetConversationForAdvisorAsync(int advisorId, int clientId)
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
@@ -53,6 +76,12 @@ namespace API.Services.Implementations
                 .ToListAsync();
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves a summary of conversations for a specific advisor, including the latest message from each client.
+        /// </summary>
+        /// <param name="advisorId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<ConversationSummaryDto>> GetConversationsForAdvisorAsync(int advisorId)
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
@@ -79,6 +108,18 @@ namespace API.Services.Implementations
                 .ToList();
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Sends a message from either a client or an advisor. 
+        /// Validates the request and ensures that the client is assigned to the advisor before sending the message. 
+        /// If the message is sent by a client, it also notifies the advisor.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="fromAdvisor"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<MessageDto> SendAsync(SendMessageRequest request, bool fromAdvisor)
         {
             if (string.IsNullOrWhiteSpace(request.Text))
@@ -138,3 +179,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

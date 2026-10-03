@@ -12,6 +12,7 @@ public partial class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        // Add services for protected session storage and token management
         builder.Services.AddScoped<ProtectedSessionStorage>();
         builder.Services.AddScoped<TokenStorageService>();
 
@@ -25,6 +26,7 @@ public partial class Program
                 "ApiSettings:BaseUrl is missing from appsettings.json.");
         }
 
+        // Configure HttpClient with JwtAuthenticationHandler
         builder.Services.AddScoped(sp =>
         {
             var jwtHandler = sp.GetRequiredService<JwtAuthenticationHandler>();
@@ -39,6 +41,7 @@ public partial class Program
             return httpClient;
         });
 
+        // Register application services
         builder.Services.AddScoped<AuthService>();
         builder.Services.AddScoped<CurrentUserService>();
         builder.Services.AddScoped<AdvisorService>();

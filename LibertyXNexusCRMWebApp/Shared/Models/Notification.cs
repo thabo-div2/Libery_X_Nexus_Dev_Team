@@ -8,6 +8,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents a notification sent to a client or advisor.
+    /// </summary>
     public class Notification
     {
         [Key]
@@ -37,3 +40,5 @@ namespace Shared.Models
         public DateTime? ReadAt { get; set; }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

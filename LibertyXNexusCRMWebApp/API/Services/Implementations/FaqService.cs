@@ -3,14 +3,18 @@ using API.Services.Interfaces;
 
 namespace API.Services.Implementations
 {
-    // FAQ content is static reference data (not user records), so unlike the
-    // rest of the API it's read straight from a JSON file instead of the
-    // EF Core / SQL database - the same approach the old Backend project
-    // used before it was dropped from the solution.
+    /// <summary>
+    /// Service for managing frequently asked questions (FAQs).
+    /// </summary>
     public class FaqService : IFaqService
     {
         private readonly string _faqsPath;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FaqService"/> class.
+        /// </summary>
+        /// <param name="env"></param>
         public FaqService(IWebHostEnvironment env)
         {
             var dataDirectory = Path.Combine(env.ContentRootPath, "Data");
@@ -18,11 +22,22 @@ namespace API.Services.Implementations
             _faqsPath = Path.Combine(dataDirectory, "faqs.json");
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves all FAQs from the data source.
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<Faq>> GetAllAsync()
         {
             return await ReadAsync<Faq>(_faqsPath);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Searches for FAQs that match the given query.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
         public async Task<List<Faq>> SearchAsync(string query)
         {
             var faqs = await ReadAsync<Faq>(_faqsPath);
@@ -51,6 +66,13 @@ namespace API.Services.Implementations
                 .ToList();
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Reads a list of objects of type <typeparamref name="T"/> from a JSON file at the specified path.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private static async Task<List<T>> ReadAsync<T>(string path)
         {
             if (!File.Exists(path))
@@ -64,3 +86,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

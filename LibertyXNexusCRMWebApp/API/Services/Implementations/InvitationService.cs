@@ -11,6 +11,9 @@ using System.Security.Cryptography;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// Service responsible for managing client invitations, including creation, validation, and email notifications.
+    /// </summary>
     public class InvitationService : IInvitationService
     {
         private readonly IInvitationRepository _invitationRepository;
@@ -20,6 +23,16 @@ namespace API.Services.Implementations
         private readonly IConfiguration _configuration;
         private readonly ILogger<InvitationService> _logger;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvitationService"/> class with the specified dependencies.
+        /// </summary>
+        /// <param name="invitationRepository"></param>
+        /// <param name="advisorRepository"></param>
+        /// <param name="auditLogRepository"></param>
+        /// <param name="emailService"></param>
+        /// <param name="configuration"></param>
+        /// <param name="logger"></param>
         public InvitationService(
             IInvitationRepository invitationRepository,
             IAdvisorRepository advisorRepository,
@@ -36,6 +49,13 @@ namespace API.Services.Implementations
             _logger = logger;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Creates a new invitation for a client to register with the system. Generates a unique token, saves the invitation, and sends an email to the client with the registration link.
+        /// </summary>
+        /// <param name="advisorId"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public async Task<InvitationResponse> CreateAsync(int advisorId, string email)
         {
             if (string.IsNullOrWhiteSpace(email))
@@ -120,6 +140,12 @@ namespace API.Services.Implementations
             };
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Validates an invitation token and returns the associated invitation details if valid.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<InvitationValidationResponse> ValidateAsync(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -149,12 +175,11 @@ namespace API.Services.Implementations
             };
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
-        /// URL-safe, cryptographically random token. 32 bytes (256 bits) is
-        /// comfortably enough entropy that guessing a valid token is
-        /// infeasible — this token is effectively a bearer credential for
-        /// registration, so it needs the same strength as a session token.
+        /// Generates a secure random token for invitation links.
         /// </summary>
+        /// <returns></returns>
         private static string GenerateToken()
         {
             var bytes = RandomNumberGenerator.GetBytes(32);
@@ -165,3 +190,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

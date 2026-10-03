@@ -6,6 +6,9 @@ using System.Text.Encodings.Web;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// Configuration options for the SMTP email service.
+    /// </summary>
     public sealed class SmtpEmailOptions
     {
         public const string SectionName = "Email:Smtp";
@@ -19,11 +22,21 @@ namespace API.Services.Implementations
         public bool EnableSsl { get; set; } = true;
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// An implementation of IEmailService that sends emails using SMTP.
+    /// </summary>
     public sealed class SmtpEmailService : IEmailService
     {
         private readonly SmtpEmailOptions _options;
         private readonly ILogger<SmtpEmailService> _logger;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the SmtpEmailService class with the specified options and logger.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
         public SmtpEmailService(
             IOptions<SmtpEmailOptions> options,
             ILogger<SmtpEmailService> logger)
@@ -32,6 +45,15 @@ namespace API.Services.Implementations
             _logger = logger;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Sends an invitation email to the specified recipient with the provided advisor name, invitation link, and expiration date.
+        /// </summary>
+        /// <param name="recipientEmail"></param>
+        /// <param name="advisorName"></param>
+        /// <param name="invitationLink"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
         public async Task SendInvitationAsync(
             string recipientEmail,
             string advisorName,
@@ -40,6 +62,7 @@ namespace API.Services.Implementations
         {
             ValidateConfiguration();
 
+            // Sanitize inputs to prevent HTML injection
             var safeAdvisorName = HtmlEncoder.Default.Encode(
                 string.IsNullOrWhiteSpace(advisorName) ? "your financial adviser" : advisorName);
             var safeLink = HtmlEncoder.Default.Encode(invitationLink);
@@ -96,6 +119,11 @@ namespace API.Services.Implementations
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Validates the SMTP email configuration options. Throws an InvalidOperationException if any required option is missing or invalid.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         private void ValidateConfiguration()
         {
             if (string.IsNullOrWhiteSpace(_options.Host) ||
@@ -109,3 +137,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

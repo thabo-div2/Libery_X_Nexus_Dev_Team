@@ -6,6 +6,9 @@ using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// Service for managing documents, including uploading, retrieving, and deleting documents associated with clients and policies.
+    /// </summary>
     public class DocumentService : IDocumentService
     {
         private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
@@ -20,6 +23,14 @@ namespace API.Services.Implementations
         private readonly IPolicyRepository _policyRepository;
         private readonly IBlobStorageService _blobStorageService;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentService"/> class.
+        /// </summary>
+        /// <param name="documentRepository"></param>
+        /// <param name="clientRepository"></param>
+        /// <param name="policyRepository"></param>
+        /// <param name="blobStorageService"></param>
         public DocumentService(IDocumentRepository documentRepository,IClientRepository clientRepository,IPolicyRepository policyRepository,IBlobStorageService blobStorageService)
         {
             _documentRepository = documentRepository;
@@ -28,6 +39,12 @@ namespace API.Services.Implementations
             _blobStorageService = blobStorageService;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves a document by its ID and maps it to a DocumentDto.
+        /// </summary>
+        /// <param name="documentId"></param>
+        /// <returns></returns>
         public async Task<DocumentDto?> GetByIdAsync(int documentId) 
         {
             var document = await _documentRepository.GetByIdAsync(documentId) ?? new Document();
@@ -47,30 +64,63 @@ namespace API.Services.Implementations
             };
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves all documents associated with a specific client and maps them to DocumentDto objects.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<DocumentDto>> GetForClientAsync(int clientId)
         {
             var documents = await _documentRepository.GetByClientIdAsync(clientId);
             return documents.Select(MapToDto);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves all documents that are visible to a specific client and maps them to DocumentDto objects.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<DocumentDto>> GetVisibleToClientAsync(int clientId)
         {
             var documents = await _documentRepository.GetVisibleToClientAsync(clientId);
             return documents.Select(MapToDto);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves all documents associated with a specific policy and maps them to DocumentDto objects.
+        /// </summary>
+        /// <param name="policyId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<DocumentDto>> GetForPolicyAsync(int policyId)
         {
             var documents = await _documentRepository.GetByPolicyIdAsync(policyId);
             return documents.Select(MapToDto);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves all documents of a specific type and maps them to DocumentDto objects.
+        /// </summary>
+        /// <param name="documentType"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<DocumentDto>> GetByTypeAsync(DocumentType documentType)
         {
             var documents = await _documentRepository.GetByTypeAsync(documentType);
             return documents.Select(MapToDto);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Uploads a document, validates the request, and stores it in blob storage. Returns a DocumentDto representing the uploaded document.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<DocumentDto> UploadAsync(UploadDocumentRequest request)
         {
             if (request.File == null || request.File.Length == 0)
@@ -128,12 +178,27 @@ namespace API.Services.Implementations
             return MapToDto(created);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves a download URI for a specific document, allowing access to the document stored in blob storage.
+        /// </summary>
+        /// <param name="documentId"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
         public async Task<Uri> GetDownloadUriAsync(int documentId)
         {
             var document = await _documentRepository.GetByIdAsync(documentId) ?? throw new KeyNotFoundException($"Document {documentId} was not found");
             return await _blobStorageService.GetReadSasUriAsync(document.BlobReference);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Sets the visibility of a specific document for clients and updates the document's metadata accordingly.
+        /// </summary>
+        /// <param name="documentId"></param>
+        /// <param name="visibleToClient"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
         public async Task<DocumentDto> SetVisibilityAsync(int documentId, bool visibleToClient)
         {
             var document = await _documentRepository.GetByIdAsync(documentId) ?? throw new KeyNotFoundException($"Document {documentId} was not found.");
@@ -145,6 +210,12 @@ namespace API.Services.Implementations
             return MapToDto(document);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Deletes a specific document, removing it from both the repository and blob storage. Returns true if the deletion was successful, or false if the document was not found.
+        /// </summary>
+        /// <param name="documentId"></param>
+        /// <returns></returns>
         public async Task<bool> DeleteAsync(int documentId)
         {
             var document = await _documentRepository.GetByIdAsync(documentId);
@@ -158,6 +229,12 @@ namespace API.Services.Implementations
             return true;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Maps a Document entity to a DocumentDto, transforming the data for external use.
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
         private static DocumentDto MapToDto(Document document) => new()
         {
             DocumentId = document.DocumentId,
@@ -173,3 +250,5 @@ namespace API.Services.Implementations
         };
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

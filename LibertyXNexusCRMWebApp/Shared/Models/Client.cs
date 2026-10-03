@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents a client in the financial advisory system, including personal details, financial information, and relationships to advisors, policies, meetings, documents, queries, and notifications.
+    /// </summary>
     public class Client
     {
         [Key]
@@ -95,3 +98,5 @@ namespace Shared.Models
         public string FullName => $"{FirstName} {LastName}";
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

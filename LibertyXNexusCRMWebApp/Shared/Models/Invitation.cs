@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents an invitation sent by an advisor to a potential client.
+    /// </summary>
     public class Invitation
     {
         [Key]
@@ -36,3 +39,5 @@ namespace Shared.Models
         public bool IsValid => Status == InvitationStatus.Pending && ExpiresAt > DateTime.UtcNow;
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//
