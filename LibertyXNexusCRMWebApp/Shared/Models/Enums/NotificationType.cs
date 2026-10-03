@@ -17,6 +17,7 @@ namespace Shared.Models.Enums
         MeetingCancelled,
         CaseUpdated,
         ClientRegistered,
-        PendingAction
+        PendingAction,
+        MessageReceived
     }
 }

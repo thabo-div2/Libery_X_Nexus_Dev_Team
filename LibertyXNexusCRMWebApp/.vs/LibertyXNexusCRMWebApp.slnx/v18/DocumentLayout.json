@@ -1,361 +1,373 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\",
+  "WorkspaceRootPath": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\notifications\\notificationdtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\dtos\\notifications\\notificationdtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\enums\\notificationtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\models\\enums\\notificationtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\models\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\marketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\marketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\marketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\marketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\marketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\marketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\chatbot.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\chatbot.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\chatbot.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\marketinformationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\marketinformationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\controllers\\marketinformationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\imarketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\imarketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\interfaces\\imarketinformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api.tests\\services\\clientservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api.tests\\services\\clientservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|solutionrelative:api.tests\\services\\clientservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\clients\\createclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\clients\\createclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\dtos\\clients\\createclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\iemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\iemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\interfaces\\iemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Services\\MessageService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Services\\MessageService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Backend\\Services\\MessageService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\invitationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\invitationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\invitationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\smtpemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\smtpemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\smtpemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api.tests\\services\\policyservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api.tests\\services\\policyservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|solutionrelative:api.tests\\services\\policyservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api.tests\\services\\meetingservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api.tests\\services\\meetingservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{79A87590-2A6D-9B23-CE9F-30AA7178F761}|API.Tests\\API.Tests.csproj|solutionrelative:api.tests\\services\\meetingservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\createclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\createclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\clients\\createclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\faqcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\faqcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\controllers\\faqcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\runtest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\runtest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\runtest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\clients\\clientdetaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\clients\\clientdetaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\dtos\\clients\\clientdetaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\clientdetaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\clientdetaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\clients\\clientdetaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\clientscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\clientscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\controllers\\clientscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\client.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\client.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\client.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\identityseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\identityseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\identity\\identityseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\clientmessages.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\clientmessages.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\clientmessages.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\data\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\data\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\data\\dbinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\identity\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\controllers\\messagecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\imessageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\imessageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\interfaces\\imessageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\imeetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\imeetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\interfaces\\imeetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\messages\\messagedtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\messages\\messagedtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\dtos\\messages\\messagedtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\repositories\\implementations\\advisorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\repositories\\implementations\\advisorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\repositories\\implementations\\advisorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\repositories\\implementations\\auditlogrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\repositories\\implementations\\auditlogrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\repositories\\implementations\\auditlogrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\models\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\documents.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\documents.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\documents.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\invitationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\invitationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\controllers\\invitationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\documentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\documentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\documentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\tokenstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\tokenstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\tokenstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\jwtauthenticationhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\jwtauthenticationhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\jwtauthenticationhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\currentuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\currentuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\currentuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\calender.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\calender.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\calender.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\advisorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\advisorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\advisorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\invitationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\invitationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\invitationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\policyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\policyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\policyservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\meetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\meetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\meetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\advisorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\advisorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\advisorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\advisor\\advisordashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\dtos\\advisor\\advisordashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\dtos\\advisor\\advisordashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\advisordashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\advisordashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\advisor\\advisordashboarddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\updatepolicystatusrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\updatepolicystatusrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\policies\\updatepolicystatusrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\updatepolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\updatepolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\policies\\updatepolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\policydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\policydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\policies\\policydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\createclientpolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\createclientpolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\policies\\createclientpolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\createcataloguepolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\policies\\createcataloguepolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\policies\\createcataloguepolicyrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\meetings\\reschedulemeetingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\meetings\\reschedulemeetingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\meetings\\reschedulemeetingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\meetings\\meetingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\meetings\\meetingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\meetings\\meetingdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\meetings\\bookmeetingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\meetings\\bookmeetingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\meetings\\bookmeetingrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\documents\\uploaddocumentrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\documents\\uploaddocumentrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\documents\\uploaddocumentrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\documents\\updatedocumentvisibilityrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\documents\\updatedocumentvisibilityrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\documents\\updatedocumentvisibilityrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\documents\\documentdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\documents\\documentdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\documents\\documentdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\updateclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\updateclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\clients\\updateclientrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\clientlistitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\clients\\clientlistitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\clients\\clientlistitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\registerresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\registerresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\auth\\registerresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\auth\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\auth\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\auth\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\auth\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\institutionitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\institutionitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\advisor\\institutionitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\deadlineitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\deadlineitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\advisor\\deadlineitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\casepipelineitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\dtos\\advisor\\casepipelineitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\dtos\\advisor\\casepipelineitemdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\approles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\approles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\identity\\approles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\jwtsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\identity\\jwtsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\identity\\jwtsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\blobstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\blobstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\blobstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\documentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\documentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\documentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\idocumentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\idocumentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\interfaces\\idocumentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\iblobstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\iblobstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\interfaces\\iblobstorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\jwttokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\jwttokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\jwttokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\users\\thabo\\source\\repos\\thabo-div2\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\advisor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\shared\\models\\advisor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{76D5A132-171E-41CF-9DC7-B55CEC7B2372}|Shared\\Shared.csproj|solutionrelative:shared\\models\\advisor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -369,24 +381,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 15,
+          "SelectedChildIndex": 5,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:1:0:{fabf9319-47eb-497e-b8f6-d9f73fba5f55}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:2:0:{fabf9319-47eb-497e-b8f6-d9f73fba5f55}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -400,77 +396,95 @@
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "MarketInformationService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MarketInformationService.cs",
-              "RelativeDocumentMoniker": "frontend\\Services\\MarketInformationService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MarketInformationService.cs",
-              "RelativeToolTip": "frontend\\Services\\MarketInformationService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T17:48:39.022Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "MarketInformationController.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MarketInformationController.cs",
-              "RelativeDocumentMoniker": "API\\Controllers\\MarketInformationController.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MarketInformationController.cs",
-              "RelativeToolTip": "API\\Controllers\\MarketInformationController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "NotificationDtos.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Notifications\\NotificationDtos.cs",
+              "RelativeDocumentMoniker": "API\\DTOs\\Notifications\\NotificationDtos.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Notifications\\NotificationDtos.cs",
+              "RelativeToolTip": "API\\DTOs\\Notifications\\NotificationDtos.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T17:42:00.732Z",
+              "WhenOpened": "2026-10-03T10:40:25.928Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "MarketInformationService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MarketInformationService.cs",
-              "RelativeDocumentMoniker": "API\\Services\\Implementations\\MarketInformationService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MarketInformationService.cs",
-              "RelativeToolTip": "API\\Services\\Implementations\\MarketInformationService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAoAAAAtAAAAAAAAAA==",
+              "Title": "NotificationType.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Enums\\NotificationType.cs",
+              "RelativeDocumentMoniker": "Shared\\Models\\Enums\\NotificationType.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Enums\\NotificationType.cs",
+              "RelativeToolTip": "Shared\\Models\\Enums\\NotificationType.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABQAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T17:40:09.908Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "IMarketInformationService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMarketInformationService.cs",
-              "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IMarketInformationService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMarketInformationService.cs",
-              "RelativeToolTip": "API\\Services\\Interfaces\\IMarketInformationService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T17:39:07.375Z",
+              "WhenOpened": "2026-10-03T10:39:05.018Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Program.cs",
-              "RelativeDocumentMoniker": "API\\Program.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Program.cs",
-              "RelativeToolTip": "API\\Program.cs",
-              "ViewState": "AgIAAEMAAAAAAAAAAADwv3EAAABiAAAAAAAAAA==",
+              "Title": "Notification.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Notification.cs",
+              "RelativeDocumentMoniker": "Shared\\Models\\Notification.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Notification.cs",
+              "RelativeToolTip": "Shared\\Models\\Notification.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:46:37.824Z",
+              "WhenOpened": "2026-10-03T10:38:45.895Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 4,
+              "Title": "MarketInformationService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MarketInformationService.cs",
+              "RelativeDocumentMoniker": "API\\Services\\Implementations\\MarketInformationService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MarketInformationService.cs",
+              "RelativeToolTip": "API\\Services\\Implementations\\MarketInformationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAoAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T17:40:09.908Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "IMarketInformationService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMarketInformationService.cs",
+              "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IMarketInformationService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMarketInformationService.cs",
+              "RelativeToolTip": "API\\Services\\Interfaces\\IMarketInformationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T17:39:07.375Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Program.cs",
+              "RelativeDocumentMoniker": "API\\Program.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Program.cs",
+              "RelativeToolTip": "API\\Program.cs",
+              "ViewState": "AgIAAEMAAAAAAAAAAADwv3EAAABiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T11:46:37.824Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
               "Title": "AdvisorRepository.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AdvisorRepository.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AdvisorRepository.cs",
               "RelativeDocumentMoniker": "API\\Repositories\\Implementations\\AdvisorRepository.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AdvisorRepository.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AdvisorRepository.cs",
               "RelativeToolTip": "API\\Repositories\\Implementations\\AdvisorRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -478,24 +492,60 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "AuthService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\AuthService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\AuthService.cs",
               "ViewState": "AgIAANQAAAAAAAAAAAAQwOUAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:46:38.266Z",
+              "WhenOpened": "2026-10-02T11:46:38.266Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\appsettings.json",
+              "RelativeDocumentMoniker": "API\\appsettings.json",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\appsettings.json",
+              "RelativeToolTip": "API\\appsettings.json",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAACMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-10-02T11:46:37.917Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 9,
+              "Title": "MarketInformationController.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MarketInformationController.cs",
+              "RelativeDocumentMoniker": "API\\Controllers\\MarketInformationController.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MarketInformationController.cs",
+              "RelativeToolTip": "API\\Controllers\\MarketInformationController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T17:42:00.732Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MarketInformationService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MarketInformationService.cs",
+              "RelativeDocumentMoniker": "frontend\\Services\\MarketInformationService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MarketInformationService.cs",
+              "RelativeToolTip": "frontend\\Services\\MarketInformationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T17:48:39.022Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
               "Title": "PolicyServiceTests.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\PolicyServiceTests.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\PolicyServiceTests.cs",
               "RelativeDocumentMoniker": "API.Tests\\Services\\PolicyServiceTests.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\PolicyServiceTests.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\PolicyServiceTests.cs",
               "RelativeToolTip": "API.Tests\\Services\\PolicyServiceTests.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -503,63 +553,47 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\appsettings.json",
-              "RelativeDocumentMoniker": "API\\appsettings.json",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\appsettings.json",
-              "RelativeToolTip": "API\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-10-02T11:46:37.917Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Program.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Program.cs",
               "RelativeDocumentMoniker": "frontend\\Program.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Program.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Program.cs",
               "RelativeToolTip": "frontend\\Program.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAgwDMAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:46:38.256Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-02T11:46:38.256Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 15,
               "Title": "InvitationService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\InvitationService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\InvitationService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\InvitationService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\InvitationService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\InvitationService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\InvitationService.cs",
               "ViewState": "AgIAAD4AAAAAAAAAAAAAwFgAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:46:38.275Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-02T11:46:38.275Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "Chatbot.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Chatbot.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Chatbot.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Chatbot.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Chatbot.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Chatbot.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\Chatbot.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-10-02T11:46:38.281Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-02T11:46:38.281Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 24,
               "Title": "FaqController.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\FaqController.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\FaqController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\FaqController.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\FaqController.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\FaqController.cs",
               "RelativeToolTip": "API\\Controllers\\FaqController.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -567,89 +601,83 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "Advisor.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Advisor.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\Advisor.razor",
               "ViewState": "AgIAADIAAAAAAAAAAAAcwFUAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-10-02T11:46:38.269Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "ClientServiceTests.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\ClientServiceTests.cs",
-              "RelativeDocumentMoniker": "API.Tests\\Services\\ClientServiceTests.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\ClientServiceTests.cs",
-              "RelativeToolTip": "API.Tests\\Services\\ClientServiceTests.cs",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAawGQAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:53:18.384Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "CreateClientRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\CreateClientRequest.cs",
-              "RelativeDocumentMoniker": "API\\DTOs\\Clients\\CreateClientRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\CreateClientRequest.cs",
-              "RelativeToolTip": "API\\DTOs\\Clients\\CreateClientRequest.cs",
-              "ViewState": "AgIAACMAAAAAAAAAAAA7wAQAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:54:37.274Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-02T11:46:38.269Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 11,
+              "Title": "ClientServiceTests.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\ClientServiceTests.cs",
+              "RelativeDocumentMoniker": "API.Tests\\Services\\ClientServiceTests.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\ClientServiceTests.cs",
+              "RelativeToolTip": "API.Tests\\Services\\ClientServiceTests.cs",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAawGQAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T11:53:18.384Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "CreateClientRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\CreateClientRequest.cs",
+              "RelativeDocumentMoniker": "API\\DTOs\\Clients\\CreateClientRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\CreateClientRequest.cs",
+              "RelativeToolTip": "API\\DTOs\\Clients\\CreateClientRequest.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAA7wAQAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T11:54:37.274Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
               "Title": "MessageService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Services\\MessageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Services\\MessageService.cs",
               "RelativeDocumentMoniker": "Backend\\Services\\MessageService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Services\\MessageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Services\\MessageService.cs",
               "RelativeToolTip": "Backend\\Services\\MessageService.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAAAYAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:49:57.802Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-02T11:49:57.802Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "SmtpEmailService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\SmtpEmailService.cs",
+              "RelativeDocumentMoniker": "API\\Services\\Implementations\\SmtpEmailService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\SmtpEmailService.cs",
+              "RelativeToolTip": "API\\Services\\Implementations\\SmtpEmailService.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAAwF0AAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T14:14:03.931Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 13,
-              "Title": "SmtpEmailService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\SmtpEmailService.cs",
-              "RelativeDocumentMoniker": "API\\Services\\Implementations\\SmtpEmailService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\SmtpEmailService.cs",
-              "RelativeToolTip": "API\\Services\\Implementations\\SmtpEmailService.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAAwF0AAAA0AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T14:14:03.931Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
               "Title": "IEmailService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IEmailService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IEmailService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IEmailService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IEmailService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IEmailService.cs",
               "RelativeToolTip": "API\\Services\\Interfaces\\IEmailService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T14:15:04.639Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-02T14:15:04.639Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 21,
               "Title": "MeetingServiceTests.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\MeetingServiceTests.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\MeetingServiceTests.cs",
               "RelativeDocumentMoniker": "API.Tests\\Services\\MeetingServiceTests.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\MeetingServiceTests.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\MeetingServiceTests.cs",
               "RelativeToolTip": "API.Tests\\Services\\MeetingServiceTests.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAiwCEAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -657,11 +685,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 19,
               "Title": "ClientService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\ClientService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\ClientService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\ClientService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\ClientService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\ClientService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\ClientService.cs",
               "ViewState": "AgIAADgAAAAAAAAAAAAAAEMAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -669,11 +697,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 43,
               "Title": "AuditLogRepository.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AuditLogRepository.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AuditLogRepository.cs",
               "RelativeDocumentMoniker": "API\\Repositories\\Implementations\\AuditLogRepository.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AuditLogRepository.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AuditLogRepository.cs",
               "RelativeToolTip": "API\\Repositories\\Implementations\\AuditLogRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -681,11 +709,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 22,
               "Title": "CreateClientRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\CreateClientRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\CreateClientRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\CreateClientRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\CreateClientRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\CreateClientRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Clients\\CreateClientRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -693,11 +721,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 26,
               "Title": "ClientDetailDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\ClientDetailDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\ClientDetailDto.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Clients\\ClientDetailDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\ClientDetailDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\ClientDetailDto.cs",
               "RelativeToolTip": "API\\DTOs\\Clients\\ClientDetailDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -705,11 +733,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 25,
               "Title": "RunTest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\RunTest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\RunTest.cs",
               "RelativeDocumentMoniker": "API\\RunTest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\RunTest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\RunTest.cs",
               "RelativeToolTip": "API\\RunTest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -717,11 +745,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 23,
               "Title": "NavMenu.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Layout\\NavMenu.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor",
               "RelativeToolTip": "frontend\\Components\\Layout\\NavMenu.razor",
               "ViewState": "AgIAAK4AAAAAAAAAAAAAAAIAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -729,11 +757,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 34,
               "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\ApplicationDbContext.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "API\\Data\\ApplicationDbContext.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\ApplicationDbContext.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\ApplicationDbContext.cs",
               "RelativeToolTip": "API\\Data\\ApplicationDbContext.cs",
               "ViewState": "AgIAAJkAAAAAAAAAAAAAAL4AAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -741,11 +769,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 29,
               "Title": "ClientsController.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\ClientsController.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\ClientsController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\ClientsController.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\ClientsController.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\ClientsController.cs",
               "RelativeToolTip": "API\\Controllers\\ClientsController.cs",
               "ViewState": "AgIAADMAAAAAAAAAAAAkwJIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -753,11 +781,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 35,
               "Title": "ApplicationUser.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\ApplicationUser.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\ApplicationUser.cs",
               "RelativeDocumentMoniker": "API\\Identity\\ApplicationUser.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\ApplicationUser.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\ApplicationUser.cs",
               "RelativeToolTip": "API\\Identity\\ApplicationUser.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -765,11 +793,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 31,
               "Title": "IdentitySeeder.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\IdentitySeeder.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\IdentitySeeder.cs",
               "RelativeDocumentMoniker": "API\\Identity\\IdentitySeeder.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\IdentitySeeder.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\IdentitySeeder.cs",
               "RelativeToolTip": "API\\Identity\\IdentitySeeder.cs",
               "ViewState": "AgIAAD0AAAAAAAAAAAAswGQAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -777,11 +805,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 30,
               "Title": "Client.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Client.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Client.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Client.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Client.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Client.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\Client.razor",
               "ViewState": "AgIAAMsBAAAAAAAAAAAowNUBAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -789,11 +817,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 28,
               "Title": "ClientService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\ClientService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\ClientService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\ClientService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\ClientService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\ClientService.cs",
               "RelativeToolTip": "frontend\\Services\\ClientService.cs",
               "ViewState": "AgIAACgAAAAAAAAAAAAQwHIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -801,11 +829,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 27,
               "Title": "ClientDetailDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientDetailDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientDetailDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\ClientDetailDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientDetailDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientDetailDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Clients\\ClientDetailDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -813,11 +841,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 41,
               "Title": "MessageDtos.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Messages\\MessageDtos.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Messages\\MessageDtos.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Messages\\MessageDtos.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Messages\\MessageDtos.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Messages\\MessageDtos.cs",
               "RelativeToolTip": "API\\DTOs\\Messages\\MessageDtos.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -825,11 +853,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 33,
               "Title": "DbInitializer.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\DbInitializer.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\DbInitializer.cs",
               "RelativeDocumentMoniker": "API\\Data\\DbInitializer.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\DbInitializer.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\DbInitializer.cs",
               "RelativeToolTip": "API\\Data\\DbInitializer.cs",
               "ViewState": "AgIAABwAAAAAAAAAAAAgwDcAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -837,11 +865,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 32,
               "Title": "ClientMessages.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\ClientMessages.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\ClientMessages.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\ClientMessages.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\ClientMessages.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\ClientMessages.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\ClientMessages.razor",
               "ViewState": "AgIAAB4BAAAAAAAAAAAswFgBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -849,11 +877,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 40,
               "Title": "IMeetingService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMeetingService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMeetingService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IMeetingService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMeetingService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMeetingService.cs",
               "RelativeToolTip": "API\\Services\\Interfaces\\IMeetingService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -861,11 +889,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 39,
               "Title": "IMessageService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMessageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMessageService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IMessageService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMessageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMessageService.cs",
               "RelativeToolTip": "API\\Services\\Interfaces\\IMessageService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABRAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -873,11 +901,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 38,
               "Title": "MessageService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\MessageService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\MessageService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAH8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -885,11 +913,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 36,
               "Title": "MessageController.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MessageController.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MessageController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\MessageController.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MessageController.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MessageController.cs",
               "RelativeToolTip": "API\\Controllers\\MessageController.cs",
               "ViewState": "AgIAADYAAAAAAAAAAAAmwF4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -897,23 +925,23 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 89,
+              "DocumentIndex": 92,
               "Title": "20260930191938_InitialMigration.cs",
               "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
               "ToolTip": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
-              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
+              "RelativeToolTip": "..\\..\\..\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAABxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-02T11:46:38.233Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 37,
               "Title": "MessageService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MessageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MessageService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\MessageService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MessageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MessageService.cs",
               "RelativeToolTip": "frontend\\Services\\MessageService.cs",
               "ViewState": "AgIAABwAAAAAAAAAAAAswFgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -921,11 +949,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 44,
               "Title": "Message.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Message.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Message.cs",
               "RelativeDocumentMoniker": "Shared\\Models\\Message.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Message.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Message.cs",
               "RelativeToolTip": "Shared\\Models\\Message.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -933,11 +961,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 46,
               "Title": "InvitationController.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\InvitationController.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\InvitationController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\InvitationController.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\InvitationController.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\InvitationController.cs",
               "RelativeToolTip": "API\\Controllers\\InvitationController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -945,11 +973,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 51,
               "Title": "Calender.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Calender.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Calender.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Calender.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Calender.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Calender.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\Calender.razor",
               "ViewState": "AgIAAAQBAAAAAAAAAAAAAAYAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -957,11 +985,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 45,
               "Title": "Documents.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Documents.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Documents.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Documents.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Documents.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Documents.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\Documents.razor",
               "ViewState": "AgIAABgAAAAAAAAAAAAAAGYBAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -969,11 +997,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 50,
               "Title": "CurrentUserService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\CurrentUserService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\CurrentUserService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\CurrentUserService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\CurrentUserService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\CurrentUserService.cs",
               "RelativeToolTip": "frontend\\Services\\CurrentUserService.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAABYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -981,11 +1009,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 49,
               "Title": "JwtAuthenticationHandler.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\JwtAuthenticationHandler.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\JwtAuthenticationHandler.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\JwtAuthenticationHandler.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\JwtAuthenticationHandler.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\JwtAuthenticationHandler.cs",
               "RelativeToolTip": "frontend\\Services\\JwtAuthenticationHandler.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADEAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -993,11 +1021,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 47,
               "Title": "DocumentService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\DocumentService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\DocumentService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\DocumentService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\DocumentService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\DocumentService.cs",
               "RelativeToolTip": "frontend\\Services\\DocumentService.cs",
               "ViewState": "AgIAACABAAAAAAAAAAAswFwBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1005,11 +1033,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 52,
               "Title": "AdvisorService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AdvisorService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AdvisorService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\AdvisorService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AdvisorService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AdvisorService.cs",
               "RelativeToolTip": "frontend\\Services\\AdvisorService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1017,11 +1045,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 48,
               "Title": "TokenStorageService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\TokenStorageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\TokenStorageService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\TokenStorageService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\TokenStorageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\TokenStorageService.cs",
               "RelativeToolTip": "frontend\\Services\\TokenStorageService.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAcwBsAAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1029,11 +1057,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 53,
               "Title": "AuthService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AuthService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\AuthService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AuthService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AuthService.cs",
               "RelativeToolTip": "frontend\\Services\\AuthService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1041,11 +1069,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 54,
               "Title": "InvitationService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\InvitationService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\InvitationService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\InvitationService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\InvitationService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\InvitationService.cs",
               "RelativeToolTip": "frontend\\Services\\InvitationService.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAcwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1053,11 +1081,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 58,
               "Title": "AdvisorDashboardDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "RelativeToolTip": "API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1065,11 +1093,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 56,
               "Title": "MeetingService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MeetingService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MeetingService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\MeetingService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MeetingService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MeetingService.cs",
               "RelativeToolTip": "frontend\\Services\\MeetingService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1077,11 +1105,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 55,
               "Title": "PolicyService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\PolicyService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\PolicyService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\PolicyService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\PolicyService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\PolicyService.cs",
               "RelativeToolTip": "frontend\\Services\\PolicyService.cs",
               "ViewState": "AgIAACoAAAAAAAAAAAAowDkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1089,11 +1117,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 60,
               "Title": "UpdatePolicyStatusRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1101,11 +1129,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 61,
               "Title": "UpdatePolicyRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1113,11 +1141,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 62,
               "Title": "PolicyDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\PolicyDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\PolicyDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\PolicyDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\PolicyDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\PolicyDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Policies\\PolicyDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1125,11 +1153,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 63,
               "Title": "CreateClientPolicyRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1137,11 +1165,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 64,
               "Title": "CreateCataloguePolicyRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1149,11 +1177,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 65,
               "Title": "RescheduleMeetingRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1161,11 +1189,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 57,
               "Title": "AdvisorService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AdvisorService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AdvisorService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\AdvisorService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AdvisorService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AdvisorService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\AdvisorService.cs",
               "ViewState": "AgIAAMsAAAAAAAAAAAAnwOoAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1173,11 +1201,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 59,
               "Title": "AdvisorDashboardDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1185,11 +1213,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 66,
               "Title": "MeetingDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\MeetingDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\MeetingDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Meetings\\MeetingDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\MeetingDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\MeetingDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Meetings\\MeetingDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1197,11 +1225,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 67,
               "Title": "BookMeetingRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1209,11 +1237,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 66,
+              "DocumentIndex": 69,
               "Title": "UpdateDocumentVisibilityRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1221,11 +1249,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 67,
+              "DocumentIndex": 70,
               "Title": "DocumentDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\DocumentDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\DocumentDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Documents\\DocumentDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\DocumentDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\DocumentDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Documents\\DocumentDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1233,11 +1261,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 68,
+              "DocumentIndex": 71,
               "Title": "UpdateClientRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1245,11 +1273,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 69,
+              "DocumentIndex": 72,
               "Title": "ClientListItemDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientListItemDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientListItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\ClientListItemDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientListItemDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientListItemDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Clients\\ClientListItemDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1257,11 +1285,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 70,
+              "DocumentIndex": 73,
               "Title": "RegisterResult.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterResult.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterResult.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\RegisterResult.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterResult.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterResult.cs",
               "RelativeToolTip": "Shared\\DTOs\\Auth\\RegisterResult.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1269,11 +1297,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 71,
+              "DocumentIndex": 74,
               "Title": "RegisterRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\RegisterRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Auth\\RegisterRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1281,11 +1309,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 72,
+              "DocumentIndex": 75,
               "Title": "LoginRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\LoginRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\LoginRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\LoginRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\LoginRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\LoginRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Auth\\LoginRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1293,11 +1321,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 65,
+              "DocumentIndex": 68,
               "Title": "UploadDocumentRequest.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
               "RelativeToolTip": "Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1305,11 +1333,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 73,
+              "DocumentIndex": 76,
               "Title": "AuthResponse.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\AuthResponse.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\AuthResponse.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\AuthResponse.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\AuthResponse.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\AuthResponse.cs",
               "RelativeToolTip": "Shared\\DTOs\\Auth\\AuthResponse.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1317,11 +1345,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 74,
+              "DocumentIndex": 77,
               "Title": "InstitutionItemDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1329,11 +1357,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 75,
+              "DocumentIndex": 78,
               "Title": "DeadlineItemDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1341,11 +1369,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 76,
+              "DocumentIndex": 79,
               "Title": "CasePipelineItemDto.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
               "RelativeToolTip": "Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1353,11 +1381,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 85,
+              "DocumentIndex": 88,
               "Title": "JwtTokenService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\JwtTokenService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\JwtTokenService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\JwtTokenService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\JwtTokenService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\JwtTokenService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\JwtTokenService.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAA1wCIAAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1365,11 +1393,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 77,
+              "DocumentIndex": 80,
               "Title": "Login.razor",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Login.razor",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
               "RelativeToolTip": "frontend\\Components\\Pages\\Login.razor",
               "ViewState": "AgIAAHUAAAAAAAAAAAAAAKIAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -1377,11 +1405,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 79,
+              "DocumentIndex": 82,
               "Title": "JwtSettings.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\JwtSettings.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\JwtSettings.cs",
               "RelativeDocumentMoniker": "API\\Identity\\JwtSettings.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\JwtSettings.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\JwtSettings.cs",
               "RelativeToolTip": "API\\Identity\\JwtSettings.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1389,11 +1417,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 78,
+              "DocumentIndex": 81,
               "Title": "AppRoles.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\AppRoles.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\AppRoles.cs",
               "RelativeDocumentMoniker": "API\\Identity\\AppRoles.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\AppRoles.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\AppRoles.cs",
               "RelativeToolTip": "API\\Identity\\AppRoles.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1401,11 +1429,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 82,
+              "DocumentIndex": 85,
               "Title": "DocumentService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\DocumentService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\DocumentService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\DocumentService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\DocumentService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\DocumentService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\DocumentService.cs",
               "ViewState": "AgIAACwAAAAAAAAAAAAuwCoAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1413,11 +1441,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 84,
+              "DocumentIndex": 87,
               "Title": "IBlobStorageService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IBlobStorageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IBlobStorageService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IBlobStorageService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IBlobStorageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IBlobStorageService.cs",
               "RelativeToolTip": "API\\Services\\Interfaces\\IBlobStorageService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1425,11 +1453,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 81,
+              "DocumentIndex": 84,
               "Title": "BlobStorageService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\BlobStorageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\BlobStorageService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\BlobStorageService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\BlobStorageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\BlobStorageService.cs",
               "RelativeToolTip": "API\\Services\\Implementations\\BlobStorageService.cs",
               "ViewState": "AgIAAAEAAAAAAAAAAAAqwBkAAABuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1437,11 +1465,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 80,
+              "DocumentIndex": 83,
               "Title": "AuthController.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\AuthController.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\AuthController.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\AuthController.cs",
               "RelativeToolTip": "API\\Controllers\\AuthController.cs",
               "ViewState": "AgIAAA8AAAAAAAAAAAA5wAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1449,11 +1477,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 83,
+              "DocumentIndex": 86,
               "Title": "IDocumentService.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IDocumentService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IDocumentService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IDocumentService.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IDocumentService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IDocumentService.cs",
               "RelativeToolTip": "API\\Services\\Interfaces\\IDocumentService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -1461,11 +1489,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 86,
+              "DocumentIndex": 89,
               "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\appsettings.json",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\appsettings.json",
               "RelativeDocumentMoniker": "frontend\\appsettings.json",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\appsettings.json",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\appsettings.json",
               "RelativeToolTip": "frontend\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
@@ -1473,11 +1501,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 87,
+              "DocumentIndex": 90,
               "Title": "DocumentLayout.json",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
               "RelativeDocumentMoniker": ".vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
               "RelativeToolTip": ".vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
@@ -1485,11 +1513,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 88,
+              "DocumentIndex": 91,
               "Title": "Advisor.cs",
-              "DocumentMoniker": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
               "RelativeDocumentMoniker": "Shared\\Models\\Advisor.cs",
-              "ToolTip": "C:\\Users\\thabo\\source\\repos\\thabo-div2\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
               "RelativeToolTip": "Shared\\Models\\Advisor.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAwAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
