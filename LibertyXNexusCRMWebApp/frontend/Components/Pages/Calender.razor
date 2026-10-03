@@ -6,6 +6,7 @@
 @inject CurrentUserService CurrentUser
 @inject MeetingService MeetingStore
 @inject MessageNotifier Notifier
+@inject IJSRuntime JS
 
 <PageTitle>Calendar | Nexus</PageTitle>
 
@@ -233,8 +234,9 @@
 
                         <button type="button"
                                 class="copy-button"
-                                disabled="@string.IsNullOrWhiteSpace(ClientBookingLink)">
-                            Copy
+                                disabled="@string.IsNullOrWhiteSpace(ClientBookingLink)"
+                                @onclick="CopyBookingLink">
+                            @(_copied ? "Copied!" : "Copy")
                         </button>
 
                     </div>
@@ -250,7 +252,7 @@
 </div>
 
 
-@code {
+            @code {
 
     private DateTime CurrentMonth { get; set; } =
         new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
@@ -292,6 +294,7 @@
         Notifier.MessageSent -= OnMeetingChanged;
     }
 
+    private bool _copied;
     private async Task LoadMeetings()
     {
         var (meetings, _) = await MeetingStore.GetForAdvisorAsync(AdvisorId);
@@ -305,20 +308,57 @@
             Type = "meeting"
         }).ToList();
 
-        TodayMeetings = confirmed
-            .Where(m => m.MeetingDate.ToLocalTime().Date == DateTime.Today)
-            .OrderBy(m => m.MeetingDate)
+        TodayMeetings = meetings
+            .Where(m => m.MeetingDate.ToLocalTime().Date == DateTime.Today && !string.Equals(m.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)).OrderBy(m => m.MeetingDate)
             .Select(m => new MeetingItem
             {
                 Time = m.MeetingDate.ToLocalTime().ToString("HH:mm"),
-                Title = $"Meeting with {m.ClientName}",
-                Method = string.Empty,
-                Status = "Confirmed"
+                Title = string.IsNullOrWhiteSpace(m.MeetingType) ? m.ClientName : $"{m.ClientName} — {m.MeetingType}",
+                Method = m.Location ?? string.Empty,
+                Status = MapDisplayStatus(m.Status)
             }).ToList();
 
         var weekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
         var weekEnd = weekStart.AddDays(7);
         MeetingsThisWeek = confirmed.Count(m => m.MeetingDate.ToLocalTime() >= weekStart && m.MeetingDate.ToLocalTime() < weekEnd);
+
+        ClientBookingLink = BuildBookingLink();
+    }
+
+    private static string MapDisplayStatus(string? backendStatus) => backendStatus?.ToLowerInvariant() switch
+    {
+        "confirmed" => "Confirmed",
+        "requested" => "Urgent",
+        "completed" => "Completed",
+        "rescheduled" => "Rescheduled",
+        _ => backendStatus ?? "Pending"
+    };
+
+    private string? BuildBookingLink()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentUser.FirstName) || string.IsNullOrWhiteSpace(CurrentUser.LastName))
+        {
+            return null;
+        }
+
+        var slug = $"{CurrentUser.FirstName}-{CurrentUser.LastName}".ToLowerInvariant().Replace(" ", "-");
+        return $"nexus.app/book/{slug}";
+    }
+
+    private async Task CopyBookingLink()
+    {
+        if (string.IsNullOrWhiteSpace(ClientBookingLink))
+        {
+            return;
+        }
+
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ClientBookingLink);
+
+        _copied = true;
+        StateHasChanged();
+        await Task.Delay(1500);
+        _copied = false;
+        StateHasChanged();
     }
 
 
@@ -394,7 +434,7 @@
         {
             "confirmed" => "status-confirmed",
             "urgent" => "status-urgent",
-            "pending" => "status-pending",
+            "pending" or "rescheduled" => "status-pending",
             _ => "status-neutral"
         };
     }
@@ -402,13 +442,17 @@
 
     private static string GetMeetingMethodIcon(string? method)
     {
-        return method?.ToLowerInvariant() switch
+        if (string.IsNullOrWhiteSpace(method))
         {
-            "teams" => "▣",
-            "call" => "◔",
-            "office" => "⌂",
-            _ => "•"
-        };
+            return "•";
+        }
+
+        var lower = method.ToLowerInvariant();
+
+        if (lower.Contains("team")) return "▣";
+        if (lower.Contains("call") || lower.Contains("phone")) return "◔";
+        if (lower.Contains("office")) return "⌂";
+        return "•";
     }
 
 

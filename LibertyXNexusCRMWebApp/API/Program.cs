@@ -102,6 +102,7 @@ namespace API
                 builder.Configuration.GetConnectionString("BlobStorage")!, 
                 builder.Configuration["BlobStorage:ContainerName"]);
             builder.Services.AddScoped<IDocumentService, DocumentService>();
+            builder.Services.AddScoped<ICaseService, CaseService>();
 
 
             var app = builder.Build();
