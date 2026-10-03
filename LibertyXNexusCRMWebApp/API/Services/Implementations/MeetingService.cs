@@ -10,11 +10,13 @@ namespace API.Services.Implementations
     {
         private readonly IMeetingRepository meetingRepository_;
         private readonly IClientRepository clientRepository_;
+        private readonly INotificationService notificationService_;
 
-        public MeetingService(IMeetingRepository meetingRepository, IClientRepository clientRepository)
+        public MeetingService(IMeetingRepository meetingRepository, IClientRepository clientRepository, INotificationService notificationService)
         {
             meetingRepository_ = meetingRepository;
             clientRepository_ = clientRepository;
+            notificationService_ = notificationService;
         }
 
         public async Task<MeetingDto?> GetByIdAsync(int meetingId)
@@ -56,11 +58,11 @@ namespace API.Services.Implementations
         {
             ValidateFutureDate(request.MeetingDate);
 
-            var clientExists = await clientRepository_.ExistsAsync(request.ClientId);
-           
-            if (!clientExists) {
-                throw new KeyNotFoundException($"Client {request.ClientId} was not found");
-            }
+            var client = await clientRepository_.GetByIdAsync(request.ClientId);
+            
+             if (client is null) {
+                 throw new KeyNotFoundException($"Client {request.ClientId} was not found");
+             }
 
             var hasConflict = await meetingRepository_.HasConflictAsync(request.MeetingDate, request.DurationMinutes);
             if (hasConflict) {
@@ -81,6 +83,17 @@ namespace API.Services.Implementations
             };
 
             var created = await meetingRepository_.AddAsync(meeting);
+
+            if (client.AdvisorId is int advisorId)
+            {
+                await notificationService_.NotifyAdvisorAsync(
+                    advisorId,
+                    NotificationType.MeetingBooked,
+                    $"{client.FullName} requested a meeting for {meeting.MeetingDate:ddd d MMM, HH:mm}.",
+                    "/calendar",
+                    client.ClientId);
+            }
+
             return await MapToDtoAsync(created);
         }
 
@@ -109,6 +122,19 @@ namespace API.Services.Implementations
             meeting.UpdatedAt = DateTime.UtcNow;
 
             await meetingRepository_.UpdateAsync(meeting);
+
+            var client = await clientRepository_.GetByIdAsync(meeting.ClientId);
+
+            if (client?.AdvisorId is int advisorId)
+            {
+                await notificationService_.NotifyAdvisorAsync(
+                    advisorId,
+                    NotificationType.MeetingCancelled,
+                    $"{client.FullName} cancelled a meeting for {meeting.MeetingDate:ddd d MMM, HH:mm}.",
+                    "/calendar",
+                    client.ClientId);
+            }
+
             return await MapToDtoAsync(meeting);
         }
 

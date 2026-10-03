@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\meetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\meetingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\controllers\\notificationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\controllers\\notificationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -95,10 +107,6 @@
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\components\\pages\\advisor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -173,10 +181,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\frontend\\services\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{90CF18BE-437A-4804-9E85-213B3EBFA1C5}|frontend\\frontend.csproj|solutionrelative:frontend\\services\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\implementations\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|solutionrelative:api\\services\\implementations\\messageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{CBFA08EA-AECE-205F-7B85-326FD0B81BAD}|API\\API.csproj|c:\\github\\libery_x_nexus_dev_team\\libertyxnexuscrmwebapp\\api\\services\\interfaces\\imessageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -406,6 +410,45 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "MeetingService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MeetingService.cs",
+              "RelativeDocumentMoniker": "API\\Services\\Implementations\\MeetingService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MeetingService.cs",
+              "RelativeToolTip": "API\\Services\\Implementations\\MeetingService.cs",
+              "ViewState": "AgIAAMsAAAAAAAAAAAAcwIQAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-03T11:37:04.335Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MessageService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
+              "RelativeDocumentMoniker": "API\\Services\\Implementations\\MessageService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
+              "RelativeToolTip": "API\\Services\\Implementations\\MessageService.cs",
+              "ViewState": "AgIAAIMAAAAAAAAAAAAgwH0AAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T11:46:37.948Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
+              "RelativeDocumentMoniker": "API\\Services\\Implementations\\AuthService.cs",
+              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
+              "RelativeToolTip": "API\\Services\\Implementations\\AuthService.cs",
+              "ViewState": "AgIAAK8AAAAAAAAAAAAmwMAAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-02T11:46:38.266Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "NotificationsController.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\NotificationsController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\NotificationsController.cs",
@@ -418,7 +461,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "NotificationService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\NotificationService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\NotificationService.cs",
@@ -431,7 +474,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "INotificationService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\INotificationService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\INotificationService.cs",
@@ -444,7 +487,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "NotificationRepository.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\NotificationRepository.cs",
               "RelativeDocumentMoniker": "API\\Repositories\\Implementations\\NotificationRepository.cs",
@@ -477,7 +520,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "INotificationRepository.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Interfaces\\INotificationRepository.cs",
               "RelativeDocumentMoniker": "API\\Repositories\\Interfaces\\INotificationRepository.cs",
@@ -490,7 +533,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "NotificationDtos.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Notifications\\NotificationDtos.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Notifications\\NotificationDtos.cs",
@@ -503,7 +546,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "NotificationType.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Enums\\NotificationType.cs",
               "RelativeDocumentMoniker": "Shared\\Models\\Enums\\NotificationType.cs",
@@ -516,7 +559,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "Notification.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Notification.cs",
               "RelativeDocumentMoniker": "Shared\\Models\\Notification.cs",
@@ -529,7 +572,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "MarketInformationService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MarketInformationService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\MarketInformationService.cs",
@@ -541,7 +584,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "IMarketInformationService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMarketInformationService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IMarketInformationService.cs",
@@ -553,7 +596,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 13,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Program.cs",
               "RelativeDocumentMoniker": "API\\Program.cs",
@@ -565,7 +608,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 48,
               "Title": "AdvisorRepository.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AdvisorRepository.cs",
               "RelativeDocumentMoniker": "API\\Repositories\\Implementations\\AdvisorRepository.cs",
@@ -577,19 +620,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
-              "RelativeDocumentMoniker": "API\\Services\\Implementations\\AuthService.cs",
-              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AuthService.cs",
-              "RelativeToolTip": "API\\Services\\Implementations\\AuthService.cs",
-              "ViewState": "AgIAANQAAAAAAAAAAAAQwOUAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:46:38.266Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\appsettings.json",
               "RelativeDocumentMoniker": "API\\appsettings.json",
@@ -602,7 +633,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "MarketInformationController.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MarketInformationController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\MarketInformationController.cs",
@@ -614,7 +645,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 15,
               "Title": "MarketInformationService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MarketInformationService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\MarketInformationService.cs",
@@ -626,7 +657,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 27,
               "Title": "PolicyServiceTests.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\PolicyServiceTests.cs",
               "RelativeDocumentMoniker": "API.Tests\\Services\\PolicyServiceTests.cs",
@@ -638,7 +669,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 14,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Program.cs",
               "RelativeDocumentMoniker": "frontend\\Program.cs",
@@ -650,7 +681,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 23,
               "Title": "InvitationService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\InvitationService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\InvitationService.cs",
@@ -662,7 +693,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "Chatbot.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Chatbot.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Chatbot.razor",
@@ -674,7 +705,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 31,
               "Title": "FaqController.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\FaqController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\FaqController.cs",
@@ -686,7 +717,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 25,
               "Title": "Advisor.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Advisor.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Advisor.razor",
@@ -698,7 +729,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 19,
               "Title": "ClientServiceTests.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\ClientServiceTests.cs",
               "RelativeDocumentMoniker": "API.Tests\\Services\\ClientServiceTests.cs",
@@ -710,7 +741,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 20,
               "Title": "CreateClientRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\CreateClientRequest.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Clients\\CreateClientRequest.cs",
@@ -722,7 +753,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 22,
               "Title": "MessageService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Backend\\Services\\MessageService.cs",
               "RelativeDocumentMoniker": "Backend\\Services\\MessageService.cs",
@@ -734,7 +765,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 24,
               "Title": "SmtpEmailService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\SmtpEmailService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\SmtpEmailService.cs",
@@ -746,7 +777,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 21,
               "Title": "IEmailService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IEmailService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IEmailService.cs",
@@ -758,7 +789,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 28,
               "Title": "MeetingServiceTests.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API.Tests\\Services\\MeetingServiceTests.cs",
               "RelativeDocumentMoniker": "API.Tests\\Services\\MeetingServiceTests.cs",
@@ -770,7 +801,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 26,
               "Title": "ClientService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\ClientService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\ClientService.cs",
@@ -782,7 +813,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 49,
               "Title": "AuditLogRepository.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Repositories\\Implementations\\AuditLogRepository.cs",
               "RelativeDocumentMoniker": "API\\Repositories\\Implementations\\AuditLogRepository.cs",
@@ -794,7 +825,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 29,
               "Title": "CreateClientRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\CreateClientRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\CreateClientRequest.cs",
@@ -806,7 +837,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 33,
               "Title": "ClientDetailDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Clients\\ClientDetailDto.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Clients\\ClientDetailDto.cs",
@@ -818,7 +849,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 32,
               "Title": "RunTest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\RunTest.cs",
               "RelativeDocumentMoniker": "API\\RunTest.cs",
@@ -830,7 +861,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 30,
               "Title": "NavMenu.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Layout\\NavMenu.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Layout\\NavMenu.razor",
@@ -842,7 +873,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 41,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "API\\Data\\ApplicationDbContext.cs",
@@ -854,7 +885,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 36,
               "Title": "ClientsController.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\ClientsController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\ClientsController.cs",
@@ -866,7 +897,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 42,
               "Title": "ApplicationUser.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\ApplicationUser.cs",
               "RelativeDocumentMoniker": "API\\Identity\\ApplicationUser.cs",
@@ -878,7 +909,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 38,
               "Title": "IdentitySeeder.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\IdentitySeeder.cs",
               "RelativeDocumentMoniker": "API\\Identity\\IdentitySeeder.cs",
@@ -890,7 +921,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 37,
               "Title": "Client.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Client.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Client.razor",
@@ -902,7 +933,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 35,
               "Title": "ClientService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\ClientService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\ClientService.cs",
@@ -914,7 +945,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 34,
               "Title": "ClientDetailDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientDetailDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\ClientDetailDto.cs",
@@ -926,7 +957,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 47,
               "Title": "MessageDtos.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Messages\\MessageDtos.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Messages\\MessageDtos.cs",
@@ -938,7 +969,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 40,
               "Title": "DbInitializer.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Data\\DbInitializer.cs",
               "RelativeDocumentMoniker": "API\\Data\\DbInitializer.cs",
@@ -950,7 +981,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 39,
               "Title": "ClientMessages.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\ClientMessages.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\ClientMessages.razor",
@@ -962,7 +993,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 46,
               "Title": "IMeetingService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMeetingService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IMeetingService.cs",
@@ -974,7 +1005,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 45,
               "Title": "IMessageService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IMessageService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IMessageService.cs",
@@ -987,18 +1018,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 43,
-              "Title": "MessageService.cs",
-              "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
-              "RelativeDocumentMoniker": "API\\Services\\Implementations\\MessageService.cs",
-              "ToolTip": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\MessageService.cs",
-              "RelativeToolTip": "API\\Services\\Implementations\\MessageService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAH8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T11:46:37.948Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 41,
               "Title": "MessageController.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\MessageController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\MessageController.cs",
@@ -1010,7 +1029,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 97,
+              "DocumentIndex": 98,
               "Title": "20260930191938_InitialMigration.cs",
               "DocumentMoniker": "C:\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\Users\\ethan\\Documents\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Migrations\\20260930191938_InitialMigration.cs",
@@ -1022,7 +1041,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 44,
               "Title": "MessageService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MessageService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\MessageService.cs",
@@ -1034,7 +1053,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 50,
               "Title": "Message.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Message.cs",
               "RelativeDocumentMoniker": "Shared\\Models\\Message.cs",
@@ -1046,7 +1065,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 52,
               "Title": "InvitationController.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\InvitationController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\InvitationController.cs",
@@ -1058,7 +1077,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 57,
               "Title": "Calender.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Calender.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Calender.razor",
@@ -1070,7 +1089,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 51,
               "Title": "Documents.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Documents.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Documents.razor",
@@ -1082,7 +1101,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 56,
               "Title": "CurrentUserService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\CurrentUserService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\CurrentUserService.cs",
@@ -1094,7 +1113,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 55,
               "Title": "JwtAuthenticationHandler.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\JwtAuthenticationHandler.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\JwtAuthenticationHandler.cs",
@@ -1106,7 +1125,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 53,
               "Title": "DocumentService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\DocumentService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\DocumentService.cs",
@@ -1118,7 +1137,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 58,
               "Title": "AdvisorService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AdvisorService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\AdvisorService.cs",
@@ -1130,7 +1149,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 54,
               "Title": "TokenStorageService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\TokenStorageService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\TokenStorageService.cs",
@@ -1142,7 +1161,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 59,
               "Title": "AuthService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\AuthService.cs",
@@ -1154,7 +1173,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 60,
               "Title": "InvitationService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\InvitationService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\InvitationService.cs",
@@ -1166,7 +1185,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 64,
               "Title": "AdvisorDashboardDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "RelativeDocumentMoniker": "API\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
@@ -1178,7 +1197,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 62,
               "Title": "MeetingService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\MeetingService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\MeetingService.cs",
@@ -1190,7 +1209,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 61,
               "Title": "PolicyService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Services\\PolicyService.cs",
               "RelativeDocumentMoniker": "frontend\\Services\\PolicyService.cs",
@@ -1202,7 +1221,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 65,
+              "DocumentIndex": 66,
               "Title": "UpdatePolicyStatusRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\UpdatePolicyStatusRequest.cs",
@@ -1214,7 +1233,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 66,
+              "DocumentIndex": 67,
               "Title": "UpdatePolicyRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\UpdatePolicyRequest.cs",
@@ -1226,7 +1245,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 67,
+              "DocumentIndex": 68,
               "Title": "PolicyDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\PolicyDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\PolicyDto.cs",
@@ -1238,7 +1257,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 68,
+              "DocumentIndex": 69,
               "Title": "CreateClientPolicyRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\CreateClientPolicyRequest.cs",
@@ -1250,7 +1269,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 69,
+              "DocumentIndex": 70,
               "Title": "CreateCataloguePolicyRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Policies\\CreateCataloguePolicyRequest.cs",
@@ -1262,7 +1281,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 70,
+              "DocumentIndex": 71,
               "Title": "RescheduleMeetingRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Meetings\\RescheduleMeetingRequest.cs",
@@ -1274,7 +1293,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 63,
               "Title": "AdvisorService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\AdvisorService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\AdvisorService.cs",
@@ -1286,7 +1305,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 65,
               "Title": "AdvisorDashboardDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\AdvisorDashboardDto.cs",
@@ -1298,7 +1317,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 71,
+              "DocumentIndex": 72,
               "Title": "MeetingDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\MeetingDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Meetings\\MeetingDto.cs",
@@ -1310,7 +1329,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 72,
+              "DocumentIndex": 73,
               "Title": "BookMeetingRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Meetings\\BookMeetingRequest.cs",
@@ -1322,7 +1341,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 74,
+              "DocumentIndex": 75,
               "Title": "UpdateDocumentVisibilityRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Documents\\UpdateDocumentVisibilityRequest.cs",
@@ -1334,7 +1353,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 75,
+              "DocumentIndex": 76,
               "Title": "DocumentDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\DocumentDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Documents\\DocumentDto.cs",
@@ -1346,7 +1365,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 76,
+              "DocumentIndex": 77,
               "Title": "UpdateClientRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\UpdateClientRequest.cs",
@@ -1358,7 +1377,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 77,
+              "DocumentIndex": 78,
               "Title": "ClientListItemDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Clients\\ClientListItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Clients\\ClientListItemDto.cs",
@@ -1370,7 +1389,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 78,
+              "DocumentIndex": 79,
               "Title": "RegisterResult.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterResult.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\RegisterResult.cs",
@@ -1382,7 +1401,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 79,
+              "DocumentIndex": 80,
               "Title": "RegisterRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\RegisterRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\RegisterRequest.cs",
@@ -1394,7 +1413,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 80,
+              "DocumentIndex": 81,
               "Title": "LoginRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\LoginRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\LoginRequest.cs",
@@ -1406,7 +1425,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 73,
+              "DocumentIndex": 74,
               "Title": "UploadDocumentRequest.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Documents\\UploadDocumentRequest.cs",
@@ -1418,7 +1437,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 81,
+              "DocumentIndex": 82,
               "Title": "AuthResponse.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Auth\\AuthResponse.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Auth\\AuthResponse.cs",
@@ -1430,7 +1449,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 82,
+              "DocumentIndex": 83,
               "Title": "InstitutionItemDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\InstitutionItemDto.cs",
@@ -1442,7 +1461,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 83,
+              "DocumentIndex": 84,
               "Title": "DeadlineItemDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\DeadlineItemDto.cs",
@@ -1454,7 +1473,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 84,
+              "DocumentIndex": 85,
               "Title": "CasePipelineItemDto.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
               "RelativeDocumentMoniker": "Shared\\DTOs\\Advisor\\CasePipelineItemDto.cs",
@@ -1466,7 +1485,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 93,
+              "DocumentIndex": 94,
               "Title": "JwtTokenService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\JwtTokenService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\JwtTokenService.cs",
@@ -1478,7 +1497,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 85,
+              "DocumentIndex": 86,
               "Title": "Login.razor",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\Components\\Pages\\Login.razor",
               "RelativeDocumentMoniker": "frontend\\Components\\Pages\\Login.razor",
@@ -1490,7 +1509,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 87,
+              "DocumentIndex": 88,
               "Title": "JwtSettings.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\JwtSettings.cs",
               "RelativeDocumentMoniker": "API\\Identity\\JwtSettings.cs",
@@ -1502,7 +1521,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 86,
+              "DocumentIndex": 87,
               "Title": "AppRoles.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Identity\\AppRoles.cs",
               "RelativeDocumentMoniker": "API\\Identity\\AppRoles.cs",
@@ -1514,7 +1533,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 90,
+              "DocumentIndex": 91,
               "Title": "DocumentService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\DocumentService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\DocumentService.cs",
@@ -1526,7 +1545,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 92,
+              "DocumentIndex": 93,
               "Title": "IBlobStorageService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IBlobStorageService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IBlobStorageService.cs",
@@ -1538,7 +1557,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 89,
+              "DocumentIndex": 90,
               "Title": "BlobStorageService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Implementations\\BlobStorageService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Implementations\\BlobStorageService.cs",
@@ -1550,7 +1569,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 88,
+              "DocumentIndex": 89,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "API\\Controllers\\AuthController.cs",
@@ -1562,7 +1581,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 91,
+              "DocumentIndex": 92,
               "Title": "IDocumentService.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\API\\Services\\Interfaces\\IDocumentService.cs",
               "RelativeDocumentMoniker": "API\\Services\\Interfaces\\IDocumentService.cs",
@@ -1574,7 +1593,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 94,
+              "DocumentIndex": 95,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\frontend\\appsettings.json",
               "RelativeDocumentMoniker": "frontend\\appsettings.json",
@@ -1586,7 +1605,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 95,
+              "DocumentIndex": 96,
               "Title": "DocumentLayout.json",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\.vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
               "RelativeDocumentMoniker": ".vs\\LibertyXNexusCRMWebApp.slnx\\v18\\DocumentLayout.json",
@@ -1598,7 +1617,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 96,
+              "DocumentIndex": 97,
               "Title": "Advisor.cs",
               "DocumentMoniker": "C:\\GitHub\\Libery_X_Nexus_Dev_Team\\LibertyXNexusCRMWebApp\\Shared\\Models\\Advisor.cs",
               "RelativeDocumentMoniker": "Shared\\Models\\Advisor.cs",
