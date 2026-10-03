@@ -2,6 +2,7 @@
 
 namespace frontend.Services;
 
+// DTOs
 public sealed record MarketInformationResult(
     string Query,
     DateTime RetrievedAtUtc,
@@ -17,15 +18,30 @@ public sealed record MarketNewsItem(
     string Summary,
     string? Sentiment);
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+/// <summary>
+/// Service that handles sending and recieving the info from the third party API
+/// </summary>
 public class MarketInformationService
 {
     private readonly HttpClient _http;
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    ///  Initializes a new instance of the <see cref="MarketInformationService"/> class with the specified <see cref="HttpClient"/>.
+    /// </summary>
+    /// <param name="http"></param>
     public MarketInformationService(HttpClient http)
     {
         _http = http;
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// Sends the user's query and receives an answer from the API
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
     public async Task<(MarketInformationResult? Result, string? Error)> GetAsync(string query)
     {
         try
@@ -53,3 +69,5 @@ public class MarketInformationService
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

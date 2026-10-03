@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 
 namespace frontend.Services
 {
+    // Data transfer objects (DTOs) for API requests and responses
     public record LoginRequest(string Email, string Password);
     public record RegisterRequest(string InvitationToken, string FirstName, string LastName, string Email, string? Phone, string Password);
     public record ApiAuthResponse(string AccessToken, string TokenType, DateTime ExpiresAtUtc, string Email, string Role);
@@ -14,12 +15,22 @@ namespace frontend.Services
     public record ForgotPasswordResult(bool Exists, string? ResetToken, string? Error);
     public record ResetPasswordResult(bool Success, string? Error);
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// Service for handling authentication-related operations.
+    /// </summary>
     public class AuthService
     {
         private readonly HttpClient _http;
         private readonly TokenStorageService _tokenStorage;
         private readonly CurrentUserService _currentUser;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthService"/> class.
+        /// </summary>
+        /// <param name="http"></param>
+        /// <param name="tokenStorage"></param>
+        /// <param name="currentUser"></param>
         public AuthService(HttpClient http, TokenStorageService tokenStorage, CurrentUserService currentUser)
         {
             _http = http;
@@ -27,6 +38,13 @@ namespace frontend.Services
             _currentUser = currentUser;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Attempts to log in a user with the provided email and password.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public async Task<AuthResult> LoginAsync(string email, string password)
         {
             try
@@ -156,6 +174,18 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Attempts to register a new user with the provided information and invitation token.
+        /// </summary>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="email"></param>
+        /// <param name="phone"></param>
+        /// <param name="identityNumber"></param>
+        /// <param name="password"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<AuthResult> RegisterAsync(string firstName, string lastName, string email, string? phone, string? identityNumber, string password, string token)
         {
             try
@@ -232,6 +262,11 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Attempts to retrieve the current user's information from the server.
+        /// </summary>
+        /// <returns></returns>
         private async Task<CurrentUserResponse?> GetCurrentUserAsync()
         {
             try
@@ -244,6 +279,12 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Attempts to initiate the forgot password process for the user with the provided email.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public async Task<ForgotPasswordResult> ForgotPasswordAsync(string email)
         {
             try
@@ -275,6 +316,14 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Attempts to reset the password for the user with the provided email, reset token, and new password.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="resetToken"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
         public async Task<ResetPasswordResult> ResetPasswordAsync(string email, string resetToken, string newPassword)
         {
             try
@@ -299,6 +348,11 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Logs out the current user by clearing the stored token and signing out the current user.
+        /// </summary>
+        /// <returns></returns>
         public async Task LogoutAsync()
         {
             await _tokenStorage.ClearTokenAsync();
@@ -306,6 +360,12 @@ namespace frontend.Services
             await _currentUser.SignOutAsync();
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Reads the error message from the HTTP response. If the response contains a JSON error message, it returns that message. Otherwise, it returns a default error message based on the HTTP status code.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
         private static async Task<string> ReadErrorMessageAsync(HttpResponseMessage response)
         {
             try
@@ -331,6 +391,13 @@ namespace frontend.Services
             };
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Represents the structure of an error response returned by the API. Contains a message describing the error.
+        /// </summary>
+        /// <param name="Message"></param>
         private record ErrorResponse(string? Message);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

@@ -3,15 +3,26 @@ using System.Net.Http.Json;
 
 namespace frontend.Services
 {
+    // Data transfer objects (DTOs) for API requests and responses
     public record CreateInvitationRequest(string Email);
     public record InvitationResult(bool Success, string Message, string? Token, DateTime? ExpiresAt);
     public record InvitationDetails(bool Valid, string Message, string Email, int AdvisorId, string AdvisorName);
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// Service for handling the generating and distribution of invitation links.
+    /// </summary>
     public class InvitationService
     {
         private readonly HttpClient _http;
         private readonly NavigationManager _navigation;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvitationService"/> class with the specified <see cref="HttpClient"/>.
+        /// </summary>
+        /// <param name="http"></param>
+        /// <param name="navigation"></param>
         public InvitationService(HttpClient http, NavigationManager navigation)
         {
             _http = http;
