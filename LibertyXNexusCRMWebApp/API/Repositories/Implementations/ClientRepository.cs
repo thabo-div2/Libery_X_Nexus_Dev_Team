@@ -18,6 +18,7 @@ namespace API.Repositories.Implementations
                             .Include(c => c.Policies)
                             .Include(c => c.Meetings)
                             .Include(c => c.Documents)
+                            .Include(c => c.Advisor)
                             .AsSplitQuery()
                             .AsNoTracking()
                             .FirstOrDefaultAsync(c => c.ClientId == clientId);

@@ -124,6 +124,7 @@ namespace API.Services.Implementations
             IdentificationNumber = client.IdentificationNumber,
             RiskProfile = client.RiskProfile,
             AdvisorId = client.AdvisorId,
+            AdvisorName = client.Advisor?.FullName,
             CreatedAt = client.CreatedAt,
             UpdatedAt = client.UpdatedAt,
             Status = client.Status.ToString(),

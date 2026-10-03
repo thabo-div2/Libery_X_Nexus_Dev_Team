@@ -35,6 +35,13 @@ namespace Shared.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        //Per step progress timsestamps
+        public DateTime? DetailsSubmittedAt { get; set; }
+        public DateTime? AdviserReviewAt { get; set; }
+        public DateTime? FicaVerifiedAt { get; set; }
+        public DateTime? SubmittedToLibertyAt { get; set; }
+        public DateTime? PolicyIssuedAt { get; set; }
     }
 }
 

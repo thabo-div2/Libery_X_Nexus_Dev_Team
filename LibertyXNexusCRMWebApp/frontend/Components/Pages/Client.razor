@@ -6,6 +6,7 @@
 @inject ClientService ClientDirectory
 @inject PolicyService PolicyDirectory
 @inject DocumentService DocumentDirectory
+@inject CaseService CaseDirectory
 
 <PageTitle>Client View | Nexus</PageTitle>
 
@@ -536,6 +537,67 @@
                 })
                 .ToList();
         }
+
+        // ---------------------------------------------------------
+        // Load the client's case and build the application
+        // progress steps from the case status.
+        // ---------------------------------------------------------
+        var (cases, caseError) = await CaseDirectory.GetForClientAsync(clientId);
+
+        if (caseError is null)
+        {
+            var currentCase = cases.FirstOrDefault();
+
+            if (currentCase is not null)
+            {
+                ApplicationSteps = BuildApplicationSteps(currentCase);
+
+                if (string.IsNullOrWhiteSpace(CurrentCaseNumber))
+                {
+                   CurrentCaseNumber = currentCase.CaseId.ToString();
+                }
+            }
+        }
+
+    }
+
+    private static List<ApplicationStep> BuildApplicationSteps(
+        CaseSummary currentCase)
+    {
+        var labels = new[]
+        {
+            "Details submitted",
+            "Adviser review",
+            "FICA verification",
+            "Submitted to Liberty",
+            "Policy issued"
+        };
+
+        // The step currently "in progress"
+        int currentIndex = currentCase.Status switch
+        {
+            "InProgress" => 1,
+            "OnHold" => 1,
+            "AwaitingApproval" => 3,
+            "Completed" => labels.Length, // past the end = all complete
+            _ => 0
+        };
+
+        var steps = new List<ApplicationStep>();
+
+        for (int i = 0; i < labels.Length; i++)
+        {
+            var status = i < currentIndex ? "complete" : i == currentIndex ? "current" : "";
+
+            steps.Add(new ApplicationStep
+            {
+                Title = labels[i],
+                Status = status,
+                DateText = status == "current" && currentCase.Status == "OnHold" ? "On hold" : string.Empty
+            });
+        }
+
+        return steps;
     }
 
 
