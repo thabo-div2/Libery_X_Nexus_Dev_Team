@@ -1,8 +1,13 @@
+using Shared.Models.Enums;
 using System.Net;
 using System.Net.Http.Json;
 
 namespace frontend.Services
 {
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// DTO representing a client profile, including personal, financial, and compliance information.
+    /// </summary>
     public sealed class ClientProfile
     {
         public int ClientId { get; set; }
@@ -41,6 +46,10 @@ namespace frontend.Services
 
         public string IdentityNumber => IdentificationNumber ?? string.Empty;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Normalizes the client's name by extracting first and last names from the full name if necessary.
+        /// </summary>
         public void NormalizeName()
         {
             if (string.IsNullOrWhiteSpace(FirstName) && string.IsNullOrWhiteSpace(LastName) && !string.IsNullOrWhiteSpace(FullName))
@@ -51,6 +60,8 @@ namespace frontend.Services
             }
         }
     }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>
     /// DTO containing personal, financial, and compliance data required to register a client.
     /// </summary>
@@ -86,20 +97,45 @@ namespace frontend.Services
     }
 
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     public class ClientService
     {
         private readonly HttpClient _http;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the ClientService class with the specified HttpClient.
+        /// </summary>
+        /// <param name="http"></param>
         public ClientService(HttpClient http)
         {
             _http = http;
         }
 
-        public async Task<(List<ClientProfile> Clients, string? Error)> SearchAsync(string? search)
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Searches for client profiles by name or email. If the search term is null or empty, all clients are returned.
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public async Task<(List<ClientProfile> Clients, string? Error)> SearchAsync(string? search, ClientStatus? status)
         {
             try
             {
-                var url = string.IsNullOrWhiteSpace(search) ? "clients" : $"clients?searchTerm={Uri.EscapeDataString(search)}";
+                var queryParams = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(search)) 
+                {
+                    queryParams.Add($"searchTerm={Uri.EscapeDataString(search.Trim())}");
+                }
+
+                if (status.HasValue)
+                {
+                    queryParams.Add($"status={Uri.EscapeDataString(status.Value.ToString())}");
+                }
+
+                var url = queryParams.Count > 0 ? $"clients?{string.Join("&", queryParams)}" : "clients";
+
                 var response = await _http.GetAsync(url);
 
                 if (!response.IsSuccessStatusCode)
@@ -108,8 +144,10 @@ namespace frontend.Services
                 }
 
                 var result = await response.Content.ReadFromJsonAsync<List<ClientProfile>>() ?? new List<ClientProfile>();
+                
                 foreach (var client in result)
                     client.NormalizeName();
+                
                 return (result, null);
             }
             catch (HttpRequestException)
@@ -122,6 +160,12 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Creates a new client profile.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<(ClientProfile? Client, string? Error)> CreateAsync(CreateClientRequest request)
         {
             try
@@ -148,6 +192,13 @@ namespace frontend.Services
             }
         }
 
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Fetches a client profile by its ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<(ClientProfile? Client, string? Error)> GetByIdAsync(int id)
         {
             try
@@ -193,3 +244,5 @@ namespace frontend.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

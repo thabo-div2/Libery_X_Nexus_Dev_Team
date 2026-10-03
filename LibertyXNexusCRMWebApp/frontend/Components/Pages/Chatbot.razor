@@ -354,7 +354,7 @@
         await CurrentUser.EnsureRestoredAsync();
 
         AdvisorId = CurrentUser.Id ?? DefaultAdvisorId;
-        var (clients, _) = await ClientDirectory.SearchAsync(null);
+        var (clients, _) = await ClientDirectory.SearchAsync(null, null);
         AdvisorClients = clients;
     }
 

@@ -8,6 +8,9 @@ using System.Security.Claims;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// Controller for managing policies. Provides endpoints for advisors and clients to create, read, update, and delete policy records, as well as to access the public policy catalogue.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
@@ -16,22 +19,48 @@ namespace API.Controllers
         private readonly IPolicyService policyService_;
         private readonly IClientService _clientService;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PoliciesController"/> class with the specified policy service and client service.
+        /// </summary>
+        /// <param name="policyService"></param>
+        /// <param name="clientService"></param>
         public PoliciesController(IPolicyService policyService, IClientService clientService)
         {
             policyService_ = policyService;
             _clientService = clientService;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets a value indicating whether the current user is an advisor based on their role claim. This property is used to determine access permissions for certain operations.
+        /// </summary>
         private bool IsAdvisor => User.IsInRole(AppRoles.Advisor);
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets the current advisor's ID from their login token so they can only access their own records.
+        /// </summary>
         private int CurrentAdvisorId => int.TryParse(User.FindFirstValue("advisorId"), out var id)
             ? id
             : throw new InvalidOperationException("Token has no advisorId claim.");
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets the current client's ID from their login token so they can only access their own records.
+        /// </summary>
         private int CurrentClientId => int.TryParse(User.FindFirstValue("clientId"), out var id)
             ? id
             : throw new InvalidOperationException("Token has no clientId claim.");
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Checks if the current user can access the specified client's records. 
+        /// Advisors can access their own clients, while clients can only access their own records. 
+        /// Returns true if access is allowed; otherwise, false.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         private async Task<bool> CanAccessClientAsync(int clientId)
         {
             if (!IsAdvisor)
@@ -43,6 +72,15 @@ namespace API.Controllers
             return client is not null && client.AdvisorId == CurrentAdvisorId;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets a policy by its ID. 
+        /// If the policy is a catalogue item (ClientId is null), it is visible to any authenticated user. 
+        /// If the policy belongs to a client, access is restricted to the client or their advisor. 
+        /// Returns 404 if the policy is not found or access is denied.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}")]
         public async Task<ActionResult<PolicyDto>> GetById(int id)
         {
@@ -60,6 +98,12 @@ namespace API.Controllers
             return Ok(policy);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets a policy by its ID, including any associated documents.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}/with-documents")]
         public async Task<ActionResult<PolicyDto>> GetWithDocuments(int id)
         {
@@ -74,13 +118,23 @@ namespace API.Controllers
             return Ok(policy);
         }
 
-        /// <summary>Public catalogue - any authenticated user (client or adviser) can browse it.</summary>
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets the public policy catalogue, which includes all policies that are not associated with a specific client (ClientId is null). This endpoint is accessible to any authenticated user.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("catalogue")]
         public async Task<ActionResult<IEnumerable<PolicyDto>>> GetCatalogue()
         {
             return Ok(await policyService_.GetCatalogueAsync());
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all policies associated with a specific client. Access is restricted to the client themselves or their advisor. Returns 403 if access is denied.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         [HttpGet("client/{clientId:int}")]
         public async Task<ActionResult<IEnumerable<PolicyDto>>> GetForClient(int clientId)
         {
@@ -88,7 +142,12 @@ namespace API.Controllers
             return Ok(await policyService_.GetForClientAsync(clientId));
         }
 
-        /// <summary>Advisor-only: cross-client view with no per-client scoping in the URL.</summary>
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all policies with the specified status. This endpoint is restricted to advisors only, as they manage the policies in the system. Returns 403 if the user is not an advisor.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         [HttpGet("status/{status}")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<PolicyDto>>> GetByStatus(PolicyStatus status)
@@ -96,7 +155,12 @@ namespace API.Controllers
             return Ok(await policyService_.GetByStatusAsync(status));
         }
 
-        /// <summary>Advisor-only - only the adviser manages what's in the public catalogue.</summary>
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Creates a new policy in the public catalogue. This endpoint is restricted to advisors only, as they manage the policies in the system. Returns 403 if the user is not an advisor.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("catalogue")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<PolicyDto>> CreateCatalogueItem([FromBody] CreateCataloguePolicyRequest request)
@@ -105,6 +169,13 @@ namespace API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.PolicyId }, created);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Creates a new policy for a specific client. Access is restricted to the client themselves or their advisor. Returns 403 if access is denied.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("client/{clientId:int}")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<PolicyDto>> CreateClientPolicy(int clientId, [FromBody] CreateClientPolicyRequest request)
@@ -126,6 +197,13 @@ namespace API.Controllers
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Updates an existing policy by its ID. Access is restricted to the client themselves or their advisor. Returns 404 if the policy is not found or access is denied, and 400 if the request data is invalid.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<PolicyDto>> Update(int id, [FromBody] UpdatePolicyRequest request)
@@ -148,6 +226,13 @@ namespace API.Controllers
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Updates the status of an existing policy by its ID. Access is restricted to advisors only, as they manage the policies in the system. Returns 404 if the policy is not found or access is denied, and 409 if the status update is invalid due to business rules.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}/status")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<PolicyDto>> UpdateStatus(int id, [FromBody] UpdatePolicyStatusRequest request)
@@ -173,6 +258,12 @@ namespace API.Controllers
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Deletes an existing policy by its ID. Access is restricted to advisors only, as they manage the policies in the system. Returns 404 if the policy is not found or access is denied.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:int}")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<IActionResult> Delete(int id)
@@ -189,3 +280,5 @@ namespace API.Controllers
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

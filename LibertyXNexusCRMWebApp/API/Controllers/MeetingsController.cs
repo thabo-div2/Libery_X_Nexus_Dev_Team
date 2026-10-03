@@ -9,6 +9,9 @@ using System.Security.Claims;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// Controller for managing meetings. Provides endpoints for advisors and clients to book, reschedule, cancel, confirm, and retrieve meetings.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
@@ -17,22 +20,46 @@ namespace API.Controllers
         private readonly IMeetingService meetingService_;
         private readonly IClientService _clientService;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MeetingsController"/> class with the specified meeting service and client service.
+        /// </summary>
+        /// <param name="meetingService"></param>
+        /// <param name="clientService"></param>
         public MeetingsController(IMeetingService meetingService, IClientService clientService)
         {
             meetingService_ = meetingService;
             _clientService = clientService;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets a value indicating whether the current user is an advisor based on their role claim.
+        /// </summary>
         private bool IsAdvisor => User.IsInRole(AppRoles.Advisor);
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets the current advisor's ID from their login token so they can only access their own records.
+        /// </summary>
         private int CurrentAdvisorId => int.TryParse(User.FindFirstValue("advisorId"), out var id)
             ? id
             : throw new InvalidOperationException("Token has no advisorId claim.");
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets the current client's ID from their login token so they can only access their own records.
+        /// </summary>
         private int CurrentClientId => int.TryParse(User.FindFirstValue("clientId"), out var id)
             ? id
             : throw new InvalidOperationException("Token has no clientId claim.");
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Checks if the current user can access the specified client's records. Advisors can access their own clients, while clients can only access their own records.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         private async Task<bool> CanAccessClientAsync(int clientId)
         {
             if (!IsAdvisor)
@@ -44,6 +71,12 @@ namespace API.Controllers
             return client is not null && client.AdvisorId == CurrentAdvisorId;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets a meeting by its ID. Returns 404 if the meeting does not exist or if the current user does not have access to it.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}")]
         public async Task<ActionResult<MeetingDto>> GetById(int id)
         {
@@ -55,6 +88,12 @@ namespace API.Controllers
             return Ok(meeting);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all meetings for a specific client. Returns 403 if the current user does not have access to the specified client's records.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         [HttpGet("client/{clientId:int}")]
         public async Task<ActionResult<IEnumerable<MeetingDto>>> GetForClient(int clientId)
         {
@@ -62,6 +101,12 @@ namespace API.Controllers
             return Ok(await meetingService_.GetForClientAsync(clientId));
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all upcoming meetings for a specific client or for all clients if no clientId is provided. Returns 403 if the current user does not have access to the specified client's records or if a client tries to access all upcoming meetings.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         [HttpGet("upcoming")]
         public async Task<ActionResult<IEnumerable<MeetingDto>>> GetUpcoming([FromQuery] int? clientId)
         {
@@ -71,15 +116,18 @@ namespace API.Controllers
                 return Ok(await meetingService_.GetUpcomingAsync(clientId));
             }
 
-            // No clientId supplied = "all upcoming meetings", which only
-            // makes sense as the adviser's own dashboard view. A client
-            // calling with no clientId would otherwise see every client's
-            // upcoming meetings system-wide.
+            // If no clientId is provided, only an advisor can access all upcoming meetings.
             if (!IsAdvisor) return Forbid();
             return Ok(await meetingService_.GetUpcomingAsync(null));
         }
 
-        /// <summary>Advisor-only: a firm-wide date range with no per-client scoping.</summary>
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all meetings within a specified date range. This endpoint is restricted to advisors only, as clients should not be able to access meetings outside of their own records.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
         [HttpGet("range")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<MeetingDto>>> GetByRange([FromQuery] DateTime from, [FromQuery] DateTime to)
@@ -94,7 +142,12 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>Advisor-only - same reasoning as GetByRange.</summary>
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all meetings with a specific status. This endpoint is restricted to advisors only, as clients should not be able to access meetings outside of their own records.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         [HttpGet("status/{status}")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<MeetingDto>>> GetByStatus(MeetingStatus status)
@@ -102,6 +155,14 @@ namespace API.Controllers
             return Ok(await meetingService_.GetByStatusAsync(status));
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Books a new meeting. 
+        /// Clients can only book meetings for themselves, while advisors can book meetings for any of their own clients. 
+        /// Returns 403 if the current user does not have access to the specified client's records.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<MeetingDto>> Book([FromBody] BookMeetingRequest request)
         {
@@ -129,6 +190,15 @@ namespace API.Controllers
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Reschedules an existing meeting. 
+        /// Clients can only reschedule their own meetings, while advisors can reschedule meetings for any of their own clients. 
+        /// Returns 404 if the meeting does not exist or if the current user does not have access to it.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}/reschedule")]
         public async Task<ActionResult<MeetingDto>> Reschedule(int id, [FromBody] RescheduleMeetingRequest request)
         {
@@ -156,6 +226,12 @@ namespace API.Controllers
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Cancels an existing meeting.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}/cancel")]
         public async Task<ActionResult<MeetingDto>> Cancel(int id)
         {
@@ -179,11 +255,12 @@ namespace API.Controllers
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
-        /// Advisor-only - confirming a meeting request is an adviser action
-        /// in this business flow, not something a client does to their own
-        /// request.
+        /// Confirms an existing meeting. This endpoint is restricted to advisors only, as clients should not be able to confirm meetings.
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}/confirm")]
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<MeetingDto>> Confirm(int id)
@@ -209,3 +286,5 @@ namespace API.Controllers
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

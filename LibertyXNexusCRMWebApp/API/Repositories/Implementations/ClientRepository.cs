@@ -58,6 +58,19 @@ namespace API.Repositories.Implementations
 
             var query = context.Clients.AsNoTracking().AsQueryable();
 
+            // Advisor should on be allowed to see their own clients, so filter by advisorId if provided
+            if (advisorId.HasValue)
+            {
+                query = query.Where(c => c.AdvisorId == advisorId);
+            }
+
+            // Filter by status if provided
+            if (status.HasValue)
+            {
+                query = query.Where(c => c.Status == status.Value);
+            }
+
+            // Filter by search term if provided
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var term = searchTerm.Trim();
@@ -65,14 +78,9 @@ namespace API.Repositories.Implementations
                 query = query.Where(c =>
                 EF.Functions.Like(c.FirstName, $"%{term}%") ||
                 EF.Functions.Like(c.LastName, $"%{term}%") ||
-                EF.Functions.Like(c.Email, $"%{term}%"));
+                EF.Functions.Like(c.Email, $"%{term}%") ||
+                EF.Functions.Like(c.FirstName + " " + c.LastName, $"%{term}%"));
             }
-
-            if (status.HasValue)
-                query = query.Where(c => c.Status == status.Value);
-
-            if (advisorId.HasValue)
-                query = query.Where(c => c.AdvisorId == advisorId.Value);
 
             return await query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).ToListAsync();
         }

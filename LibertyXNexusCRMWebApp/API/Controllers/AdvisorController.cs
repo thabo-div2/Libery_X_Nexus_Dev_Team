@@ -8,6 +8,9 @@ using System.Security.Claims;
 
 namespace API.Controllers
 {
+    /// <summary>
+    /// Controller for managing advisor-related operations. Provides endpoints for advisors to access their dashboard and other advisor-specific functionalities.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Authorize(Roles = AppRoles.Advisor)]
@@ -15,11 +18,21 @@ namespace API.Controllers
     {
         private readonly IAdvisorService _advisorService;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdvisorController"/> class with the specified advisor service.
+        /// </summary>
+        /// <param name="advisorService"></param>
         public AdvisorController(IAdvisorService advisorService)
         {
             _advisorService = advisorService;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Retrieves the dashboard data for the authenticated advisor. The dashboard includes various metrics and information relevant to the advisor's activities.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("dashboard")]
         public async Task<ActionResult<AdvisorDashboardDto>> GetDashboard()
         {
@@ -33,3 +46,5 @@ namespace API.Controllers
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

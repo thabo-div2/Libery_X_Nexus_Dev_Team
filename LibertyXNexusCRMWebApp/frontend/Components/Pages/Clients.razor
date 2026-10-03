@@ -25,8 +25,8 @@
                 <span class="search-icon">⌕</span>
 
                 <input type="text"
-                       value="@SearchText"
-                       @oninput="OnSearchInput"
+                       @bind="SearchText"
+                       @bind:event="oninput"
                        placeholder="Search by name, email or status" />
             </div>
 
@@ -50,7 +50,7 @@
         <section class="clients-list-panel">
 
             <div class="panel-heading">
-                <h2>@(IsLoading ? "Clients" : $"Clients ({ClientResults.Count})")</h2>
+                <h2>@(IsLoading ? "Clients" : $"Clients ({FilteredClients.Count()})")</h2>
             </div>
 
             <div class="clients-list">
@@ -61,7 +61,7 @@
                         <span>Loading clients…</span>
                     </div>
                 }
-                else if (ClientResults.Count == 0)
+                else if (!FilteredClients.Any())
                 {
                     <div class="clients-empty-state">
                         <span>No clients found.</span>
@@ -69,7 +69,7 @@
                 }
                 else
                 {
-                    @foreach (var client in ClientResults)
+                    @foreach (var client in FilteredClients)
                     {
                         <button type="button"
                                 class="client-item @(SelectedClient?.ClientId == client.ClientId ? "selected" : "")"
@@ -162,9 +162,16 @@
 @code {
     private List<ClientProfile> ClientResults = new();
     private ClientProfile? SelectedClient;
-    private string SearchText = string.Empty;
+    private string SearchText = "";
     private string? LoadError;
     private bool IsLoading = true;
+
+    private IEnumerable<ClientProfile> FilteredClients => ClientResults
+        .Where(c => string.IsNullOrEmpty(SearchText) ||
+                    c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                    c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                    c.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                    c.Status.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "search")]
@@ -197,7 +204,7 @@
         IsLoading = true;
         LoadError = null;
 
-        var (clients, error) = await ClientDirectory.SearchAsync(SearchText);
+        var (clients, error) = await ClientDirectory.SearchAsync(SearchText, null);
         ClientResults = clients;
         LoadError = error;
         IsLoading = false;
@@ -208,3 +215,5 @@
         }
     }
 }
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@
