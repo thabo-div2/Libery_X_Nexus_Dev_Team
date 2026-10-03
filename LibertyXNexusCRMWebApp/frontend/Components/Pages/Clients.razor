@@ -5,6 +5,8 @@
 @inject ClientService ClientDirectory
 @inject CurrentUserService CurrentUser
 @using Microsoft.AspNetCore.Components
+@inject CaseService CaseDirectory
+@using Shared.Models.Enums
 
 <PageTitle>Clients | Nexus</PageTitle>
 
@@ -73,7 +75,7 @@
                     {
                         <button type="button"
                                 class="client-item @(SelectedClient?.ClientId == client.ClientId ? "selected" : "")"
-                                @onclick="() => SelectedClient = client">
+                                        @onclick="() => SelectClient(client)">
 
                             <div class="client-item-top">
                                 <strong>@client.FirstName @client.LastName</strong>
@@ -142,8 +144,42 @@
                         <span class="detail-value">@SelectedClient.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</span>
                     </div>
 
-                </div>
+                    <div class="case-progress">
 
+                        <span class="detail-label">Application progress</span>
+
+                           @if (!string.IsNullOrEmpty(CaseError))
+                           {
+                             <p class="clients-error">@CaseError</p>
+                           }
+
+                           @if (SelectedCase is null)
+                           {
+                              <span class="detail-value">No case on file for this client yet.</span>
+                           }
+                            else
+                             {
+                                 <ul class="case-step-list">
+                                     @foreach (var (step, label) in CaseSteps)
+                                     {
+                                         var complete = IsStepComplete(step);
+
+                                         <li class="case-step-row">
+                                             <label class="case-step-check">
+                                                <input type="checkbox"
+                                                     checked="@complete"
+                                                     disabled="@complete"
+                                                     @onchange="() => MarkStep(step)" />
+                                                      @label
+                                             </label>
+                                         </li>
+                                     }
+                                 </ul>
+                            }
+
+                    </div>
+
+                </div>
             }
 
         </section>
@@ -165,6 +201,8 @@
     private string SearchText = "";
     private string? LoadError;
     private bool IsLoading = true;
+    private CaseSummary? SelectedCase;
+    private string? CaseError;
 
     private IEnumerable<ClientProfile> FilteredClients => ClientResults
         .Where(c => string.IsNullOrEmpty(SearchText) ||
@@ -213,6 +251,73 @@
         {
             SelectedClient = null;
         }
+    }
+
+    private static readonly (CaseStep Step, string Label)[] CaseSteps = new[]
+    {
+        (CaseStep.DetailsSubmitted, "Details submitted"),
+        (CaseStep.AdviserReview, "Adviser review"),
+        (CaseStep.FicaVerification, "FICA verification"),
+        (CaseStep.SubmittedToLiberty, "Submitted to Liberty"),
+        (CaseStep.PolicyIssued, "Policy issued"),
+    };
+
+    private async Task SelectClient(ClientProfile client)
+    {
+        SelectedClient = client;
+        await LoadCaseForSelectedClient();
+    }
+
+    private async Task LoadCaseForSelectedClient()
+    {
+        SelectedCase = null;
+        CaseError = null;
+
+        if (SelectedClient is null)
+        {
+            return;
+        }
+
+        var (cases, error) = await CaseDirectory.GetForClientAsync(SelectedClient.ClientId);
+        CaseError = error;
+        SelectedCase = cases.FirstOrDefault();
+    }
+
+    private bool IsStepComplete(CaseStep step)
+    {
+        if (SelectedCase is null)
+        {
+            return false;
+        }
+
+        return step switch
+        {
+            CaseStep.DetailsSubmitted => SelectedCase.DetailsSubmittedAt.HasValue,
+            CaseStep.AdviserReview => SelectedCase.AdviserReviewAt.HasValue,
+            CaseStep.FicaVerification => SelectedCase.FicaVerifiedAt.HasValue,
+            CaseStep.SubmittedToLiberty => SelectedCase.SubmittedToLibertyAt.HasValue,
+            CaseStep.PolicyIssued => SelectedCase.PolicyIssuedAt.HasValue,
+            _ => false
+        };
+    }
+
+    private async Task MarkStep(CaseStep step)
+    {
+        if (SelectedCase is null)
+        {
+            return;
+        }
+
+        var (updated, error) = await CaseDirectory.MarkStepCompleteAsync(SelectedCase.CaseId, step);
+
+        if (error is not null)
+        {
+            CaseError = error;
+            return;
+        }
+
+        SelectedCase = updated;
+        CaseError = null;
     }
 }
 

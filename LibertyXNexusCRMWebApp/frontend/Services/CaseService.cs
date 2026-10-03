@@ -1,4 +1,7 @@
-﻿namespace frontend.Services
+﻿using Shared.Models.Enums;
+using System.Net;
+
+namespace frontend.Services
 {
     public record CaseSummary(
             int CaseId,
@@ -7,7 +10,12 @@
             string Status,
             string? Notes,
             DateTime CreatedAt,
-            DateTime? UpdatedAt
+            DateTime? UpdatedAt,
+            DateTime? DetailsSubmittedAt,
+            DateTime? AdviserReviewAt,
+            DateTime? FicaVerifiedAt,
+            DateTime? SubmittedToLibertyAt,
+            DateTime? PolicyIssuedAt
         );
 
     public class CaseService
@@ -42,6 +50,35 @@
             catch (Exception ex)
             {
                 return (new List<CaseSummary>(), $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        public async Task<(CaseSummary? Case, string? Error)>
+            MarkStepCompleteAsync(int caseId, CaseStep step)
+        {
+            try
+            {
+                var response =await _http.PutAsJsonAsync($"Cases/{caseId}/steps/{step}",new {});
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return (null,"That case could not be found.");
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null,await ReadErrorAsync(response));
+                }
+                var updated = await response.Content.ReadFromJsonAsync<CaseSummary>();
+                return updated is null ? (null, "The API returned an empty case."): (updated, null);
+            }
+            catch (HttpRequestException)
+            {
+               return ( null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
             }
         }
 

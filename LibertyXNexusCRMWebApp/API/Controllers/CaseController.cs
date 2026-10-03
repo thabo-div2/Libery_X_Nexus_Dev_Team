@@ -1,6 +1,7 @@
 using API.DTOs.Cases;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models.Enums;
 
 namespace API.Controllers
 {
@@ -19,6 +20,19 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<CaseStatusDto>>> GetForClient(int clientId)
         {
             return Ok(await _caseService.GetForClientAsync(clientId));
+        }
+
+        [HttpPut("{id:int}/steps/{step}")]
+        public async Task<ActionResult<CaseStatusDto>> MarkStepComplete(int id, CaseStep step)
+        {
+            try
+            {
+                return Ok(await _caseService.MarkStepCompleteAsync(id,step));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new {message = ex.Message});
+            }
         }
     }
 }

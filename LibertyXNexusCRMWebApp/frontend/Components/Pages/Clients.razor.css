@@ -426,3 +426,48 @@
         flex-basis: 100%;
     }
 }
+
+/* ===============================
+   APPLICATION PROGRESS
+   =============================== */
+
+.case-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.case-step-list {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.case-step-row {
+    display: flex;
+    align-items: center;
+}
+
+.case-step-check {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #172e43;
+    font-size: 8px;
+    cursor: pointer;
+}
+
+.case-step-check input[type="checkbox"] {
+    width: 11px;
+    height: 11px;
+    accent-color: #123b5b;
+    cursor: pointer;
+}
+
+.case-step-check input[type="checkbox"]:disabled {
+    cursor: default;
+    opacity: 0.6;
+}

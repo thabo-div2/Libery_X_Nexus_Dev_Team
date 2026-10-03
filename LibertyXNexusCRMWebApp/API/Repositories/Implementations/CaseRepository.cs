@@ -63,5 +63,43 @@ namespace API.Repositories.Implementations
 
             await context.SaveChangesAsync();
         }
+
+        public async Task<Case> MarkStepCompleteAsync(int caseId, CaseStep step)
+        {
+            using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            var caseRecord = await context.Cases.Include(c => c.Policy).FirstOrDefaultAsync(c => c.CaseId == caseId);
+
+            if (caseRecord is null)
+             throw new KeyNotFoundException($"Case with id {caseId} was not found.");
+
+            var now = DateTime.UtcNow;
+
+            switch (step)
+            {
+                case CaseStep.DetailsSubmitted:
+                    caseRecord.DetailsSubmittedAt = now;
+                    break;
+                case CaseStep.AdviserReview:
+                    caseRecord.AdviserReviewAt = now;
+                    break;
+                case CaseStep.FicaVerification:
+                    caseRecord.FicaVerifiedAt = now;
+                    break;
+                case CaseStep.SubmittedToLiberty:
+                    caseRecord.SubmittedToLibertyAt = now;
+                    caseRecord.Status = CaseStatus.AwaitingApproval;
+                    break;
+                case CaseStep.PolicyIssued:
+                    caseRecord.PolicyIssuedAt = now;
+                    caseRecord.Status = CaseStatus.Completed;
+                    break;
+            }
+            caseRecord.UpdatedAt = now;
+
+            await context.SaveChangesAsync();
+
+            return caseRecord;
+        }
     }
 }
