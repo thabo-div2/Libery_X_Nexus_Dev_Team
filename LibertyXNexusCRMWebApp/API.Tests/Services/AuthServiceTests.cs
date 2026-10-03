@@ -22,6 +22,7 @@ namespace API.Tests.Services
         private readonly Mock<IClientRepository> _clientRepository;
         private readonly Mock<IInvitationRepository> _invitationRepository;
         private readonly Mock<IAuditLogRepository> _auditLogRepository;
+        private readonly Mock<INotificationService> _notificationService;
         private readonly AuthService _sut;
 
         public AuthServiceTests()
@@ -33,6 +34,7 @@ namespace API.Tests.Services
             _clientRepository = new Mock<IClientRepository>();
             _invitationRepository = new Mock<IInvitationRepository>();
             _auditLogRepository = new Mock<IAuditLogRepository>();
+            _notificationService = new Mock<INotificationService>();
 
             _auditLogRepository
                 .Setup(r => r.LogAsync(
@@ -51,7 +53,8 @@ namespace API.Tests.Services
                 _advisorRepository.Object,
                 _clientRepository.Object,
                 _invitationRepository.Object,
-                _auditLogRepository.Object);
+                _auditLogRepository.Object,
+                _notificationService.Object);
         }
 
         private static ApplicationUser MakeUser(string email, bool isActive = true) => new()

@@ -1,11 +1,12 @@
+using API.DTOs.Clients;
+using API.DTOs.Meetings;
 using API.Repositories.Interfaces;
 using API.Services.Implementations;
+using API.Services.Interfaces;
 using Moq;
-using API.DTOs.Clients;
 using Shared.Models;
 using Shared.Models.Enums;
 using Xunit;
-using API.DTOs.Meetings;
 
 namespace API.Tests.Services
 {
@@ -13,11 +14,12 @@ namespace API.Tests.Services
     {
         private readonly Mock<IMeetingRepository> _meetingRepository = new();
         private readonly Mock<IClientRepository> _clientRepository = new();
+        private readonly Mock<INotificationService> _notificationService = new();
         private readonly MeetingService _sut;
 
         public MeetingServiceTests()
         {
-            _sut = new MeetingService(_meetingRepository.Object, _clientRepository.Object);
+            _sut = new MeetingService(_meetingRepository.Object, _clientRepository.Object, _notificationService.Object);
         }
 
         private static Client MakeClient(int id = 1) => new()
@@ -60,6 +62,8 @@ namespace API.Tests.Services
         public async Task BookAsync_WithConflictingSlot_ThrowsInvalidOperationException()
         {
             _clientRepository.Setup(r => r.ExistsAsync(1)).ReturnsAsync(true);
+            _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(MakeClient(1));
+
             _meetingRepository
                 .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), 60, null))
                 .ReturnsAsync(true);

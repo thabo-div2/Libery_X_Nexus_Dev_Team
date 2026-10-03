@@ -100,6 +100,8 @@ namespace API
             builder.Services.AddScoped<IMeetingService, MeetingService>();
             builder.Services.AddScoped<IPolicyService, PolicyService>();
             builder.Services.AddScoped<IInvitationService, InvitationService>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddOptions<SmtpEmailOptions>()
                 .Bind(builder.Configuration.GetSection(SmtpEmailOptions.SectionName))
                 .ValidateOnStart();
