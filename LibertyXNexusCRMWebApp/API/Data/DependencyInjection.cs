@@ -10,6 +10,12 @@ namespace API.Data
 {
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Register Repositories and Add db context
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
         public static IServiceCollection AddDataAccessLayer(this IServiceCollection services, string connectionString)
         {
             services.AddDbContextFactory<ApplicationDbContext>(options =>
@@ -43,6 +49,7 @@ namespace API.Data
             return services;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
         /// Registers Blob Storage support.
         /// </summary>
@@ -64,25 +71,25 @@ namespace API.Data
 
             services.AddSingleton(sp =>
             {
-                if (!string.IsNullOrWhiteSpace(accountUrl))
-                {
-                    var credential = new DefaultAzureCredential();
-
-                    var blobServiceClient = new BlobServiceClient(
-                        new Uri(accountUrl),
-                        credential);
-
-                    return blobServiceClient;
-                }
-
+                // Local development: use connection string if one is configured.
                 if (!string.IsNullOrWhiteSpace(connectionString))
                 {
                     return new BlobServiceClient(connectionString);
                 }
 
+                // Azure deployment: fall back to managed identity / DefaultAzureCredential.
+                if (!string.IsNullOrWhiteSpace(accountUrl))
+                {
+                    var credential = new DefaultAzureCredential();
+
+                    return new BlobServiceClient(
+                        new Uri(accountUrl),
+                        credential);
+                }
+
                 throw new InvalidOperationException(
-                    "Blob Storage is not configured. Set BlobStorage:AccountUrl for Azure managed identity " +
-                    "or ConnectionStrings:BlobStorage for local development.");
+                    "Blob Storage is not configured. Set ConnectionStrings:BlobStorage " +
+                    "for local development or BlobStorage:AccountUrl for Azure.");
             });
 
             services.AddSingleton<IBlobStorageService, BlobStorageService>();
@@ -91,3 +98,5 @@ namespace API.Data
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

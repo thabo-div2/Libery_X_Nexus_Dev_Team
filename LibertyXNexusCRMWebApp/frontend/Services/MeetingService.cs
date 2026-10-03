@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 
 namespace frontend.Services
 {
+    // DTOs
     public record MeetingSummary(
         int MeetingId,
         int ClientId,
@@ -15,17 +16,33 @@ namespace frontend.Services
         DateTime CreatedAt,
         DateTime UpdatedAt);
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// Handles the advisors meetings
+    /// </summary>
     public class MeetingService
     {
         private readonly HttpClient _http;
         private readonly MessageNotifier _notifier;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="MeetingService"/> class with the specified <see cref="HttpClient"/> <see cref="MessageNotifier" />.
+        /// </summary>
+        /// <param name="http"></param>
+        /// <param name="notifier"></param>
         public MeetingService(HttpClient http, MessageNotifier notifier)
         {
             _http = http;
             _notifier = notifier;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all the meetings that are assigned to a client.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         public async Task<(List<MeetingSummary> Meetings, string? Error)> GetForClientAsync(int clientId)
         {
             try
@@ -49,6 +66,12 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all the meetings that are assigned to an advisor.
+        /// </summary>
+        /// <param name="advisorId"></param>
+        /// <returns></returns>
         public async Task<(List<MeetingSummary> Meetings, string? Error)> GetForAdvisorAsync(int advisorId)
         {
             try
@@ -72,6 +95,16 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Requests a meeting with an advisor.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="advisorId"></param>
+        /// <param name="fromAdvisor"></param>
+        /// <param name="meetingDate"></param>
+        /// <param name="notes"></param>
+        /// <returns></returns>
         public async Task<string?> RequestAsync(int clientId, int advisorId, bool fromAdvisor, DateTime meetingDate, string? notes)
         {
             try
@@ -105,6 +138,14 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Advisor responds to meeting requests
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <param name="clientId"></param>
+        /// <param name="accept"></param>
+        /// <returns></returns>
         public async Task<string?> RespondAsync(int meetingId, int clientId, bool accept)
         {
             try
@@ -129,6 +170,12 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Inspect the details of an individual meeting.
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <returns></returns>
         public async Task<(MeetingSummary? Meeting, string? Error)> GetByIdAsync(int meetingId)
         {
             try
@@ -156,6 +203,12 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Cancel an upcoming meeting that was accepted.
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <returns></returns>
         public async Task<string?> CancelAsync(int meetingId) 
         { 
             try 
@@ -176,6 +229,12 @@ namespace frontend.Services
             } 
         } 
         
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Confirm a meeting request.
+        /// </summary>
+        /// <param name="meetingId"></param>
+        /// <returns></returns>
         public async Task<string?> ConfirmAsync(int meetingId) 
         { 
             try 
@@ -195,8 +254,14 @@ namespace frontend.Services
             { 
                 return $"Something went wrong: {ex.Message}"; 
             } 
-        } 
-        
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Reads the error message from the HTTP response. If the response contains a JSON error message, it returns that message. Otherwise, it returns a default error message based on the HTTP status code.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
         private static async Task<string> ReadErrorAsync(HttpResponseMessage response) 
         { 
             var body = await response.Content.ReadAsStringAsync();
@@ -209,3 +274,5 @@ namespace frontend.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

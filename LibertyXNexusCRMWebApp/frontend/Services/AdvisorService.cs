@@ -2,15 +2,27 @@
 
 namespace frontend.Services
 {
+    /// <summary>
+    /// Service for interacting with the advisor-related API endpoints.
+    /// </summary>
     public class AdvisorService
     {
         private readonly HttpClient _http;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdvisorService"/> class with the specified <see cref="HttpClient"/>.
+        /// </summary>
+        /// <param name="http"></param>
         public AdvisorService(HttpClient http)
         {
             _http = http;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets the advisor dashboard data from the API.
+        /// </summary>
+        /// <returns></returns>
         public async Task<(AdvisorDashboardDto? Dashboard, string? Error)> GetDashboardAsync()
         {
             try
@@ -49,3 +61,5 @@ namespace frontend.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

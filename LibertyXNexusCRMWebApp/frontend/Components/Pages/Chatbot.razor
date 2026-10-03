@@ -116,6 +116,23 @@
                     }
                 }
 
+                @if (IsThinking)
+                {
+                    <div class="message-row assistant-message-row">
+                        <div class="assistant-avatar">
+                            N
+                        </div>
+
+                        <div class="message-content">
+                            <div class="message-bubble assistant-bubble typing-bubble">
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
 
                 @if (IsHandedToAdviser)
                 {
@@ -226,9 +243,11 @@
                 <button type="button"
                         class="send-button"
                         aria-label="Send message"
-                        @onclick="SendMessage">
+                        @onclick="SendMessage"
+                        disabled="@IsThinking"
+                >
 
-                    ➤
+                    @(IsThinking ? "..." : "➤")
 
                 </button>
 
@@ -330,6 +349,7 @@
 
     private string PromptText { get; set; } = string.Empty;
 
+    private bool IsThinking;
     private bool IsHandedToAdviser { get; set; }
 
     private List<AssistantConversationItem> ConversationItems { get; set; } = new();
@@ -371,7 +391,8 @@
     private async Task SendMessage()
     {
         var text = PromptText.Trim();
-        if (string.IsNullOrWhiteSpace(text))
+
+        if (string.IsNullOrWhiteSpace(text) || IsThinking)
         {
             return;
         }
@@ -384,57 +405,71 @@
         });
 
         PromptText = string.Empty;
-        StateHasChanged();
 
-        if (LooksLikeMeetingRequest(text))
+        IsThinking = true;
+        IsHandedToAdviser = false;
+
+        await InvokeAsync(StateHasChanged);
+
+        try
         {
-            await TypeAssistantReply("Sure — pick a client and a time below.");
-            OpenMeetingPanel(text);
-            return;
-        }
-
-        if (LooksLikeMarketQuestion(text))
-        {
-            var (marketInfo, marketError) = await MarketStore.GetAsync(text);
-
-            if (marketError is not null)
+            if (LooksLikeMeetingRequest(text))
             {
-                await TypeAssistantReply(marketError);
-                IsHandedToAdviser = false;
+                await TypeAssistantReply("Sure — pick a client and a time below.");
+                OpenMeetingPanel(text);
                 return;
             }
 
-            if (marketInfo is not null)
+            if (LooksLikeMarketQuestion(text))
             {
-                await TypeAssistantReply(BuildMarketReply(marketInfo));
-                IsHandedToAdviser = false;
-                return;
+                var (marketInfo, marketError) = await MarketStore.GetAsync(text);
+
+                if (marketError is not null)
+                {
+                    await TypeAssistantReply(marketError);
+                    IsHandedToAdviser = false;
+                    return;
+                }
+
+                if (marketInfo is not null)
+                {
+                    await TypeAssistantReply(BuildMarketReply(marketInfo));
+                    IsHandedToAdviser = false;
+                    return;
+                }
             }
+
+            var (matches, error) = await FaqStore.SearchAsync(text);
+
+            string replyText;
+            var handoff = false;
+
+            if (error is not null)
+            {
+                replyText = error;
+            }
+            else if (matches.Count > 0)
+            {
+                var bestMatch = matches[0];
+                replyText = bestMatch.Answer;
+                handoff = bestMatch.RequiresHandoff;
+            }
+            else
+            {
+                replyText =
+                    "I don't have an answer for that one on file — I'll pass it along to your adviser so they can help.";
+
+                handoff = true;
+            }
+
+            await TypeAssistantReply(replyText);
+            IsHandedToAdviser = handoff;
         }
-
-        var (matches, error) = await FaqStore.SearchAsync(text);
-
-        string replyText;
-        var handoff = false;
-
-        if (error is not null)
+        finally
         {
-            replyText = error;
+            IsThinking = false;
+            await InvokeAsync(StateHasChanged);
         }
-        else if (matches.Count > 0)
-        {
-            var bestMatch = matches[0];
-            replyText = bestMatch.Answer;
-            handoff = bestMatch.RequiresHandoff;
-        }
-        else
-        {
-            replyText = "I don't have an answer for that one on file — I'll pass it along to your adviser so they can help.";
-            handoff = true;
-        }
-
-        await TypeAssistantReply(replyText);
-        IsHandedToAdviser = handoff;
     }
 
     private async Task TypeAssistantReply(string text)
@@ -622,3 +657,5 @@
         public bool IsAssistant { get; set; }
     }
 }
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

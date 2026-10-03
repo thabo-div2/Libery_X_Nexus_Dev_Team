@@ -98,6 +98,9 @@ namespace frontend.Services
 
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// Service class for managing client profiles, including searching, creating, and retrieving client data from the backend API.
+    /// </summary>
     public class ClientService
     {
         private readonly HttpClient _http;
@@ -231,6 +234,12 @@ namespace frontend.Services
             }
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Reads the error message from an HTTP response and formats it for display.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
         private static async Task<string> ReadErrorAsync(HttpResponseMessage response)
         {
             var body = await response.Content.ReadAsStringAsync();

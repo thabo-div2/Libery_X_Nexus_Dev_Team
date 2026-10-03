@@ -2,17 +2,33 @@
 
 namespace frontend.Services
 {
+    /// <summary>
+    /// Handles the inserting jwt into headers and storing them
+    /// </summary>
     public class JwtAuthenticationHandler : DelegatingHandler
     {
         private readonly TokenStorageService _tokenStorage;
         private readonly ILogger<JwtAuthenticationHandler> _logger;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JwtAuthenticationHandler"/> class. 
+        /// </summary>
+        /// <param name="tokenStorage"></param>
+        /// <param name="logger"></param>
         public JwtAuthenticationHandler(TokenStorageService tokenStorage, ILogger<JwtAuthenticationHandler> logger)
         {
             _tokenStorage = tokenStorage;
             _logger = logger;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Attaches the jwt token to the header
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             // Get the JWT that was stored during login.
