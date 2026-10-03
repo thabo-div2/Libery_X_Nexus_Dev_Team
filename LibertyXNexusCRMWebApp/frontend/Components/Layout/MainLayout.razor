@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
+@using frontend.Services
 
 <div class="nexus-app">
 
@@ -14,12 +15,25 @@
 </div>
 
 @code {
+    // The chatbot and FAQs pages used to be single shared routes whose
+    // sidebar was decided by CurrentUser.IsClient/IsAdvisor at render time.
+    // That depended on ProtectedSessionStorage restoration finishing before
+    // the layout rendered, which isn't guaranteed (prerendering/circuit
+    // reconnects could render once before restoration completed) and could
+    // flash the advisor sidebar - and its "/advisor" links - to a client.
+    // Each role now has its own dedicated route instead, so this is pure
+    // URL matching with no dependency on restoration timing.
+    private static readonly string[] ClientPaths =
+    {
+        "client", "client-messages", "client-chatbot", "client-faqs"
+    };
+
     private bool IsClientRoute
     {
         get
         {
             var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?')[0].ToLowerInvariant();
-            return path == "client" || path == "client-messages";
+            return ClientPaths.Contains(path);
         }
     }
 }

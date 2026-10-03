@@ -1,0 +1,166 @@
+﻿@implements IAsyncDisposable
+@using frontend.Services
+@inject NotificationService Notifications
+@inject CurrentUserService CurrentUser
+@inject NavigationManager Nav
+
+<div class="notification-bell">
+    <button type="button"
+            class="notification-button"
+            aria-label="Notifications"
+            @onclick="ToggleOpen">
+        <span>♧</span>
+        @if (UnreadCount > 0)
+        {
+            <span class="notification-badge">@(UnreadCount > 9 ? "9+" : UnreadCount.ToString())</span>
+        }
+    </button>
+
+    @if (IsOpen)
+    {
+        <div class="notification-panel">
+            <div class="notification-panel-header">
+                <strong>Notifications</strong>
+                @if (Feed.Items.Any(i => !i.IsReminder && !i.IsRead))
+                {
+                    <button type="button" class="notification-mark-all" @onclick="MarkAllAsReadAsync">Mark all read</button>
+                }
+            </div>
+
+            @if (IsLoading)
+            {
+                <p class="notification-empty">Loading…</p>
+            }
+            else if (Feed.Items.Count == 0)
+            {
+                <p class="notification-empty">You're all caught up.</p>
+            }
+            else
+            {
+                <ul class="notification-list">
+                    @foreach (var item in Feed.Items)
+                    {
+                        <li class="notification-item @(item.IsReminder ? "is-reminder" : "") @(!item.IsReminder && !item.IsRead ? "is-unread" : "")"
+                            @onclick="() => HandleClickAsync(item)">
+                            <span class="notification-dot"></span>
+                            <div class="notification-item-body">
+                                <span class="notification-item-message">@item.Message</span>
+                                <span class="notification-item-meta">
+                                    @(item.IsReminder ? "Reminder" : item.CreatedAt.ToLocalTime().ToString("d MMM, HH:mm"))
+                                </span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool IsOpen;
+    private bool IsLoading;
+    private NotificationFeed Feed = new(0, new List<NotificationItem>());
+    private int UnreadCount;
+    private PeriodicTimer? _timer;
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+
+        if (CurrentUser.Id is int advisorId)
+        {
+            UnreadCount = await Notifications.GetUnreadCountForAdvisorAsync(advisorId);
+        }
+
+        _cts = new CancellationTokenSource();
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(45));
+        _ = PollAsync(_cts.Token);
+    }
+
+    private async Task PollAsync(CancellationToken token)
+    {
+        try
+        {
+            while (_timer is not null && await _timer.WaitForNextTickAsync(token))
+            {
+                if (CurrentUser.Id is not int advisorId) continue;
+
+                UnreadCount = await Notifications.GetUnreadCountForAdvisorAsync(advisorId);
+
+                if (IsOpen)
+                {
+                    Feed = await Notifications.GetFeedForAdvisorAsync(advisorId);
+                }
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when the component is disposed.
+        }
+    }
+
+    private async Task ToggleOpen()
+    {
+        IsOpen = !IsOpen;
+
+        if (IsOpen && CurrentUser.Id is int advisorId)
+        {
+            IsLoading = true;
+            Feed = await Notifications.GetFeedForAdvisorAsync(advisorId);
+            UnreadCount = Feed.UnreadCount;
+            IsLoading = false;
+        }
+    }
+
+    private async Task HandleClickAsync(NotificationItem item)
+    {
+        if (!item.IsReminder && !item.IsRead)
+        {
+            await Notifications.MarkAsReadAsync(item.NotificationId);
+
+            if (CurrentUser.Id is int advisorId)
+            {
+                UnreadCount = await Notifications.GetUnreadCountForAdvisorAsync(advisorId);
+            }
+
+            Feed = Feed with
+            {
+                Items = Feed.Items
+                    .Select(i => i.NotificationId == item.NotificationId && !i.IsReminder ? i with { IsRead = true } : i)
+                    .ToList()
+            };
+        }
+
+        IsOpen = false;
+
+        if (!string.IsNullOrWhiteSpace(item.LinkUrl))
+        {
+            Nav.NavigateTo(item.LinkUrl);
+        }
+    }
+
+    private async Task MarkAllAsReadAsync()
+    {
+        if (CurrentUser.Id is not int advisorId) return;
+
+        await Notifications.MarkAllAsReadAsync(advisorId);
+        UnreadCount = 0;
+
+        Feed = Feed with
+        {
+            Items = Feed.Items.Select(i => i.IsReminder ? i : i with { IsRead = true }).ToList()
+        };
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _cts?.Cancel();
+        _timer?.Dispose();
+        _cts?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

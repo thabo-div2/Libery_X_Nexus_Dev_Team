@@ -75,5 +75,16 @@ namespace API.Repositories.Implementations
                         .SetProperty(n => n.IsRead, true)
                         .SetProperty(n => n.ReadAt, DateTime.UtcNow));
         }
+
+        public async Task MarkAllAsReadForAdvisorAsync(int advisorId)
+        {
+            using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            await context.Notifications
+                .Where(n => n.AdvisorId == advisorId)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(n => n.IsRead, true)
+                .SetProperty(n => n.ReadAt, DateTime.UtcNow));
+        }
     }
 }

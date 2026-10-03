@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents a meeting scheduled between a client and an advisor.
+    /// </summary>
     public class Meeting
     {
         [Key]
@@ -38,3 +41,5 @@ namespace Shared.Models
         public DateTime UpdatedAt { get; set; }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents a document associated with a client and a policy.
+    /// </summary>
     public class Document
     {
         [Key]
@@ -44,3 +47,5 @@ namespace Shared.Models
         public string UploadedBy { get; set; }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

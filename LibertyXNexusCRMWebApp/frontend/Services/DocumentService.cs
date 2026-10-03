@@ -157,49 +157,23 @@ namespace frontend.Services
             }
         }
 
-        public async Task<(DocumentSummary? Document, string? Error)> UploadAsync(int clientId, int policyId, DocumentType documentType, string uploadedby, IBrowserFile file, bool visibleToClient = false)
+        public async Task<(DocumentSummary? Document, string? Error)> UploadAsync(int clientId, int policyId, DocumentType documentType, string uploadedby, string fileName, string contentType, byte[] fileBytes, bool visibleToClient = false)
         {
             try
             {
-                const long maxFileSize = 30_000_000;
-
-                await using var stream = file.OpenReadStream(maxFileSize);
-
                 using var content = new MultipartFormDataContent();
 
-                content.Add(
-                    new StringContent(clientId.ToString()),
-                    "ClientId");
+                content.Add(new StringContent(clientId.ToString()), "ClientId");
+                content.Add(new StringContent(policyId.ToString()), "PolicyId");
+                content.Add(new StringContent(documentType.ToString()), "DocumentType");
+                content.Add(new StringContent(visibleToClient.ToString()), "VisibleToClient");
+                content.Add(new StringContent(uploadedby), "UploadedBy");
 
-                content.Add(
-                    new StringContent(policyId.ToString()),
-                    "PolicyId");
+                var fileContent = new ByteArrayContent(fileBytes);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(
+                    string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType);
 
-                content.Add(
-                    new StringContent(documentType.ToString()),
-                    "DocumentType");
-
-                content.Add(
-                    new StringContent(visibleToClient.ToString()),
-                    "VisibleToClient");
-
-                content.Add(
-                    new StringContent(uploadedby),
-                    "UploadedBy");
-
-                var fileContent = new StreamContent(stream);
-
-                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(
-                        string.IsNullOrWhiteSpace(file.ContentType)
-                            ? "application/octet-stream"
-                            : file.ContentType
-                    );
-
-                content.Add(
-                    fileContent,
-                    "File",
-                    file.Name
-                    );
+                content.Add(fileContent, "File", fileName);
 
                 var response = await _http.PostAsync("documents", content);
 
@@ -213,7 +187,6 @@ namespace frontend.Services
                 return document is null
                     ? (null, "The API returned an empty document.")
                     : (document, null);
-
             }
             catch (IOException)
             {

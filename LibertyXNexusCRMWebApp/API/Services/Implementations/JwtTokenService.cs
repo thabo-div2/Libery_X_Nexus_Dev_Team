@@ -16,11 +16,24 @@ namespace API.Services.Implementations
     {
         private readonly JwtSettings _settings;
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JwtTokenService"/> class with the specified JWT settings.
+        /// </summary>
+        /// <param name="options"></param>
         public JwtTokenService(IOptions<JwtSettings> options)
         {
             _settings = options.Value;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Creates a JWT token for the given user with the specified roles and optional extra claims.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="roles"></param>
+        /// <param name="extraClaims"></param>
+        /// <returns></returns>
         public (string Token, DateTime ExpiresAtUtc) CreateToken(
         ApplicationUser user,
         IEnumerable<string> roles,
@@ -30,9 +43,7 @@ namespace API.Services.Implementations
             {
                 new(JwtRegisteredClaimNames.Sub, user.Id),
                 new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new("firstName", user.UserName ?? string.Empty),
-                new("lastName", user.NormalizedUserName ?? string.Empty)
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             claims.AddRange(roles.Select(r => new Claim("role", r)));
@@ -60,3 +71,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

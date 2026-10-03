@@ -1,4 +1,8 @@
-﻿<div class="nav-menu">
+﻿@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject NavigationManager NavigationManager
+
+<div class="nav-menu">
 
     <!-- BRAND -->
     <a class="brand" href="@(IsClientView ? "/client" : "/advisor")">
@@ -32,6 +36,23 @@
 
                 <span class="nav-icon">▱</span>
                 <span class="nav-text">Messages</span>
+
+            </NavLink>
+
+
+            <NavLink class="nav-item"
+                     href="/client-chatbot">
+
+                <span class="nav-icon">⌘</span>
+                <span class="nav-text">AI assistant</span>
+
+            </NavLink>
+
+            <NavLink class="nav-item"
+                     href="/client-faqs">
+
+                <span class="nav-icon">?</span>
+                <span class="nav-text">FAQs</span>
 
             </NavLink>
         }
@@ -90,6 +111,14 @@
                 <span class="nav-text">AI assistant</span>
 
             </NavLink>
+
+            <NavLink class="nav-item"
+                     href="/faqs">
+
+                <span class="nav-icon">?</span>
+                <span class="nav-text">FAQs</span>
+
+            </NavLink>
         }
 
     </nav>
@@ -110,14 +139,13 @@
             <span>@ProfileRole</span>
         </div>
 
-        <a href="/"
-           class="logout-button"
-           title="Sign out"
-           aria-label="Sign out">
-
+        <button type="button"
+                class="logout-button"
+                title="Sign out"
+                aria-label="Sign out"
+                @onclick="LogoutAsync">
             ↪
-
-        </a>
+        </button>
 
     </div>
 
@@ -127,7 +155,37 @@
     [Parameter]
     public bool IsClientView { get; set; }
 
-    private string ProfileName => IsClientView ? "My Account" : "Rudolf Bekker";
+    private string ProfileName => !string.IsNullOrWhiteSpace(CurrentUser.FirstName) || !string.IsNullOrWhiteSpace(CurrentUser.LastName)
+            ? $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim()
+            : (IsClientView ? "My Account" : "Financial Advisor");
+
     private string ProfileRole => IsClientView ? "Client" : "Financial Advisor";
-    private string ProfileInitials => IsClientView ? "ME" : "RB";
+
+    private string ProfileInitials
+    {
+        get
+        {
+            var first = CurrentUser.FirstName?.Trim();
+            var last = CurrentUser.LastName?.Trim();
+
+            if (string.IsNullOrEmpty(first) && string.IsNullOrEmpty(last))
+            {
+                return IsClientView ? "ME" : "FA";
+            }
+
+            var initials = $"{(first?.Length > 0 ? first[0] : ' ')}{(last?.Length > 0 ? last[0] : ' ')}".Trim();
+            return initials.Length > 0 ? initials.ToUpperInvariant() : (IsClientView ? "ME" : "FA");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+    }
+
+    private async Task LogoutAsync()
+    {
+        await CurrentUser.SignOutAsync();
+        NavigationManager.NavigateTo("/");
+    }
 }

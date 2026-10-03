@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents an audit log entry that records actions performed by users in the system, including details about the action, the affected entity, and the timestamp.
+    /// </summary>
     public class AuditLog
     {
         [Key]
@@ -32,3 +35,5 @@ namespace Shared.Models
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

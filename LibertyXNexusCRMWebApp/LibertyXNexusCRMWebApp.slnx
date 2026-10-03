@@ -2,4 +2,5 @@
   <Project Path="API/API.csproj" />
   <Project Path="frontend/frontend.csproj" />
   <Project Path="Shared/Shared.csproj" Id="76d5a132-171e-41cf-9dc7-b55cec7b2372" />
+  <Project Path="API.Tests/API.Tests.csproj" />
 </Solution>

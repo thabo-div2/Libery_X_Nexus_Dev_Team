@@ -10,5 +10,6 @@ namespace API.Repositories.Interfaces
         Task<int> GetUnreadCountForAdvisorAsync(int advisorId);
         Task MarkAsReadAsync(int notificationId);
         Task MarkAllAsReadForClientAsync(int clientId);
+        Task MarkAllAsReadForAdvisorAsync(int advisorId);
     }
 }

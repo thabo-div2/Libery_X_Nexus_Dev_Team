@@ -22,8 +22,9 @@ namespace API.Services.Implementations
         private readonly IClientRepository _clientRepository;
         private readonly IInvitationRepository _invitationRepository;
         private readonly IAuditLogRepository _auditLogRepository;
+        private readonly INotificationService _notificationService;
 
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtTokenService jwtTokenService, ILogger<AuthService> logger, IAdvisorRepository advisorRepository, IClientRepository clientRepository, IInvitationRepository invitationRepository, IAuditLogRepository auditLogRepository)
+        public AuthService(UserManager<ApplicationUser> userManager, IJwtTokenService jwtTokenService, ILogger<AuthService> logger, IAdvisorRepository advisorRepository, IClientRepository clientRepository, IInvitationRepository invitationRepository, IAuditLogRepository auditLogRepository, INotificationService notificationService)
         {
             _userManager = userManager;
             _jwtTokenService = jwtTokenService;
@@ -32,6 +33,7 @@ namespace API.Services.Implementations
             _clientRepository = clientRepository;
             _invitationRepository = invitationRepository;
             _auditLogRepository = auditLogRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)
@@ -75,6 +77,8 @@ namespace API.Services.Implementations
                 if (advisor is not null)
                 {
                     extraClaims.Add(new Claim("advisorId", advisor.AdvisorId.ToString()));
+                    extraClaims.Add(new Claim("firstName", advisor.FirstName ?? string.Empty));
+                    extraClaims.Add(new Claim("lastName", advisor.LastName ?? string.Empty));
                     domainUserId = advisor.AdvisorId;
                 }
                 userRole = UserRole.FinancialAdviser;
@@ -86,6 +90,8 @@ namespace API.Services.Implementations
                 if (client is not null)
                 {
                     extraClaims.Add(new Claim("clientId", client.ClientId.ToString()));
+                    extraClaims.Add(new Claim("firstName", client.FirstName ?? string.Empty));
+                    extraClaims.Add(new Claim("lastName", client.LastName ?? string.Empty));
                     domainUserId = client.ClientId;
                 }
                 userRole = UserRole.RegisteredClient;
@@ -179,6 +185,13 @@ namespace API.Services.Implementations
                 entityAffected: "Client",
                 details: $"Client self-registered from a invitation {invitation.InvitationId}");
 
+            await _notificationService.NotifyAdvisorAsync(
+                invitation.AdvisorId,
+                NotificationType.ClientRegistered,
+                $"{createdClient.FirstName} {createdClient.LastName} has accepted the invitation.",
+                "/clients",
+                createdClient.ClientId);
+
             var extraClaims = new[]
             {
                 new Claim("clientId", createdClient.ClientId.ToString())
@@ -197,6 +210,64 @@ namespace API.Services.Implementations
                     Role = AppRoles.Client
                 }
             };
+        }
+
+        public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null || !user.IsActive)
+            {
+                // Deliberately distinguishable from the "exists" case: the
+                // client explicitly asked to tell the user whether the email
+                // is on file, rather than returning a generic message either
+                // way (the more conservative, information-hiding approach).
+                return new ForgotPasswordResponse
+                {
+                    Exists = false,
+                    ResetToken = null
+                };
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            return new ForgotPasswordResponse
+            {
+                Exists = true,
+                ResetToken = resetToken
+            };
+        }
+
+        public async Task<ResetPasswordResult> ResetPasswordAsync(ResetPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null || !user.IsActive)
+            {
+                return new ResetPasswordResult
+                {
+                    Success = false,
+                    Error = "No account was found for that email."
+                };
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, request.ResetToken, request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return new ResetPasswordResult
+                {
+                    Success = false,
+                    Error = string.Join("; ", result.Errors.Select(e => e.Description))
+                };
+            }
+
+            // A successful reset clears any lockout, same as a successful login would.
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            _logger.LogInformation("Password reset completed for {UserId}", user.Id);
+
+            return new ResetPasswordResult { Success = true };
         }
     }
 }

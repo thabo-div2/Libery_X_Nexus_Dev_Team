@@ -18,7 +18,7 @@ namespace API
 {
     public partial class Program
     {
-        public static async Task Main(string[] args) 
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +29,13 @@ namespace API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var containerName = builder.Configuration["BlobStorage:ContainerName"];
-
             var dataDirectory = Path.Combine(builder.Environment.ContentRootPath, "Data");
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")?.Replace("[DataPath]", dataDirectory);
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("ConnectionStrings:DefaultConnection is missing.");
+            }
 
             builder.Services.AddDataAccessLayer(connectionString!);
 
@@ -52,7 +54,8 @@ namespace API
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             })
             .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
             // JWT Bearer Authentication
             builder.Services.AddOptions<JwtSettings>()
@@ -67,20 +70,20 @@ namespace API
                     var jwt = jwtOptions.Value;
                     options.MapInboundClaims = false;
 
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = jwt.Issuer,
-                    ValidateAudience = true,
-                    ValidAudience = jwt.Audience,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
-                    ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 },
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1),
-                    RoleClaimType = "role"
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwt.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwt.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+                        ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 },
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.FromMinutes(1),
+                        RoleClaimType = "role"
+                    };
+                });
 
             builder.Services.AddAuthorizationBuilder().SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
@@ -97,12 +100,22 @@ namespace API
             builder.Services.AddScoped<IMeetingService, MeetingService>();
             builder.Services.AddScoped<IPolicyService, PolicyService>();
             builder.Services.AddScoped<IInvitationService, InvitationService>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddOptions<SmtpEmailOptions>()
+                .Bind(builder.Configuration.GetSection(SmtpEmailOptions.SectionName))
+                .ValidateOnStart();
+            builder.Services.AddScoped<IEmailService, SmtpEmailService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddBlobStorage(
-                builder.Configuration.GetConnectionString("BlobStorage")!, 
+                builder.Configuration.GetConnectionString("BlobStorage"),
+                builder.Configuration["BlobStorage:AccountUrl"],
                 builder.Configuration["BlobStorage:ContainerName"]);
             builder.Services.AddScoped<IDocumentService, DocumentService>();
             builder.Services.AddScoped<ICaseService, CaseService>();
+            builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
+            builder.Services.AddHttpClient<IMarketInformationService, MarketInformationService>();
+            builder.Services.AddScoped<IFaqService, FaqService>();
 
 
             var app = builder.Build();

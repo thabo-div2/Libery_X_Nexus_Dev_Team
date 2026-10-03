@@ -50,6 +50,18 @@ namespace API.Services.Implementations
 
             var today = DateTime.UtcNow.Date;
 
+            var totalClients = await context.Clients
+                .AsNoTracking()
+                .CountAsync(c => c.AdvisorId == advisorId);
+
+            var meetingsToday = await context.Meetings
+                .AsNoTracking()
+                .CountAsync(m =>
+                    m.Client.AdvisorId == advisorId &&
+                    m.MeetingDate >= today &&
+                    m.MeetingDate < today.AddDays(1) &&
+                    m.Status != MeetingStatus.Cancelled);
+
             var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
 
             var endOfWeek = startOfWeek.AddDays(7);
@@ -205,6 +217,7 @@ namespace API.Services.Implementations
             var dashboard = new AdvisorDashboardDto
             {
                 AdvisorFirstName = advisor.FirstName,
+                AdvisorLastName = advisor.LastName,
                 ActiveCases = activeCases,
                 WaitingOnClient = waitingOnClient,
                 AwaitingDocuments = awaitingDocuments,
@@ -216,7 +229,9 @@ namespace API.Services.Implementations
                 PipelineValueChange = pipelineValueChange,
                 Cases = caseItems,
                 Deadlines = deadlines,
-                Institutions = institutions
+                Institutions = institutions,
+                TotalClients = totalClients,
+                MeetingsToday = meetingsToday
             };
 
             return dashboard;
@@ -231,7 +246,7 @@ namespace API.Services.Implementations
 
             var change = ((current - previous) / previous) * 100;
 
-            return $"{(change >= 0 ? "+" : "")}{change:D0}%";
+            return $"{(change >= 0 ? "+" : "")}{change:F0}%";
         }
     }
 

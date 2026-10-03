@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents a query submitted by a client, which can be assigned to an advisor for response.
+    /// </summary>
     public class ClientQuery
     {
         [Key]
@@ -38,3 +41,5 @@ namespace Shared.Models
         public DateTime? RespondedAt { get; set; }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

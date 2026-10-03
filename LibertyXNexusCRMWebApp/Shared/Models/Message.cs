@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents a message exchanged between a client and an advisor.
+    /// </summary>
     public class Message
     {
         [Key]
@@ -29,3 +32,5 @@ namespace Shared.Models
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

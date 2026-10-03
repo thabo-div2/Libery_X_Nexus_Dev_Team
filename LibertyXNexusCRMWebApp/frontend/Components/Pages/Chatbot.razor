@@ -1,5 +1,12 @@
-﻿@page "/chatbot"
+@page "/chatbot"
 @layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject FaqService FaqStore
+@inject MarketInformationService MarketStore
+@inject MeetingService MeetingStore
+@inject ClientService ClientDirectory
+@inject CurrentUserService CurrentUser
 
 <PageTitle>Nexus Assistant | Nexus</PageTitle>
 
@@ -21,11 +28,11 @@
                        placeholder="Search clients, cases, documents" />
             </div>
 
-            <button type="button"
-                    class="notification-button"
-                    aria-label="Notifications">
-                ♧
-            </button>
+            <a href="/faqs" class="browse-faqs-button">
+                Browse FAQs
+            </a>
+
+            <NotificationBell />
 
         </div>
 
@@ -139,24 +146,71 @@
             </div>
 
 
+            @if (ShowMeetingForm)
+            {
+                <div class="meeting-request-form">
+
+                    <label>
+                        Client
+                        <select @bind="SelectedClientId">
+                            <option value="">Select a client…</option>
+                            @foreach (var client in AdvisorClients)
+                            {
+                                <option value="@client.ClientId">@client.FirstName @client.LastName</option>
+                            }
+                        </select>
+                    </label>
+
+                    @if (!string.IsNullOrWhiteSpace(MatchedClientName))
+                    {
+                        <p class="meeting-match-note">Booking with @MatchedClientName — change above if that's not who you meant.</p>
+                    }
+
+                    <label>
+                        Date &amp; time
+                        <input type="datetime-local" @bind="MeetingDateTimeInput" />
+                    </label>
+
+                    <label>
+                        Notes (optional)
+                        <input type="text" @bind="MeetingNotes" placeholder="What would you like to discuss?" />
+                    </label>
+
+                    <div class="meeting-form-actions">
+                        <button type="button" class="meeting-cancel-button" @onclick="CloseMeetingForm">Cancel</button>
+                        <button type="button" class="meeting-send-button" @onclick="SendMeetingRequest">Request meeting</button>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(MeetingError))
+                    {
+                        <p class="assistant-form-error">@MeetingError</p>
+                    }
+
+                </div>
+            }
+
+
             <div class="quick-prompts">
 
-                <button type="button" class="prompt-chip">
-                    Where is my application right now?
-                </button>
-
-                <button type="button" class="prompt-chip">
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is FICA and why do you need it?")'>
                     What is FICA and why do you need it?
                 </button>
 
-                <button type="button" class="prompt-chip">
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I upload a document?")'>
                     How do I upload a document?
                 </button>
 
-                <a href="/calendar"
-                   class="prompt-chip prompt-link">
-                    Book a meeting with my adviser
-                </a>
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I message my adviser?")'>
+                    How do I message my adviser?
+                </button>
+
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is happening in the global markets today?")'>
+                    What is happening in the markets today?
+                </button>
+
+                <button type="button" class="prompt-chip prompt-link" @onclick='() => SendQuickPrompt("Book a meeting with a client")'>
+                    Book a meeting with a client
+                </button>
 
             </div>
 
@@ -165,11 +219,14 @@
 
                 <input type="text"
                        @bind="PromptText"
+                       @bind:event="oninput"
+                       @onkeydown="HandlePromptKeyDown"
                        placeholder="Ask about documents, status or next steps..." />
 
                 <button type="button"
                         class="send-button"
-                        aria-label="Send message">
+                        aria-label="Send message"
+                        @onclick="SendMessage">
 
                     ➤
 
@@ -208,6 +265,11 @@
                     <div class="capability-item">
                         <span class="capability-dot"></span>
                         <span>Book or reschedule meetings</span>
+                    </div>
+
+                    <div class="capability-item">
+                        <span class="capability-dot"></span>
+                        <span>Provide current market and economic information</span>
                     </div>
 
                 </div>
@@ -257,22 +319,299 @@
 
 @code {
 
+    private const int TypingDelayMs = 15;
+    private const int DefaultAdvisorId = 1;
+
+    private static readonly string[] MeetingKeywords =
+    {
+        "book a meeting", "book meeting", "schedule a meeting", "schedule meeting",
+        "set up a meeting", "arrange a meeting", "request a meeting"
+    };
+
     private string PromptText { get; set; } = string.Empty;
 
     private bool IsHandedToAdviser { get; set; }
 
     private List<AssistantConversationItem> ConversationItems { get; set; } = new();
 
+    private int AdvisorId;
 
-    /// <summary>
-    /// Later, load the existing assistant conversation and escalation
-    /// status from the application's service layer.
-    /// </summary>
-    protected override Task OnInitializedAsync()
+    private List<ClientProfile> AdvisorClients = new();
+    private int? SelectedClientId;
+    private string? MatchedClientName;
+
+    private bool ShowMeetingForm;
+    private DateTime? MeetingDateTimeInput;
+    private string MeetingNotes = string.Empty;
+    private string? MeetingError;
+
+    protected override async Task OnInitializedAsync()
     {
-        return Task.CompletedTask;
+        await CurrentUser.EnsureRestoredAsync();
+
+        AdvisorId = CurrentUser.Id ?? DefaultAdvisorId;
+        var (clients, _) = await ClientDirectory.SearchAsync(null, null);
+        AdvisorClients = clients;
     }
 
+    private async Task SendQuickPrompt(string text)
+    {
+        PromptText = text;
+        await SendMessage();
+    }
+
+    private async Task HandlePromptKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        var text = PromptText.Trim();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return;
+        }
+
+        ConversationItems.Add(new AssistantConversationItem
+        {
+            Text = text,
+            TimeText = DateTime.Now.ToString("HH:mm"),
+            IsAssistant = false
+        });
+
+        PromptText = string.Empty;
+        StateHasChanged();
+
+        if (LooksLikeMeetingRequest(text))
+        {
+            await TypeAssistantReply("Sure — pick a client and a time below.");
+            OpenMeetingPanel(text);
+            return;
+        }
+
+        if (LooksLikeMarketQuestion(text))
+        {
+            var (marketInfo, marketError) = await MarketStore.GetAsync(text);
+
+            if (marketError is not null)
+            {
+                await TypeAssistantReply(marketError);
+                IsHandedToAdviser = false;
+                return;
+            }
+
+            if (marketInfo is not null)
+            {
+                await TypeAssistantReply(BuildMarketReply(marketInfo));
+                IsHandedToAdviser = false;
+                return;
+            }
+        }
+
+        var (matches, error) = await FaqStore.SearchAsync(text);
+
+        string replyText;
+        var handoff = false;
+
+        if (error is not null)
+        {
+            replyText = error;
+        }
+        else if (matches.Count > 0)
+        {
+            var bestMatch = matches[0];
+            replyText = bestMatch.Answer;
+            handoff = bestMatch.RequiresHandoff;
+        }
+        else
+        {
+            replyText = "I don't have an answer for that one on file — I'll pass it along to your adviser so they can help.";
+            handoff = true;
+        }
+
+        await TypeAssistantReply(replyText);
+        IsHandedToAdviser = handoff;
+    }
+
+    private async Task TypeAssistantReply(string text)
+    {
+        var message = new AssistantConversationItem
+        {
+            Text = string.Empty,
+            TimeText = DateTime.Now.ToString("HH:mm"),
+            IsAssistant = true
+        };
+
+        ConversationItems.Add(message);
+
+        foreach (var character in text)
+        {
+            message.Text += character;
+            StateHasChanged();
+            await Task.Delay(TypingDelayMs);
+        }
+    }
+
+    private static bool LooksLikeMarketQuestion(string text)
+    {
+        var lower = text.ToLowerInvariant();
+
+        var marketTerms = new[]
+        {
+            "market", "markets", "jse", "rand", "zar", "usd/zar", "exchange rate",
+            "stock", "stocks", "share price", "shares", "s&p", "nasdaq", "dow jones",
+            "interest rate", "interest rates", "inflation", "economy", "economic",
+            "economic news", "financial news", "monetary policy", "federal reserve", "fed",
+            "sarb", "oil price", "oil prices", "gold price", "gold prices", "commodity",
+            "commodities", "global finance", "financial markets", "recession"
+        };
+
+        return marketTerms.Any(term => lower.Contains(term));
+    }
+
+    private static string BuildMarketReply(MarketInformationResult result)
+    {
+        var lines = new List<string>
+        {
+            "Here is the latest market and financial-news information I could retrieve:",
+            string.Empty
+        };
+
+        if (!string.IsNullOrWhiteSpace(result.UsdZarRate))
+        {
+            lines.Add($"USD/ZAR: {result.UsdZarRate}");
+            lines.Add(string.Empty);
+        }
+
+        if (result.News.Count > 0)
+        {
+            lines.Add("Latest relevant financial news:");
+
+            foreach (var item in result.News.Take(5))
+            {
+                var published = FormatPublishedTime(item.PublishedAt);
+                var source = string.IsNullOrWhiteSpace(item.Source) ? "Unknown source" : item.Source;
+                var sentiment = string.IsNullOrWhiteSpace(item.Sentiment) ? string.Empty : $" ({item.Sentiment})";
+
+                lines.Add($"• {item.Title}");
+                lines.Add($"  Source: {source}{sentiment}{published}");
+                if (!string.IsNullOrWhiteSpace(item.Summary))
+                {
+                    lines.Add($"  {item.Summary}");
+                }
+                if (!string.IsNullOrWhiteSpace(item.Url))
+                {
+                    lines.Add($"  {item.Url}");
+                }
+            }
+        }
+
+        lines.Add(string.Empty);
+        lines.Add($"Information retrieved: {result.RetrievedAtUtc.ToLocalTime():d MMM yyyy, HH:mm} SAST.");
+        lines.Add("This is general market information, not personalised investment advice.");
+
+        return string.Join("", lines);
+    }
+
+    private static string FormatPublishedTime(string publishedAt)
+    {
+        if (DateTime.TryParseExact(
+                publishedAt,
+                "yyyyMMdd'T'HHmmss",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.AssumeUniversal,
+                out var parsed))
+        {
+            return $" · {parsed.ToLocalTime():d MMM yyyy, HH:mm} SAST";
+        }
+
+        return string.Empty;
+    }
+
+    private static bool LooksLikeMeetingRequest(string text)
+    {
+        var lower = text.ToLowerInvariant();
+        return MeetingKeywords.Any(keyword => lower.Contains(keyword));
+    }
+
+    private void OpenMeetingPanel(string? clientNameHint)
+    {
+        ShowMeetingForm = true;
+        MeetingError = null;
+        MeetingDateTimeInput = null;
+        MeetingNotes = string.Empty;
+        SelectedClientId = null;
+        MatchedClientName = null;
+
+        if (!string.IsNullOrWhiteSpace(clientNameHint))
+        {
+            var match = FindClientByName(clientNameHint);
+            if (match is not null)
+            {
+                SelectedClientId = match.ClientId;
+                MatchedClientName = $"{match.FirstName} {match.LastName}";
+            }
+        }
+    }
+
+    private ClientProfile? FindClientByName(string text)
+    {
+        var lower = text.ToLowerInvariant();
+        var words = lower.Split(new[] { ' ', ',', '.', '?', '!', ':', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+        return AdvisorClients.FirstOrDefault(c =>
+            lower.Contains($"{c.FirstName} {c.LastName}".ToLowerInvariant()) ||
+            words.Contains(c.FirstName.ToLowerInvariant()) ||
+            words.Contains(c.LastName.ToLowerInvariant()));
+    }
+
+    private void CloseMeetingForm()
+    {
+        ShowMeetingForm = false;
+        MeetingError = null;
+    }
+
+    private async Task SendMeetingRequest()
+    {
+        MeetingError = null;
+
+        if (MeetingDateTimeInput is null)
+        {
+            MeetingError = "Choose a date and time for the meeting.";
+            return;
+        }
+
+        if (SelectedClientId is null)
+        {
+            MeetingError = "Select a client for this meeting.";
+            return;
+        }
+
+        var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
+
+        var error = await MeetingStore.RequestAsync(SelectedClientId.Value, AdvisorId, fromAdvisor: true, meetingDateUtc, MeetingNotes);
+
+        if (error is not null)
+        {
+            MeetingError = error;
+            return;
+        }
+
+        var client = AdvisorClients.FirstOrDefault(c => c.ClientId == SelectedClientId.Value);
+        var confirmationText = $"Meeting booked with {client?.FirstName} {client?.LastName} for {meetingDateUtc.ToLocalTime():d MMM yyyy, HH:mm}.";
+
+        ShowMeetingForm = false;
+        MeetingDateTimeInput = null;
+        MeetingNotes = string.Empty;
+        SelectedClientId = null;
+        MatchedClientName = null;
+
+        await TypeAssistantReply(confirmationText);
+    }
 
     public class AssistantConversationItem
     {

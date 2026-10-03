@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Shared.Models
 {
+    /// <summary>
+    /// Represents an insurance policy associated with a client.
+    /// </summary>
     public class Policy
     {
         [Key]
@@ -40,3 +43,5 @@ namespace Shared.Models
         public Case? Case { get; set; }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//
