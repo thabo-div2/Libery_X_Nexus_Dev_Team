@@ -15,7 +15,7 @@ using Xunit;
 namespace API.Tests.Services
 {
     /// <summary>
-    /// Unit tests for the AuthService: logging in, registering, forgot password and reset password.
+    /// Tests for the AuthService.
     /// </summary>
     public class AuthServiceTests
     {
@@ -32,7 +32,7 @@ namespace API.Tests.Services
         private readonly AuthService _sut;
 
         /// <summary>
-        /// Sets up fake versions of everything the AuthService needs before each test.
+        /// Sets up the fakes for each test.
         /// </summary>
         public AuthServiceTests()
         {
@@ -47,8 +47,7 @@ namespace API.Tests.Services
             _emailService = new Mock<IEmailService>();
             _configuration = new Mock<IConfiguration>();
 
-            // AuthService builds the password reset link from Frontend:BaseUrl,
-            // so the mocked configuration has to supply it.
+            // The reset link needs the frontend URL.
             _configuration
                 .Setup(c => c["Frontend:BaseUrl"])
                 .Returns("https://localhost:7028/");
@@ -77,7 +76,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Makes a fake user for the tests.
+        /// Makes a fake user.
         /// </summary>
         private static ApplicationUser MakeUser(string email, bool isActive = true) => new()
         {
@@ -88,7 +87,7 @@ namespace API.Tests.Services
         };
 
         /// <summary>
-        /// Logging in with an email that doesn't exist should fail.
+        /// Unknown email can't log in.
         /// </summary>
         [Fact]
         public async Task LoginAsync_WithUnknownEmail_ReturnsNull()
@@ -101,7 +100,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Logging in with a deactivated account should fail.
+        /// Inactive account can't log in.
         /// </summary>
         [Fact]
         public async Task LoginAsync_WithInactiveAccount_ReturnsNull()
@@ -115,7 +114,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Logging in with a locked out account should fail.
+        /// Locked out account can't log in.
         /// </summary>
         [Fact]
         public async Task LoginAsync_WithLockedOutAccount_ReturnsNull()
@@ -130,7 +129,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// A wrong password should fail and count as a failed attempt.
+        /// Wrong password fails and counts the attempt.
         /// </summary>
         [Fact]
         public async Task LoginAsync_WithWrongPassword_ReturnsNullAndRecordsFailure()
@@ -148,7 +147,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Logging in with the right details should give back a token and the client role.
+        /// Correct login gives a token.
         /// </summary>
         [Fact]
         public async Task LoginAsync_WithValidClientCredentials_ReturnsTokenAndClientRole()
@@ -171,7 +170,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Registering with an invalid invitation should fail.
+        /// Bad invite can't register.
         /// </summary>
         [Fact]
         public async Task RegisterAsync_WithInvalidInvitation_ReturnsFailure()
@@ -191,7 +190,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Registering with an email that's already used should fail.
+        /// Used email can't register.
         /// </summary>
         [Fact]
         public async Task RegisterAsync_WithAlreadyUsedEmail_ReturnsFailure()
@@ -213,7 +212,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Registering with a valid invitation should create the client and give back a token.
+        /// Valid invite registers the client.
         /// </summary>
         [Fact]
         public async Task RegisterAsync_WithValidInvitation_CreatesClientAndReturnsToken()
@@ -244,7 +243,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// If creating the account fails, the error messages should be sent back.
+        /// Failed account creation returns the errors.
         /// </summary>
         [Fact]
         public async Task RegisterAsync_WhenIdentityCreationFails_ReturnsFailureWithDescriptions()
@@ -269,7 +268,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Forgot password with a real account should send one reset email with the right link.
+        /// Real account gets a reset email.
         /// </summary>
         [Fact]
         public async Task ForgotPasswordAsync_WithExistingActiveAccount_SendsResetEmail()
@@ -282,7 +281,7 @@ namespace API.Tests.Services
 
             Assert.Equal("If an account exists for that email address, a password reset link has been sent.", result.Message);
 
-            // The reset link should point at the frontend's forgot-password page with the email and token.
+            // Check the email was sent with the right link.
             _emailService.Verify(e => e.SendPasswordResetAsync(
                 "client@nexus.test",
                 "https://localhost:7028/forgot-password?email=client%40nexus.test&token=reset-token-123"),
@@ -290,7 +289,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Forgot password with an unknown email should give the same message but not send an email.
+        /// Unknown email gets no email.
         /// </summary>
         [Fact]
         public async Task ForgotPasswordAsync_WithUnknownEmail_ReturnsGenericMessageAndSendsNoEmail()
@@ -305,7 +304,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Forgot password with a deactivated account should give the same message but not send an email.
+        /// Inactive account gets no email.
         /// </summary>
         [Fact]
         public async Task ForgotPasswordAsync_WithInactiveAccount_ReturnsGenericMessageAndSendsNoEmail()
@@ -321,7 +320,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Resetting the password with a valid token should work.
+        /// Valid token resets the password.
         /// </summary>
         [Fact]
         public async Task ResetPasswordAsync_WithValidTokenAndAccount_Succeeds()
@@ -342,7 +341,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Resetting the password for an email that doesn't exist should fail.
+        /// Unknown email can't reset.
         /// </summary>
         [Fact]
         public async Task ResetPasswordAsync_WithUnknownEmail_Fails()
@@ -361,7 +360,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Resetting the password with a bad token should fail and give back the error.
+        /// Bad token can't reset.
         /// </summary>
         [Fact]
         public async Task ResetPasswordAsync_WithInvalidToken_FailsWithIdentityError()

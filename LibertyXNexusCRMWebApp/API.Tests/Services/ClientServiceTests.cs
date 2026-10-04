@@ -9,7 +9,7 @@ using Xunit;
 namespace API.Tests.Services
 {
     /// <summary>
-    /// Unit tests for the ClientService: getting, searching, adding, updating and deleting clients.
+    /// Tests for the ClientService.
     /// </summary>
     public class ClientServiceTests
     {
@@ -17,7 +17,7 @@ namespace API.Tests.Services
         private readonly ClientService _sut;
 
         /// <summary>
-        /// Sets up the ClientService with a fake client repository.
+        /// Sets up the service with a fake repo.
         /// </summary>
         public ClientServiceTests()
         {
@@ -25,7 +25,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Getting a client that doesn't exist should give back null.
+        /// Missing client returns null.
         /// </summary>
         [Fact]
         public async Task GetByIdAsync_WhenClientDoesNotExist_ReturnsNull()
@@ -38,7 +38,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Getting a client that exists should give back their details.
+        /// Existing client returns its details.
         /// </summary>
         [Fact]
         public async Task GetByIdAsync_WhenClientExists_ReturnsMappedDto()
@@ -54,7 +54,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Searching should pass the filters to the repository and give back the results.
+        /// Search passes the filters and returns results.
         /// </summary>
         [Fact]
         public async Task SearchAsync_PassesFiltersThroughToRepository_AndMapsResults()
@@ -76,7 +76,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Adding a client with an email that's already used should throw an error.
+        /// Used email throws an error.
         /// </summary>
         [Fact]
         public async Task CreateAsync_WithEmailAlreadyInUse_ThrowsInvalidOperationException()
@@ -98,7 +98,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Adding a client with a new email should create them.
+        /// New email creates the client.
         /// </summary>
         [Fact]
         public async Task CreateAsync_WithNewEmail_CreatesAndReturnsClient()
@@ -130,7 +130,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Updating a client that doesn't exist should give back null.
+        /// Updating a missing client returns null.
         /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenClientDoesNotExist_ReturnsNull()
@@ -145,7 +145,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Updating a client that exists should save the changes.
+        /// Updating a client saves the changes.
         /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenClientExists_UpdatesAndReturnsClient()
@@ -164,7 +164,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Deleting a client that doesn't exist should give back false.
+        /// Deleting a missing client returns false.
         /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenClientDoesNotExist_ReturnsFalse()
@@ -177,7 +177,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Deleting a client that exists should delete them and give back true.
+        /// Deleting a client returns true.
         /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenClientExists_DeletesAndReturnsTrue()

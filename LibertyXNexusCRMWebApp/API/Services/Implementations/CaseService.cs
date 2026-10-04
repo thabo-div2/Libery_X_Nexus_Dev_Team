@@ -6,14 +6,14 @@ using Shared.Models;
 namespace API.Services.Implementations
 {
     /// <summary>
-    /// This service handles getting the cases (policy applications) for a client.
+    /// Handles a client's cases.
     /// </summary>
     public class CaseService : ICaseService
     {
         private readonly ICaseRepository caseRepository_;
 
         /// <summary>
-        /// Sets up the service with the case repository.
+        /// Sets up the service.
         /// </summary>
         public CaseService(ICaseRepository caseRepository)
         {
@@ -21,7 +21,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Gets all the cases that belong to a client.
+        /// Gets all of a client's cases.
         /// </summary>
         public async Task<IEnumerable<CaseStatusDto>> GetForClientAsync(int clientId)
         {
@@ -30,7 +30,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Turns a case from the database into a DTO we can send to the frontend.
+        /// Turns a case into a DTO.
         /// </summary>
         private static CaseStatusDto MapToDto(Case c) => new()
         {

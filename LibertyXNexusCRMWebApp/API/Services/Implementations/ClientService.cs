@@ -8,14 +8,14 @@ using Shared.Models.Enums;
 namespace API.Services.Implementations
 {
     /// <summary>
-    /// This service handles everything to do with clients, like adding, searching, updating and deleting them.
+    /// Handles adding, finding, updating and deleting clients.
     /// </summary>
     public class ClientService : IClientService
     {
         private readonly IClientRepository clientRepository_;
 
         /// <summary>
-        /// Sets up the service with the client repository.
+        /// Sets up the service.
         /// </summary>
         public ClientService(IClientRepository clientRepository) 
         {
@@ -23,7 +23,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Gets a client's full details using their id.
+        /// Gets a client by id.
         /// </summary>
         public async Task<ClientDetailDto?> GetByIdAsync(int clientId)
         {
@@ -32,7 +32,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Searches for clients by name or email, status and advisor.
+        /// Searches for clients.
         /// </summary>
         public async Task<IEnumerable<ClientListItemDto>> SearchAsync(string? searchTerm, ClientStatus? status, int? advisorId)
         {
@@ -41,7 +41,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Adds a new client. The email can't already be used and the client has to give POPIA consent.
+        /// Adds a new client.
         /// </summary>
         public async Task<ClientDetailDto> CreateAsync(CreateClientRequest request)
         {
@@ -98,7 +98,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Updates a client's details. Returns null if the client doesn't exist.
+        /// Updates a client.
         /// </summary>
         public async Task<ClientDetailDto?> UpdateAsync(int clientId, UpdateClientRequest request)
         {
@@ -122,7 +122,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Deletes a client. Returns false if the client doesn't exist.
+        /// Deletes a client.
         /// </summary>
         public async Task<bool> DeleteAsync(int clientId)
         {
@@ -136,7 +136,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Turns a client from the database into the full details DTO.
+        /// Turns a client into the details DTO.
         /// </summary>
         private static ClientDetailDto MapToDetailDto(Client client) => new()
         {
@@ -179,7 +179,7 @@ namespace API.Services.Implementations
         };
 
         /// <summary>
-        /// Turns a client into the smaller DTO used in the client list.
+        /// Turns a client into the list DTO.
         /// </summary>
         private static ClientListItemDto MapToListItemDto(Client client) => new()
         {

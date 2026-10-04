@@ -11,7 +11,7 @@ using Xunit;
 namespace API.Tests.Services
 {
     /// <summary>
-    /// Unit tests for the MeetingService: booking, cancelling, confirming and rescheduling meetings.
+    /// Tests for the MeetingService.
     /// </summary>
     public class MeetingServiceTests
     {
@@ -21,7 +21,7 @@ namespace API.Tests.Services
         private readonly MeetingService _sut;
 
         /// <summary>
-        /// Sets up the MeetingService with fake repositories and a fake notification service.
+        /// Sets up the service with fakes.
         /// </summary>
         public MeetingServiceTests()
         {
@@ -29,7 +29,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Makes a fake client for the tests.
+        /// Makes a fake client.
         /// </summary>
         private static Client MakeClient(int id = 1) => new()
         {
@@ -40,7 +40,7 @@ namespace API.Tests.Services
         };
 
         /// <summary>
-        /// Booking a meeting in the past should throw an error.
+        /// Can't book in the past.
         /// </summary>
         [Fact]
         public async Task BookAsync_WithPastDate_ThrowsArgumentException()
@@ -56,7 +56,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Booking a meeting for a client that doesn't exist should throw an error.
+        /// Can't book for an unknown client.
         /// </summary>
         [Fact]
         public async Task BookAsync_WithUnknownClient_ThrowsKeyNotFoundException()
@@ -74,7 +74,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Booking a meeting when the time slot is already taken should throw an error.
+        /// Can't book a taken time slot.
         /// </summary>
         [Fact]
         public async Task BookAsync_WithConflictingSlot_ThrowsInvalidOperationException()
@@ -97,7 +97,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Booking a valid meeting should create it.
+        /// Valid booking creates the meeting.
         /// </summary>
         [Fact]
         public async Task BookAsync_WithValidRequest_CreatesAndReturnsMeeting()
@@ -133,7 +133,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Cancelling a meeting that already happened should throw an error.
+        /// Can't cancel a completed meeting.
         /// </summary>
         [Fact]
         public async Task CancelAsync_WhenMeetingIsCompleted_ThrowsInvalidOperationException()
@@ -145,7 +145,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Cancelling a requested meeting should work.
+        /// Can cancel a requested meeting.
         /// </summary>
         [Fact]
         public async Task CancelAsync_WhenMeetingIsRequested_CancelsSuccessfully()
@@ -161,7 +161,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Confirming a meeting that isn't in the requested state should throw an error.
+        /// Can only confirm a requested meeting.
         /// </summary>
         [Fact]
         public async Task ConfirmAsync_WhenMeetingIsNotRequested_ThrowsInvalidOperationException()
@@ -173,7 +173,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Confirming a requested meeting should work.
+        /// Can confirm a requested meeting.
         /// </summary>
         [Fact]
         public async Task ConfirmAsync_WhenMeetingIsRequested_ConfirmsSuccessfully()
@@ -189,7 +189,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Rescheduling a cancelled meeting should throw an error.
+        /// Can't reschedule a cancelled meeting.
         /// </summary>
         [Fact]
         public async Task RescheduleAsync_WhenMeetingIsCancelled_ThrowsInvalidOperationException()
@@ -203,7 +203,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Rescheduling a meeting that doesn't exist should throw an error.
+        /// Can't reschedule a missing meeting.
         /// </summary>
         [Fact]
         public async Task RescheduleAsync_ThatDoesNotExist_ThrowsKeyNotFoundException()
@@ -216,7 +216,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Getting meetings where the start date is after the end date should throw an error.
+        /// Start date can't be after end date.
         /// </summary>
         [Fact]
         public async Task GetByDateRangeAsync_WithStartAfterEnd_ThrowsArgumentException()

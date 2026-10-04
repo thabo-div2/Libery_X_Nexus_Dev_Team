@@ -3,7 +3,7 @@
 namespace frontend.Services
 {
     /// <summary>
-    /// One notification shown in the bell dropdown.
+    /// One notification.
     /// </summary>
     public record NotificationItem(
         int NotificationId,
@@ -15,19 +15,19 @@ namespace frontend.Services
         bool IsReminder);
 
     /// <summary>
-    /// The advisor's notifications plus how many are unread.
+    /// The notifications and unread count.
     /// </summary>
     public record NotificationFeed(int UnreadCount, List<NotificationItem> Items);
 
     /// <summary>
-    /// This service gets the advisor's notifications from the API and marks them as read.
+    /// Gets and updates notifications.
     /// </summary>
     public class NotificationService
     {
         private readonly HttpClient _http;
 
         /// <summary>
-        /// Sets up the service with the HttpClient.
+        /// Sets up the service.
         /// </summary>
         public NotificationService(HttpClient http)
         {
@@ -35,7 +35,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets all the notifications for an advisor.
+        /// Gets the advisor's notifications.
         /// </summary>
         public async Task<NotificationFeed> GetFeedForAdvisorAsync(int advisorId)
         {
@@ -58,7 +58,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets how many unread notifications the advisor has.
+        /// Gets the unread count.
         /// </summary>
         public async Task<int> GetUnreadCountForAdvisorAsync(int advisorId)
         {
@@ -80,7 +80,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Marks one notification as read.
+        /// Marks one as read.
         /// </summary>
         public async Task<bool> MarkAsReadAsync(int notificationId)
         {
@@ -96,7 +96,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Marks all of the advisor's notifications as read.
+        /// Marks all as read.
         /// </summary>
         public async Task<bool> MarkAllAsReadAsync(int advisorId)
         {

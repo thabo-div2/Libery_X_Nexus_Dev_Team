@@ -5,52 +5,52 @@ namespace frontend.Services
 {
     // Data transfer objects (DTOs) for API requests and responses
     /// <summary>
-    /// What we send to the API to log in.
+    /// Login data.
     /// </summary>
     public record LoginRequest(string Email, string Password);
 
     /// <summary>
-    /// What we send to the API to register a new client.
+    /// Register data.
     /// </summary>
     public record RegisterRequest(string InvitationToken, string FirstName, string LastName, string Email, string? Phone, string Password);
 
     /// <summary>
-    /// What the API sends back after logging in, including the token.
+    /// What the API sends back after login.
     /// </summary>
     public record ApiAuthResponse(string AccessToken, string TokenType, DateTime ExpiresAtUtc, string Email, string Role);
 
     /// <summary>
-    /// The logged in user's info that the API reads from their token.
+    /// The logged in user's info.
     /// </summary>
     public record CurrentUserResponse(string? UserId, string? Email, string? AdvisorId, string? ClientId, string? FirstName, string? LastName, List<string> Roles);
 
     /// <summary>
-    /// The result of logging in or registering that the pages use.
+    /// The result of logging in or registering.
     /// </summary>
     public record AuthResult(bool Success, string Message, string? Role, int? Id, string? FirstName, string? LastName, string? Email);
 
     /// <summary>
-    /// What we send to the API when someone forgets their password.
+    /// Forgot password data.
     /// </summary>
     public record ForgotPasswordApiRequest(string Email);
 
     /// <summary>
-    /// What the API sends back after a forgot password request.
+    /// What the API sends back for forgot password.
     /// </summary>
     public record ForgotPasswordApiResponse(string Message);
 
     /// <summary>
-    /// What we send to the API to set a new password.
+    /// Reset password data.
     /// </summary>
     public record ResetPasswordApiRequest(string Email, string ResetToken, string NewPassword);
 
     /// <summary>
-    /// The result of a forgot password request: a message, or an error if something went wrong.
+    /// The result of forgot password.
     /// </summary>
     public record ForgotPasswordResult(string? Message, string? Error);
 
     /// <summary>
-    /// The result of resetting a password: if it worked, or an error if it didn't.
+    /// The result of a password reset.
     /// </summary>
     public record ResetPasswordResult(bool Success, string? Error);
 

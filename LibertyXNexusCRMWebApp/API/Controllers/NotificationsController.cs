@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace API.Controllers
 {
     /// <summary>
-    /// This controller handles the advisor's notifications, like the ones that show up under the bell icon.
+    /// Handles the advisor's notifications.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
@@ -17,7 +17,7 @@ namespace API.Controllers
         private readonly INotificationService _notificationService;
 
         /// <summary>
-        /// Sets up the controller with the notification service.
+        /// Sets up the controller.
         /// </summary>
         public NotificationsController(INotificationService notificationService)
         {
@@ -25,14 +25,14 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Gets the advisor's id from the logged in user's token.
+        /// Gets the advisor id from the token.
         /// </summary>
         private int CurrentAdvisorId => int.TryParse(User.FindFirstValue("advisorId"), out var id)
             ? id
             : throw new InvalidOperationException("Token has no advisorId claim.");
 
         /// <summary>
-        /// Gets all the notifications for the logged in advisor.
+        /// Gets the advisor's notifications.
         /// </summary>
         [HttpGet("advisor/{advisorId:int}")]
         public async Task<IActionResult> GetFeed(int advisorId)
@@ -46,7 +46,7 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Gets how many notifications the advisor hasn't read yet.
+        /// Gets the unread notification count.
         /// </summary>
         [HttpGet("advisor/{advisorId:int}/unread-count")]
         public async Task<IActionResult> GetUnreadCount(int advisorId)
@@ -70,7 +70,7 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Marks all of the advisor's notifications as read.
+        /// Marks all notifications as read.
         /// </summary>
         [HttpPut("advisor/{advisorId:int}/read-all")]
         public async Task<IActionResult> MarkAllAsRead(int advisorId)

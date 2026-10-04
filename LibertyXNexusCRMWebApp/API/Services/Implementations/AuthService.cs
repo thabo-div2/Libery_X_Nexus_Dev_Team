@@ -27,7 +27,7 @@ namespace API.Services.Implementations
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// Sets up the auth service with everything it needs, like the user manager, repositories and the email service.
+        /// Sets up the service.
         /// </summary>
         public AuthService(
             UserManager<ApplicationUser> userManager,
@@ -54,7 +54,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Logs a user in. Checks their email and password, locks them out after too many wrong tries, and gives back a JWT token.
+        /// Logs the user in and gives back a token.
         /// </summary>
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)
         {
@@ -138,7 +138,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Registers a new client using their invitation code, creates their account and tells their advisor.
+        /// Registers a client from an invite.
         /// </summary>
         public async Task<RegisterResult> RegisterAsync(RegisterRequest request)
         {
@@ -236,7 +236,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Emails the user a link to reset their password. It always gives back the same message so nobody can tell which emails have accounts.
+        /// Emails the user a reset link.
         /// </summary>
         public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
         {
@@ -295,7 +295,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Changes the user's password using the reset token from their email link.
+        /// Changes the user's password.
         /// </summary>
         public async Task<ResetPasswordResult> ResetPasswordAsync(ResetPasswordRequest request)
         {

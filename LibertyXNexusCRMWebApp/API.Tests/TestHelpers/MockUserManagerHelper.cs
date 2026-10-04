@@ -10,12 +10,12 @@ namespace API.Tests.TestHelpers
     // password hasher behind it. This is the standard pattern for unit
     // testing code that depends on UserManager.
     /// <summary>
-    /// Helper for making a fake UserManager so the tests don't need a real database.
+    /// Makes a fake UserManager for tests.
     /// </summary>
     public static class MockUserManagerHelper
     {
         /// <summary>
-        /// Makes a fake UserManager we can set up in each test.
+        /// Creates the fake UserManager.
         /// </summary>
         public static Mock<UserManager<ApplicationUser>> Create()
         {

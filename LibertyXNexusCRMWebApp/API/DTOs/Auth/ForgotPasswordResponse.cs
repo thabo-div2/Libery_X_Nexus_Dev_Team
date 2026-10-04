@@ -1,7 +1,7 @@
 namespace API.DTOs.Auth
 {
     /// <summary>
-    /// What the API sends back after a forgot password request. It's always the same message so nobody can tell which emails have accounts.
+    /// The message sent back after forgot password.
     /// </summary>
     public class ForgotPasswordResponse
     {

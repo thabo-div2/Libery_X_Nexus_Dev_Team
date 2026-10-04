@@ -4,7 +4,7 @@ using System.Net;
 namespace frontend.Services
 {
     /// <summary>
-    /// The info about a policy that we show on the frontend.
+    /// A policy shown on the frontend.
     /// </summary>
     public record PolicySummary(
             int PolicyId,
@@ -23,7 +23,7 @@ namespace frontend.Services
         );
 
     /// <summary>
-    /// What we send to the API to add a new policy to the catalogue.
+    /// Data to add a catalogue policy.
     /// </summary>
     public record CreateCataloguePolicyRequest(
             string PolicyName,
@@ -34,7 +34,7 @@ namespace frontend.Services
         );
 
     /// <summary>
-    /// What we send to the API to give a client a policy.
+    /// Data to give a client a policy.
     /// </summary>
     public record CreateClientPolicyRequest(
             string PolicyName,
@@ -48,7 +48,7 @@ namespace frontend.Services
         );
 
     /// <summary>
-    /// What we send to the API to update a policy.
+    /// Data to update a policy.
     /// </summary>
     public record UpdatePolicyRequest(
             string PolicyName,
@@ -61,14 +61,14 @@ namespace frontend.Services
         );
 
     /// <summary>
-    /// This service handles everything to do with policies, like getting, adding, updating and deleting them.
+    /// Handles policies.
     /// </summary>
     public class PolicyService
     {
         private readonly HttpClient _http;
 
         /// <summary>
-        /// Sets up the service with the HttpClient.
+        /// Sets up the service.
         /// </summary>
         public PolicyService(HttpClient http)
         {
@@ -76,7 +76,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets one policy using its id.
+        /// Gets a policy by id.
         /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             GetByIdAsync(int policyId)
@@ -123,7 +123,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets a policy along with its documents.
+        /// Gets a policy with its documents.
         /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             GetWithDocumentsAsync(int policyId)
@@ -171,7 +171,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets all the policies in the catalogue.
+        /// Gets the policy catalogue.
         /// </summary>
         public async Task<(List<PolicySummary> Policies, string? Error)>
             GetCatalogueAsync()
@@ -211,7 +211,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets all the policies a client has.
+        /// Gets a client's policies.
         /// </summary>
         public async Task<(List<PolicySummary> Policies, string? Error)>
             GetForClientAsync(int clientId)
@@ -252,7 +252,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets all the policies with a certain status.
+        /// Gets policies by status.
         /// </summary>
         public async Task<(List<PolicySummary> Policies, string? Error)>
             GetByStatusAsync(PolicyStatus status)
@@ -293,7 +293,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Adds a new policy to the catalogue.
+        /// Adds a catalogue policy.
         /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             CreateCatalogueItemAsync(
@@ -336,7 +336,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gives a client a new policy.
+        /// Gives a client a policy.
         /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             CreateClientPolicyAsync(
@@ -380,7 +380,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Updates a policy's details.
+        /// Updates a policy.
         /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             UpdateAsync(
@@ -487,7 +487,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Deletes a policy. Returns an error message if it fails, or null if it worked.
+        /// Deletes a policy.
         /// </summary>
         public async Task<string?> DeleteAsync(int policyId)
         {
@@ -520,7 +520,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Reads the error message the API sent back.
+        /// Reads the error from the API.
         /// </summary>
         private static async Task<string> ReadErrorAsync(
             HttpResponseMessage response)

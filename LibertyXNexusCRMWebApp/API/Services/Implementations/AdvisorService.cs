@@ -7,14 +7,14 @@ using Shared.Models.Enums;
 namespace API.Services.Implementations
 {
     /// <summary>
-    /// This service builds all the info shown on the advisor's dashboard.
+    /// Gets the data for the advisor dashboard.
     /// </summary>
     public class AdvisorService : IAdvisorService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
         /// <summary>
-        /// Sets up the service with the database context factory.
+        /// Sets up the service.
         /// </summary>
         public AdvisorService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
@@ -22,7 +22,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Gets the dashboard stats for an advisor, like active cases, meetings, pipeline value, deadlines and institutions.
+        /// Builds the advisor's dashboard stats.
         /// </summary>
         public async Task<AdvisorDashboardDto> GetDashboardAsync(int advisorId)
         {
@@ -247,7 +247,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Works out the percentage change between this week and last week, e.g. "+20%".
+        /// Works out the change from last week.
         /// </summary>
         private static string CalculatePercentageChange(double current, double previous)
         {

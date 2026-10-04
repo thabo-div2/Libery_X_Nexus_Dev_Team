@@ -67,7 +67,7 @@ namespace API.Controllers
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
-        /// Handles forgot password requests. Emails a reset link if the account exists and always sends back the same message.
+        /// Sends a reset link if the account exists.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>

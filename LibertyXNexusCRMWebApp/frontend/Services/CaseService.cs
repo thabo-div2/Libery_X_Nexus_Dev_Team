@@ -1,7 +1,7 @@
 ﻿namespace frontend.Services
 {
     /// <summary>
-    /// The info about a case that we show on the client's side.
+    /// A case shown to the client.
     /// </summary>
     public record CaseSummary(
             int CaseId,
@@ -14,14 +14,14 @@
         );
 
     /// <summary>
-    /// This service gets a client's cases from the API.
+    /// Gets a client's cases from the API.
     /// </summary>
     public class CaseService
     {
         private readonly HttpClient _http;
 
         /// <summary>
-        /// Sets up the service with the HttpClient.
+        /// Sets up the service.
         /// </summary>
         public CaseService(HttpClient http)
         {
@@ -29,7 +29,7 @@
         }
 
         /// <summary>
-        /// Gets all the cases for a client from the API.
+        /// Gets all of a client's cases.
         /// </summary>
         public async Task<(List<CaseSummary> Cases, string? Error)>
             GetForClientAsync(int clientId)
@@ -58,7 +58,7 @@
         }
 
         /// <summary>
-        /// Reads the error message the API sent back.
+        /// Reads the error from the API.
         /// </summary>
         private static async Task<string> ReadErrorAsync(
             HttpResponseMessage response)

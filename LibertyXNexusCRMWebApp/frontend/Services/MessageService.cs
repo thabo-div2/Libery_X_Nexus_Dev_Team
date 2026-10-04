@@ -3,17 +3,17 @@ using System.Net.Http.Json;
 namespace frontend.Services
 {
     /// <summary>
-    /// One chat message between a client and their advisor.
+    /// One chat message.
     /// </summary>
     public record ChatMessage(int Id, int ClientId, int AdvisorId, bool FromAdvisor, string Text, DateTime SentAt);
 
     /// <summary>
-    /// A short summary of a conversation, used in the advisor's message list.
+    /// A conversation in the advisor's list.
     /// </summary>
     public record ConversationSummary(int ClientId, string ClientName, string? LastMessage, DateTime? LastMessageAt);
 
     /// <summary>
-    /// This service handles sending and getting chat messages between clients and advisors.
+    /// Sends and gets chat messages.
     /// </summary>
     public class MessageService
     {
@@ -21,7 +21,7 @@ namespace frontend.Services
         private readonly MessageNotifier _notifier;
 
         /// <summary>
-        /// Sets up the service with the HttpClient and the message notifier.
+        /// Sets up the service.
         /// </summary>
         public MessageService(HttpClient http, MessageNotifier notifier)
         {
@@ -30,7 +30,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets all the messages in a client's conversation.
+        /// Gets a client's messages.
         /// </summary>
         public async Task<(List<ChatMessage> Messages, string? Error)> GetConversationAsync(int clientId)
         {
@@ -56,7 +56,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets all of an advisor's conversations with their clients.
+        /// Gets all of an advisor's chats.
         /// </summary>
         public async Task<(List<ConversationSummary> Conversations, string? Error)> GetConversationsForAdvisorAsync(int advisorId)
         {
@@ -82,7 +82,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Sends a message. Returns an error message if it fails, or null if it worked.
+        /// Sends a message.
         /// </summary>
         public async Task<string?> SendAsync(int clientId, int advisorId, bool fromAdvisor, string text)
         {

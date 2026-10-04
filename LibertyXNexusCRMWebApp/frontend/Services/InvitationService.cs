@@ -5,17 +5,17 @@ namespace frontend.Services
 {
     // Data transfer objects (DTOs) for API requests and responses
     /// <summary>
-    /// What we send to the API to create an invitation.
+    /// Data to create an invite.
     /// </summary>
     public record CreateInvitationRequest(string Email);
 
     /// <summary>
-    /// What we get back after creating an invitation.
+    /// The result of creating an invite.
     /// </summary>
     public record InvitationResult(bool Success, string Message, string? Token, DateTime? ExpiresAt);
 
     /// <summary>
-    /// The details of an invitation, like if it's still valid and which advisor sent it.
+    /// The details of an invite.
     /// </summary>
     public record InvitationDetails(bool Valid, string Message, string Email, int AdvisorId, string AdvisorName);
 
@@ -41,7 +41,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Creates an invitation for a new client's email.
+        /// Creates an invite.
         /// </summary>
         public async Task<InvitationResult> CreateAsync(string email)
         {
@@ -62,7 +62,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Checks if an invitation link is still valid.
+        /// Checks if an invite is valid.
         /// </summary>
         public async Task<InvitationDetails> ValidateAsync(string token)
         {
@@ -83,7 +83,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Builds the register link that gets sent to the client.
+        /// Builds the register link.
         /// </summary>
         public string BuildLink(string token)
         {

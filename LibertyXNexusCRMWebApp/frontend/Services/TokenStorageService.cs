@@ -3,7 +3,7 @@
 namespace frontend.Services
 {
     /// <summary>
-    /// This service saves the user's login token in the browser's session storage so they stay logged in.
+    /// Saves the login token in the browser.
     /// </summary>
     public class TokenStorageService
     {
@@ -13,7 +13,7 @@ namespace frontend.Services
         private bool _loaded;
 
         /// <summary>
-        /// Sets up the service with protected session storage.
+        /// Sets up the service.
         /// </summary>
         public TokenStorageService(ProtectedSessionStorage storage)
         {
@@ -21,7 +21,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Saves the login token.
+        /// Saves the token.
         /// </summary>
         public async Task SetTokenAsync(string token)
         {
@@ -39,7 +39,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets the saved login token, or null if there isn't one.
+        /// Gets the token.
         /// </summary>
         public async Task<string?> GetTokenAsync()
         {
@@ -63,7 +63,7 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Deletes the saved login token when the user logs out.
+        /// Deletes the token.
         /// </summary>
         public async Task ClearTokenAsync()
         {

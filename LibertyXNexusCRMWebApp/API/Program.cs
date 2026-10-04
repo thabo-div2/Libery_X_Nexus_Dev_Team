@@ -17,12 +17,12 @@ using Microsoft.AspNetCore.Authorization;
 namespace API
 {
     /// <summary>
-    /// This is where the API starts up.
+    /// Starts the API.
     /// </summary>
     public partial class Program
     {
         /// <summary>
-        /// Sets up all the services (database, login, JWT, email, blob storage etc.), seeds the database and starts the API.
+        /// Sets up the services and runs the API.
         /// </summary>
         public static async Task Main(string[] args)
         {

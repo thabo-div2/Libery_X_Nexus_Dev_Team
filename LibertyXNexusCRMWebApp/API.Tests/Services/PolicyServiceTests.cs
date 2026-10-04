@@ -9,7 +9,7 @@ using Xunit;
 namespace API.Tests.Services
 {
     /// <summary>
-    /// Unit tests for the PolicyService: adding, updating, changing the status of and deleting policies.
+    /// Tests for the PolicyService.
     /// </summary>
     public class PolicyServiceTests
     {
@@ -19,7 +19,7 @@ namespace API.Tests.Services
         private readonly PolicyService _sut;
 
         /// <summary>
-        /// Sets up the PolicyService with fake repositories.
+        /// Sets up the service with fakes.
         /// </summary>
         public PolicyServiceTests()
         {
@@ -27,7 +27,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Adding a catalogue policy should save it as a catalogue item with no client.
+        /// Catalogue policy has no client.
         /// </summary>
         [Fact]
         public async Task CreateCatalogueItemAsync_CreatesAsCatalogueItemWithNoClient()
@@ -55,7 +55,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Giving a policy to a client that doesn't exist should throw an error.
+        /// Unknown client throws an error.
         /// </summary>
         [Fact]
         public async Task CreateClientPolicyAsync_WithUnknownClient_ThrowsKeyNotFoundException()
@@ -68,7 +68,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// A policy whose end date is before its start date should throw an error.
+        /// End date before start date throws an error.
         /// </summary>
         [Fact]
         public async Task CreateClientPolicyAsync_WithEndDateBeforeStartDate_ThrowsArgumentException()
@@ -87,7 +87,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Giving a client a valid policy should create it as pending.
+        /// Valid policy is created as pending.
         /// </summary>
         [Fact]
         public async Task CreateClientPolicyAsync_WithValidRequest_CreatesPendingPolicyForClient()
@@ -110,7 +110,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Updating a policy that doesn't exist should give back null.
+        /// Updating a missing policy returns null.
         /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenPolicyDoesNotExist_ReturnsNull()
@@ -125,7 +125,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Updating a policy so the end date is before the start date should throw an error.
+        /// Bad dates on update throw an error.
         /// </summary>
         [Fact]
         public async Task UpdateAsync_WithEndDateBeforeStartDate_ThrowsArgumentException()
@@ -145,7 +145,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Changing the status of a cancelled policy should throw an error.
+        /// Can't change a cancelled policy.
         /// </summary>
         [Fact]
         public async Task UpdateStatusAsync_WhenPolicyIsCancelled_ThrowsInvalidOperationException()
@@ -159,7 +159,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Changing the status of a policy that doesn't exist should throw an error.
+        /// Missing policy throws an error.
         /// </summary>
         [Fact]
         public async Task UpdateStatusAsync_WhenPolicyDoesNotExist_ThrowsKeyNotFoundException()
@@ -172,7 +172,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// A valid status change should update the policy.
+        /// Valid status change works.
         /// </summary>
         [Fact]
         public async Task UpdateStatusAsync_WithValidTransition_UpdatesStatus()
@@ -189,7 +189,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Deleting a policy that doesn't exist should give back false.
+        /// Deleting a missing policy returns false.
         /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenPolicyDoesNotExist_ReturnsFalse()
@@ -203,7 +203,7 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Deleting a policy that exists should delete it and give back true.
+        /// Deleting a policy returns true.
         /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenPolicyExists_DeletesAndReturnsTrue()

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace API.Services.Implementations
 {
     /// <summary>
-    /// Settings for Azure Blob Storage, like which container the documents go in.
+    /// Blob storage settings.
     /// </summary>
     public class BlobStorageOptions
     {
@@ -16,7 +16,7 @@ namespace API.Services.Implementations
     }
 
     /// <summary>
-    /// This service uploads, downloads and deletes client documents in Azure Blob Storage.
+    /// Saves client documents in Azure Blob Storage.
     /// </summary>
     public class BlobStorageService : IBlobStorageService
     {
@@ -24,7 +24,7 @@ namespace API.Services.Implementations
         private readonly BlobStorageOptions _options;
 
         /// <summary>
-        /// Sets up the service and connects to the documents container.
+        /// Sets up the service.
         /// </summary>
         public BlobStorageService(BlobServiceClient blobServiceClient, IOptions<BlobStorageOptions> options)
         {
@@ -33,7 +33,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Makes the documents container if it doesn't exist yet.
+        /// Creates the container if it's missing.
         /// </summary>
         public async Task EnsureContainerExistsAsync()
         {
@@ -41,7 +41,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Uploads a file to blob storage and gives back where it was saved.
+        /// Uploads a file.
         /// </summary>
         public async Task<string> UploadAsync(Stream content, string fileName, string contentType)
         {
@@ -67,7 +67,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Makes a short-lived link so someone can view or download a document.
+        /// Makes a temporary link to view a file.
         /// </summary>
         public async Task<Uri> GetReadSasUriAsync(string blobReference, TimeSpan? validFor = null)
         {
@@ -110,7 +110,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Deletes a document from blob storage.
+        /// Deletes a file.
         /// </summary>
         public async Task DeleteAsync(string blobReference)
         {
@@ -119,7 +119,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Checks if a document is in blob storage.
+        /// Checks if a file exists.
         /// </summary>
         public async Task<bool> ExistsAsync(string blobReference)
         {
@@ -129,7 +129,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Gets the blob for a saved reference like "container/fileName".
+        /// Gets the blob from its saved name.
         /// </summary>
         private BlobClient GetBlobClient(string blobReference)
         {
@@ -145,7 +145,7 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
-        /// Replaces any characters that aren't allowed in a file name.
+        /// Removes bad characters from a file name.
         /// </summary>
         private static string SanitizeFileName(string fileName)
         {
