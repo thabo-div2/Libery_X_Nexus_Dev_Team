@@ -2,6 +2,9 @@
 @inject CurrentUserService CurrentUser
 @inject NavigationManager NavigationManager
 
+@* Add the render mode to ensure C# event handlers like @onclick are active *@
+@rendermode InteractiveServer
+
 <div class="nav-menu">
 
     <!-- BRAND -->
@@ -148,7 +151,6 @@
         </button>
 
     </div>
-
 </div>
 
 @code {
@@ -185,9 +187,15 @@
 
     private async Task LogoutAsync()
     {
-        await CurrentUser.SignOutAsync();
-        NavigationManager.NavigateTo("/");
+        try
+        {
+            await CurrentUser.SignOutAsync();
+            // Force load ensures the browser fully reloads to clear auth state
+            NavigationManager.NavigateTo("/", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Logout failed: {ex.Message}");
+        }
     }
 }
-
-@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@
