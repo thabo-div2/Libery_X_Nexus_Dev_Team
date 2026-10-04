@@ -10,3 +10,5 @@ namespace API.Services.Interfaces
         Task<MessageDto> SendAsync(SendMessageRequest request, bool fromAdvisor);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

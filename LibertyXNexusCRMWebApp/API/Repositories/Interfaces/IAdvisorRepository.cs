@@ -9,3 +9,5 @@ namespace API.Repositories.Interfaces
         Task<Advisor?> GetWithClientAsync(int advisorId);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

@@ -4,8 +4,19 @@ using System.Net.Http.Json;
 namespace frontend.Services
 {
     // Data transfer objects (DTOs) for API requests and responses
+    /// <summary>
+    /// What we send to the API to create an invitation.
+    /// </summary>
     public record CreateInvitationRequest(string Email);
+
+    /// <summary>
+    /// What we get back after creating an invitation.
+    /// </summary>
     public record InvitationResult(bool Success, string Message, string? Token, DateTime? ExpiresAt);
+
+    /// <summary>
+    /// The details of an invitation, like if it's still valid and which advisor sent it.
+    /// </summary>
     public record InvitationDetails(bool Valid, string Message, string Email, int AdvisorId, string AdvisorName);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -29,6 +40,9 @@ namespace frontend.Services
             _navigation = navigation;
         }
 
+        /// <summary>
+        /// Creates an invitation for a new client's email.
+        /// </summary>
         public async Task<InvitationResult> CreateAsync(string email)
         {
             try
@@ -47,6 +61,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Checks if an invitation link is still valid.
+        /// </summary>
         public async Task<InvitationDetails> ValidateAsync(string token)
         {
             try
@@ -65,9 +82,14 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Builds the register link that gets sent to the client.
+        /// </summary>
         public string BuildLink(string token)
         {
             return $"{_navigation.BaseUri}register?token={token}";
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

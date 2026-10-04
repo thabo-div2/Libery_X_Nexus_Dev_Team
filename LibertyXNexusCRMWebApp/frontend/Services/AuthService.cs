@@ -4,15 +4,54 @@ using System.Net.Http.Json;
 namespace frontend.Services
 {
     // Data transfer objects (DTOs) for API requests and responses
+    /// <summary>
+    /// What we send to the API to log in.
+    /// </summary>
     public record LoginRequest(string Email, string Password);
+
+    /// <summary>
+    /// What we send to the API to register a new client.
+    /// </summary>
     public record RegisterRequest(string InvitationToken, string FirstName, string LastName, string Email, string? Phone, string Password);
+
+    /// <summary>
+    /// What the API sends back after logging in, including the token.
+    /// </summary>
     public record ApiAuthResponse(string AccessToken, string TokenType, DateTime ExpiresAtUtc, string Email, string Role);
+
+    /// <summary>
+    /// The logged in user's info that the API reads from their token.
+    /// </summary>
     public record CurrentUserResponse(string? UserId, string? Email, string? AdvisorId, string? ClientId, string? FirstName, string? LastName, List<string> Roles);
+
+    /// <summary>
+    /// The result of logging in or registering that the pages use.
+    /// </summary>
     public record AuthResult(bool Success, string Message, string? Role, int? Id, string? FirstName, string? LastName, string? Email);
+
+    /// <summary>
+    /// What we send to the API when someone forgets their password.
+    /// </summary>
     public record ForgotPasswordApiRequest(string Email);
+
+    /// <summary>
+    /// What the API sends back after a forgot password request.
+    /// </summary>
     public record ForgotPasswordApiResponse(string Message);
+
+    /// <summary>
+    /// What we send to the API to set a new password.
+    /// </summary>
     public record ResetPasswordApiRequest(string Email, string ResetToken, string NewPassword);
-    public record ForgotPasswordResult(string? ResetToken, string? Error);
+
+    /// <summary>
+    /// The result of a forgot password request: a message, or an error if something went wrong.
+    /// </summary>
+    public record ForgotPasswordResult(string? Message, string? Error);
+
+    /// <summary>
+    /// The result of resetting a password: if it worked, or an error if it didn't.
+    /// </summary>
     public record ResetPasswordResult(bool Success, string? Error);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

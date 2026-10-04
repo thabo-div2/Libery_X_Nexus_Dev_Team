@@ -8,16 +8,25 @@ using Xunit;
 
 namespace API.Tests.Services
 {
+    /// <summary>
+    /// Unit tests for the ClientService: getting, searching, adding, updating and deleting clients.
+    /// </summary>
     public class ClientServiceTests
     {
         private readonly Mock<IClientRepository> _clientRepository = new();
         private readonly ClientService _sut;
 
+        /// <summary>
+        /// Sets up the ClientService with a fake client repository.
+        /// </summary>
         public ClientServiceTests()
         {
             _sut = new ClientService(_clientRepository.Object);
         }
 
+        /// <summary>
+        /// Getting a client that doesn't exist should give back null.
+        /// </summary>
         [Fact]
         public async Task GetByIdAsync_WhenClientDoesNotExist_ReturnsNull()
         {
@@ -28,6 +37,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Getting a client that exists should give back their details.
+        /// </summary>
         [Fact]
         public async Task GetByIdAsync_WhenClientExists_ReturnsMappedDto()
         {
@@ -41,6 +53,9 @@ namespace API.Tests.Services
             Assert.Equal(5, result.AdvisorId);
         }
 
+        /// <summary>
+        /// Searching should pass the filters to the repository and give back the results.
+        /// </summary>
         [Fact]
         public async Task SearchAsync_PassesFiltersThroughToRepository_AndMapsResults()
         {
@@ -60,6 +75,9 @@ namespace API.Tests.Services
             _clientRepository.Verify(r => r.SearchAsync("jane", ClientStatus.Registered, 5), Times.Once);
         }
 
+        /// <summary>
+        /// Adding a client with an email that's already used should throw an error.
+        /// </summary>
         [Fact]
         public async Task CreateAsync_WithEmailAlreadyInUse_ThrowsInvalidOperationException()
         {
@@ -79,6 +97,9 @@ namespace API.Tests.Services
             await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.CreateAsync(request));
         }
 
+        /// <summary>
+        /// Adding a client with a new email should create them.
+        /// </summary>
         [Fact]
         public async Task CreateAsync_WithNewEmail_CreatesAndReturnsClient()
         {
@@ -108,6 +129,9 @@ namespace API.Tests.Services
             Assert.Equal(3, result.AdvisorId);
         }
 
+        /// <summary>
+        /// Updating a client that doesn't exist should give back null.
+        /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenClientDoesNotExist_ReturnsNull()
         {
@@ -120,6 +144,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Updating a client that exists should save the changes.
+        /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenClientExists_UpdatesAndReturnsClient()
         {
@@ -136,6 +163,9 @@ namespace API.Tests.Services
             Assert.Equal("High", result.RiskProfile);
         }
 
+        /// <summary>
+        /// Deleting a client that doesn't exist should give back false.
+        /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenClientDoesNotExist_ReturnsFalse()
         {
@@ -146,6 +176,9 @@ namespace API.Tests.Services
             Assert.False(result);
         }
 
+        /// <summary>
+        /// Deleting a client that exists should delete them and give back true.
+        /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenClientExists_DeletesAndReturnsTrue()
         {
@@ -159,3 +192,5 @@ namespace API.Tests.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

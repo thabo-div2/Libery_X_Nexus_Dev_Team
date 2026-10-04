@@ -21,3 +21,5 @@ namespace API.Repositories.Interfaces
         Task<IEnumerable<AuditLog>> GetRecentAsync(int count = 100);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

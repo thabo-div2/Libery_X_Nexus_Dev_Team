@@ -2,6 +2,9 @@
 
 namespace frontend.Services
 {
+    /// <summary>
+    /// One notification shown in the bell dropdown.
+    /// </summary>
     public record NotificationItem(
         int NotificationId,
         string Type,
@@ -11,17 +14,29 @@ namespace frontend.Services
         DateTime CreatedAt,
         bool IsReminder);
 
+    /// <summary>
+    /// The advisor's notifications plus how many are unread.
+    /// </summary>
     public record NotificationFeed(int UnreadCount, List<NotificationItem> Items);
 
+    /// <summary>
+    /// This service gets the advisor's notifications from the API and marks them as read.
+    /// </summary>
     public class NotificationService
     {
         private readonly HttpClient _http;
 
+        /// <summary>
+        /// Sets up the service with the HttpClient.
+        /// </summary>
         public NotificationService(HttpClient http)
         {
             _http = http;
         }
 
+        /// <summary>
+        /// Gets all the notifications for an advisor.
+        /// </summary>
         public async Task<NotificationFeed> GetFeedForAdvisorAsync(int advisorId)
         {
             try
@@ -42,6 +57,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gets how many unread notifications the advisor has.
+        /// </summary>
         public async Task<int> GetUnreadCountForAdvisorAsync(int advisorId)
         {
             try
@@ -61,6 +79,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Marks one notification as read.
+        /// </summary>
         public async Task<bool> MarkAsReadAsync(int notificationId)
         {
             try
@@ -74,6 +95,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Marks all of the advisor's notifications as read.
+        /// </summary>
         public async Task<bool> MarkAllAsReadAsync(int advisorId)
         {
             try
@@ -88,3 +112,5 @@ namespace frontend.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

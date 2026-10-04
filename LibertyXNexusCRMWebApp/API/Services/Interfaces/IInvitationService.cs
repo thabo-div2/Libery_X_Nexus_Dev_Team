@@ -9,3 +9,5 @@ namespace API.Services.Interfaces
         Task<InvitationValidationResponse> ValidateAsync(string token);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

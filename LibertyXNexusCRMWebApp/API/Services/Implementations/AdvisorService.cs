@@ -6,15 +6,24 @@ using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// This service builds all the info shown on the advisor's dashboard.
+    /// </summary>
     public class AdvisorService : IAdvisorService
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
+        /// <summary>
+        /// Sets up the service with the database context factory.
+        /// </summary>
         public AdvisorService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
 
+        /// <summary>
+        /// Gets the dashboard stats for an advisor, like active cases, meetings, pipeline value, deadlines and institutions.
+        /// </summary>
         public async Task<AdvisorDashboardDto> GetDashboardAsync(int advisorId)
         {
             using var context = await _contextFactory.CreateDbContextAsync();
@@ -237,6 +246,9 @@ namespace API.Services.Implementations
             return dashboard;
         }
 
+        /// <summary>
+        /// Works out the percentage change between this week and last week, e.g. "+20%".
+        /// </summary>
         private static string CalculatePercentageChange(double current, double previous)
         {
             if (previous == 0)
@@ -252,3 +264,5 @@ namespace API.Services.Implementations
 
 
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

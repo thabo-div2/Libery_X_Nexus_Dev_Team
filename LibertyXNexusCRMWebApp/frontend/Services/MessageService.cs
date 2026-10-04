@@ -2,20 +2,36 @@ using System.Net.Http.Json;
 
 namespace frontend.Services
 {
+    /// <summary>
+    /// One chat message between a client and their advisor.
+    /// </summary>
     public record ChatMessage(int Id, int ClientId, int AdvisorId, bool FromAdvisor, string Text, DateTime SentAt);
+
+    /// <summary>
+    /// A short summary of a conversation, used in the advisor's message list.
+    /// </summary>
     public record ConversationSummary(int ClientId, string ClientName, string? LastMessage, DateTime? LastMessageAt);
 
+    /// <summary>
+    /// This service handles sending and getting chat messages between clients and advisors.
+    /// </summary>
     public class MessageService
     {
         private readonly HttpClient _http;
         private readonly MessageNotifier _notifier;
 
+        /// <summary>
+        /// Sets up the service with the HttpClient and the message notifier.
+        /// </summary>
         public MessageService(HttpClient http, MessageNotifier notifier)
         {
             _http = http;
             _notifier = notifier;
         }
 
+        /// <summary>
+        /// Gets all the messages in a client's conversation.
+        /// </summary>
         public async Task<(List<ChatMessage> Messages, string? Error)> GetConversationAsync(int clientId)
         {
             try
@@ -39,6 +55,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gets all of an advisor's conversations with their clients.
+        /// </summary>
         public async Task<(List<ConversationSummary> Conversations, string? Error)> GetConversationsForAdvisorAsync(int advisorId)
         {
             try
@@ -62,6 +81,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Sends a message. Returns an error message if it fails, or null if it worked.
+        /// </summary>
         public async Task<string?> SendAsync(int clientId, int advisorId, bool fromAdvisor, string text)
         {
             try
@@ -86,3 +108,5 @@ namespace frontend.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

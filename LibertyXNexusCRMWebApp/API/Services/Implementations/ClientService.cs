@@ -7,27 +7,42 @@ using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
+    /// <summary>
+    /// This service handles everything to do with clients, like adding, searching, updating and deleting them.
+    /// </summary>
     public class ClientService : IClientService
     {
         private readonly IClientRepository clientRepository_;
 
+        /// <summary>
+        /// Sets up the service with the client repository.
+        /// </summary>
         public ClientService(IClientRepository clientRepository) 
         {
             clientRepository_ = clientRepository;
         }
 
+        /// <summary>
+        /// Gets a client's full details using their id.
+        /// </summary>
         public async Task<ClientDetailDto?> GetByIdAsync(int clientId)
         {
             var client = await clientRepository_.GetWithDetailsAsync(clientId);
             return client is null ? null : MapToDetailDto(client);
         }
 
+        /// <summary>
+        /// Searches for clients by name or email, status and advisor.
+        /// </summary>
         public async Task<IEnumerable<ClientListItemDto>> SearchAsync(string? searchTerm, ClientStatus? status, int? advisorId)
         {
             var clients = await clientRepository_.SearchAsync(searchTerm, status, advisorId);
             return clients.Select(MapToListItemDto);
         }
 
+        /// <summary>
+        /// Adds a new client. The email can't already be used and the client has to give POPIA consent.
+        /// </summary>
         public async Task<ClientDetailDto> CreateAsync(CreateClientRequest request)
         {
             var existing = await clientRepository_.GetByEmailAsync(request.Email);
@@ -82,6 +97,9 @@ namespace API.Services.Implementations
             return MapToDetailDto(created);
         }
 
+        /// <summary>
+        /// Updates a client's details. Returns null if the client doesn't exist.
+        /// </summary>
         public async Task<ClientDetailDto?> UpdateAsync(int clientId, UpdateClientRequest request)
         {
 
@@ -103,6 +121,9 @@ namespace API.Services.Implementations
             return MapToDetailDto(client);
         }
 
+        /// <summary>
+        /// Deletes a client. Returns false if the client doesn't exist.
+        /// </summary>
         public async Task<bool> DeleteAsync(int clientId)
         {
             var exists = await clientRepository_.ExistsAsync(clientId);
@@ -114,6 +135,9 @@ namespace API.Services.Implementations
             return true;
         }
 
+        /// <summary>
+        /// Turns a client from the database into the full details DTO.
+        /// </summary>
         private static ClientDetailDto MapToDetailDto(Client client) => new()
         {
             ClientId = client.ClientId,
@@ -154,6 +178,9 @@ namespace API.Services.Implementations
             PopiaConsentAt = client.PopiaConsentAt,
         };
 
+        /// <summary>
+        /// Turns a client into the smaller DTO used in the client list.
+        /// </summary>
         private static ClientListItemDto MapToListItemDto(Client client) => new()
         {
             ClientId = client.ClientId,
@@ -166,3 +193,5 @@ namespace API.Services.Implementations
 
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//
