@@ -203,18 +203,18 @@
                             <div class="pipeline-filters">
 
                                 <button type="button"
-                                        class="filter-pill active">
-                                    All
+                                        class="filter-pill @(SelectedInstitution == "All" ? "active" : "")"
+                                        @onclick='() => SetInstitutionFilter("All")'> All
                                 </button>
 
                                 <button type="button"
-                                        class="filter-pill">
-                                    Liberty
+                                        class="filter-pill @(SelectedInstitution == "Liberty" ? "active" : "")"
+                                        @onclick='() => SetInstitutionFilter("Liberty")'> Liberty
                                 </button>
 
                                 <button type="button"
-                                        class="filter-pill">
-                                    Standard Bank
+                                        class="filter-pill @(SelectedInstitution == "Standard Bank" ? "active" : "")"
+                                        @onclick='() => SetInstitutionFilter("Standard Bank")'> Standard Bank
                                 </button>
 
                             </div>
@@ -238,9 +238,9 @@
 
                                 <tbody>
 
-                                    @if (Dashboard?.Cases is not null && Dashboard.Cases.Any())
+                                    @if (Dashboard?.Cases is not null && Dashboard.Cases.Any(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution))
                                     {
-                                        @foreach (var caseItem in Dashboard.Cases)
+                                        @foreach (var caseItem in Dashboard.Cases.Where(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution))
                                         {
                                             <tr>
                                                 <td class="client-name">
@@ -392,7 +392,7 @@
 
 
                         <!-- AI ASSISTANT -->
-                        <button type="button" class="assistant-card">
+                        <a href="/chatbot" class="assistant-card">
 
                             <div class="assistant-text">
                                 <strong>Ask the Nexus assistant</strong>
@@ -403,8 +403,7 @@
                             </div>
 
                             <span class="assistant-arrow">↗</span>
-
-                        </button>
+                        </a>
 
                     </aside>
 
@@ -438,6 +437,12 @@
     private string? InviteLink;
     private string? InviteError;
     private string? InviteMessage;
+    private string SelectedInstitution = "All";
+
+    private void SetInstitutionFilter(string institution)
+    {
+        SelectedInstitution = institution;
+    }
 
     private void ToggleInvitePanel()
     {
