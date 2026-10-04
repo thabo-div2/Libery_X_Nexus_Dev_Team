@@ -14,6 +14,9 @@ using Xunit;
 
 namespace API.Tests.Services
 {
+    /// <summary>
+    /// Tests for the AuthService.
+    /// </summary>
     public class AuthServiceTests
     {
         private readonly Mock<UserManager<ApplicationUser>> _userManager;
@@ -28,6 +31,9 @@ namespace API.Tests.Services
         private readonly Mock<IConfiguration> _configuration;
         private readonly AuthService _sut;
 
+        /// <summary>
+        /// Sets up the fakes for each test.
+        /// </summary>
         public AuthServiceTests()
         {
             _userManager = MockUserManagerHelper.Create();
@@ -41,10 +47,10 @@ namespace API.Tests.Services
             _emailService = new Mock<IEmailService>();
             _configuration = new Mock<IConfiguration>();
 
+            // The reset link needs the frontend URL.
             _configuration
                 .Setup(c => c["Frontend:BaseUrl"])
-                .Returns("https://localhost:7028");
-
+                .Returns("https://localhost:7028/");
 
             _auditLogRepository
                 .Setup(r => r.LogAsync(
@@ -69,6 +75,9 @@ namespace API.Tests.Services
                 _configuration.Object);
         }
 
+        /// <summary>
+        /// Makes a fake user.
+        /// </summary>
         private static ApplicationUser MakeUser(string email, bool isActive = true) => new()
         {
             Id = Guid.NewGuid().ToString(),
@@ -77,6 +86,9 @@ namespace API.Tests.Services
             IsActive = isActive
         };
 
+        /// <summary>
+        /// Unknown email can't log in.
+        /// </summary>
         [Fact]
         public async Task LoginAsync_WithUnknownEmail_ReturnsNull()
         {
@@ -87,6 +99,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Inactive account can't log in.
+        /// </summary>
         [Fact]
         public async Task LoginAsync_WithInactiveAccount_ReturnsNull()
         {
@@ -98,6 +113,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Locked out account can't log in.
+        /// </summary>
         [Fact]
         public async Task LoginAsync_WithLockedOutAccount_ReturnsNull()
         {
@@ -110,6 +128,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Wrong password fails and counts the attempt.
+        /// </summary>
         [Fact]
         public async Task LoginAsync_WithWrongPassword_ReturnsNullAndRecordsFailure()
         {
@@ -125,6 +146,9 @@ namespace API.Tests.Services
             _userManager.Verify(m => m.AccessFailedAsync(user), Times.Once);
         }
 
+        /// <summary>
+        /// Correct login gives a token.
+        /// </summary>
         [Fact]
         public async Task LoginAsync_WithValidClientCredentials_ReturnsTokenAndClientRole()
         {
@@ -145,6 +169,9 @@ namespace API.Tests.Services
             Assert.Equal(AppRoles.Client, result.Role);
         }
 
+        /// <summary>
+        /// Bad invite can't register.
+        /// </summary>
         [Fact]
         public async Task RegisterAsync_WithInvalidInvitation_ReturnsFailure()
         {
@@ -162,6 +189,9 @@ namespace API.Tests.Services
             Assert.NotNull(result.Error);
         }
 
+        /// <summary>
+        /// Used email can't register.
+        /// </summary>
         [Fact]
         public async Task RegisterAsync_WithAlreadyUsedEmail_ReturnsFailure()
         {
@@ -181,6 +211,9 @@ namespace API.Tests.Services
             Assert.Contains("already exists", result.Error);
         }
 
+        /// <summary>
+        /// Valid invite registers the client.
+        /// </summary>
         [Fact]
         public async Task RegisterAsync_WithValidInvitation_CreatesClientAndReturnsToken()
         {
@@ -209,6 +242,9 @@ namespace API.Tests.Services
             _invitationRepository.Verify(r => r.MarkRedeemedAsync(invitation.InvitationId, createdClient.ClientId), Times.Once);
         }
 
+        /// <summary>
+        /// Failed account creation returns the errors.
+        /// </summary>
         [Fact]
         public async Task RegisterAsync_WhenIdentityCreationFails_ReturnsFailureWithDescriptions()
         {
@@ -231,8 +267,11 @@ namespace API.Tests.Services
             Assert.Contains("Password too weak", result.Error);
         }
 
+        /// <summary>
+        /// Real account gets a reset email.
+        /// </summary>
         [Fact]
-        public async Task ForgotPasswordAsync_WithExistingActiveAccount_ReturnsExistsAndToken()
+        public async Task ForgotPasswordAsync_WithExistingActiveAccount_SendsResetEmail()
         {
             var user = MakeUser("client@nexus.test");
             _userManager.Setup(m => m.FindByEmailAsync(user.Email!)).ReturnsAsync(user);
@@ -241,20 +280,34 @@ namespace API.Tests.Services
             var result = await _sut.ForgotPasswordAsync(new ForgotPasswordRequest { Email = user.Email! });
 
             Assert.Equal("If an account exists for that email address, a password reset link has been sent.", result.Message);
+
+            // Check the email was sent with the right link.
+            _emailService.Verify(e => e.SendPasswordResetAsync(
+                "client@nexus.test",
+                "https://localhost:7028/forgot-password?email=client%40nexus.test&token=reset-token-123"),
+                Times.Once);
         }
 
+        /// <summary>
+        /// Unknown email gets no email.
+        /// </summary>
         [Fact]
-        public async Task ForgotPasswordAsync_WithUnknownEmail_ReturnsDoesNotExist()
+        public async Task ForgotPasswordAsync_WithUnknownEmail_ReturnsGenericMessageAndSendsNoEmail()
         {
             _userManager.Setup(m => m.FindByEmailAsync("missing@nexus.test")).ReturnsAsync((ApplicationUser?)null);
 
             var result = await _sut.ForgotPasswordAsync(new ForgotPasswordRequest { Email = "missing@nexus.test" });
 
             Assert.Equal("If an account exists for that email address, a password reset link has been sent.", result.Message);
+
+            _emailService.Verify(e => e.SendPasswordResetAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
+        /// <summary>
+        /// Inactive account gets no email.
+        /// </summary>
         [Fact]
-        public async Task ForgotPasswordAsync_WithInactiveAccount_ReturnsDoesNotExist()
+        public async Task ForgotPasswordAsync_WithInactiveAccount_ReturnsGenericMessageAndSendsNoEmail()
         {
             var user = MakeUser("inactive@nexus.test", isActive: false);
             _userManager.Setup(m => m.FindByEmailAsync(user.Email!)).ReturnsAsync(user);
@@ -262,8 +315,13 @@ namespace API.Tests.Services
             var result = await _sut.ForgotPasswordAsync(new ForgotPasswordRequest { Email = user.Email! });
 
             Assert.Equal("If an account exists for that email address, a password reset link has been sent.", result.Message);
+
+            _emailService.Verify(e => e.SendPasswordResetAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
+        /// <summary>
+        /// Valid token resets the password.
+        /// </summary>
         [Fact]
         public async Task ResetPasswordAsync_WithValidTokenAndAccount_Succeeds()
         {
@@ -282,6 +340,9 @@ namespace API.Tests.Services
             Assert.True(result.Success);
         }
 
+        /// <summary>
+        /// Unknown email can't reset.
+        /// </summary>
         [Fact]
         public async Task ResetPasswordAsync_WithUnknownEmail_Fails()
         {
@@ -298,6 +359,9 @@ namespace API.Tests.Services
             Assert.NotNull(result.Error);
         }
 
+        /// <summary>
+        /// Bad token can't reset.
+        /// </summary>
         [Fact]
         public async Task ResetPasswordAsync_WithInvalidToken_FailsWithIdentityError()
         {
@@ -319,3 +383,5 @@ namespace API.Tests.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

@@ -4,8 +4,19 @@ using System.Net.Http.Json;
 namespace frontend.Services
 {
     // Data transfer objects (DTOs) for API requests and responses
+    /// <summary>
+    /// Data to create an invite.
+    /// </summary>
     public record CreateInvitationRequest(string Email);
+
+    /// <summary>
+    /// The result of creating an invite.
+    /// </summary>
     public record InvitationResult(bool Success, string Message, string? Token, DateTime? ExpiresAt);
+
+    /// <summary>
+    /// The details of an invite.
+    /// </summary>
     public record InvitationDetails(bool Valid, string Message, string Email, int AdvisorId, string AdvisorName);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -29,6 +40,9 @@ namespace frontend.Services
             _navigation = navigation;
         }
 
+        /// <summary>
+        /// Creates an invite.
+        /// </summary>
         public async Task<InvitationResult> CreateAsync(string email)
         {
             try
@@ -47,6 +61,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Checks if an invite is valid.
+        /// </summary>
         public async Task<InvitationDetails> ValidateAsync(string token)
         {
             try
@@ -65,9 +82,14 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Builds the register link.
+        /// </summary>
         public string BuildLink(string token)
         {
             return $"{_navigation.BaseUri}register?token={token}";
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

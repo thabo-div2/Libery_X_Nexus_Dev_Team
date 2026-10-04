@@ -8,16 +8,25 @@ using Xunit;
 
 namespace API.Tests.Services
 {
+    /// <summary>
+    /// Tests for the ClientService.
+    /// </summary>
     public class ClientServiceTests
     {
         private readonly Mock<IClientRepository> _clientRepository = new();
         private readonly ClientService _sut;
 
+        /// <summary>
+        /// Sets up the service with a fake repo.
+        /// </summary>
         public ClientServiceTests()
         {
             _sut = new ClientService(_clientRepository.Object);
         }
 
+        /// <summary>
+        /// Missing client returns null.
+        /// </summary>
         [Fact]
         public async Task GetByIdAsync_WhenClientDoesNotExist_ReturnsNull()
         {
@@ -28,6 +37,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Existing client returns its details.
+        /// </summary>
         [Fact]
         public async Task GetByIdAsync_WhenClientExists_ReturnsMappedDto()
         {
@@ -41,6 +53,9 @@ namespace API.Tests.Services
             Assert.Equal(5, result.AdvisorId);
         }
 
+        /// <summary>
+        /// Search passes the filters and returns results.
+        /// </summary>
         [Fact]
         public async Task SearchAsync_PassesFiltersThroughToRepository_AndMapsResults()
         {
@@ -60,6 +75,9 @@ namespace API.Tests.Services
             _clientRepository.Verify(r => r.SearchAsync("jane", ClientStatus.Registered, 5), Times.Once);
         }
 
+        /// <summary>
+        /// Used email throws an error.
+        /// </summary>
         [Fact]
         public async Task CreateAsync_WithEmailAlreadyInUse_ThrowsInvalidOperationException()
         {
@@ -79,6 +97,9 @@ namespace API.Tests.Services
             await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.CreateAsync(request));
         }
 
+        /// <summary>
+        /// New email creates the client.
+        /// </summary>
         [Fact]
         public async Task CreateAsync_WithNewEmail_CreatesAndReturnsClient()
         {
@@ -108,6 +129,9 @@ namespace API.Tests.Services
             Assert.Equal(3, result.AdvisorId);
         }
 
+        /// <summary>
+        /// Updating a missing client returns null.
+        /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenClientDoesNotExist_ReturnsNull()
         {
@@ -120,6 +144,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Updating a client saves the changes.
+        /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenClientExists_UpdatesAndReturnsClient()
         {
@@ -136,6 +163,9 @@ namespace API.Tests.Services
             Assert.Equal("High", result.RiskProfile);
         }
 
+        /// <summary>
+        /// Deleting a missing client returns false.
+        /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenClientDoesNotExist_ReturnsFalse()
         {
@@ -146,6 +176,9 @@ namespace API.Tests.Services
             Assert.False(result);
         }
 
+        /// <summary>
+        /// Deleting a client returns true.
+        /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenClientExists_DeletesAndReturnsTrue()
         {
@@ -159,3 +192,5 @@ namespace API.Tests.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

@@ -16,8 +16,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace API
 {
+    /// <summary>
+    /// Starts the API.
+    /// </summary>
     public partial class Program
     {
+        /// <summary>
+        /// Sets up the services and runs the API.
+        /// </summary>
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -170,3 +176,5 @@ namespace API
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

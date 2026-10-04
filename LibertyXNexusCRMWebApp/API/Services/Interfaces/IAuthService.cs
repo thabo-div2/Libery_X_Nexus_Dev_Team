@@ -13,3 +13,5 @@ namespace API.Services.Interfaces
         Task<ResetPasswordResult> ResetPasswordAsync(ResetPasswordRequest request);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

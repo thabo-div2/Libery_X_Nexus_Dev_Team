@@ -26,6 +26,9 @@ namespace API.Services.Implementations
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
+        /// <summary>
+        /// Sets up the service.
+        /// </summary>
         public AuthService(
             UserManager<ApplicationUser> userManager,
             IJwtTokenService jwtTokenService,
@@ -50,6 +53,9 @@ namespace API.Services.Implementations
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Logs the user in and gives back a token.
+        /// </summary>
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -131,6 +137,9 @@ namespace API.Services.Implementations
 
         }
 
+        /// <summary>
+        /// Registers a client from an invite.
+        /// </summary>
         public async Task<RegisterResult> RegisterAsync(RegisterRequest request)
         {
             var invitation = await _invitationRepository.GetValidByTokenAsync(request.InvitationToken);
@@ -226,6 +235,9 @@ namespace API.Services.Implementations
             };
         }
 
+        /// <summary>
+        /// Emails the user a reset link.
+        /// </summary>
         public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
         {
             const string genericMessage =
@@ -282,6 +294,9 @@ namespace API.Services.Implementations
             };
         }
 
+        /// <summary>
+        /// Changes the user's password.
+        /// </summary>
         public async Task<ResetPasswordResult> ResetPasswordAsync(ResetPasswordRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -315,3 +330,5 @@ namespace API.Services.Implementations
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

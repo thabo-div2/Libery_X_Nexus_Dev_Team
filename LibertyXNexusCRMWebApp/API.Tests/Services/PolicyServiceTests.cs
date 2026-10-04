@@ -8,6 +8,9 @@ using Xunit;
 
 namespace API.Tests.Services
 {
+    /// <summary>
+    /// Tests for the PolicyService.
+    /// </summary>
     public class PolicyServiceTests
     {
         private readonly Mock<IPolicyRepository> _policyRepository = new();
@@ -15,11 +18,17 @@ namespace API.Tests.Services
         private readonly Mock<ICaseRepository> _caseRepository = new();
         private readonly PolicyService _sut;
 
+        /// <summary>
+        /// Sets up the service with fakes.
+        /// </summary>
         public PolicyServiceTests()
         {
             _sut = new PolicyService(_policyRepository.Object, _clientRepository.Object, _caseRepository.Object);
         }
 
+        /// <summary>
+        /// Catalogue policy has no client.
+        /// </summary>
         [Fact]
         public async Task CreateCatalogueItemAsync_CreatesAsCatalogueItemWithNoClient()
         {
@@ -45,6 +54,9 @@ namespace API.Tests.Services
             Assert.Equal("Active", result.Status);
         }
 
+        /// <summary>
+        /// Unknown client throws an error.
+        /// </summary>
         [Fact]
         public async Task CreateClientPolicyAsync_WithUnknownClient_ThrowsKeyNotFoundException()
         {
@@ -55,6 +67,9 @@ namespace API.Tests.Services
             await Assert.ThrowsAsync<KeyNotFoundException>(() => _sut.CreateClientPolicyAsync(99, request));
         }
 
+        /// <summary>
+        /// End date before start date throws an error.
+        /// </summary>
         [Fact]
         public async Task CreateClientPolicyAsync_WithEndDateBeforeStartDate_ThrowsArgumentException()
         {
@@ -71,6 +86,9 @@ namespace API.Tests.Services
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateClientPolicyAsync(1, request));
         }
 
+        /// <summary>
+        /// Valid policy is created as pending.
+        /// </summary>
         [Fact]
         public async Task CreateClientPolicyAsync_WithValidRequest_CreatesPendingPolicyForClient()
         {
@@ -91,6 +109,9 @@ namespace API.Tests.Services
             Assert.Equal("Pending", result.Status);
         }
 
+        /// <summary>
+        /// Updating a missing policy returns null.
+        /// </summary>
         [Fact]
         public async Task UpdateAsync_WhenPolicyDoesNotExist_ReturnsNull()
         {
@@ -103,6 +124,9 @@ namespace API.Tests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Bad dates on update throw an error.
+        /// </summary>
         [Fact]
         public async Task UpdateAsync_WithEndDateBeforeStartDate_ThrowsArgumentException()
         {
@@ -120,6 +144,9 @@ namespace API.Tests.Services
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.UpdateAsync(1, request));
         }
 
+        /// <summary>
+        /// Can't change a cancelled policy.
+        /// </summary>
         [Fact]
         public async Task UpdateStatusAsync_WhenPolicyIsCancelled_ThrowsInvalidOperationException()
         {
@@ -131,6 +158,9 @@ namespace API.Tests.Services
             await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.UpdateStatusAsync(1, request));
         }
 
+        /// <summary>
+        /// Missing policy throws an error.
+        /// </summary>
         [Fact]
         public async Task UpdateStatusAsync_WhenPolicyDoesNotExist_ThrowsKeyNotFoundException()
         {
@@ -141,6 +171,9 @@ namespace API.Tests.Services
             await Assert.ThrowsAsync<KeyNotFoundException>(() => _sut.UpdateStatusAsync(404, request));
         }
 
+        /// <summary>
+        /// Valid status change works.
+        /// </summary>
         [Fact]
         public async Task UpdateStatusAsync_WithValidTransition_UpdatesStatus()
         {
@@ -155,6 +188,9 @@ namespace API.Tests.Services
             Assert.Equal("Active", result.Status);
         }
 
+        /// <summary>
+        /// Deleting a missing policy returns false.
+        /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenPolicyDoesNotExist_ReturnsFalse()
         {
@@ -166,6 +202,9 @@ namespace API.Tests.Services
             _policyRepository.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
         }
 
+        /// <summary>
+        /// Deleting a policy returns true.
+        /// </summary>
         [Fact]
         public async Task DeleteAsync_WhenPolicyExists_DeletesAndReturnsTrue()
         {
@@ -179,3 +218,5 @@ namespace API.Tests.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

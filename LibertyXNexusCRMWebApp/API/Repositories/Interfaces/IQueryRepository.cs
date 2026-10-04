@@ -11,3 +11,5 @@ namespace API.Repositories.Interfaces
         Task<bool> BelongsToClientAsync(int queryId, int clientId);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

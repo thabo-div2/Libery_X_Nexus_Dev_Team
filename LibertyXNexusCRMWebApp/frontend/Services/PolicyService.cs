@@ -3,6 +3,9 @@ using System.Net;
 
 namespace frontend.Services
 {
+    /// <summary>
+    /// A policy shown on the frontend.
+    /// </summary>
     public record PolicySummary(
             int PolicyId,
             int? ClientId,
@@ -19,6 +22,9 @@ namespace frontend.Services
             DateTime? UpdatedAt
         );
 
+    /// <summary>
+    /// Data to add a catalogue policy.
+    /// </summary>
     public record CreateCataloguePolicyRequest(
             string PolicyName,
             string Provider,
@@ -27,6 +33,9 @@ namespace frontend.Services
             double? CoverAmount
         );
 
+    /// <summary>
+    /// Data to give a client a policy.
+    /// </summary>
     public record CreateClientPolicyRequest(
             string PolicyName,
             string Provider,
@@ -38,6 +47,9 @@ namespace frontend.Services
             DateTime? TargetSubmissionDate = null
         );
 
+    /// <summary>
+    /// Data to update a policy.
+    /// </summary>
     public record UpdatePolicyRequest(
             string PolicyName,
             string Provider,
@@ -48,15 +60,24 @@ namespace frontend.Services
             DateTime? EndDate
         );
 
+    /// <summary>
+    /// Handles policies.
+    /// </summary>
     public class PolicyService
     {
         private readonly HttpClient _http;
 
+        /// <summary>
+        /// Sets up the service.
+        /// </summary>
         public PolicyService(HttpClient http)
         {
             _http = http;
         }
 
+        /// <summary>
+        /// Gets a policy by id.
+        /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             GetByIdAsync(int policyId)
         {
@@ -101,6 +122,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gets a policy with its documents.
+        /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             GetWithDocumentsAsync(int policyId)
         {
@@ -146,6 +170,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gets the policy catalogue.
+        /// </summary>
         public async Task<(List<PolicySummary> Policies, string? Error)>
             GetCatalogueAsync()
         {
@@ -183,6 +210,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gets a client's policies.
+        /// </summary>
         public async Task<(List<PolicySummary> Policies, string? Error)>
             GetForClientAsync(int clientId)
         {
@@ -221,6 +251,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gets policies by status.
+        /// </summary>
         public async Task<(List<PolicySummary> Policies, string? Error)>
             GetByStatusAsync(PolicyStatus status)
         {
@@ -259,6 +292,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Adds a catalogue policy.
+        /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             CreateCatalogueItemAsync(
                 CreateCataloguePolicyRequest request)
@@ -299,6 +335,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gives a client a policy.
+        /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             CreateClientPolicyAsync(
                 int clientId,
@@ -340,6 +379,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Updates a policy.
+        /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             UpdateAsync(
                 int policyId,
@@ -388,6 +430,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Changes a policy's status.
+        /// </summary>
         public async Task<(PolicySummary? Policy, string? Error)>
             UpdateStatusAsync(
                 int policyId,
@@ -441,6 +486,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Deletes a policy.
+        /// </summary>
         public async Task<string?> DeleteAsync(int policyId)
         {
             try
@@ -471,6 +519,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Reads the error from the API.
+        /// </summary>
         private static async Task<string> ReadErrorAsync(
             HttpResponseMessage response)
         {
@@ -489,3 +540,5 @@ namespace frontend.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

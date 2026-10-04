@@ -2,6 +2,9 @@
 
 namespace frontend.Services
 {
+    /// <summary>
+    /// Saves the login token in the browser.
+    /// </summary>
     public class TokenStorageService
     {
         private const string StorageKey = "nexus-access-token";
@@ -9,11 +12,17 @@ namespace frontend.Services
         private string? _accessToken;
         private bool _loaded;
 
+        /// <summary>
+        /// Sets up the service.
+        /// </summary>
         public TokenStorageService(ProtectedSessionStorage storage)
         {
             _storage = storage;
         }
 
+        /// <summary>
+        /// Saves the token.
+        /// </summary>
         public async Task SetTokenAsync(string token)
         {
             _accessToken = token;
@@ -29,6 +38,9 @@ namespace frontend.Services
             }
         }
 
+        /// <summary>
+        /// Gets the token.
+        /// </summary>
         public async Task<string?> GetTokenAsync()
         {
             if (_loaded)
@@ -50,6 +62,9 @@ namespace frontend.Services
             return _accessToken;
         }
 
+        /// <summary>
+        /// Deletes the token.
+        /// </summary>
         public async Task ClearTokenAsync()
         {
             _accessToken = null;
@@ -66,3 +81,5 @@ namespace frontend.Services
         }
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

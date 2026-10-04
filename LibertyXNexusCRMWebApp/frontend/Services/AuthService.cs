@@ -4,15 +4,54 @@ using System.Net.Http.Json;
 namespace frontend.Services
 {
     // Data transfer objects (DTOs) for API requests and responses
+    /// <summary>
+    /// Login data.
+    /// </summary>
     public record LoginRequest(string Email, string Password);
+
+    /// <summary>
+    /// Register data.
+    /// </summary>
     public record RegisterRequest(string InvitationToken, string FirstName, string LastName, string Email, string? Phone, string Password);
+
+    /// <summary>
+    /// What the API sends back after login.
+    /// </summary>
     public record ApiAuthResponse(string AccessToken, string TokenType, DateTime ExpiresAtUtc, string Email, string Role);
+
+    /// <summary>
+    /// The logged in user's info.
+    /// </summary>
     public record CurrentUserResponse(string? UserId, string? Email, string? AdvisorId, string? ClientId, string? FirstName, string? LastName, List<string> Roles);
+
+    /// <summary>
+    /// The result of logging in or registering.
+    /// </summary>
     public record AuthResult(bool Success, string Message, string? Role, int? Id, string? FirstName, string? LastName, string? Email);
+
+    /// <summary>
+    /// Forgot password data.
+    /// </summary>
     public record ForgotPasswordApiRequest(string Email);
+
+    /// <summary>
+    /// What the API sends back for forgot password.
+    /// </summary>
     public record ForgotPasswordApiResponse(string Message);
+
+    /// <summary>
+    /// Reset password data.
+    /// </summary>
     public record ResetPasswordApiRequest(string Email, string ResetToken, string NewPassword);
-    public record ForgotPasswordResult(string? ResetToken, string? Error);
+
+    /// <summary>
+    /// The result of forgot password.
+    /// </summary>
+    public record ForgotPasswordResult(string? Message, string? Error);
+
+    /// <summary>
+    /// The result of a password reset.
+    /// </summary>
     public record ResetPasswordResult(bool Success, string? Error);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

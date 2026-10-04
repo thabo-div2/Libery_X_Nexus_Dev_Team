@@ -13,7 +13,7 @@
     align-items: stretch;
     margin: 0;
     padding: 0;
-    background: #f6f8fb;
+    background: var(--color-page-bg);
 }
 
 
@@ -30,7 +30,7 @@
     top: 0;
     z-index: 100;
     overflow: hidden;
-    background: #062946;
+    background: var(--color-sidebar);
 }
 
 
@@ -46,7 +46,7 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background: #f6f8fb;
+    background: var(--color-page-bg);
 }
 
 

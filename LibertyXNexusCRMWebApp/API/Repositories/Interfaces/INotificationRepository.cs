@@ -13,3 +13,5 @@ namespace API.Repositories.Interfaces
         Task MarkAllAsReadForAdvisorAsync(int advisorId);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

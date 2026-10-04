@@ -1,5 +1,8 @@
 ﻿namespace frontend.Services
 {
+    /// <summary>
+    /// A case shown to the client.
+    /// </summary>
     public record CaseSummary(
             int CaseId,
             int PolicyId,
@@ -10,15 +13,24 @@
             DateTime? UpdatedAt
         );
 
+    /// <summary>
+    /// Gets a client's cases from the API.
+    /// </summary>
     public class CaseService
     {
         private readonly HttpClient _http;
 
+        /// <summary>
+        /// Sets up the service.
+        /// </summary>
         public CaseService(HttpClient http)
         {
             _http = http;
         }
 
+        /// <summary>
+        /// Gets all of a client's cases.
+        /// </summary>
         public async Task<(List<CaseSummary> Cases, string? Error)>
             GetForClientAsync(int clientId)
         {
@@ -45,6 +57,9 @@
             }
         }
 
+        /// <summary>
+        /// Reads the error from the API.
+        /// </summary>
         private static async Task<string> ReadErrorAsync(
             HttpResponseMessage response)
         {
@@ -60,3 +75,5 @@
     
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

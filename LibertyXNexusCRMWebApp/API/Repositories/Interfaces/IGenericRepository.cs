@@ -14,3 +14,5 @@ namespace API.Repositories.Interfaces
         Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

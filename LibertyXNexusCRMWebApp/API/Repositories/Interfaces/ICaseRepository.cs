@@ -11,3 +11,5 @@ namespace API.Repositories.Interfaces
         Task UpdateStatusAsync(int caseId, CaseStatus status, string? notes = null);
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//
