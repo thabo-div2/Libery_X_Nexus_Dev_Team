@@ -1,0 +1,37 @@
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+ 
+jobs:
+  build:
+ 
+    runs-on: ubuntu-latest
+ 
+    # The solution isn't at the repo root — it's one level down, inside
+    # LibertyXNexusCRMWebApp. Setting this once here means every step below
+    # can use plain relative commands instead of repeating the path.
+    defaults:
+      run:
+        working-directory: LibertyXNexusCRMWebApp
+ 
+    steps:
+    - uses: actions/checkout@v4
+ 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        # All four projects target net10.0 (checked API.csproj, frontend.csproj,
+        # Shared.csproj, API.Tests.csproj) — the default template's 8.0.x
+        # would fail to even restore against this solution.
+        dotnet-version: 10.0.x
+ 
+    - name: Restore dependencies
+      run: dotnet restore LibertyXNexusCRMWebApp.slnx
+ 
+    - name: Build
+      run: dotnet build LibertyXNexusCRMWebApp.slnx --no-restore --configuration Release
+ 
+    - name: Test
+      run: dotnet test LibertyXNexusCRMWebApp.slnx --no-build --configuration Release --verbosity normal
