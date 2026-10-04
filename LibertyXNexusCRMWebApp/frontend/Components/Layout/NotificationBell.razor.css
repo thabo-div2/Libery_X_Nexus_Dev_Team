@@ -71,32 +71,32 @@
         background: var(--color-white);
     }
 
-    .notification-panel-header strong {
+        .notification-panel-header strong {
+            font-size: 13px;
+            color: var(--color-text);
+        }
+
+    .notification-mark-all {
+        border: none;
+        background: none;
+        color: var(--color-blue-710);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+    }
+
+        .notification-mark-all:hover {
+            text-decoration: underline;
+        }
+
+    .notification-empty {
+        margin: 0;
+        padding: 20px 14px;
+        color: var(--color-grey-430);
         font-size: 13px;
-        color: var(--color-text);
+        text-align: center;
     }
-
-.notification-mark-all {
-    border: none;
-    background: none;
-    color: var(--color-blue-710);
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
-}
-
-    .notification-mark-all:hover {
-        text-decoration: underline;
-    }
-
-.notification-empty {
-    margin: 0;
-    padding: 20px 14px;
-    color: var(--color-grey-430);
-    font-size: 13px;
-    text-align: center;
-}
 
     .notification-list {
         margin: 0;
@@ -151,22 +151,23 @@
         min-width: 0;
     }
 
-.notification-item-message {
-    font-size: 13px;
-    color: var(--color-text);
-    line-height: 1.4;
-}
+    .notification-item-message {
+        font-size: 13px;
+        color: var(--color-text);
+        line-height: 1.4;
+    }
 
     .notification-item.is-unread .notification-item-message {
         font-weight: 600;
     }
 
-.notification-item-meta {
-    font-size: 11px;
-    color: var(--color-grey-390);
-}
+    .notification-item-meta {
+        font-size: 11px;
+        color: var(--color-grey-390);
+    }
 
     .notification-item.is-reminder .notification-item-meta {
         color: var(--color-yellow-625);
     }
+}
     /* ================================ EndOfFile ============================== */
