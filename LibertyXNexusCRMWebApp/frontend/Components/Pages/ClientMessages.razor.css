@@ -5,8 +5,8 @@
 .client-messages-page {
     min-height: 100vh;
     width: 100%;
-    background: #f6f8fb;
-    color: #14263a;
+    background: var(--color-page-bg);
+    color: var(--color-blue-850);
     font-family: Inter, "Segoe UI", Arial, sans-serif;
     padding: 24px;
     display: flex;
@@ -16,12 +16,12 @@
 .client-messages-header h1 {
     margin: 0 0 4px;
     font-size: 20px;
-    color: #12283e;
+    color: var(--color-text);
 }
 
 .client-messages-header p {
     margin: 0 0 18px;
-    color: #83909d;
+    color: var(--color-grey-430);
     font-size: 13px;
 }
 
@@ -37,10 +37,10 @@
     min-height: 365px;
     display: flex;
     flex-direction: column;
-    border: 1px solid #d8dfe6;
+    border: 1px solid var(--color-border);
     border-radius: 10px;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(22, 48, 72, 0.04);
+    background: var(--color-white);
+    box-shadow: 0 2px 6px var(--color-shadow-04);
     overflow: hidden;
 }
 
@@ -52,7 +52,7 @@
     justify-content: space-between;
     gap: 12px;
     padding: 0 16px;
-    border-bottom: 1px solid #e3e8ec;
+    border-bottom: 1px solid var(--color-border-light);
 }
 
 .chat-client {
@@ -63,7 +63,7 @@
 
 .chat-client h2 {
     margin: 0;
-    color: #172e43;
+    color: var(--color-text);
     font-size: 14px;
     font-weight: 650;
 }
@@ -76,8 +76,8 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: #073253;
-    color: #ffffff;
+    background: var(--color-primary);
+    color: var(--color-white);
     font-size: 12px;
     font-weight: 650;
 }
@@ -87,17 +87,17 @@
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
-    border: 1px solid #dbe2e8;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    background: #ffffff;
-    color: #073253;
+    background: var(--color-white);
+    color: var(--color-primary);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
 }
 
     .meeting-toggle-button:hover:not(:disabled) {
-        background: #f4f7f9;
+        background: var(--color-page-bg);
     }
 
     .meeting-toggle-button:disabled {
@@ -116,26 +116,26 @@
     flex-direction: column;
     gap: 10px;
     padding: 14px 16px;
-    border-bottom: 1px solid #e3e8ec;
-    background: #fafbfd;
+    border-bottom: 1px solid var(--color-border-light);
+    background: var(--color-white);
 }
 
     .meeting-request-form label {
         display: flex;
         flex-direction: column;
         gap: 4px;
-        color: #536676;
+        color: var(--color-slate-610);
         font-size: 11px;
         font-weight: 600;
     }
 
     .meeting-request-form input {
         padding: 8px 10px;
-        border: 1px solid #dbe2e8;
+        border: 1px solid var(--color-border);
         border-radius: 6px;
         outline: none;
-        background: #ffffff;
-        color: #263a4d;
+        background: var(--color-white);
+        color: var(--color-slate-770);
         font-family: inherit;
         font-size: 12px;
     }
@@ -148,10 +148,10 @@
 
 .meeting-cancel-button {
     padding: 8px 14px;
-    border: 1px solid #dbe2e8;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
-    background: #ffffff;
-    color: #536676;
+    background: var(--color-white);
+    color: var(--color-slate-610);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -161,15 +161,15 @@
     padding: 8px 14px;
     border: none;
     border-radius: 6px;
-    background: #073253;
-    color: #ffffff;
+    background: var(--color-primary);
+    color: var(--color-white);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
 }
 
     .meeting-send-button:hover {
-        background: #08416b;
+        background: var(--color-blue-770);
     }
 
 
@@ -200,19 +200,19 @@
     flex-direction: column;
     gap: 4px;
     padding: 12px 14px;
-    border: 1px solid #dbe2e8;
+    border: 1px solid var(--color-border);
     border-radius: 10px;
-    background: #fafbfd;
+    background: var(--color-white);
     text-align: center;
 }
 
     .meeting-card strong {
-        color: #172e43;
+        color: var(--color-text);
         font-size: 12px;
     }
 
     .meeting-card span {
-        color: #536676;
+        color: var(--color-slate-610);
         font-size: 11px;
     }
 
@@ -226,30 +226,30 @@
 }
 
 .meeting-pending {
-    border-color: #f0c775;
-    background: #fff8ea;
+    border-color: var(--color-yellow-300);
+    background: var(--color-yellow-40);
 }
 
     .meeting-pending .meeting-status-label {
-        color: #8a6712;
+        color: var(--color-warning-text);
     }
 
 .meeting-confirmed {
-    border-color: #8fc7a4;
-    background: #eefaf1;
+    border-color: var(--color-green-330);
+    background: var(--color-green-40);
 }
 
     .meeting-confirmed .meeting-status-label {
-        color: #2d8b59;
+        color: var(--color-success);
     }
 
 .meeting-denied {
-    border-color: #e3a3a3;
-    background: #fdecea;
+    border-color: var(--color-red-240);
+    background: var(--color-danger-bg);
 }
 
     .meeting-denied .meeting-status-label {
-        color: #c0392b;
+        color: var(--color-danger);
     }
 
 
@@ -261,15 +261,15 @@
     max-width: 70%;
     padding: 10px 14px;
     border-radius: 10px;
-    background: #eaf2f7;
-    color: #40596c;
+    background: var(--color-blue-60);
+    color: var(--color-slate-660);
 }
 
 .message-from-me {
     align-self: flex-end;
     border-top-right-radius: 3px;
-    background: #073253;
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-white);
 }
 
 .message-from-advisor {
@@ -307,20 +307,20 @@
     display: flex;
     gap: 10px;
     padding: 12px 16px;
-    border-top: 1px solid #e3e8ec;
-    background: #ffffff;
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-white);
 }
 
 .client-messages-composer input {
     flex: 1;
     padding: 10px 12px;
-    border: 1px solid #dde3ea;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     font-size: 13px;
 }
 
     .client-messages-composer input:disabled {
-        background: #f7f8f9;
+        background: var(--color-page-bg);
         cursor: not-allowed;
     }
 
@@ -328,8 +328,8 @@
     padding: 10px 18px;
     border: none;
     border-radius: 8px;
-    background: #062946;
-    color: #fff;
+    background: var(--color-sidebar);
+    color: var(--color-white);
     font-weight: 600;
     cursor: pointer;
 }
@@ -345,13 +345,13 @@
    =============================== */
 
 .client-messages-error {
-    color: #c0392b;
+    color: var(--color-danger);
     font-size: 12px;
     margin-top: 8px;
 }
 
 .client-messages-empty {
-    color: #83909d;
+    color: var(--color-grey-430);
     font-size: 13px;
     padding: 12px 0;
     text-align: center;
