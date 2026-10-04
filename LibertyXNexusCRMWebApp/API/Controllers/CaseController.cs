@@ -18,9 +18,7 @@ namespace API.Controllers
         private readonly ICaseService _caseService;
         private readonly IClientService _clientService;
 
-        public CasesController(
-            ICaseService caseService,
-            IClientService clientService)
+        public CasesController(ICaseService caseService,IClientService clientService)
         {
             _caseService = caseService;
             _clientService = clientService;

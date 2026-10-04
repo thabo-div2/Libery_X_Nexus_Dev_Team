@@ -38,13 +38,13 @@ namespace API.Repositories.Implementations
             return await query.OrderBy(m => m.MeetingDate).AsNoTracking().ToListAsync();
         }
 
-        public async Task<IEnumerable<Meeting>> GetByDateRangeAsync(DateTime from, DateTime to)
+        public async Task<IEnumerable<Meeting>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
 
             var meetings = await context.Meetings
                                     .Include(m => m.Client)
-                                    .Where(m => m.MeetingDate >= from && m.MeetingDate <= to)
+                                    .Where(m => m.MeetingDate >= from && m.MeetingDate <= to && m.Client.AdvisorId == advisorId)
                                     .OrderBy(m => m.MeetingDate)
                                     .AsNoTracking()
                                     .ToListAsync();
@@ -52,13 +52,13 @@ namespace API.Repositories.Implementations
             return meetings;
         }
 
-        public async Task<IEnumerable<Meeting>> GetByStatusAsync(MeetingStatus status)
+        public async Task<IEnumerable<Meeting>> GetByStatusAsync(MeetingStatus status, int advisorId)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
 
             var meetings = await context.Meetings
                                     .Include(m => m.Client)
-                                    .Where(m => m.Status == status)
+                                    .Where(m => m.Status == status && m.Client.AdvisorId == advisorId)
                                     .OrderBy(m => m.MeetingDate)
                                     .AsNoTracking()
                                     .ToListAsync();

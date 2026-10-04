@@ -134,7 +134,7 @@ namespace API.Controllers
         {
             try
             {
-                return Ok(await meetingService_.GetByDateRangeAsync(from, to));
+                return Ok(await meetingService_.GetByDateRangeAsync(from, to, CurrentAdvisorId));
             }
             catch (ArgumentException ex)
             {
@@ -152,7 +152,7 @@ namespace API.Controllers
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<MeetingDto>>> GetByStatus(MeetingStatus status)
         {
-            return Ok(await meetingService_.GetByStatusAsync(status));
+            return Ok(await meetingService_.GetByStatusAsync(status, CurrentAdvisorId));
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

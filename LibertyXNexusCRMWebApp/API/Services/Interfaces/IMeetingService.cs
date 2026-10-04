@@ -8,8 +8,8 @@ namespace API.Services.Interfaces
         Task<MeetingDto?> GetByIdAsync(int meetingId);
         Task<IEnumerable<MeetingDto>> GetForClientAsync(int clientId);
         Task<IEnumerable<MeetingDto>> GetUpcomingAsync(int? clientId);
-        Task<IEnumerable<MeetingDto>> GetByDateRangeAsync(DateTime from, DateTime to);
-        Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status);
+        Task<IEnumerable<MeetingDto>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId);
+        Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status, int advisorId);
         Task<MeetingDto> BookAsync(BookMeetingRequest request);
         Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request);
         Task<MeetingDto> CancelAsync(int meetingId);

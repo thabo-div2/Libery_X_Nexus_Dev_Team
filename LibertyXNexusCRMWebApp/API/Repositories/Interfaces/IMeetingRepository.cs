@@ -7,8 +7,8 @@ namespace API.Repositories.Interfaces
     {
         Task<IEnumerable<Meeting>> GetClientIdAsync(int clientId);
         Task<IEnumerable<Meeting>> GetUpcomingMeetingAsync(int? clientId = null);
-        Task<IEnumerable<Meeting>> GetByDateRangeAsync(DateTime from, DateTime to);
-        Task<IEnumerable<Meeting>> GetByStatusAsync(MeetingStatus status);
+        Task<IEnumerable<Meeting>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId);
+        Task<IEnumerable<Meeting>> GetByStatusAsync(MeetingStatus status, int advisorId);
         Task<bool> HasConflictAsync(DateTime start, int durationMinutes, int? excludeMeetingId = null);
         Task<bool> BelongsToClientAsync(int meetingId, int clientId);
     }
