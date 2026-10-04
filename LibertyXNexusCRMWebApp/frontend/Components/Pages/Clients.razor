@@ -159,22 +159,35 @@
                            }
                             else
                              {
-                                 <ul class="case-step-list">
+                               <ul class="case-step-list">
                                      @foreach (var (step, label) in CaseSteps)
                                      {
                                          var complete = IsStepComplete(step);
-
-                                         <li class="case-step-row">
+                                         var stepDate = GetStepDate(step);
+                                         <li class="case-step-row @(complete? "is-complete" : "")">
                                              <label class="case-step-check">
-                                                <input type="checkbox"
-                                                     checked="@complete"
-                                                     disabled="@complete"
-                                                     @onchange="() => MarkStep(step)" />
-                                                      @label
+                                                 <input type="checkbox"
+                                                        class="case-step-input"
+                                                        checked="@complete"
+                                                        disabled="@complete"
+                                                        @onchange="() => MarkStep(step)" />
+                                                 <span class="case-step-box">
+                                                       <svg class="case-step-tick" viewBox="0 0 16 16">
+                                                          <path d="M3 8.5L6.5 12L13 4.5" />
+                                                       </svg>
+                                                 </span>
+
+                                                 <span class="case-step-text">
+                                                       <span class="case-step-label">@label</span>
+                                                        @if (stepDate is not null)
+                                                        {
+                                                          <span class="case-step-date">@stepDate</span>
+                                                        }
+                                                 </span>
                                              </label>
                                          </li>
                                      }
-                                 </ul>
+                               </ul>
                             }
 
                     </div>
@@ -319,6 +332,26 @@
         SelectedCase = updated;
         CaseError = null;
     }
+
+    private string? GetStepDate(CaseStep step)
+    {
+        if (SelectedCase is null)
+        {
+            return null;
+        }
+
+        var when = step switch
+        {
+            CaseStep.DetailsSubmitted => SelectedCase.DetailsSubmittedAt,
+            CaseStep.AdviserReview => SelectedCase.AdviserReviewAt,
+            CaseStep.FicaVerification => SelectedCase.FicaVerifiedAt,
+            CaseStep.SubmittedToLiberty => SelectedCase.SubmittedToLibertyAt,
+            CaseStep.PolicyIssued => SelectedCase.PolicyIssuedAt,
+            _ => null
+        };
+        return when?.ToString("dd MMM yyyy");
+    }
+
 }
 
 @* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

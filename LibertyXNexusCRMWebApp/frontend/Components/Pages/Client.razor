@@ -580,7 +580,7 @@
         {
             steps.Add(new ApplicationStep
             {
-                Title = entries[i].Label,
+                Title = entries[i].Label,   
                 Status = entries[i].When.HasValue ? "complete": i == firstIncomplete? "current": "",
                 DateText = entries[i].When?.ToString("dd MMM yyyy") ?? string.Empty
             });
