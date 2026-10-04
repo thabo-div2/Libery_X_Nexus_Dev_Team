@@ -37,7 +37,7 @@
 .client-heading h1 {
     margin: 0 0 4px;
     color: var(--color-text);
-    font-size: 16px;
+    font-size: 17.5px;
     font-weight: 650;
     letter-spacing: -0.25px;
 }
@@ -45,7 +45,7 @@
 .client-heading p {
     margin: 0;
     color: var(--color-grey-430);
-    font-size: 9px;
+    font-size: 10px;
 }
 
 
@@ -80,7 +80,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: 10px;
+        font-size: 11px;
     }
 
         .search-box input::placeholder {
@@ -97,7 +97,7 @@
     left: 11px;
     z-index: 2;
     color: var(--color-text-muted);
-    font-size: 15px;
+    font-size: 16.5px;
 }
 
 
@@ -113,7 +113,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-blue-790);
-    font-size: 13px;
+    font-size: 14.5px;
     cursor: pointer;
 }
 
@@ -171,7 +171,7 @@
     .card-header h2 {
         margin: 0;
         color: var(--color-text);
-        font-size: 10px;
+        font-size: 11px;
         font-weight: 650;
     }
 
@@ -187,7 +187,7 @@
     border-radius: 20px;
     background: var(--color-warning-bg);
     color: var(--color-warning-text);
-    font-size: 7px;
+    font-size: 8px;
     font-weight: 600;
 }
 
@@ -234,7 +234,7 @@
     justify-content: center;
     flex-shrink: 0;
     border-radius: 50%;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
 }
 
@@ -292,13 +292,13 @@
 
     .progress-details strong {
         color: var(--color-slate-740);
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 600;
     }
 
     .progress-details span {
         color: var(--color-grey-430);
-        font-size: 7px;
+        font-size: 8px;
     }
 
 
@@ -308,7 +308,7 @@
 
 .view-all-link {
     color: var(--color-blue-740);
-    font-size: 8px;
+    font-size: 9px;
     font-weight: 600;
     text-decoration: none;
 }
@@ -338,7 +338,7 @@
 
 .document-name {
     color: var(--color-slate-610);
-    font-size: 9px;
+    font-size: 10px;
 }
 
 
@@ -350,7 +350,7 @@
     gap: 5px;
     padding: 4px 8px;
     border-radius: 20px;
-    font-size: 7px;
+    font-size: 8px;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -412,7 +412,7 @@
     border-radius: 4px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.15s ease;
@@ -456,19 +456,19 @@
 
     .policy-details strong {
         color: var(--color-slate-740);
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 600;
     }
 
     .policy-details span {
         color: var(--color-grey-390);
-        font-size: 7px;
+        font-size: 8px;
     }
 
 .policy-value {
     flex-shrink: 0;
     color: var(--color-blue-800);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 600;
 }
 
@@ -492,7 +492,7 @@
     width: 17px;
     flex-shrink: 0;
     color: var(--color-text-muted);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .update-content {
@@ -505,7 +505,7 @@
     .update-content strong {
         overflow: hidden;
         color: var(--color-slate-710);
-        font-size: 8px;
+        font-size: 9px;
         font-weight: 500;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -513,7 +513,7 @@
 
     .update-content span {
         color: var(--color-grey-390);
-        font-size: 7px;
+        font-size: 8px;
     }
 
 
@@ -542,7 +542,7 @@
     border-radius: 50%;
     background: var(--color-blue-790);
     color: var(--color-white);
-    font-size: 8px;
+    font-size: 9px;
     font-weight: 600;
 }
 
@@ -554,13 +554,13 @@
 
     .adviser-details strong {
         color: var(--color-slate-770);
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 600;
     }
 
     .adviser-details span {
         color: var(--color-grey-430);
-        font-size: 7px;
+        font-size: 8px;
     }
 
 
@@ -580,7 +580,7 @@
     justify-content: center;
     gap: 6px;
     border-radius: 4px;
-    font-size: 8px;
+    font-size: 9px;
     font-weight: 500;
     text-decoration: none;
 }
@@ -624,11 +624,11 @@
 
     .empty-state strong {
         color: var(--color-slate-610);
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .empty-state span {
-        font-size: 8px;
+        font-size: 9px;
     }
 
 .large-empty {
@@ -723,7 +723,7 @@
     border-radius: 8px;
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    font-size: 13px;
+    font-size: 14.5px;
 }
 
 /* ================================ EndOfFile ============================== */

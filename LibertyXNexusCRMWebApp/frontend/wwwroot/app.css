@@ -150,6 +150,10 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+html {
+    font-size: 110%;
+}
+
 a, .btn-link {
     color: var(--color-blue-640);
 }

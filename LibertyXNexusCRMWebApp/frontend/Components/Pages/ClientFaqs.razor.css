@@ -34,7 +34,7 @@
 .faqs-heading h1 {
     margin: 0 0 4px;
     color: var(--color-text);
-    font-size: 16px;
+    font-size: 17.5px;
     font-weight: 650;
     letter-spacing: -0.2px;
 }
@@ -42,7 +42,7 @@
 .faqs-heading p {
     margin: 0;
     color: var(--color-grey-430);
-    font-size: 9px;
+    font-size: 10px;
 }
 
 
@@ -74,7 +74,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: 10px;
+        font-size: 11px;
     }
 
         .search-box input::placeholder {
@@ -91,7 +91,7 @@
     left: 11px;
     z-index: 2;
     color: var(--color-text-muted);
-    font-size: 15px;
+    font-size: 16.5px;
 }
 
 .ask-assistant-button {
@@ -103,7 +103,7 @@
     border-radius: 5px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: 9.5px;
+    font-size: 10.5px;
     font-weight: 650;
     text-decoration: none;
     white-space: nowrap;
@@ -124,7 +124,7 @@
     border-radius: 8px;
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    font-size: 13px;
+    font-size: 14.5px;
 }
 
 
@@ -150,12 +150,12 @@
     justify-content: center;
     gap: 10px;
     color: var(--color-grey-390);
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .ask-assistant-link {
     color: var(--color-blue-790);
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 650;
     text-decoration: none;
 }
@@ -178,7 +178,7 @@
 .faq-category-title {
     margin: 0;
     color: var(--color-text);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 650;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -219,7 +219,7 @@
     background: transparent;
     color: var(--color-blue-780);
     font-family: inherit;
-    font-size: 9.5px;
+    font-size: 10.5px;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
@@ -239,7 +239,7 @@
     border-radius: 50%;
     background: var(--color-blue-60);
     color: var(--color-slate-660);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 650;
 }
 
@@ -251,7 +251,7 @@
     .faq-answer p {
         margin: 12px 0 0;
         color: var(--color-slate-640);
-        font-size: 9px;
+        font-size: 10px;
         line-height: 1.5;
     }
 
@@ -259,7 +259,7 @@
     display: inline-block;
     margin-top: 8px;
     color: var(--color-blue-790);
-    font-size: 8.5px;
+    font-size: 9.5px;
     font-weight: 650;
     text-decoration: none;
 }
