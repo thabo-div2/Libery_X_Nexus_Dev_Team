@@ -41,6 +41,9 @@ namespace API.Tests.Services
             _emailService = new Mock<IEmailService>();
             _configuration = new Mock<IConfiguration>();
 
+            _configuration
+                .Setup(c => c["Frontend:BaseUrl"])
+                .Returns("https://localhost:7028");
 
 
             _auditLogRepository
