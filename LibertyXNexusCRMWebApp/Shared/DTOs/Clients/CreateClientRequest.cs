@@ -4,7 +4,7 @@ namespace Shared.DTOs.Clients
 {
     public class CreateClientRequest
     {
-        [Required, MaxLength(100)]
+        [MaxLength(100)]
         public string? IdentityProviderSubjectId {  get; set; }
 
         [Required, MaxLength(100)]
