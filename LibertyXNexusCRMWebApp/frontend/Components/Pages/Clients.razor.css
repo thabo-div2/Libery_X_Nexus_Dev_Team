@@ -34,7 +34,7 @@
 .clients-heading h1 {
     margin: 0 0 4px;
     color: var(--color-text);
-    font-size: 16px;
+    font-size: calc(16px * var(--font-scale));
     font-weight: 650;
     letter-spacing: -0.2px;
 }
@@ -42,7 +42,7 @@
 .clients-heading p {
     margin: 0;
     color: var(--color-grey-430);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
 }
 
 
@@ -74,7 +74,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: 10px;
+        font-size: calc(10px * var(--font-scale));
     }
 
         .search-box input::placeholder {
@@ -91,7 +91,7 @@
     left: 11px;
     z-index: 2;
     color: var(--color-text-muted);
-    font-size: 15px;
+    font-size: calc(15px * var(--font-scale));
 }
 
 .notification-button {
@@ -104,7 +104,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-blue-790);
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale));
     cursor: pointer;
 }
 
@@ -123,7 +123,7 @@
     border-radius: 8px;
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale));
 }
 
 
@@ -170,7 +170,7 @@
     .panel-heading h2 {
         margin: 0;
         color: var(--color-text);
-        font-size: 10px;
+        font-size: calc(10px * var(--font-scale));
         font-weight: 650;
     }
 
@@ -228,7 +228,7 @@
     .client-item-top strong {
         overflow: hidden;
         color: var(--color-slate-770);
-        font-size: 8.5px;
+        font-size: calc(8.5px * var(--font-scale));
         font-weight: 600;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -240,7 +240,7 @@
     border-radius: 20px;
     background: var(--color-blue-60);
     color: var(--color-slate-660);
-    font-size: 6.5px;
+    font-size: calc(6.5px * var(--font-scale));
     font-weight: 650;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -249,7 +249,7 @@
 .client-item-email {
     overflow: hidden;
     color: var(--color-grey-390);
-    font-size: 7px;
+    font-size: calc(7px * var(--font-scale));
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -260,7 +260,7 @@
     align-items: center;
     justify-content: center;
     color: var(--color-grey-390);
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
 }
 
 
@@ -288,7 +288,7 @@
 .client-detail-heading h2 {
     margin: 0;
     color: var(--color-text);
-    font-size: 10px;
+    font-size: calc(10px * var(--font-scale));
     font-weight: 650;
 }
 
@@ -300,7 +300,7 @@
     border-radius: 20px;
     background: var(--color-warning-bg);
     color: var(--color-warning-text);
-    font-size: 7px;
+    font-size: calc(7px * var(--font-scale));
     font-weight: 600;
     white-space: nowrap;
 }
@@ -330,7 +330,7 @@
 
 .detail-label {
     color: var(--color-grey-430);
-    font-size: 7px;
+    font-size: calc(7px * var(--font-scale));
     font-weight: 650;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -338,7 +338,7 @@
 
 .detail-value {
     color: var(--color-text);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
 }
 
 .client-empty-state {
@@ -361,17 +361,17 @@
     border-radius: 50%;
     background: var(--color-blue-60);
     color: var(--color-text-muted);
-    font-size: 14px;
+    font-size: calc(14px * var(--font-scale));
 }
 
 .client-empty-state strong {
     color: var(--color-slate-610);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
 }
 
 .client-empty-state span {
     color: var(--color-grey-390);
-    font-size: 7px;
+    font-size: calc(7px * var(--font-scale));
 }
 
 
@@ -524,7 +524,7 @@
 
 .case-step-label {
     color: #172e43;
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     font-weight: 600;
 }
 
@@ -534,7 +534,7 @@
 
 .case-step-date {
     color: #8b98a3;
-    font-size: 6.5px;
+    font-size: calc(6.5px * var(--font-scale));
 }
 
 /* ================================ EndOfFile ============================== */

@@ -34,7 +34,7 @@
 .header-greeting h1 {
     margin: 0 0 3px;
     color: var(--color-text);
-    font-size: 17px;
+    font-size: calc(17px * var(--font-scale));
     font-weight: 650;
     letter-spacing: -0.25px;
 }
@@ -42,7 +42,7 @@
 .header-greeting p {
     margin: 0;
     color: var(--color-grey-430);
-    font-size: 10px;
+    font-size: calc(10px * var(--font-scale));
 }
 
 
@@ -74,7 +74,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font: inherit;
-        font-size: 11px;
+        font-size: calc(11px * var(--font-scale));
         transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
@@ -92,7 +92,7 @@
     left: 12px;
     z-index: 2;
     color: var(--color-text-muted);
-    font-size: 16px;
+    font-size: calc(16px * var(--font-scale));
 }
 
 .notification-button {
@@ -124,7 +124,7 @@
     background: var(--color-primary);
     color: var(--color-white);
     text-decoration: none;
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale));
     font-weight: 600;
     white-space: nowrap;
 }
@@ -135,7 +135,7 @@
     }
 
 .plus-icon {
-    font-size: 16px;
+    font-size: calc(16px * var(--font-scale));
     font-weight: 400;
 }
 
@@ -174,14 +174,14 @@
 .stat-label {
     margin-bottom: 8px;
     color: var(--color-grey-540);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
     font-weight: 600;
     letter-spacing: 0.2px;
 }
 
 .stat-value {
     color: var(--color-blue-800);
-    font-size: 25px;
+    font-size: calc(25px * var(--font-scale));
     font-weight: 700;
     line-height: 1;
 }
@@ -189,7 +189,7 @@
 .stat-change {
     margin-top: auto;
     color: var(--color-grey-430);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
 }
 
 
@@ -230,7 +230,7 @@
     .card-header h2 {
         margin: 0;
         color: var(--color-text);
-        font-size: 11px;
+        font-size: calc(11px * var(--font-scale));
         font-weight: 700;
     }
 
@@ -257,7 +257,7 @@
     background: var(--color-white);
     color: var(--color-grey-430);
     font-family: inherit;
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     cursor: pointer;
 }
 
@@ -292,7 +292,7 @@
         padding: 0 16px;
         border-bottom: 1px solid var(--color-border-light);
         color: var(--color-text-muted);
-        font-size: 8px;
+        font-size: calc(8px * var(--font-scale));
         font-weight: 600;
         text-align: left;
     }
@@ -302,7 +302,7 @@
         padding: 0 16px;
         border-bottom: 1px solid var(--color-blue-60);
         color: var(--color-grey-540);
-        font-size: 9px;
+        font-size: calc(9px * var(--font-scale));
         vertical-align: middle;
     }
 
@@ -357,7 +357,7 @@
     gap: 5px;
     padding: 4px 8px;
     border-radius: 20px;
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     font-weight: 600;
 }
 
@@ -423,17 +423,17 @@
     border-radius: 50%;
     background: var(--color-page-bg);
     color: var(--color-text-muted);
-    font-size: 17px;
+    font-size: calc(17px * var(--font-scale));
 }
 
 .table-empty-state strong {
     color: var(--color-slate-660);
-    font-size: 11px;
+    font-size: calc(11px * var(--font-scale));
 }
 
 .table-empty-state span {
     color: var(--color-grey-390);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
 }
 
 
@@ -479,21 +479,21 @@
 .deadline-title {
     overflow: hidden;
     color: var(--color-slate-740);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .deadline-client {
     color: var(--color-grey-390);
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
 }
 
 .deadline-date {
     flex-shrink: 0;
     padding: 4px 8px;
     border-radius: 20px;
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     font-weight: 600;
 }
 
@@ -539,12 +539,12 @@
 
 .institution-name {
     color: var(--color-slate-710);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
 }
 
 .institution-count {
     color: var(--color-grey-430);
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
 }
 
 .institution-progress {
@@ -572,7 +572,7 @@
     align-items: center;
     justify-content: center;
     color: var(--color-grey-390);
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
 }
 
 
@@ -609,21 +609,21 @@
 }
 
     .assistant-text strong {
-        font-size: 10px;
+        font-size: calc(10px * var(--font-scale));
         font-weight: 650;
     }
 
     .assistant-text span {
         overflow: hidden;
         color: var(--color-slate-230);
-        font-size: 8px;
+        font-size: calc(8px * var(--font-scale));
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
 .assistant-arrow {
     flex-shrink: 0;
-    font-size: 15px;
+    font-size: calc(15px * var(--font-scale));
 }
 
 
@@ -730,13 +730,13 @@
 
 .invite-panel-card h3 {
     margin: 0 0 4px;
-    font-size: 14px;
+    font-size: calc(14px * var(--font-scale));
     color: var(--color-text);
 }
 
 .invite-panel-card p {
     margin: 0 0 12px;
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale));
     color: var(--color-grey-430);
 }
 
@@ -750,7 +750,7 @@
     padding: 10px 12px;
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale));
 }
 
 .invite-link-output {
@@ -759,7 +759,7 @@
     padding: 10px 12px;
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale));
     color: var(--color-text);
     background: var(--color-page-bg);
 }
@@ -767,7 +767,7 @@
 .invite-error {
     margin: 10px 0 0;
     color: var(--color-danger);
-    font-size: 12px;
+    font-size: calc(12px * var(--font-scale));
 }
 
 .dashboard-error {
@@ -776,7 +776,7 @@
     border-radius: 8px;
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    font-size: 13px;
+    font-size: calc(13px * var(--font-scale));
 }
 
 /* ================================ EndOfFile ============================== */

@@ -25,7 +25,7 @@
 
 .brand {
     margin: 0 0 1.5rem;
-    font-size: 1.25rem;
+    font-size: calc(1.25rem * var(--font-scale));
     font-weight: 700;
     color: var(--color-primary);
 }
