@@ -25,6 +25,12 @@ namespace Shared.Models
 
         public string? Notes { get; set; }
 
+        public DateTime? DetailsSubmittedAt { get; set; }
+        public DateTime? AdviserReviewAt { get; set; }
+        public DateTime? FicaVerifiedAt { get; set; }
+        public DateTime? SubmittedToLibertyAt { get; set; }
+        public DateTime? PolicyIssuedAt { get; set; }
+
         public DateTime? TargetSubmissionDate { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
