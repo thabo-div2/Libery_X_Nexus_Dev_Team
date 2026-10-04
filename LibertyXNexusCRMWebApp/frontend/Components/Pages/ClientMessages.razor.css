@@ -15,14 +15,14 @@
 
 .client-messages-header h1 {
     margin: 0 0 4px;
-    font-size: calc(20px * var(--font-scale));
+    font-size: 22px;
     color: var(--color-text);
 }
 
 .client-messages-header p {
     margin: 0 0 18px;
     color: var(--color-grey-430);
-    font-size: calc(13px * var(--font-scale));
+    font-size: 14.5px;
 }
 
 
@@ -64,7 +64,7 @@
 .chat-client h2 {
     margin: 0;
     color: var(--color-text);
-    font-size: calc(14px * var(--font-scale));
+    font-size: 15.5px;
     font-weight: 650;
 }
 
@@ -78,7 +78,7 @@
     border-radius: 50%;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(12px * var(--font-scale));
+    font-size: 13px;
     font-weight: 650;
 }
 
@@ -91,7 +91,7 @@
     border-radius: 6px;
     background: var(--color-white);
     color: var(--color-primary);
-    font-size: calc(12px * var(--font-scale));
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -125,7 +125,7 @@
         flex-direction: column;
         gap: 4px;
         color: var(--color-slate-610);
-        font-size: calc(11px * var(--font-scale));
+        font-size: 12px;
         font-weight: 600;
     }
 
@@ -137,7 +137,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: calc(12px * var(--font-scale));
+        font-size: 13px;
     }
 
 .meeting-form-actions {
@@ -152,7 +152,7 @@
     border-radius: 6px;
     background: var(--color-white);
     color: var(--color-slate-610);
-    font-size: calc(12px * var(--font-scale));
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -163,7 +163,7 @@
     border-radius: 6px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(12px * var(--font-scale));
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -208,12 +208,12 @@
 
     .meeting-card strong {
         color: var(--color-text);
-        font-size: calc(12px * var(--font-scale));
+        font-size: 13px;
     }
 
     .meeting-card span {
         color: var(--color-slate-610);
-        font-size: calc(11px * var(--font-scale));
+        font-size: 12px;
     }
 
 .meeting-card-notes {
@@ -279,7 +279,7 @@
 
 .message-author {
     display: block;
-    font-size: calc(11px * var(--font-scale));
+    font-size: 12px;
     font-weight: 600;
     opacity: 0.7;
     margin-bottom: 2px;
@@ -287,12 +287,12 @@
 
 .message-bubble p {
     margin: 0;
-    font-size: calc(13px * var(--font-scale));
+    font-size: 14.5px;
 }
 
 .message-time {
     display: block;
-    font-size: calc(10px * var(--font-scale));
+    font-size: 11px;
     opacity: 0.6;
     margin-top: 4px;
 }
@@ -316,7 +316,7 @@
     padding: 10px 12px;
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    font-size: calc(13px * var(--font-scale));
+    font-size: 14.5px;
 }
 
     .client-messages-composer input:disabled {
@@ -346,13 +346,13 @@
 
 .client-messages-error {
     color: var(--color-danger);
-    font-size: calc(12px * var(--font-scale));
+    font-size: 13px;
     margin-top: 8px;
 }
 
 .client-messages-empty {
     color: var(--color-grey-430);
-    font-size: calc(13px * var(--font-scale));
+    font-size: 14.5px;
     padding: 12px 0;
     text-align: center;
 }

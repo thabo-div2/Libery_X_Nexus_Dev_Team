@@ -27,7 +27,7 @@
 .assistant-heading h1 {
     margin: 0 0 4px;
     color: var(--color-text);
-    font-size: calc(16px * var(--font-scale));
+    font-size: 17.5px;
     font-weight: 650;
     letter-spacing: -0.2px;
 }
@@ -35,7 +35,7 @@
 .assistant-heading p {
     margin: 0;
     color: var(--color-grey-430);
-    font-size: calc(9px * var(--font-scale));
+    font-size: 10px;
 }
 
 .header-actions {
@@ -63,7 +63,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: calc(10px * var(--font-scale));
+        font-size: 11px;
     }
 
         .search-box input::placeholder {
@@ -80,7 +80,7 @@
     left: 11px;
     z-index: 2;
     color: var(--color-text-muted);
-    font-size: calc(15px * var(--font-scale));
+    font-size: 16.5px;
 }
 
 .browse-faqs-button {
@@ -92,7 +92,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-blue-790);
-    font-size: calc(9.5px * var(--font-scale));
+    font-size: 10.5px;
     font-weight: 650;
     text-decoration: none;
     white-space: nowrap;
@@ -112,7 +112,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-blue-790);
-    font-size: calc(13px * var(--font-scale));
+    font-size: 14.5px;
     cursor: pointer;
 }
 
@@ -177,7 +177,7 @@
     border-radius: 6px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(8px * var(--font-scale));
+    font-size: 9px;
     font-weight: 700;
 }
 
@@ -195,7 +195,7 @@
 .message-bubble {
     padding: 9px 11px;
     border-radius: 10px;
-    font-size: calc(8.5px * var(--font-scale));
+    font-size: 9.5px;
     line-height: 1.5;
 }
 
@@ -213,7 +213,7 @@
 
 .message-time {
     color: var(--color-grey-360);
-    font-size: calc(6px * var(--font-scale));
+    font-size: 7px;
 }
 
 .handoff-card {
@@ -234,19 +234,19 @@
 
     .handoff-heading strong {
         color: var(--color-yellow-740);
-        font-size: calc(7px * var(--font-scale));
+        font-size: 8px;
         font-weight: 700;
     }
 
 .handoff-icon {
     color: var(--color-yellow-620);
-    font-size: calc(10px * var(--font-scale));
+    font-size: 11px;
 }
 
 .handoff-card p {
     margin: 0 0 10px;
     color: var(--color-yellow-670);
-    font-size: calc(8px * var(--font-scale));
+    font-size: 9px;
     line-height: 1.5;
 }
 
@@ -260,7 +260,7 @@
     border-radius: 4px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(7px * var(--font-scale));
+    font-size: 8px;
     font-weight: 600;
     text-decoration: none;
 }
@@ -292,7 +292,7 @@
     background: var(--color-white);
     color: var(--color-text-muted);
     font-family: inherit;
-    font-size: calc(6.5px * var(--font-scale));
+    font-size: 7.5px;
     cursor: pointer;
     white-space: nowrap;
 }
@@ -326,7 +326,7 @@
         flex-direction: column;
         gap: 4px;
         color: var(--color-slate-610);
-        font-size: calc(7.5px * var(--font-scale));
+        font-size: 8.5px;
         font-weight: 600;
     }
 
@@ -339,13 +339,13 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: calc(8px * var(--font-scale));
+        font-size: 9px;
     }
 
 .meeting-match-note {
     margin: 0;
     color: var(--color-slate-610);
-    font-size: calc(7px * var(--font-scale));
+    font-size: 8px;
     font-style: italic;
 }
 
@@ -361,7 +361,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-slate-610);
-    font-size: calc(7.5px * var(--font-scale));
+    font-size: 8.5px;
     font-weight: 650;
     cursor: pointer;
 }
@@ -372,7 +372,7 @@
     border-radius: 5px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(7.5px * var(--font-scale));
+    font-size: 8.5px;
     font-weight: 650;
     cursor: pointer;
 }
@@ -384,7 +384,7 @@
 .assistant-form-error {
     margin: 0;
     color: var(--color-danger);
-    font-size: calc(7.5px * var(--font-scale));
+    font-size: 8.5px;
 }
 
 .message-input-area {
@@ -406,7 +406,7 @@
         background: var(--color-white);
         color: var(--color-slate-710);
         font-family: inherit;
-        font-size: calc(8px * var(--font-scale));
+        font-size: 9px;
     }
 
         .message-input-area input::placeholder {
@@ -431,7 +431,7 @@
     border-radius: 4px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(10px * var(--font-scale));
+    font-size: 11px;
     cursor: pointer;
 }
 
@@ -456,7 +456,7 @@
     .info-card-header h2 {
         margin: 0;
         color: var(--color-text);
-        font-size: calc(10px * var(--font-scale));
+        font-size: 11px;
         font-weight: 650;
     }
 
@@ -471,7 +471,7 @@
     align-items: center;
     gap: 8px;
     color: var(--color-slate-610);
-    font-size: calc(8px * var(--font-scale));
+    font-size: 9px;
 }
 
 .capability-dot,
@@ -496,7 +496,7 @@
     border-radius: 4px;
     background: var(--color-blue-60);
     color: var(--color-text-muted);
-    font-size: calc(7px * var(--font-scale));
+    font-size: 8px;
     line-height: 1.5;
 }
 

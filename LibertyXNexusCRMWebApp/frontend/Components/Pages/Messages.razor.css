@@ -34,7 +34,7 @@
 .messages-heading h1 {
     margin: 0 0 4px;
     color: var(--color-text);
-    font-size: calc(16px * var(--font-scale));
+    font-size: 17.5px;
     font-weight: 650;
     letter-spacing: -0.2px;
 }
@@ -42,7 +42,7 @@
 .messages-heading p {
     margin: 0;
     color: var(--color-grey-430);
-    font-size: calc(9px * var(--font-scale));
+    font-size: 10px;
 }
 
 
@@ -74,7 +74,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: calc(10px * var(--font-scale));
+        font-size: 11px;
     }
 
         .search-box input::placeholder {
@@ -91,7 +91,7 @@
     left: 11px;
     z-index: 2;
     color: var(--color-text-muted);
-    font-size: calc(15px * var(--font-scale));
+    font-size: 16.5px;
 }
 
 .notification-button {
@@ -104,7 +104,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-blue-790);
-    font-size: calc(13px * var(--font-scale));
+    font-size: 14.5px;
     cursor: pointer;
 }
 
@@ -157,7 +157,7 @@
     .panel-heading h2 {
         margin: 0;
         color: var(--color-text);
-        font-size: calc(10px * var(--font-scale));
+        font-size: 11px;
         font-weight: 650;
     }
 
@@ -216,7 +216,7 @@
     .conversation-top strong {
         overflow: hidden;
         color: var(--color-slate-770);
-        font-size: calc(8.5px * var(--font-scale));
+        font-size: 9.5px;
         font-weight: 600;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -225,7 +225,7 @@
 .conversation-time {
     flex-shrink: 0;
     color: var(--color-grey-430);
-    font-size: calc(6.5px * var(--font-scale));
+    font-size: 7.5px;
 }
 
 .conversation-bottom {
@@ -240,7 +240,7 @@
     flex: 1;
     overflow: hidden;
     color: var(--color-grey-390);
-    font-size: calc(7px * var(--font-scale));
+    font-size: 8px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -255,7 +255,7 @@
     border-radius: 50%;
     background: var(--color-orange-460);
     color: var(--color-white);
-    font-size: calc(6px * var(--font-scale));
+    font-size: 7px;
     font-weight: 600;
 }
 
@@ -265,7 +265,7 @@
     align-items: center;
     justify-content: center;
     color: var(--color-grey-390);
-    font-size: calc(8px * var(--font-scale));
+    font-size: 9px;
 }
 
 
@@ -296,7 +296,7 @@
 .chat-client h2 {
     margin: 0;
     color: var(--color-text);
-    font-size: calc(10px * var(--font-scale));
+    font-size: 11px;
     font-weight: 650;
 }
 
@@ -311,7 +311,7 @@
     border-radius: 20px;
     background: var(--color-warning-bg);
     color: var(--color-warning-text);
-    font-size: calc(7px * var(--font-scale));
+    font-size: 8px;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -337,7 +337,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-primary);
-    font-size: calc(7.5px * var(--font-scale));
+    font-size: 8.5px;
     font-weight: 650;
     white-space: nowrap;
     cursor: pointer;
@@ -366,7 +366,7 @@
         flex-direction: column;
         gap: 4px;
         color: var(--color-slate-610);
-        font-size: calc(7.5px * var(--font-scale));
+        font-size: 8.5px;
         font-weight: 600;
     }
 
@@ -378,7 +378,7 @@
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: calc(8px * var(--font-scale));
+        font-size: 9px;
     }
 
 .meeting-form-actions {
@@ -393,7 +393,7 @@
     border-radius: 5px;
     background: var(--color-white);
     color: var(--color-slate-610);
-    font-size: calc(7.5px * var(--font-scale));
+    font-size: 8.5px;
     font-weight: 650;
     cursor: pointer;
 }
@@ -404,7 +404,7 @@
     border-radius: 5px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(7.5px * var(--font-scale));
+    font-size: 8.5px;
     font-weight: 650;
     cursor: pointer;
 }
@@ -452,7 +452,7 @@
 .message-bubble {
     padding: 9px 11px;
     border-radius: 10px;
-    font-size: calc(8px * var(--font-scale));
+    font-size: 9px;
     line-height: 1.45;
 }
 
@@ -470,7 +470,7 @@
 
 .message-time {
     color: var(--color-grey-360);
-    font-size: calc(6px * var(--font-scale));
+    font-size: 7px;
 }
 
 
@@ -494,12 +494,12 @@
 
     .meeting-card strong {
         color: var(--color-text);
-        font-size: calc(8.5px * var(--font-scale));
+        font-size: 9.5px;
     }
 
     .meeting-card span {
         color: var(--color-slate-610);
-        font-size: calc(7.5px * var(--font-scale));
+        font-size: 8.5px;
     }
 
 .meeting-card-notes {
@@ -523,7 +523,7 @@
     padding: 6px 12px;
     border: none;
     border-radius: 5px;
-    font-size: calc(7.5px * var(--font-scale));
+    font-size: 8.5px;
     font-weight: 650;
     cursor: pointer;
 }
@@ -598,17 +598,17 @@
     border-radius: 50%;
     background: var(--color-blue-60);
     color: var(--color-text-muted);
-    font-size: calc(14px * var(--font-scale));
+    font-size: 15.5px;
 }
 
 .chat-empty-state strong {
     color: var(--color-slate-610);
-    font-size: calc(9px * var(--font-scale));
+    font-size: 10px;
 }
 
 .chat-empty-state span {
     color: var(--color-grey-390);
-    font-size: calc(7px * var(--font-scale));
+    font-size: 8px;
 }
 
 
@@ -636,7 +636,7 @@
         background: var(--color-white);
         color: var(--color-slate-710);
         font-family: inherit;
-        font-size: calc(8px * var(--font-scale));
+        font-size: 9px;
     }
 
         .reply-area input::placeholder {
@@ -665,7 +665,7 @@
     border-radius: 4px;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: calc(10px * var(--font-scale));
+    font-size: 11px;
     cursor: pointer;
 }
 
@@ -719,7 +719,7 @@
     justify-content: center;
     flex-shrink: 0;
     margin-top: 1px;
-    font-size: calc(9px * var(--font-scale));
+    font-size: 10px;
 }
 
 .notification-warning {
@@ -751,14 +751,14 @@
 
     .notification-details strong {
         color: var(--color-slate-660);
-        font-size: calc(7.5px * var(--font-scale));
+        font-size: 8.5px;
         font-weight: 500;
         line-height: 1.35;
     }
 
     .notification-details span {
         color: var(--color-grey-390);
-        font-size: calc(6px * var(--font-scale));
+        font-size: 7px;
     }
 
 .notifications-empty {
@@ -767,7 +767,7 @@
     align-items: center;
     justify-content: center;
     color: var(--color-grey-390);
-    font-size: calc(8px * var(--font-scale));
+    font-size: 9px;
 }
 
 
@@ -858,7 +858,7 @@
     border-radius: 8px;
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    font-size: calc(13px * var(--font-scale));
+    font-size: 14.5px;
 }
 
 /* ================================ EndOfFile ============================== */

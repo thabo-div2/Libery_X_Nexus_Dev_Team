@@ -4,9 +4,6 @@
 /// </summary>
 */
 :root {
-    /* Text size: 1 = original size, 1.1 = 10% bigger */
-    --font-scale: 1.1;
-
     /* Main colours */
     --color-accent: #ff8b1f;
     --color-border: #dbe2e8;
@@ -153,8 +150,8 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-body {
-    font-size: calc(1rem * var(--font-scale));
+html {
+    font-size: 110%;
 }
 
 a, .btn-link {
