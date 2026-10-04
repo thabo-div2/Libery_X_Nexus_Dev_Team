@@ -10,9 +10,9 @@ namespace frontend.Services
     public record CurrentUserResponse(string? UserId, string? Email, string? AdvisorId, string? ClientId, string? FirstName, string? LastName, List<string> Roles);
     public record AuthResult(bool Success, string Message, string? Role, int? Id, string? FirstName, string? LastName, string? Email);
     public record ForgotPasswordApiRequest(string Email);
-    public record ForgotPasswordApiResponse(bool Exists, string? ResetToken);
+    public record ForgotPasswordApiResponse(string Message);
     public record ResetPasswordApiRequest(string Email, string ResetToken, string NewPassword);
-    public record ForgotPasswordResult(bool Exists, string? ResetToken, string? Error);
+    public record ForgotPasswordResult(string? ResetToken, string? Error);
     public record ResetPasswordResult(bool Success, string? Error);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -294,25 +294,25 @@ namespace frontend.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorMessage = await ReadErrorMessageAsync(response);
-                    return new ForgotPasswordResult(false, null, errorMessage);
+                    return new ForgotPasswordResult(null, errorMessage);
                 }
 
                 var result = await response.Content.ReadFromJsonAsync<ForgotPasswordApiResponse>();
 
                 if (result is null)
                 {
-                    return new ForgotPasswordResult(false, null, "The server did not return a valid response.");
+                    return new ForgotPasswordResult(null, "The server did not return a valid response.");
                 }
 
-                return new ForgotPasswordResult(result.Exists, result.ResetToken, null);
+                return new ForgotPasswordResult(result.Message, null);
             }
             catch (HttpRequestException)
             {
-                return new ForgotPasswordResult(false, null, "Can't reach the server. Make sure the API project is running.");
+                return new ForgotPasswordResult(null, "Can't reach the server. Make sure the API project is running.");
             }
             catch (Exception ex)
             {
-                return new ForgotPasswordResult(false, null, $"Something went wrong: {ex.Message}");
+                return new ForgotPasswordResult(null, $"Something went wrong: {ex.Message}");
             }
         }
 

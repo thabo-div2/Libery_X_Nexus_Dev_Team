@@ -121,6 +121,111 @@ namespace API.Services.Implementations
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Send a user an email to reset their password
+        /// </summary>
+        /// <param name="recipientEmail"></param>
+        /// <param name="resetLink"></param>
+        /// <returns></returns>
+        public async Task SendPasswordResetAsync(string recipientEmail, string resetLink)
+        {
+            ValidateConfiguration();
+
+            var safeLink = HtmlEncoder.Default.Encode(resetLink);
+
+            using var message = new MailMessage
+            {
+                From = new MailAddress(
+                    _options.FromEmail,
+                    _options.FromName),
+
+                Subject = "Reset your Liberty X Nexus password",
+
+                IsBodyHtml = true,
+
+                Body = $"""
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222;">
+                <h2>Password reset request</h2>
+
+                <p>
+                    We received a request to reset the password for your
+                    Liberty X Nexus account.
+                </p>
+
+                <p>
+                    If you made this request, click the button below:
+                </p>
+
+                <p>
+                    <a href="{safeLink}"
+                       style="display:inline-block;
+                              padding:12px 20px;
+                              background:#111;
+                              color:#fff;
+                              text-decoration:none;
+                              border-radius:6px;">
+                        Reset password
+                    </a>
+                </p>
+
+                <p>
+                    If the button does not work, copy and paste this link
+                    into your browser:
+                </p>
+
+                <p>{safeLink}</p>
+
+                <p>
+                    If you did not request a password reset, you can safely
+                    ignore this email.
+                </p>
+
+                <p>
+                    For your security, this link is single-use and expires
+                    according to the configured ASP.NET Identity token
+                    lifetime.
+                </p>
+
+                <p>
+                    Regards,<br/>
+                    Liberty X Nexus
+                </p>
+            </body>
+            </html>
+            """
+            };
+
+            message.To.Add(new MailAddress(recipientEmail));
+
+            using var client = new SmtpClient(
+                _options.Host,
+                _options.Port)
+            {
+                EnableSsl = _options.EnableSsl,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(
+                    _options.Username,
+                    _options.Password)
+            };
+
+            try
+            {
+                await client.SendMailAsync(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to send password reset email.");
+
+                throw;
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Validates the SMTP email configuration options. Throws an InvalidOperationException if any required option is missing or invalid.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>

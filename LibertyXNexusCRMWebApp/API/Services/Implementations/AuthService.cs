@@ -23,8 +23,20 @@ namespace API.Services.Implementations
         private readonly IInvitationRepository _invitationRepository;
         private readonly IAuditLogRepository _auditLogRepository;
         private readonly INotificationService _notificationService;
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(UserManager<ApplicationUser> userManager, IJwtTokenService jwtTokenService, ILogger<AuthService> logger, IAdvisorRepository advisorRepository, IClientRepository clientRepository, IInvitationRepository invitationRepository, IAuditLogRepository auditLogRepository, INotificationService notificationService)
+        public AuthService(
+            UserManager<ApplicationUser> userManager,
+            IJwtTokenService jwtTokenService,
+            ILogger<AuthService> logger,
+            IAdvisorRepository advisorRepository,
+            IClientRepository clientRepository,
+            IInvitationRepository invitationRepository,
+            IAuditLogRepository auditLogRepository,
+            INotificationService notificationService,
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _jwtTokenService = jwtTokenService;
@@ -34,6 +46,8 @@ namespace API.Services.Implementations
             _invitationRepository = invitationRepository;
             _auditLogRepository = auditLogRepository;
             _notificationService = notificationService;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)
@@ -214,27 +228,57 @@ namespace API.Services.Implementations
 
         public async Task<ForgotPasswordResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            const string genericMessage =
+                "If an account exists for that email address, " +
+                "a password reset link has been sent.";
 
+            var normalizedEmail = request.Email.Trim();
+
+            var user = await _userManager.FindByEmailAsync(normalizedEmail);
+
+            // Do not reveal whether an account exists.
             if (user is null || !user.IsActive)
             {
-                // Deliberately distinguishable from the "exists" case: the
-                // client explicitly asked to tell the user whether the email
-                // is on file, rather than returning a generic message either
-                // way (the more conservative, information-hiding approach).
+                _logger.LogInformation(
+                    "Password reset requested for an unknown or inactive account.");
+
                 return new ForgotPasswordResponse
                 {
-                    Exists = false,
-                    ResetToken = null
+                    Message = genericMessage
                 };
             }
 
-            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetToken =
+                await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var frontendBaseUrl =
+                _configuration["Frontend:BaseUrl"];
+
+            if (string.IsNullOrWhiteSpace(frontendBaseUrl))
+            {
+                _logger.LogError(
+                    "Frontend:BaseUrl is not configured.");
+
+                throw new InvalidOperationException(
+                    "Frontend:BaseUrl is not configured.");
+            }
+
+            var resetLink =
+                $"{frontendBaseUrl.TrimEnd('/')}/forgot-password" +
+                $"?email={Uri.EscapeDataString(normalizedEmail)}" +
+                $"&token={Uri.EscapeDataString(resetToken)}";
+
+            await _emailService.SendPasswordResetAsync(
+                normalizedEmail,
+                resetLink);
+
+            _logger.LogInformation(
+                "Password reset email generated for user {UserId}.",
+                user.Id);
 
             return new ForgotPasswordResponse
             {
-                Exists = true,
-                ResetToken = resetToken
+                Message = genericMessage
             };
         }
 

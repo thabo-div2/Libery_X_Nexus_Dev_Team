@@ -7,5 +7,9 @@
             string advisorName,
             string invitationLink,
             DateTime expiresAt);
+
+        Task SendPasswordResetAsync(
+            string recipientEmail,
+            string resetLink);
     }
 }

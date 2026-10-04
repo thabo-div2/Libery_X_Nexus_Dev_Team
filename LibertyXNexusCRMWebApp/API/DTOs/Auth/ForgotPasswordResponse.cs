@@ -7,7 +7,8 @@ namespace API.DTOs.Auth
     // emailed to the user as it would be in a production system.
     public class ForgotPasswordResponse
     {
-        public bool Exists { get; set; }
-        public string? ResetToken { get; set; }
+        public string Message { get; set; } = string.Empty;
     }
 }
+
+//-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

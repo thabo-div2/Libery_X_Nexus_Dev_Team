@@ -1,5 +1,6 @@
 ﻿using API.DTOs.Documents;
 using API.Identity;
+using API.Services.Implementations;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace API.Controllers
     {
         private readonly IDocumentService documentService_;
         private readonly IClientService _clientService;
+        private readonly IPolicyService _policyService;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -25,10 +27,12 @@ namespace API.Controllers
         /// </summary>
         /// <param name="documentService"></param>
         /// <param name="clientService"></param>
-        public DocumentsController(IDocumentService documentService, IClientService clientService)
+        /// <param name="policyService"></param>
+        public DocumentsController(IDocumentService documentService, IClientService clientService, IPolicyService policyService)
         {
             documentService_ = documentService;
             _clientService = clientService;
+            _policyService = policyService;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -125,6 +129,27 @@ namespace API.Controllers
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<DocumentDto>>> GetForPolicy(int policyId)
         {
+            var policy = await _policyService.GetByIdAsync(policyId);
+
+            if (policy is null)
+            {
+                return NotFound(new
+                {
+                    message = "Policy was not found."
+                });
+            }
+
+            var client = await _clientService.GetByIdAsync(policy.ClientId.Value);
+
+            if (client is null || client.AdvisorId != CurrentAdvisorId)
+            {
+                // Do not reveal that another advisor's policy exists.
+                return NotFound(new
+                {
+                    message = "Policy was not found."
+                });
+            }
+
             return Ok(await documentService_.GetForPolicyAsync(policyId));
         }
 
