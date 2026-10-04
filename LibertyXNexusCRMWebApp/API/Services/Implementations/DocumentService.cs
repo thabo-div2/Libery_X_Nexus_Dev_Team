@@ -66,6 +66,19 @@ namespace API.Services.Implementations
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Retrieves all the documents.
+        /// </summary>
+        /// <param name="advisorId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<DocumentDto>> GetAllDocumentsAsync(int advisorId)
+        {
+            var documents = await _documentRepository.GetByAdvisorIdAsync(advisorId);
+            return documents.Select(MapToDto);
+
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Retrieves all documents associated with a specific client and maps them to DocumentDto objects.
         /// </summary>
         /// <param name="clientId"></param>

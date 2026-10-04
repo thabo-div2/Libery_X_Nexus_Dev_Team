@@ -73,14 +73,14 @@ namespace API.Services.Implementations
         /// <param name="to"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<IEnumerable<MeetingDto>> GetByDateRangeAsync(DateTime from, DateTime to)
+        public async Task<IEnumerable<MeetingDto>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId)
         {
             if (from > to)
             {
                 throw new ArgumentException("The start of the date range must be before the end");
             }
 
-            var meetings = await meetingRepository_.GetByDateRangeAsync(from, to);
+            var meetings = await meetingRepository_.GetByDateRangeAsync(from, to, advisorId);
             return await MapManyAsync(meetings);
         }
 
@@ -90,9 +90,9 @@ namespace API.Services.Implementations
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status)
+        public async Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status, int advisorId)
         {
-            var meetings = await meetingRepository_.GetByStatusAsync(status);
+            var meetings = await meetingRepository_.GetByStatusAsync(status, advisorId);
             return await MapManyAsync(meetings);
         }
 

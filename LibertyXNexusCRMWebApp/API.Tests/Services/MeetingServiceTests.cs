@@ -224,7 +224,7 @@ namespace API.Tests.Services
             var from = DateTime.UtcNow;
             var to = DateTime.UtcNow.AddDays(-1);
 
-            await Assert.ThrowsAsync<ArgumentException>(() => _sut.GetByDateRangeAsync(from, to));
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.GetByDateRangeAsync(from, to, 1));
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Shared.Models.Enums
     public enum CaseStep
     {
         DetailsSubmitted,
-        AdvisorReview,
+        AdviserReview,
         FicaVerification,
         SubmittedToLiberty,
         PolicyIssued

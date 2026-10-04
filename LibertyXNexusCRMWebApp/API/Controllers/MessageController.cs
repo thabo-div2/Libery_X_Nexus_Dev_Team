@@ -16,15 +16,17 @@ namespace API.Controllers
     public class MessageController : ControllerBase
     {
         private readonly IMessageService _messageService;
+        private readonly IClientService _clientService;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageController"/> class with the specified message service.
         /// </summary>
         /// <param name="messageService"></param>
-        public MessageController(IMessageService messageService)
+        public MessageController(IMessageService messageService, IClientService clientService)
         {
             _messageService = messageService;
+            _clientService = clientService;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -43,6 +45,24 @@ namespace API.Controllers
             ? id
             : throw new InvalidOperationException("Token has no advisorId claim.");
 
+        private async Task<bool> CanAccessClientAsync(int clientId)
+        {
+            if (User.IsInRole(AppRoles.Client))
+            {
+                return clientId == CurrentClientId;
+            }
+
+            if (User.IsInRole(AppRoles.Advisor))
+            {
+                var client = await _clientService.GetByIdAsync(clientId);
+
+                return client is not null &&
+                       client.AdvisorId == CurrentAdvisorId;
+            }
+
+            return false;
+        }
+
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
         /// Gets the conversation between the current user (either an advisor or a client) and the specified client. The conversation includes all messages exchanged between the two parties.
@@ -52,19 +72,26 @@ namespace API.Controllers
         [HttpGet("client/{clientId:int}")]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetConversation(int clientId)
         {
-            var role = User.FindFirstValue("role");
-
-            if (role == AppRoles.Client)
+            if (!await CanAccessClientAsync(clientId))
             {
-                if (clientId != CurrentClientId)
-                    return Forbid();
-
-                return Ok(await _messageService.GetConversationForClientAsync(clientId));
+                return NotFound(new
+                {
+                    message = "Conversation was not found."
+                });
             }
 
-            if (role == AppRoles.Advisor)
+            if (User.IsInRole(AppRoles.Client))
             {
-                return Ok(await _messageService.GetConversationForAdvisorAsync(CurrentAdvisorId, clientId));
+                return Ok(
+                    await _messageService.GetConversationForClientAsync(clientId));
+            }
+
+            if (User.IsInRole(AppRoles.Advisor))
+            {
+                return Ok(
+                    await _messageService.GetConversationForAdvisorAsync(
+                        CurrentAdvisorId,
+                        clientId));
             }
 
             return Forbid();

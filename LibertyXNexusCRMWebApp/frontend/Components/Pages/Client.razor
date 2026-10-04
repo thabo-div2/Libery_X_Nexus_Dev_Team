@@ -7,6 +7,7 @@
 @inject PolicyService PolicyDirectory
 @inject DocumentService DocumentDirectory
 @inject CaseService CaseDirectory
+@using Shared.Models.Enums
 
 <PageTitle>Client View | Nexus</PageTitle>
 
@@ -59,13 +60,7 @@
 
                     </div>
 
-                    <button type="button"
-                            class="notification-button"
-                            aria-label="Notifications">
-
-                        ♧
-
-                    </button>
+                    <NotificationBell />
 
                 </div>
 
@@ -561,42 +556,29 @@
 
     }
 
-    private static List<ApplicationStep> BuildApplicationSteps(
-        CaseSummary currentCase)
+    private static List<ApplicationStep> BuildApplicationSteps(CaseSummary currentCase)
     {
-        var labels = new[]
+        var entries = new(string Label,DateTime? When)[]
         {
-            "Details submitted",
-            "Adviser review",
-            "FICA verification",
-            "Submitted to Liberty",
-            "Policy issued"
-        };
-
-        // The step currently "in progress"
-        int currentIndex = currentCase.Status switch
-        {
-            "InProgress" => 1,
-            "OnHold" => 1,
-            "AwaitingApproval" => 3,
-            "Completed" => labels.Length, // past the end = all complete
-            _ => 0
+           ("Details submitted", currentCase.DetailsSubmittedAt),
+            ("Adviser review", currentCase.AdviserReviewAt),
+            ("FICA verification", currentCase.FicaVerifiedAt),
+            ("Submitted to Liberty", currentCase.SubmittedToLibertyAt),
+            ("Policy issued", currentCase.PolicyIssuedAt),
         };
 
         var steps = new List<ApplicationStep>();
+        int firstIncomplete = Array.FindIndex(entries, e => e.When is null);
 
-        for (int i = 0; i < labels.Length; i++)
+        for (int i = 0;i< entries.Length; i++)
         {
-            var status = i < currentIndex ? "complete" : i == currentIndex ? "current" : "";
-
             steps.Add(new ApplicationStep
             {
-                Title = labels[i],
-                Status = status,
-                DateText = status == "current" && currentCase.Status == "OnHold" ? "On hold" : string.Empty
+                Title = entries[i].Label,   
+                Status = entries[i].When.HasValue ? "complete": i == firstIncomplete? "current": "",
+                DateText = entries[i].When?.ToString("dd MMM yyyy") ?? string.Empty
             });
         }
-
         return steps;
     }
 

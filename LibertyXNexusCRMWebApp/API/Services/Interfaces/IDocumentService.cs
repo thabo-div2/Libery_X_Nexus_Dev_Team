@@ -9,6 +9,7 @@ namespace API.Services.Interfaces
         Task<IEnumerable<DocumentDto>> GetForClientAsync(int clientId);
         Task<IEnumerable<DocumentDto>> GetVisibleToClientAsync(int clientId);
         Task<IEnumerable<DocumentDto>> GetForPolicyAsync(int policyId);
+        Task<IEnumerable<DocumentDto>> GetAllDocumentsAsync(int advisorId);
         Task<IEnumerable<DocumentDto>> GetByTypeAsync(DocumentType documentType);
         Task<DocumentDto> UploadAsync(UploadDocumentRequest request);
         Task<Uri> GetDownloadUriAsync(int documentId);

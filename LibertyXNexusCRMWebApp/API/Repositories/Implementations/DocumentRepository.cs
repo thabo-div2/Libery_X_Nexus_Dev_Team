@@ -19,6 +19,19 @@ namespace API.Repositories.Implementations
             return docs;
         }
 
+        public async Task<IEnumerable<Document>> GetByAdvisorIdAsync(int advisorId)
+        {
+            using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            var docs = await context.Documents
+                .Where(d => d.Client.AdvisorId == advisorId)
+                .OrderByDescending(d => d.UpdateAt)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return docs;
+        }
+
         public async Task<IEnumerable<Document>> GetVisibleToClientAsync(int clientId) 
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();

@@ -3,6 +3,7 @@ using API.Identity;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models.Enums;
 using System.Security.Claims;
 
 namespace API.Controllers
@@ -18,9 +19,7 @@ namespace API.Controllers
         private readonly ICaseService _caseService;
         private readonly IClientService _clientService;
 
-        public CasesController(
-            ICaseService caseService,
-            IClientService clientService)
+        public CasesController(ICaseService caseService,IClientService clientService)
         {
             _caseService = caseService;
             _clientService = clientService;
@@ -81,6 +80,19 @@ namespace API.Controllers
             var cases = await _caseService.GetForClientAsync(clientId);
 
             return Ok(cases);
+        }
+
+        [HttpPut("{id:int}/steps/{step}")]
+        public async Task<ActionResult<CaseStatusDto>> MarkStepComplete(int id, CaseStep step)
+        {
+            try
+            {
+                return Ok(await _caseService.MarkStepCompleteAsync(id,step));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new {message = ex.Message});
+            }
         }
     }
 }

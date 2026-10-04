@@ -2,6 +2,7 @@
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Shared.Models;
+using Shared.Models.Enums;
 
 namespace API.Services.Implementations
 {
@@ -29,18 +30,29 @@ namespace API.Services.Implementations
             return cases.Select(MapToDto);
         }
 
+        public async Task<CaseStatusDto> MarkStepCompleteAsync(int caseId, CaseStep step)
+        {
+            var updated = await caseRepository_.MarkStepCompleteAsync(caseId, step);
+            return MapToDto(updated);
+        }
+
         /// <summary>
         /// Turns a case into a DTO.
         /// </summary>
         private static CaseStatusDto MapToDto(Case c) => new()
         {
             CaseId = c.CaseId,
+            Status = c.Status.ToString(),
             PolicyId = c.PolicyId,
             PolicyName = c.Policy?.PolicyName,
-            Status = c.Status.ToString(),
             Notes = c.Notes,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt,
+            DetailsSubmittedAt = c.DetailsSubmittedAt,
+            AdviserReviewAt = c.AdviserReviewAt,
+            FicaVerifiedAt = c.FicaVerifiedAt,
+            SubmittedToLibertyAt = c.SubmittedToLibertyAt,
+            PolicyIssuedAt = c.PolicyIssuedAt,
         };
     }
 }
