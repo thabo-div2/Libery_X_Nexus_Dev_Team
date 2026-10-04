@@ -7,6 +7,7 @@
 @inject MeetingService MeetingStore
 @inject CurrentUserService CurrentUser
 @inject MessageNotifier Notifier
+@inject NotificationService Notifications
 
 <PageTitle>Messages | Nexus</PageTitle>
 
@@ -370,8 +371,26 @@
         await CurrentUser.EnsureRestoredAsync();
 
         await LoadConversations();
+        await LoadNotificationsAsync();
 
         Notifier.MessageSent += OnMessageSent;
+    }
+
+    private async Task LoadNotificationsAsync()
+    {
+        if (CurrentUser.Id is not int advisorId)
+        {
+            return;
+        }
+
+        var feed = await Notifications.GetFeedForAdvisorAsync(advisorId);
+
+        NotificationItems = feed.Items.Select(i => new NotificationItem
+            {
+                Title = i.Message,
+                TimeText = i.IsReminder? "Reminder": i.CreatedAt.ToLocalTime().ToString("d MMM, HH:mm"),
+                Type = i.Type
+            }).ToList();       
     }
 
     private void OnMessageSent(int clientId)

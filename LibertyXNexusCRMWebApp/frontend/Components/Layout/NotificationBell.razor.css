@@ -50,13 +50,14 @@
     position: absolute;
     top: 44px;
     right: 0;
-    width: 340px;
-    max-height: 420px;
+    width: 420px;
+    max-height: 480px;
     overflow-y: auto;
+    padding: 10px;
     border: 1px solid #e2e7ed;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #ffffff;
-    box-shadow: 0 12px 30px rgba(18, 40, 62, 0.14);
+    box-shadow: 0 16px 36px rgba(18, 40, 62, 0.14);
     z-index: 50;
 }
 
@@ -73,7 +74,7 @@
 }
 
     .notification-panel-header strong {
-        font-size: 12px;
+        font-size: 15px;
         color: #12283e;
     }
 
@@ -108,10 +109,15 @@
 .notification-item {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
-    padding: 10px 14px;
-    border-bottom: 1px solid #f2f4f7;
+    gap: 10px;
+    padding: 14px 16px 22px 16px;
     cursor: pointer;
+    margin-bottom: 8px;
+    border: 1px solid #edf0f4;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(18, 40, 62, 0.06);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
     .notification-item:last-child {
@@ -142,7 +148,7 @@
 .notification-item-body {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 5px;
     min-width: 0;
 }
 
