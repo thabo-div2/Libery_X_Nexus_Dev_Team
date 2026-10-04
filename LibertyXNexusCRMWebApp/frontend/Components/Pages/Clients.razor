@@ -32,11 +32,7 @@
                        placeholder="Search by name, email or status" />
             </div>
 
-            <button type="button"
-                    class="notification-button"
-                    aria-label="Notifications">
-                ♧
-            </button>
+            <NotificationBell />
 
         </div>
 
@@ -278,6 +274,14 @@
     private async Task SelectClient(ClientProfile client)
     {
         SelectedClient = client;
+
+        // Fetch the full profile Phone, ID number, Risk profile
+        var (fullClient, error) = await ClientDirectory.GetByIdAsync(client.ClientId);
+        if (fullClient is not null)
+        {
+            SelectedClient = fullClient;
+        }
+
         await LoadCaseForSelectedClient();
     }
 
