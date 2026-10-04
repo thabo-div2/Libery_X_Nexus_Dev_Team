@@ -427,4 +427,114 @@
     }
 }
 
+/* ===============================
+   APPLICATION PROGRESS
+   =============================== */
+
+.case-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.case-step-list {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.case-step-row{
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.case-step-row:hover {
+    background: #f4f7f9;
+
+}
+
+.case-step-row.is-complete {
+    background: #f2faf5;
+}
+
+.case-step-check {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 8px;
+    cursor: pointer;
+}
+
+.case-step-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.case-step-box {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #c6d0d9;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.case-step-check:hover .case-step-box {
+    border-color: #123b5b;
+}
+
+.case-step-input:checked + .case-step-box {
+    background: #1f9d55;
+    border-color: #1f9d55;
+    transform: scale(1.05);
+}
+
+.case-step-tick {
+    width: 9px;
+    height: 9px;
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 0.25s ease 0.05s;
+}
+
+.case-step-input:checked +.case-step-box .case-step-tick {
+    stroke-dashoffset: 0;
+}
+
+.case-step-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.case-step-label {
+    color: #172e43;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.is-complete .case-step-label {
+    color: #1f9d55;
+}
+
+.case-step-date {
+    color: #8b98a3;
+    font-size: 6.5px;
+}
+
 /* ================================ EndOfFile ============================== */

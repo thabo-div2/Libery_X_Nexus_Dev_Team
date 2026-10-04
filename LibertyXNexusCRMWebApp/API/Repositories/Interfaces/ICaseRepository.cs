@@ -9,6 +9,7 @@ namespace API.Repositories.Interfaces
         Task<IEnumerable<Case>> GetByStatusAsync(CaseStatus status);
         Task<IEnumerable<Case>> GetByClientIdAsync(int clientId);
         Task UpdateStatusAsync(int caseId, CaseStatus status, string? notes = null);
+        Task<Case> MarkStepCompleteAsync(int caseId, CaseStep step);
     }
 }
 

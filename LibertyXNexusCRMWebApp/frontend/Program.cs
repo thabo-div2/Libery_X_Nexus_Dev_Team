@@ -51,10 +51,10 @@ public partial class Program
         builder.Services.AddScoped<MeetingService>();
         builder.Services.AddScoped<DocumentService>();
         builder.Services.AddScoped<PolicyService>();
+        builder.Services.AddScoped<CaseService>();
         builder.Services.AddScoped<NotificationService>();
         builder.Services.AddScoped<FaqService>();
         builder.Services.AddScoped<MarketInformationService>();
-        builder.Services.AddScoped<CaseService>();
 
         builder.Services.AddSingleton<MessageNotifier>();
 
