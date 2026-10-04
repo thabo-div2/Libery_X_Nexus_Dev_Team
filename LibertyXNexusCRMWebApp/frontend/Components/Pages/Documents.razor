@@ -281,14 +281,21 @@
                 return;
             }
 
-            if (!CurrentUser.IsClient)
+            (List<DocumentSummary>? Documents, string? Error) result;
+
+            if (CurrentUser.IsAdvisor)
             {
-                ErrorMessage = "Documents are currently loaded for the signed-in client. " +
-                "Advisor-wide document access will be connected separately.";
+                result = await Document.GetForAdvisorAsync(CurrentUser.Id.Value);
+            }
+            else if (CurrentUser.IsClient)
+            {
+                result = await Document.GetForClientAsync(CurrentUser.Id.Value);
+            }
+            else
+            {
+                ErrorMessage = "Unknown user role.";
                 return;
             }
-
-            var result = await Document.GetForClientAsync(CurrentUser.Id.Value);
 
             if (!string.IsNullOrWhiteSpace(result.Error))
             {
@@ -305,7 +312,7 @@
                         DateText = FormatDate(document.UpdatedAt),
                         Status = GetDocumentStatus(document)
                     })
-                .ToList();
+                .ToList() ?? new List<DocumentItem>();
 
 
             Templates.Clear();

@@ -93,6 +93,26 @@ namespace API.Controllers
             return Ok(document);
         }
 
+        /// <summary>
+        /// Advisor can fetch all the documents.
+        /// </summary>
+        /// <param name="advisorId"></param>
+        /// <returns></returns>
+        [HttpGet("advisor/{advisorId:int}")]
+        [Authorize(Roles = AppRoles.Advisor)]
+        public async Task<ActionResult<IEnumerable<DocumentDto>>> GetAllDocuments(int advisorId)
+        {
+            // Only allow an advisor to read their own documents.
+            if (!int.TryParse(User.FindFirstValue("advisorId"), out var tokenAdvisorId)
+                || tokenAdvisorId != advisorId)
+            {
+                return Forbid();
+            }
+
+            var documents = await documentService_.GetAllDocumentsAsync(advisorId);
+            return Ok(documents);
+        }
+
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
         /// Gets all documents for a specific client. Returns 403 if the current user does not have access to the specified client.

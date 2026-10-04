@@ -29,6 +29,7 @@ namespace frontend.Services
         string? UploadedBy,
         DateTime? UpdatedAt);
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>
     /// Service used by the Blazor frontend to call the Documents API endpoints.
     /// Contains convenience methods for retrieving, uploading and deleting documents.
@@ -47,6 +48,7 @@ namespace frontend.Services
             _http = http;
         }
 
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
         /// Retrieve a single document summary by id.
         /// </summary>
@@ -86,6 +88,36 @@ namespace frontend.Services
             catch (Exception ex)
             {
                 // Unexpected error - include message for debugging in UI
+                return (null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets all the advisors document
+        /// </summary>
+        /// <param name="advisorId"></param>
+        /// <returns></returns>
+        public async Task<(List<DocumentSummary>? Documents, string? Error)> GetForAdvisorAsync(int advisorId)
+        {
+            try
+            {
+                var response = await _http.GetAsync($"documents/advisor/{advisorId}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (new List<DocumentSummary>(), await ReadErrorAsync(response));
+                }
+
+                var documents = await response.Content.ReadFromJsonAsync<List<DocumentSummary>>();
+                return (documents ?? new List<DocumentSummary>(), null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server.");
+            }
+            catch (Exception ex)
+            {
                 return (null, $"Something went wrong: {ex.Message}");
             }
         }
