@@ -5,6 +5,7 @@ using API.Services.Implementations;
 using API.Services.Interfaces;
 using API.Tests.TestHelpers;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shared.Models;
@@ -23,6 +24,8 @@ namespace API.Tests.Services
         private readonly Mock<IInvitationRepository> _invitationRepository;
         private readonly Mock<IAuditLogRepository> _auditLogRepository;
         private readonly Mock<INotificationService> _notificationService;
+        private readonly Mock<IEmailService> _emailService;
+        private readonly Mock<IConfiguration> _configuration;
         private readonly AuthService _sut;
 
         public AuthServiceTests()
@@ -35,6 +38,10 @@ namespace API.Tests.Services
             _invitationRepository = new Mock<IInvitationRepository>();
             _auditLogRepository = new Mock<IAuditLogRepository>();
             _notificationService = new Mock<INotificationService>();
+            _emailService = new Mock<IEmailService>();
+            _configuration = new Mock<IConfiguration>();
+
+
 
             _auditLogRepository
                 .Setup(r => r.LogAsync(
@@ -54,7 +61,9 @@ namespace API.Tests.Services
                 _clientRepository.Object,
                 _invitationRepository.Object,
                 _auditLogRepository.Object,
-                _notificationService.Object);
+                _notificationService.Object,
+                _emailService.Object,
+                _configuration.Object);
         }
 
         private static ApplicationUser MakeUser(string email, bool isActive = true) => new()
@@ -228,8 +237,7 @@ namespace API.Tests.Services
 
             var result = await _sut.ForgotPasswordAsync(new ForgotPasswordRequest { Email = user.Email! });
 
-            Assert.True(result.Exists);
-            Assert.Equal("reset-token-123", result.ResetToken);
+            Assert.Equal("If an account exists for that email address, a password reset link has been sent.", result.Message);
         }
 
         [Fact]
@@ -239,8 +247,7 @@ namespace API.Tests.Services
 
             var result = await _sut.ForgotPasswordAsync(new ForgotPasswordRequest { Email = "missing@nexus.test" });
 
-            Assert.False(result.Exists);
-            Assert.Null(result.ResetToken);
+            Assert.Equal("If an account exists for that email address, a password reset link has been sent.", result.Message);
         }
 
         [Fact]
@@ -251,7 +258,7 @@ namespace API.Tests.Services
 
             var result = await _sut.ForgotPasswordAsync(new ForgotPasswordRequest { Email = user.Email! });
 
-            Assert.False(result.Exists);
+            Assert.Equal("If an account exists for that email address, a password reset link has been sent.", result.Message);
         }
 
         [Fact]
