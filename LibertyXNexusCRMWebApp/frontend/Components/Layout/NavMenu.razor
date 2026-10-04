@@ -1,5 +1,6 @@
 ﻿@using frontend.Services
 @inject CurrentUserService CurrentUser
+@inject AuthService Auth
 @inject NavigationManager NavigationManager
 
 <div class="nav-menu">
@@ -143,8 +144,17 @@
                 class="logout-button"
                 title="Sign out"
                 aria-label="Sign out"
-                @onclick="LogoutAsync">
-            ↪
+                >
+            <a 
+               class="logout-button"
+               title="Sign out"
+               aria-label="Sign out"
+               @onclick="() => LogoutAsync()"
+               @onclick:preventDefault>
+
+                ↪
+
+            </a>
         </button>
 
     </div>
@@ -185,8 +195,8 @@
 
     private async Task LogoutAsync()
     {
-        await CurrentUser.SignOutAsync();
-        NavigationManager.NavigateTo("/");
+        await Auth.LogoutAsync();
+        NavigationManager.NavigateTo("/", forceLoad: true);
     }
 }
 
