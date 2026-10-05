@@ -118,10 +118,16 @@ namespace frontend.Services
                     Location = (string?)null,
                     Notes = notes
                 };
+
                 var response = await _http.PostAsJsonAsync("meetings", request);
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                    {
+                        return "You're busy at that time — please select another slot.";
+                    }
+
                     return $"The server reported an error (status {(int)response.StatusCode}).";
                 }
 
