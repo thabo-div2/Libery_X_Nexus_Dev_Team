@@ -139,6 +139,7 @@ namespace API
             builder.Services.Configure<AlphaVantageOptions>(builder.Configuration.GetSection("AlphaVantage"));
             builder.Services.AddHttpClient<IMarketInformationService, MarketInformationService>();
             builder.Services.AddScoped<IFaqService, FaqService>();
+            builder.Services.AddScoped<IMathService, MathService>();
 
             builder.Services.AddMemoryCache();
 
