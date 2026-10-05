@@ -1,18 +1,22 @@
 using API.Data;
+using API.HealthChecks;
+using API.Identity;
 using API.Repositories.Implementations;
 using API.Repositories.Interfaces;
 using API.Services.Implementations;
 using API.Services.Interfaces;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
-using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 using System.Text;
-using API.Identity;
-using Microsoft.AspNetCore.Authorization;
+
 
 namespace API
 {
@@ -138,6 +142,9 @@ namespace API
 
             builder.Services.AddMemoryCache();
 
+            builder.Services.AddHealthChecks()
+                .AddCheck<DatabaseHealthCheck>("database")
+                .AddCheck<BlobStorageHealthCheck>("blob-storage");
 
             var app = builder.Build();
 
@@ -173,6 +180,27 @@ namespace API
             app.UseCors();
 
             app.MapControllers();
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = async (context, report) =>
+                {
+                    context.Response.ContentType = "application/json";
+
+                    var result = JsonSerializer.Serialize(new
+                    {
+                        status = report.Status.ToString(),
+                        checks = report.Entries.Select(e => new
+                        {
+                            name = e.Key,
+                            status = e.Value.Status.ToString(),
+                            description = e.Value.Description,
+                            error = e.Value.Exception?.Message
+                        })
+                    });
+
+                    await context.Response.WriteAsync(result);
+                }
+            }).AllowAnonymous();
 
             app.Run();
         }
