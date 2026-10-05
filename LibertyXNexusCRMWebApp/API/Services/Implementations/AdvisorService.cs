@@ -35,102 +35,53 @@ namespace API.Services.Implementations
                 return new AdvisorDashboardDto();
             }
 
-            var cases = await context.Cases
-                .AsNoTracking()
-                .Include(c => c.Policy)
-                .ThenInclude(p => p.Client)
-                .Include(c => c.Policy)
-                .ThenInclude(p => p.Documents)
-                .Where(c =>
-                    c.Policy.Client != null &&
-                    c.Policy.Client.AdvisorId == advisorId)
-                .OrderByDescending(c => c.UpdatedAt)
-                .ToListAsync();
+            var today = DateTime.UtcNow.Date;
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+            var endOfWeek = startOfWeek.AddDays(7);
+            var previousWeekStart = startOfWeek.AddDays(-7);
+            var previousWeekEnd = startOfWeek;
+            var deadlineDate = today.AddDays(30);
+
+            // These queries are all independent of each other, so instead of
+            // awaiting them one at a time — nine sequential round-trips to
+            // Azure SQL — run them concurrently. Each gets its own DbContext
+            // because a single DbContext can't run two queries at once.
+            var casesTask = GetCasesAsync(advisorId);
+            var totalClientsTask = GetTotalClientsAsync(advisorId);
+            var meetingsTodayTask = GetMeetingsCountAsync(advisorId, today, today.AddDays(1));
+            var meetingsThisWeekTask = GetMeetingsCountAsync(advisorId, startOfWeek, endOfWeek);
+            var meetingsLastWeekTask = GetMeetingsCountAsync(advisorId, previousWeekStart, previousWeekEnd);
+            var pipelineValueTask = GetPipelineSumAsync(advisorId, null, null);
+            var pipelineThisWeekTask = GetPipelineSumAsync(advisorId, startOfWeek, endOfWeek);
+            var pipelineLastWeekTask = GetPipelineSumAsync(advisorId, previousWeekStart, previousWeekEnd);
+            var deadlinesTask = GetDeadlinesAsync(advisorId, today, deadlineDate);
+
+            await Task.WhenAll(
+                casesTask, totalClientsTask, meetingsTodayTask, meetingsThisWeekTask,
+                meetingsLastWeekTask, pipelineValueTask, pipelineThisWeekTask,
+                pipelineLastWeekTask, deadlinesTask);
+
+            var cases = casesTask.Result;
+            var totalClients = totalClientsTask.Result;
+            var meetingsToday = meetingsTodayTask.Result;
+            var meetingsThisWeek = meetingsThisWeekTask.Result;
+            var meetingsLastWeek = meetingsLastWeekTask.Result;
+            var pipelineValue = pipelineValueTask.Result;
+            var pipelineThisWeek = pipelineThisWeekTask.Result;
+            var pipelineLastWeek = pipelineLastWeekTask.Result;
+            var deadlines = deadlinesTask.Result;
 
             var activeCases = cases.Count(c =>
-                c.Status == Shared.Models.Enums.CaseStatus.InProgress ||
-                c.Status == Shared.Models.Enums.CaseStatus.AwaitingApproval);
+                c.Status == CaseStatus.InProgress ||
+                c.Status == CaseStatus.AwaitingApproval);
 
             var waitingOnClient = cases.Count(c =>
-                c.Status == Shared.Models.Enums.CaseStatus.OnHold);
+                c.Status == CaseStatus.OnHold);
 
             var awaitingDocuments = cases.Count(c =>
                 c.Policy.Documents.Count == 0);
 
-            var today = DateTime.UtcNow.Date;
-
-            var totalClients = await context.Clients
-                .AsNoTracking()
-                .CountAsync(c => c.AdvisorId == advisorId);
-
-            var meetingsToday = await context.Meetings
-                .AsNoTracking()
-                .CountAsync(m =>
-                    m.Client.AdvisorId == advisorId &&
-                    m.MeetingDate >= today &&
-                    m.MeetingDate < today.AddDays(1) &&
-                    m.Status != MeetingStatus.Cancelled);
-
-            var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
-
-            var endOfWeek = startOfWeek.AddDays(7);
-
-            var previousWeekStart = startOfWeek.AddDays(-7);
-            var previousWeekEnd = startOfWeek;
-
-            var meetingsThisWeek = await context.Meetings
-                .AsNoTracking()
-                .Where(m =>
-                m.Client.AdvisorId == advisorId &&
-                m.MeetingDate >= startOfWeek &&
-                m.MeetingDate < endOfWeek &&
-                m.Status != Shared.Models.Enums.MeetingStatus.Cancelled)
-                .CountAsync();
-
-            var meetingsLastWeek = await context.Meetings
-                .AsNoTracking()
-                .Where(m =>
-                m.Client.AdvisorId == advisorId &&
-                m.MeetingDate >= previousWeekStart &&
-                m.MeetingDate < previousWeekEnd &&
-                m.Status != Shared.Models.Enums.MeetingStatus.Cancelled)
-                .CountAsync();
-
             var meetingsChange = CalculatePercentageChange(meetingsThisWeek, meetingsLastWeek);
-
-            var pipelineValue = await context.Policies
-                .AsNoTracking()
-                .Where(p =>
-                    p.Client != null &&
-                    p.Client.AdvisorId == advisorId &&
-                    !p.IsCatalogueItem &&
-                    p.Status != PolicyStatus.Cancelled &&
-                    p.Status != PolicyStatus.Matured)
-                .SumAsync(p => p.PremiumAmount ?? 0);
-
-            var pipelineThisWeek = await context.Policies
-                .AsNoTracking()
-                .Where(p =>
-                    p.Client != null &&
-                    p.Client.AdvisorId == advisorId &&
-                    !p.IsCatalogueItem &&
-                    p.Status != PolicyStatus.Cancelled &&
-                    p.Status != PolicyStatus.Matured &&
-                    p.CreatedAt >= startOfWeek &&
-                    p.CreatedAt < endOfWeek)
-                .SumAsync(p => p.PremiumAmount ?? 0);
-
-            var pipelineLastWeek = await context.Policies
-                .AsNoTracking()
-                .Where(p =>
-                    p.Client != null &&
-                    p.Client.AdvisorId == advisorId &&
-                    !p.IsCatalogueItem &&
-                    p.Status != PolicyStatus.Cancelled &&
-                    p.Status != PolicyStatus.Matured &&
-                    p.CreatedAt >= previousWeekStart &&
-                    p.CreatedAt < previousWeekEnd)
-                .SumAsync(p => p.PremiumAmount ?? 0);
 
             var pipelineValueChange = CalculatePercentageChange(
                 pipelineThisWeek,
@@ -178,29 +129,6 @@ namespace API.Services.Implementations
                 })
                 .ToList();
 
-            var deadlineDate = today.AddDays(30);
-
-            var deadlines = await context.Policies
-                .AsNoTracking()
-                .Where(p =>
-                p.Client != null &&
-                p.Client.AdvisorId == advisorId &&
-                p.EndDate.HasValue &&
-                p.EndDate.Value >= today &&
-                p.EndDate.Value <= deadlineDate)
-                .OrderBy(p => p.EndDate)
-                .Take(10)
-                .Select(p => new DeadlineItemDto
-                {
-                    Title = "Policy expiry",
-                    ClientName = p.Client!.FullName,
-                    Date = p.EndDate!.Value,
-                    Urgency = p.EndDate.Value <= today.AddDays(7)
-                        ? "Urgent"
-                        : "Soon"
-                })
-                .ToListAsync();
-
             var institutionsGroups = cases
                 .GroupBy(c => c.Policy.Provider)
                 .Select(g => new
@@ -244,6 +172,109 @@ namespace API.Services.Implementations
             };
 
             return dashboard;
+        }
+
+        /// <summary>
+        /// Loads this advisor's cases, with the client, policy and document
+        /// data the rest of the dashboard calculations need.
+        /// </summary>
+        private async Task<List<Shared.Models.Case>> GetCasesAsync(int advisorId)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.Cases
+                .AsNoTracking()
+                .Include(c => c.Policy)
+                .ThenInclude(p => p.Client)
+                .Include(c => c.Policy)
+                .ThenInclude(p => p.Documents)
+                .Where(c =>
+                    c.Policy.Client != null &&
+                    c.Policy.Client.AdvisorId == advisorId)
+                .OrderByDescending(c => c.UpdatedAt)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Counts this advisor's total clients.
+        /// </summary>
+        private async Task<int> GetTotalClientsAsync(int advisorId)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.Clients
+                .AsNoTracking()
+                .CountAsync(c => c.AdvisorId == advisorId);
+        }
+
+        /// <summary>
+        /// Counts this advisor's non-cancelled meetings within a date range.
+        /// </summary>
+        private async Task<int> GetMeetingsCountAsync(int advisorId, DateTime from, DateTime to)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.Meetings
+                .AsNoTracking()
+                .CountAsync(m =>
+                    m.Client.AdvisorId == advisorId &&
+                    m.MeetingDate >= from &&
+                    m.MeetingDate < to &&
+                    m.Status != MeetingStatus.Cancelled);
+        }
+
+        /// <summary>
+        /// Sums this advisor's active, non-catalogue policy premiums,
+        /// optionally restricted to policies created within a date range.
+        /// </summary>
+        private async Task<double> GetPipelineSumAsync(int advisorId, DateTime? from, DateTime? to)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            var query = context.Policies
+                .AsNoTracking()
+                .Where(p =>
+                    p.Client != null &&
+                    p.Client.AdvisorId == advisorId &&
+                    !p.IsCatalogueItem &&
+                    p.Status != PolicyStatus.Cancelled &&
+                    p.Status != PolicyStatus.Matured);
+
+            if (from.HasValue && to.HasValue)
+            {
+                query = query.Where(p => p.CreatedAt >= from.Value && p.CreatedAt < to.Value);
+            }
+
+            return await query.SumAsync(p => p.PremiumAmount ?? 0);
+        }
+
+        /// <summary>
+        /// Gets this advisor's upcoming policy-expiry deadlines.
+        /// </summary>
+        private async Task<List<DeadlineItemDto>> GetDeadlinesAsync(int advisorId, DateTime today, DateTime deadlineDate)
+        {
+            using var context = await _contextFactory.CreateDbContextAsync();
+
+            return await context.Policies
+                .AsNoTracking()
+                .Where(p =>
+                p.Client != null &&
+                p.Client.AdvisorId == advisorId &&
+                p.EndDate.HasValue &&
+                p.EndDate.Value >= today &&
+                p.EndDate.Value <= deadlineDate)
+                .OrderBy(p => p.EndDate)
+                .Take(10)
+                .Select(p => new DeadlineItemDto
+                {
+                    Title = "Policy expiry",
+                    ClientName = p.Client!.FullName,
+                    Date = p.EndDate!.Value,
+                    Urgency = p.EndDate.Value <= today.AddDays(7)
+                        ? "Urgent"
+                        : "Soon"
+                })
+                .ToListAsync();
         }
 
         /// <summary>
