@@ -1,37 +1,157 @@
+name: CI/CD - Liberty X Nexus
+
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
- 
+    branches: ["main"]
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  SOLUTION_PATH: "LibertyXNexusCRMWebApp/LibertyXNexusCRMWebApp.slnx"
+  API_PROJECT: "LibertyXNexusCRMWebApp/API/API.csproj"
+  FRONTEND_PROJECT: "LibertyXNexusCRMWebApp/frontend/frontend.csproj"
+
 jobs:
-  build:
- 
+
+  # ============================================================
+  # BUILD AND TEST
+  # ============================================================
+  build-and-test:
+    name: Build and Test
     runs-on: ubuntu-latest
- 
-    # The solution isn't at the repo root — it's one level down, inside
-    # LibertyXNexusCRMWebApp. Setting this once here means every step below
-    # can use plain relative commands instead of repeating the path.
-    defaults:
-      run:
-        working-directory: LibertyXNexusCRMWebApp
- 
+
     steps:
-    - uses: actions/checkout@v4
- 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        # All four projects target net10.0 (checked API.csproj, frontend.csproj,
-        # Shared.csproj, API.Tests.csproj) — the default template's 8.0.x
-        # would fail to even restore against this solution.
-        dotnet-version: 10.0.x
- 
-    - name: Restore dependencies
-      run: dotnet restore LibertyXNexusCRMWebApp.slnx
- 
-    - name: Build
-      run: dotnet build LibertyXNexusCRMWebApp.slnx --no-restore --configuration Release
- 
-    - name: Test
-      run: dotnet test LibertyXNexusCRMWebApp.slnx --no-build --configuration Release --verbosity normal
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Build solution
+        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal
+
+  # ============================================================
+  # PUBLISH API
+  # ============================================================
+  publish-api:
+    name: Publish API
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.API_PROJECT }}
+
+      - name: Publish API
+        run: |
+          dotnet publish ${{ env.API_PROJECT }} \
+            --configuration Release \
+            --no-restore \
+            --output ./publish-api
+
+      - name: Upload API artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-publish
+          path: ./publish-api
+
+  # ============================================================
+  # PUBLISH FRONTEND
+  # ============================================================
+  publish-frontend:
+    name: Publish Frontend
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.FRONTEND_PROJECT }}
+
+      - name: Publish Frontend
+        run: |
+          dotnet publish ${{ env.FRONTEND_PROJECT }} \
+            --configuration Release \
+            --no-restore \
+            --output ./publish-frontend
+
+      - name: Upload Frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-publish
+          path: ./publish-frontend
+
+  # ============================================================
+  # DEPLOY API
+  # ============================================================
+  deploy-api:
+    name: Deploy API to Azure
+    runs-on: ubuntu-latest
+    needs: publish-api
+
+    # Do NOT deploy pull requests.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-publish
+          path: ./publish-api
+
+      - name: Deploy API to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: YOUR-API-APP-SERVICE-NAME
+          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
+          package: ./publish-api
+
+  # ============================================================
+  # DEPLOY FRONTEND
+  # ============================================================
+  deploy-frontend:
+    name: Deploy Frontend to Azure
+    runs-on: ubuntu-latest
+    environment: production
+    needs: publish-frontend
+
+    # Do NOT deploy pull requests.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download Frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-publish
+          path: ./publish-frontend
+
+      - name: Deploy Frontend to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: YOUR-FRONTEND-APP-SERVICE-NAME
+          publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
+          package: ./publish-frontend
