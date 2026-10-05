@@ -98,39 +98,46 @@
                     <div class="form-body">
                         <div class="form-grid">
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.FirstName))">
                                 <label for="firstName">First name</label>
-                                <input id="firstName" type="text" @bind="Model.FirstName" placeholder="Thandi" />
+                                <input id="firstName" type="text" @bind="Model.FirstName" @bind:after="() => ClearFieldError(nameof(Model.FirstName))" placeholder="Thandi" />
+                                @FieldError(nameof(Model.FirstName))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.LastName))">
                                 <label for="lastName">Last name</label>
-                                <input id="lastName" type="text" @bind="Model.LastName" placeholder="Mokoena" />
+                                <input id="lastName" type="text" @bind="Model.LastName" @bind:after="() => ClearFieldError(nameof(Model.LastName))" placeholder="Mokoena" />
+                                @FieldError(nameof(Model.LastName))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.IdentificationNumber))">
                                 <label for="idNumber">ID number</label>
-                                <input id="idNumber" type="text" @bind="Model.IdentificationNumber" placeholder="9001015800086" />
+                                <input id="idNumber" type="text" @bind="Model.IdentificationNumber" @bind:after="() => ClearFieldError(nameof(Model.IdentificationNumber))" placeholder="9001015800086" />
+                                @FieldError(nameof(Model.IdentificationNumber))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.DateOfBirth))">
                                 <label for="dateOfBirth">Date of birth</label>
-                                <input id="dateOfBirth" type="date" @bind="Model.DateOfBirth" />
+                                <input id="dateOfBirth" type="date" @bind="Model.DateOfBirth" @bind:after="() => ClearFieldError(nameof(Model.DateOfBirth))" />
+                                @FieldError(nameof(Model.DateOfBirth))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.Email))">
                                 <label for="email">Email</label>
-                                <input id="email" type="email" @bind="Model.Email" placeholder="thandi@example.co.za" />
+                                <input id="email" type="email" @bind="Model.Email" @bind:after="() => ClearFieldError(nameof(Model.Email))" placeholder="thandi@example.co.za" />
+                                @FieldError(nameof(Model.Email))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.Phone))">
                                 <label for="mobile">Mobile</label>
-                                <input id="mobile" type="tel" @bind="Model.Phone" placeholder="+27 82 000 0000" />
+                                <input id="mobile" type="tel" @bind="Model.Phone" @bind:after="() => ClearFieldError(nameof(Model.Phone))" placeholder="+27 82 000 0000" />
+                                @FieldError(nameof(Model.Phone))
                             </div>
 
-                            <div class="form-group full-width">
+                            <div class="form-group full-width @ErrorClass(nameof(Model.ResidentialAddress))">
                                 <label for="address">Residential address</label>
-                                <input id="address" type="text" @bind="Model.ResidentialAddress" placeholder="12 Rivonia Road, Sandton" />
+                                <input id="address" type="text" @bind="Model.ResidentialAddress" @bind:after="() => ClearFieldError(nameof(Model.ResidentialAddress))" placeholder="12 Rivonia Road, Sandton" />
+                                @FieldError(nameof(Model.ResidentialAddress))
                             </div>
 
                             <div class="form-group">
@@ -145,9 +152,10 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.Dependants))">
                                 <label for="dependants">Dependants</label>
-                                <input id="dependants" type="number" min="0" @bind="Model.Dependants" placeholder="0" />
+                                <input id="dependants" type="number" min="0" @bind="Model.Dependants" @bind:after="() => ClearFieldError(nameof(Model.Dependants))" placeholder="0" />
+                                @FieldError(nameof(Model.Dependants))
                             </div>
 
                         </div>
@@ -160,18 +168,19 @@
                     <div class="form-body">
                         <div class="form-grid">
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.Institution))">
                                 <label for="institution">Institution</label>
-                                <select id="institution" @bind="Model.Institution">
+                                <select id="institution" @bind="Model.Institution" @bind:after="() => ClearFieldError(nameof(Model.Institution))">
                                     <option value="">Select institution</option>
                                     <option>Liberty</option>
                                     <option>Standard Bank</option>
                                 </select>
+                                @FieldError(nameof(Model.Institution))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.Product))">
                                 <label for="product">Product</label>
-                                <select id="product" @bind="Model.Product">
+                                <select id="product" @bind="Model.Product" @bind:after="() => ClearFieldError(nameof(Model.Product))">
                                     <option value="">Select product</option>
                                     <option>Retirement Annuity</option>
                                     <option>Life Cover</option>
@@ -180,6 +189,7 @@
                                     <option>Disability Cover</option>
                                     <option>Estate Review</option>
                                 </select>
+                                @FieldError(nameof(Model.Product))
                             </div>
 
                             <div class="form-group">
@@ -189,9 +199,10 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.TargetSubmissionDate))">
                                 <label for="submissionDate">Target submission date</label>
-                                <input id="submissionDate" type="date" @bind="Model.TargetSubmissionDate" />
+                                <input id="submissionDate" type="date" @bind="Model.TargetSubmissionDate" @bind:after="() => ClearFieldError(nameof(Model.TargetSubmissionDate))" />
+                                @FieldError(nameof(Model.TargetSubmissionDate))
                             </div>
 
                         </div>
@@ -233,19 +244,22 @@
                                 <input id="employer" type="text" @bind="Model.Employer" placeholder="Sasol Ltd" />
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.GrossMonthlyIncome))">
                                 <label for="grossIncome">Gross monthly income</label>
-                                <input id="grossIncome" type="number" step="0.01" @bind="Model.GrossMonthlyIncome" placeholder="65000" />
+                                <input id="grossIncome" type="number" step="0.01" @bind="Model.GrossMonthlyIncome" @bind:after="() => ClearFieldError(nameof(Model.GrossMonthlyIncome))" placeholder="65000" />
+                                @FieldError(nameof(Model.GrossMonthlyIncome))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.NetMonthlyIncome))">
                                 <label for="netIncome">Net monthly income</label>
-                                <input id="netIncome" type="number" step="0.01" @bind="Model.NetMonthlyIncome" placeholder="46500" />
+                                <input id="netIncome" type="number" step="0.01" @bind="Model.NetMonthlyIncome" @bind:after="() => ClearFieldError(nameof(Model.NetMonthlyIncome))" placeholder="46500" />
+                                @FieldError(nameof(Model.NetMonthlyIncome))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.MonthlyExpenses))">
                                 <label for="monthlyExpenses">Monthly expenses</label>
-                                <input id="monthlyExpenses" type="number" step="0.01" @bind="Model.MonthlyExpenses" placeholder="32000" />
+                                <input id="monthlyExpenses" type="number" step="0.01" @bind="Model.MonthlyExpenses" @bind:after="() => ClearFieldError(nameof(Model.MonthlyExpenses))" placeholder="32000" />
+                                @FieldError(nameof(Model.MonthlyExpenses))
                             </div>
 
                             <div class="form-group">
@@ -274,24 +288,28 @@
                     <div class="form-body">
                         <div class="form-grid">
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.PropertyValue))">
                                 <label for="propertyValue">Property value</label>
-                                <input id="propertyValue" type="number" step="0.01" @bind="Model.PropertyValue" placeholder="2400000" />
+                                <input id="propertyValue" type="number" step="0.01" @bind="Model.PropertyValue" @bind:after="() => ClearFieldError(nameof(Model.PropertyValue))" placeholder="2400000" />
+                                @FieldError(nameof(Model.PropertyValue))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.ExistingInvestments))">
                                 <label for="existingInvestments">Existing investments</label>
-                                <input id="existingInvestments" type="number" step="0.01" @bind="Model.ExistingInvestments" placeholder="380000" />
+                                <input id="existingInvestments" type="number" step="0.01" @bind="Model.ExistingInvestments" @bind:after="() => ClearFieldError(nameof(Model.ExistingInvestments))" placeholder="380000" />
+                                @FieldError(nameof(Model.ExistingInvestments))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.RetirementSavings))">
                                 <label for="retirementSavings">Retirement savings</label>
-                                <input id="retirementSavings" type="number" step="0.01" @bind="Model.RetirementSavings" placeholder="412800" />
+                                <input id="retirementSavings" type="number" step="0.01" @bind="Model.RetirementSavings" @bind:after="() => ClearFieldError(nameof(Model.RetirementSavings))" placeholder="412800" />
+                                @FieldError(nameof(Model.RetirementSavings))
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.OutstandingDebt))">
                                 <label for="outstandingDebt">Outstanding debt</label>
-                                <input id="outstandingDebt" type="number" step="0.01" @bind="Model.OutstandingDebt" placeholder="1150000" />
+                                <input id="outstandingDebt" type="number" step="0.01" @bind="Model.OutstandingDebt" @bind:after="() => ClearFieldError(nameof(Model.OutstandingDebt))" placeholder="1150000" />
+                                @FieldError(nameof(Model.OutstandingDebt))
                             </div>
 
                         </div>
@@ -315,25 +333,27 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @ErrorClass(nameof(Model.InvestmentHorizonYears))">
                                 <label for="investmentHorizon">Investment horizon (years)</label>
-                                <input id="investmentHorizon" type="number" min="0" @bind="Model.InvestmentHorizonYears" placeholder="25" />
+                                <input id="investmentHorizon" type="number" min="0" @bind="Model.InvestmentHorizonYears" @bind:after="() => ClearFieldError(nameof(Model.InvestmentHorizonYears))" placeholder="25" />
+                                @FieldError(nameof(Model.InvestmentHorizonYears))
                             </div>
 
                         </div>
 
-                        <div class="form-group full-width">
+                        <div class="form-group full-width @ErrorClass(nameof(Model.RiskProfile))">
                             <label>Risk appetite</label>
                             <div class="pipeline-filters">
                                 @foreach (var option in RiskOptions)
                                 {
                                     <button type="button"
                                             class="filter-pill @(Model.RiskProfile == option ? "active" : "")"
-                                            @onclick="() => Model.RiskProfile = option">
+                                            @onclick="() => SelectRiskProfile(option)">
                                         @option
                                     </button>
                                 }
                             </div>
+                            @FieldError(nameof(Model.RiskProfile))
                         </div>
 
                         <div class="form-actions">
@@ -352,22 +372,33 @@
 
                         @foreach (var slot in DocumentSlots)
                         {
-                            <div class="deadline-item">
+                            <div class="deadline-item @ErrorClass(DocKey(slot.Type))">
                                 <div class="deadline-details">
                                     <span class="deadline-title">@slot.Label @(slot.Required ? "" : "(optional)")</span>
-                                    <span class="deadline-client">@slot.Hint</span>
+                                    <span class="deadline-client">@slot.Hint · PDF, JPG or PNG, max 30MB</span>
+                                    @FieldError(DocKey(slot.Type))
                                 </div>
 
                                 @if (PickedFiles.ContainsKey(slot.Type))
                                 {
-                                    <span class="requirement complete">
-                                        <span class="requirement-icon">✓</span>
-                                        <span>@PickedFiles[slot.Type].Name</span>
+                                    <span class="picked-file">
+                                        <span class="requirement complete">
+                                            <span class="requirement-icon">✓</span>
+                                            <span>@PickedFiles[slot.Type].Name</span>
+                                        </span>
+                                        @if (!UploadedDocs.Contains(slot.Type))
+                                        {
+                                            <button type="button" class="remove-file-button" title="Remove file" aria-label="Remove @PickedFiles[slot.Type].Name" @onclick="() => RemoveFile(slot.Type)">×</button>
+                                        }
                                     </span>
                                 }
                                 else
                                 {
-                                    <InputFile OnChange="@(e => OnFileSelected(e, slot.Type))" accept=".pdf,.jpg,.jpeg,.png" />
+                                    <label class="upload-button">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        <span>Upload file</span>
+                                        <InputFile OnChange="@(e => OnFileSelected(e, slot.Type))" accept=".pdf,.jpg,.jpeg,.png" />
+                                    </label>
                                 }
                             </div>
                         }
@@ -410,23 +441,50 @@
                             </div>
                         </div>
 
-                        <div class="form-group full-width" style="margin-top:1rem">
+                        <div class="form-group full-width @ErrorClass(nameof(Model.PopiaConsent))" style="margin-top:1rem">
                             <label style="display:flex;align-items:flex-start;gap:0.5rem">
-                                <input type="checkbox" @bind="Model.PopiaConsent" />
+                                <input type="checkbox" @bind="Model.PopiaConsent" @bind:after="() => ClearFieldError(nameof(Model.PopiaConsent))" />
                                 <span>Client consents to processing of personal information (POPIA) and receipt of the service package for digital signature.</span>
                             </label>
+                            @FieldError(nameof(Model.PopiaConsent))
                         </div>
 
                         @if (!string.IsNullOrEmpty(SubmitError))
                         {
-                            <p class="invite-error">@SubmitError</p>
+                            <div class="submit-alert" role="alert">
+                                <strong>The client wasn't created</strong>
+                                <span>@SubmitError</span>
+                                <span>Nothing you entered was lost. Check the details and try again.</span>
+                            </div>
+                        }
+
+                        @if (PartialProblems.Count > 0)
+                        {
+                            <div class="partial-result" role="alert">
+                                <strong>@Model.FirstName @Model.LastName was saved, but a few things didn't finish:</strong>
+                                <ul>
+                                    @foreach (var problem in PartialProblems)
+                                    {
+                                        <li>@problem</li>
+                                    }
+                                </ul>
+                                <div class="partial-result-actions">
+                                    <button type="button" class="secondary-button" @onclick='() => Nav.NavigateTo("/clients")'>Go to clients</button>
+                                    <button type="button" class="primary-button" @onclick="SubmitAsync" disabled="@IsSubmitting">
+                                        @(IsSubmitting ? "Retrying…" : "Try again")
+                                    </button>
+                                </div>
+                            </div>
                         }
 
                         <div class="form-actions">
                             <button type="button" class="secondary-button" @onclick="() => GoToStep(3)" disabled="@IsSubmitting">Back</button>
-                            <button type="button" class="primary-button" @onclick="SubmitAsync" disabled="@IsSubmitting">
-                                @(IsSubmitting ? "Creating client…" : "Create client")
-                            </button>
+                            @if (PartialProblems.Count == 0)
+                            {
+                                <button type="button" class="primary-button" @onclick="SubmitAsync" disabled="@IsSubmitting">
+                                    @(IsSubmitting ? "Creating client…" : "Create client")
+                                </button>
+                            }
                         </div>
                     </div>
                 </section>
@@ -535,6 +593,200 @@
     private string? SubmitError;
     private bool IsSubmitting;
 
+    // ---------------------------------------------------------
+    // Error handling
+    // ---------------------------------------------------------
+
+    /// <summary>
+    /// Errors for each field, e.g. "Email" -> "Enter a valid email address".
+    /// </summary>
+    private readonly Dictionary<string, string> FieldErrors = new();
+
+    /// <summary>
+    /// Set when the page should jump to the first field with an error after it redraws.
+    /// </summary>
+    private bool FocusFirstError;
+
+    /// <summary>
+    /// Remembers what was already saved, so "Try again" doesn't create the client twice.
+    /// </summary>
+    private int? CreatedClientId;
+    private int? CreatedPolicyId;
+    private readonly HashSet<DocumentType> UploadedDocs = new();
+
+    /// <summary>
+    /// Things that didn't finish after the client was saved (e.g. an upload that failed).
+    /// </summary>
+    private readonly List<string> PartialProblems = new();
+
+    private static readonly string[] AllowedFileTypes = { ".pdf", ".jpg", ".jpeg", ".png" };
+    private const long MaxFileSize = 30_000_000;
+
+    private static readonly System.Text.RegularExpressions.Regex EmailPattern =
+        new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    private static string DocKey(DocumentType type) => $"Doc_{type}";
+
+    private string ErrorClass(string field) => FieldErrors.ContainsKey(field) ? "has-error" : string.Empty;
+
+    private string? GetFieldError(string field) => FieldErrors.TryGetValue(field, out var message) ? message : null;
+
+    /// <summary>
+    /// Shows a small red message under a field, if it has an error.
+    /// </summary>
+    private RenderFragment FieldError(string field) => __builder =>
+    {
+        var message = GetFieldError(field);
+        if (message is not null)
+        {
+            <span class="field-error" role="alert">@message</span>
+        }
+    };
+
+    /// <summary>
+    /// Removes a field's error as soon as the user changes it.
+    /// </summary>
+    private void ClearFieldError(string field)
+    {
+        FieldErrors.Remove(field);
+    }
+
+    private void SelectRiskProfile(string option)
+    {
+        Model.RiskProfile = option;
+        ClearFieldError(nameof(Model.RiskProfile));
+    }
+
+    /// <summary>
+    /// Checks every field on one step and records what's wrong. Returns true if the step is fine.
+    /// </summary>
+    private bool ValidateStep(int step)
+    {
+        void Error(string field, string message) => FieldErrors[field] = message;
+
+        if (step == 1)
+        {
+            if (string.IsNullOrWhiteSpace(Model.FirstName)) Error(nameof(Model.FirstName), "Enter the client's first name.");
+            if (string.IsNullOrWhiteSpace(Model.LastName)) Error(nameof(Model.LastName), "Enter the client's last name.");
+
+            var id = (Model.IdentificationNumber ?? string.Empty).Replace(" ", "");
+            if (id.Length == 0) Error(nameof(Model.IdentificationNumber), "Enter the client's ID number.");
+            else if (id.Length != 13 || !id.All(char.IsDigit)) Error(nameof(Model.IdentificationNumber), "A South African ID number must be 13 digits.");
+            else if (!PassesLuhnCheck(id)) Error(nameof(Model.IdentificationNumber), "This ID number isn't valid. Check for a typo.");
+
+            if (Model.DateOfBirth is DateTime dob)
+            {
+                if (dob.Date > DateTime.Today) Error(nameof(Model.DateOfBirth), "Date of birth can't be in the future.");
+                else if (dob.Date < DateTime.Today.AddYears(-120)) Error(nameof(Model.DateOfBirth), "Check the date of birth.");
+            }
+
+            if (string.IsNullOrWhiteSpace(Model.Email)) Error(nameof(Model.Email), "Enter the client's email address.");
+            else if (!EmailPattern.IsMatch(Model.Email.Trim())) Error(nameof(Model.Email), "Enter a valid email address, e.g. name@example.co.za.");
+
+            var phoneDigits = new string((Model.Phone ?? string.Empty).Where(char.IsDigit).ToArray());
+            if (string.IsNullOrWhiteSpace(Model.Phone)) Error(nameof(Model.Phone), "Enter the client's mobile number.");
+            else if (phoneDigits.Length < 10 || phoneDigits.Length > 15 || (Model.Phone ?? "").Any(c => !char.IsDigit(c) && " +-()".IndexOf(c) < 0))
+                Error(nameof(Model.Phone), "Enter a valid mobile number, e.g. +27 82 000 0000.");
+
+            if (string.IsNullOrWhiteSpace(Model.ResidentialAddress)) Error(nameof(Model.ResidentialAddress), "Enter the client's residential address.");
+            else if (Model.ResidentialAddress.Trim().Length < 5) Error(nameof(Model.ResidentialAddress), "Enter the full address.");
+
+            if (Model.Dependants is int dependants && (dependants < 0 || dependants > 20)) Error(nameof(Model.Dependants), "Dependants must be between 0 and 20.");
+
+            // Documents are filed against the case, so the case has to be assigned.
+            if (string.IsNullOrWhiteSpace(Model.Institution)) Error(nameof(Model.Institution), "Choose an institution so documents can be filed against the case.");
+            if (string.IsNullOrWhiteSpace(Model.Product)) Error(nameof(Model.Product), "Choose a product for this case.");
+
+            if (Model.TargetSubmissionDate is DateTime target && target.Date < DateTime.Today)
+                Error(nameof(Model.TargetSubmissionDate), "The target submission date can't be in the past.");
+        }
+        else if (step == 2)
+        {
+            void NotNegative(decimal? value, string field)
+            {
+                if (value is decimal amount && amount < 0) Error(field, "This amount can't be negative.");
+            }
+
+            NotNegative(Model.GrossMonthlyIncome, nameof(Model.GrossMonthlyIncome));
+            NotNegative(Model.NetMonthlyIncome, nameof(Model.NetMonthlyIncome));
+            NotNegative(Model.MonthlyExpenses, nameof(Model.MonthlyExpenses));
+            NotNegative(Model.PropertyValue, nameof(Model.PropertyValue));
+            NotNegative(Model.ExistingInvestments, nameof(Model.ExistingInvestments));
+            NotNegative(Model.RetirementSavings, nameof(Model.RetirementSavings));
+            NotNegative(Model.OutstandingDebt, nameof(Model.OutstandingDebt));
+
+            if (Model.GrossMonthlyIncome is decimal gross && Model.NetMonthlyIncome is decimal net && net > gross && !FieldErrors.ContainsKey(nameof(Model.NetMonthlyIncome)))
+                Error(nameof(Model.NetMonthlyIncome), "Net income can't be more than gross income.");
+
+            if (Model.InvestmentHorizonYears is int years && (years < 1 || years > 60))
+                Error(nameof(Model.InvestmentHorizonYears), "Enter a horizon between 1 and 60 years.");
+
+            if (string.IsNullOrWhiteSpace(Model.RiskProfile)) Error(nameof(Model.RiskProfile), "Choose the client's risk appetite.");
+        }
+        else if (step == 3)
+        {
+            foreach (var slot in DocumentSlots.Where(s => s.Required && !PickedFiles.ContainsKey(s.Type)))
+            {
+                Error(DocKey(slot.Type), $"Upload the {slot.Label.ToLowerInvariant()}. It's needed for FICA.");
+            }
+        }
+        else if (step == 4)
+        {
+            if (!Model.PopiaConsent) Error(nameof(Model.PopiaConsent), "The client's POPIA consent is needed before you can create their profile.");
+        }
+
+        return !HasErrorsForStep(step);
+    }
+
+    /// <summary>
+    /// Checks if any field on a step still has an error.
+    /// </summary>
+    private bool HasErrorsForStep(int step)
+    {
+        string[] stepOne = { nameof(Model.FirstName), nameof(Model.LastName), nameof(Model.IdentificationNumber), nameof(Model.DateOfBirth), nameof(Model.Email), nameof(Model.Phone), nameof(Model.ResidentialAddress), nameof(Model.Dependants), nameof(Model.Institution), nameof(Model.Product), nameof(Model.TargetSubmissionDate) };
+        string[] stepTwo = { nameof(Model.GrossMonthlyIncome), nameof(Model.NetMonthlyIncome), nameof(Model.MonthlyExpenses), nameof(Model.PropertyValue), nameof(Model.ExistingInvestments), nameof(Model.RetirementSavings), nameof(Model.OutstandingDebt), nameof(Model.InvestmentHorizonYears), nameof(Model.RiskProfile) };
+
+        return step switch
+        {
+            1 => stepOne.Any(FieldErrors.ContainsKey),
+            2 => stepTwo.Any(FieldErrors.ContainsKey),
+            3 => FieldErrors.Keys.Any(k => k.StartsWith("Doc_")),
+            4 => FieldErrors.ContainsKey(nameof(Model.PopiaConsent)),
+            _ => false
+        };
+    }
+
+    /// <summary>
+    /// SA ID numbers end with a check digit (Luhn), so this catches most typos.
+    /// </summary>
+    private static bool PassesLuhnCheck(string digits)
+    {
+        var sum = 0;
+        var doubleIt = false;
+
+        for (var i = digits.Length - 1; i >= 0; i--)
+        {
+            var d = digits[i] - '0';
+            if (doubleIt)
+            {
+                d *= 2;
+                if (d > 9) d -= 9;
+            }
+            sum += d;
+            doubleIt = !doubleIt;
+        }
+
+        return sum % 10 == 0;
+    }
+
+    /// <summary>
+    /// Lets the user take a picked file off before submitting.
+    /// </summary>
+    private void RemoveFile(DocumentType type)
+    {
+        PickedFiles.Remove(type);
+    }
+
     private bool HasIdentityDetails =>
         !string.IsNullOrWhiteSpace(Model.FirstName) &&
         !string.IsNullOrWhiteSpace(Model.LastName) &&
@@ -568,6 +820,20 @@
             await CheckForDraftAsync();
             StateHasChanged();
         }
+
+        if (FocusFirstError)
+        {
+            FocusFirstError = false;
+
+            try
+            {
+                await JS.InvokeVoidAsync("focusFirstError");
+            }
+            catch
+            {
+                // Not important if this fails, the red fields are still showing.
+            }
+        }
     }
 
     private async Task CheckForDraftAsync()
@@ -595,6 +861,7 @@
 
     private void ResumeDraft()
     {
+        FieldErrors.Clear();
         if (PendingDraft is null) return;
 
         Model.FirstName = PendingDraft.FirstName;
@@ -638,6 +905,7 @@
 
     private async Task DiscardDraftAsync()
     {
+        FieldErrors.Clear();
         ShowDraftBanner = false;
         PendingDraft = null;
         await ClearDraftStorageAsync();
@@ -739,26 +1007,47 @@
     }
 
     private async Task OnFileSelected(InputFileChangeEventArgs e, DocumentType type)
-{
-    var file = e.File;
-    const long maxFileSize = 30_000_000;
-
-    try
     {
-        await using var stream = file.OpenReadStream(maxFileSize);
-        using var memory = new MemoryStream();
-        await stream.CopyToAsync(memory);
+        var key = DocKey(type);
+        ClearFieldError(key);
 
-        PickedFiles[type] = new PickedFile(
-            file.Name,
-            string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
-            memory.ToArray());
+        var file = e.File;
+        var extension = Path.GetExtension(file.Name).ToLowerInvariant();
+
+        if (!AllowedFileTypes.Contains(extension))
+        {
+            FieldErrors[key] = $"'{file.Name}' isn't a PDF, JPG or PNG file.";
+            return;
+        }
+
+        if (file.Size == 0)
+        {
+            FieldErrors[key] = $"'{file.Name}' is empty. Choose another file.";
+            return;
+        }
+
+        if (file.Size > MaxFileSize)
+        {
+            FieldErrors[key] = $"'{file.Name}' is {file.Size / 1_000_000.0:0.#}MB. The limit is 30MB.";
+            return;
+        }
+
+        try
+        {
+            await using var stream = file.OpenReadStream(MaxFileSize);
+            using var memory = new MemoryStream();
+            await stream.CopyToAsync(memory);
+
+            PickedFiles[type] = new PickedFile(
+                file.Name,
+                string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
+                memory.ToArray());
+        }
+        catch (Exception)
+        {
+            FieldErrors[key] = $"'{file.Name}' couldn't be read. Try choosing it again.";
+        }
     }
-    catch (IOException)
-    {
-        StepError = $"'{file.Name}' couldn't be read — try a smaller file (max 30MB).";
-    }
-}
 
     private void TryJumpToStep(int step)
     {
@@ -775,12 +1064,17 @@
         StepError = null;
         DraftSavedMessage = null;
 
-        if (step > CurrentStep && CurrentStep == 1)
+        if (step > CurrentStep)
         {
-            if (!HasIdentityDetails || string.IsNullOrWhiteSpace(Model.Email))
+            // Check every step between here and where we're going.
+            for (var s = CurrentStep; s < step; s++)
             {
-                StepError = "First name, last name, ID number and email are required before continuing.";
-                return;
+                if (!ValidateStep(s))
+                {
+                    CurrentStep = s;
+                    FocusFirstError = true;
+                    return;
+                }
             }
         }
 
@@ -795,97 +1089,150 @@
     {
         SubmitError = null;
 
-        if (!Model.PopiaConsent)
+        // Check every step again in case something was changed.
+        for (var s = 1; s <= 4; s++)
         {
-            SubmitError = "The client's POPIA consent is required before this profile can be created.";
-            return;
+            if (!ValidateStep(s))
+            {
+                CurrentStep = s;
+                FocusFirstError = true;
+                return;
+            }
         }
 
         IsSubmitting = true;
+        PartialProblems.Clear();
 
-        var request = new CreateClientRequest
+        try
         {
-            FirstName = Model.FirstName,
-            LastName = Model.LastName,
-            Email = Model.Email,
-            Phone = Model.Phone,
-            IdentificationNumber = Model.IdentificationNumber,
-            DateOfBirth = Model.DateOfBirth,
-            ResidentialAddress = Model.ResidentialAddress,
-            MaritalStatus = Model.MaritalStatus,
-            Dependants = Model.Dependants,
-            EmploymentStatus = Model.EmploymentStatus,
-            Occupation = Model.Occupation,
-            Employer = Model.Employer,
-            GrossMonthlyIncome = Model.GrossMonthlyIncome,
-            NetMonthlyIncome = Model.NetMonthlyIncome,
-            MonthlyExpenses = Model.MonthlyExpenses,
-            SourceOfFunds = Model.SourceOfFunds,
-            TaxNumber = Model.TaxNumber,
-            PropertyValue = Model.PropertyValue,
-            ExistingInvestments = Model.ExistingInvestments,
-            RetirementSavings = Model.RetirementSavings,
-            OutstandingDebt = Model.OutstandingDebt,
-            PrimaryGoal = Model.PrimaryGoal,
-            InvestmentHorizonYears = Model.InvestmentHorizonYears,
-            RiskProfile = Model.RiskProfile,
-            PopiaConsent = Model.PopiaConsent
-        };
+            // 1. Create the client (skipped if it was already created on an earlier try).
+            if (CreatedClientId is null)
+            {
+                var request = new CreateClientRequest
+                {
+                    FirstName = Model.FirstName.Trim(),
+                    LastName = Model.LastName.Trim(),
+                    Email = Model.Email.Trim(),
+                    Phone = Model.Phone?.Trim(),
+                    IdentificationNumber = Model.IdentificationNumber?.Replace(" ", ""),
+                    DateOfBirth = Model.DateOfBirth,
+                    ResidentialAddress = Model.ResidentialAddress?.Trim(),
+                    MaritalStatus = Model.MaritalStatus,
+                    Dependants = Model.Dependants,
+                    EmploymentStatus = Model.EmploymentStatus,
+                    Occupation = Model.Occupation,
+                    Employer = Model.Employer,
+                    GrossMonthlyIncome = Model.GrossMonthlyIncome,
+                    NetMonthlyIncome = Model.NetMonthlyIncome,
+                    MonthlyExpenses = Model.MonthlyExpenses,
+                    SourceOfFunds = Model.SourceOfFunds,
+                    TaxNumber = Model.TaxNumber,
+                    PropertyValue = Model.PropertyValue,
+                    ExistingInvestments = Model.ExistingInvestments,
+                    RetirementSavings = Model.RetirementSavings,
+                    OutstandingDebt = Model.OutstandingDebt,
+                    PrimaryGoal = Model.PrimaryGoal,
+                    InvestmentHorizonYears = Model.InvestmentHorizonYears,
+                    RiskProfile = Model.RiskProfile,
+                    PopiaConsent = Model.PopiaConsent
+                };
 
-        var (client, clientError) = await Clients.CreateAsync(request);
+                var (client, clientError) = await Clients.CreateAsync(request);
 
-        if (client is null)
+                if (client is null)
+                {
+                    var error = clientError ?? string.Empty;
+
+                    // The email is already used: send the user straight to that field.
+                    if (error.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+                    {
+                        FieldErrors[nameof(Model.Email)] = "A client with this email already exists.";
+                        CurrentStep = 1;
+                        FocusFirstError = true;
+                        return;
+                    }
+
+                    SubmitError = string.IsNullOrWhiteSpace(error) ? "The server didn't respond as expected." : error;
+                    return;
+                }
+
+                CreatedClientId = client.ClientId;
+            }
+
+            // 2. Assign the case.
+            if (CreatedPolicyId is null && !string.IsNullOrWhiteSpace(Model.Institution) && !string.IsNullOrWhiteSpace(Model.Product))
+            {
+                var policyRequest = new CreateClientPolicyRequest(
+                    PolicyName: Model.Product!,
+                    Provider: Model.Institution!,
+                    Description: null,
+                    PremiumAmount: null,
+                    CoverAmount: null,
+                    StartDate: null,
+                    EndDate: null,
+                    TargetSubmissionDate: Model.TargetSubmissionDate);
+
+                var (policy, policyError) = await Policies.CreateClientPolicyAsync(CreatedClientId.Value, policyRequest);
+
+                if (policy is not null)
+                {
+                    CreatedPolicyId = policy.PolicyId;
+                }
+                else
+                {
+                    PartialProblems.Add($"The {Model.Product} case with {Model.Institution} couldn't be assigned ({policyError ?? "no reason given"}).");
+                }
+            }
+
+            // 3. Upload the documents (only the ones that haven't gone through yet).
+            if (CreatedPolicyId is not null)
+            {
+                var uploaderName = $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim();
+                if (string.IsNullOrWhiteSpace(uploaderName))
+                {
+                    uploaderName = CurrentUser.Email ?? "Advisor";
+                }
+
+                foreach (var (type, file) in PickedFiles.Where(f => !UploadedDocs.Contains(f.Key)).ToList())
+                {
+                    var (document, uploadError) = await Documents.UploadAsync(CreatedClientId.Value, CreatedPolicyId.Value, type, uploaderName, file.Name, file.ContentType, file.Content);
+
+                    if (document is not null)
+                    {
+                        UploadedDocs.Add(type);
+                    }
+                    else
+                    {
+                        PartialProblems.Add($"'{file.Name}' couldn't be uploaded ({uploadError ?? "no reason given"}).");
+                    }
+                }
+            }
+            else if (PickedFiles.Count > 0)
+            {
+                PartialProblems.Add("The documents weren't uploaded because the case couldn't be assigned.");
+            }
+
+            // The client exists now, so the draft isn't needed any more.
+            await ClearDraftStorageAsync();
+
+            if (PartialProblems.Count == 0)
+            {
+                Nav.NavigateTo("/clients");
+            }
+        }
+        catch (Exception)
         {
-            SubmitError = clientError ?? "Something went wrong creating this client.";
+            SubmitError = CreatedClientId is null
+                ? "Something unexpected went wrong while saving."
+                : "The client was saved, but something unexpected went wrong afterwards.";
+        }
+        finally
+        {
+            // Never leave the button stuck on "Creating client…".
             IsSubmitting = false;
-            return;
         }
-
-        int? policyId = null;
-
-        if (!string.IsNullOrWhiteSpace(Model.Institution) && !string.IsNullOrWhiteSpace(Model.Product))
-        {
-            var policyRequest = new CreateClientPolicyRequest(
-                PolicyName: Model.Product!,
-                Provider: Model.Institution!,
-                Description: null,
-                PremiumAmount: null,
-                CoverAmount: null,
-                StartDate: null,
-                EndDate: null,
-                TargetSubmissionDate: Model.TargetSubmissionDate);
-
-            var (policy, policyError) = await Policies.CreateClientPolicyAsync(client.ClientId, policyRequest);
-
-            if (policy is not null)
-            {
-                policyId = policy.PolicyId;
-            }
-            else
-            {
-                // The client record is already saved — don't block on this, just surface it.
-                SubmitError = $"Client was created, but the case couldn't be assigned: {policyError}";
-            }
-        }
-
-        if (policyId is not null)
-        {
-            var uploaderName = $"{CurrentUser.FirstName} {CurrentUser.LastName}".Trim();
-            if (string.IsNullOrWhiteSpace(uploaderName))
-            {
-                uploaderName = CurrentUser.Email ?? "Advisor";
-            }
-
-            foreach (var (type, file) in PickedFiles)
-            {
-              await Documents.UploadAsync(client.ClientId, policyId.Value, type, uploaderName, file.Name, file.ContentType, file.Content);
-            }
-        }
-        // Clear the draft from local storage after successful submission.
-        await ClearDraftStorageAsync();
-
-        Nav.NavigateTo("/clients");
     }
+
 }
 
 @* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

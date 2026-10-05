@@ -246,10 +246,43 @@ namespace frontend.Services
 
             if (!string.IsNullOrWhiteSpace(body))
             {
+                // Pull out the API's own message, e.g. { "message": "A client with email ... already exists" }
+                try
+                {
+                    using var json = System.Text.Json.JsonDocument.Parse(body);
+                    var root = json.RootElement;
+
+                    if (root.ValueKind == System.Text.Json.JsonValueKind.Object)
+                    {
+                        if (root.TryGetProperty("message", out var message) && message.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            return message.GetString()!;
+                        }
+
+                        // Validation errors look like { "errors": { "Email": [ "..." ] } }
+                        if (root.TryGetProperty("errors", out var errors) && errors.ValueKind == System.Text.Json.JsonValueKind.Object)
+                        {
+                            var joined = string.Join(" ", errors.EnumerateObject()
+                                .SelectMany(e => e.Value.EnumerateArray())
+                                .Select(e => e.GetString())
+                                .Where(m => !string.IsNullOrWhiteSpace(m)));
+
+                            if (!string.IsNullOrWhiteSpace(joined))
+                            {
+                                return joined;
+                            }
+                        }
+                    }
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    // Not JSON, so just show the text below.
+                }
+
                 return $"API returned HTTP {(int)response.StatusCode}: {body}";
             }
 
-            return $"The server reported an error (status {(int)response.StatusCode}.";
+            return $"The server reported an error (status {(int)response.StatusCode}).";
         }
     }
 }
