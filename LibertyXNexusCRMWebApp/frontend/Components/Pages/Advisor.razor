@@ -116,7 +116,7 @@
                             @(Dashboard?.ActiveCases ?? 0)
                         </strong>
 
-                        <span class="stat-change">
+                        <span class="stat-change @GetChangeClass(Dashboard?.ActiveCasesChange)">
                             @if (!string.IsNullOrWhiteSpace(Dashboard?.ActiveCasesChange))
                             {
                                 @Dashboard?.ActiveCasesChange
@@ -136,7 +136,7 @@
                             @(Dashboard?.AwaitingDocuments ?? 0)
                         </strong>
 
-                        <span class="stat-change">
+                        <span class="stat-change @GetChangeClass(Dashboard?.AwaitingDocumentsChange)">
                             @if (!string.IsNullOrWhiteSpace(Dashboard?.AwaitingDocumentsChange))
                             {
                                 @Dashboard?.AwaitingDocumentsChange
@@ -156,7 +156,7 @@
                             @(Dashboard?.MeetingsThisWeek ?? 0)
                         </strong>
 
-                        <span class="stat-change">
+                        <span class="stat-change @GetChangeClass(Dashboard?.MeetingsChange)">
                             @if (!string.IsNullOrWhiteSpace(Dashboard?.MeetingsChange))
                             {
                                 @Dashboard?.MeetingsChange
@@ -176,7 +176,7 @@
                             @($"R {Dashboard?.PipelineValue:N0}" ?? "-")
                         </strong>
 
-                        <span class="stat-change">
+                        <span class="stat-change @GetChangeClass(Dashboard?.PipelineValueChange)">
                             @if (!string.IsNullOrWhiteSpace(Dashboard?.PipelineValueChange))
                             {
                                 @Dashboard?.PipelineValueChange
@@ -439,6 +439,28 @@
     private string? InviteError;
     private string? InviteMessage;
     private string SelectedInstitution = "All";
+
+    private static string GetChangeClass(string? change)
+{
+    if (string.IsNullOrWhiteSpace(change))
+    {
+        return string.Empty;
+    }
+
+    var trimmed = change.TrimStart();
+
+    if (trimmed.StartsWith("-"))
+    {
+        return "negative";
+    }
+
+    if (trimmed.StartsWith("+"))
+    {
+        return "positive";
+    }
+
+    return string.Empty;
+}
 
     private void SetInstitutionFilter(string institution)
     {
