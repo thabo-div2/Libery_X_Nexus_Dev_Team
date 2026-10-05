@@ -165,12 +165,12 @@ by the API rather than Azure App Service Easy Auth.
 
 ## Swagger
 
-Swagger/OpenAPI is available on the deployed API for endpoint testing
+Swagger is available on the deployed API for endpoint testing
 and documentation:
 
-``` text
-https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/swagger
-```
+
+[Swagger](https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/swagger)
+
 
 ## Deployed Applications
 
@@ -248,3 +248,12 @@ Service **Connection strings** section as `DefaultConnection`.
 -   Azure Managed Identity is used for Blob Storage access.
 -   Exposed or compromised credentials should be rotated immediately.
 -   HTTPS is used for communication between deployed services.
+
+## Youtub Presentation
+
+- [Youtube](https://youtu.be/ybFxeS9y7XM)
+
+## Reference
+- [ChatGPT](https://chatgpt.com/share/6ac3ec99-a1cc-83e9-a2ce-55da8710c37f)
+- [Gemini](https://share.gemini.google/RhsGUFd4msFD)
+
