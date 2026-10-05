@@ -8,6 +8,7 @@
 @inject CurrentUserService CurrentUser
 @inject MessageNotifier Notifier
 @inject NotificationService Notifications
+@inject IJSRuntime JS
 
 <PageTitle>Messages | Nexus</PageTitle>
 
@@ -171,7 +172,7 @@
             }
 
 
-            <div class="chat-body">
+            <div class="chat-body" @ref="ChatBodyRef">
 
                 @if (Timeline.Count > 0)
                 {
@@ -365,6 +366,33 @@
 
     private string? LoadError;
     private string? SendError;
+
+    private ElementReference ChatBodyRef;
+    private string? LastScrollKey;
+
+    /// <summary>
+    /// Scrolls the chat to the bottom when it opens or a new message comes in.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var scrollKey = $"{SelectedConversationId}:{Timeline.Count}";
+
+        if (Timeline.Count == 0 || scrollKey == LastScrollKey)
+        {
+            return;
+        }
+
+        LastScrollKey = scrollKey;
+
+        try
+        {
+            await JS.InvokeVoidAsync("scrollToBottom", ChatBodyRef);
+        }
+        catch
+        {
+            // The page might be closing, so there's nothing to scroll.
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

@@ -8,6 +8,7 @@
 @inject MessageService MessageStore
 @inject MeetingService MeetingStore
 @inject MessageNotifier Notifier
+@inject IJSRuntime JS
 
 <PageTitle>Messages | Nexus</PageTitle>
 
@@ -78,7 +79,7 @@
                         </div>
                     }
 
-                    <div class="chat-body">
+                    <div class="chat-body" @ref="ChatBodyRef">
                         @if (TimelineItems.Count == 0)
                         {
                             <p class="client-messages-empty">No messages yet. Say hello to @AdvisorName.</p>
@@ -159,6 +160,31 @@
     private DateTime? MeetingDateTimeInput;
     private string MeetingNotes = string.Empty;
     private string? MeetingError;
+
+    private ElementReference ChatBodyRef;
+    private int LastScrollCount;
+
+    /// <summary>
+    /// Scrolls the chat to the bottom when it opens or a new message comes in.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (TimelineItems.Count == 0 || TimelineItems.Count == LastScrollCount)
+        {
+            return;
+        }
+
+        LastScrollCount = TimelineItems.Count;
+
+        try
+        {
+            await JS.InvokeVoidAsync("scrollToBottom", ChatBodyRef);
+        }
+        catch
+        {
+            // The page might be closing, so there's nothing to scroll.
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
