@@ -388,6 +388,34 @@
         }
     }
 
+    private static bool IsAllowedChatMessage(string text)
+    {
+        var lower = text.ToLowerInvariant();
+
+        var allowedTerms = new[]
+        {
+        // FAQ / Nexus functionality
+        "fica", "document", "documents", "upload", "signature", "sign",
+        "case", "cases", "status", "application", "process",
+        "profile", "account", "password", "login", "register",
+        "adviser", "advisor", "message", "notification",
+        "meeting", "calendar", "client", "policy",
+        "claim", "claims", "verification",
+
+        // General market information
+        "market", "markets", "jse", "rand", "zar", "usd",
+        "exchange rate", "stock", "stocks", "share", "shares",
+        "interest rate", "inflation", "economy", "economic",
+        "financial news", "monetary policy", "sarb",
+        "oil", "gold", "commodity", "commodities",
+
+        // General chatbot interaction
+        "hello", "hi", "hey", "help"
+    };
+
+        return allowedTerms.Any(term => lower.Contains(term));
+    }
+
     private async Task SendMessage()
     {
         var text = PromptText.Trim();
@@ -437,6 +465,15 @@
                     IsHandedToAdviser = false;
                     return;
                 }
+            }
+
+            if (!IsAllowedChatMessage(text))
+            {
+                await TypeAssistantReply(
+                    "I can only help with Nexus FAQs, documents, cases, meetings, and general market information. Please ask a question related to one of these areas.");
+
+                IsHandedToAdviser = false;
+                return;
             }
 
             var (matches, error) = await FaqStore.SearchAsync(text);
@@ -511,10 +548,10 @@
     private static string BuildMarketReply(MarketInformationResult result)
     {
         var lines = new List<string>
-        {
-            "Here is the latest market and financial-news information I could retrieve:",
-            string.Empty
-        };
+    {
+        "Here is the latest market information:",
+        string.Empty
+    };
 
         if (!string.IsNullOrWhiteSpace(result.UsdZarRate))
         {
@@ -524,32 +561,24 @@
 
         if (result.News.Count > 0)
         {
-            lines.Add("Latest relevant financial news:");
+            lines.Add("Latest financial news:");
 
             foreach (var item in result.News.Take(3))
             {
                 var published = FormatPublishedTime(item.PublishedAt);
-                var source = string.IsNullOrWhiteSpace(item.Source) ? "Unknown source" : item.Source;
-                var sentiment = string.IsNullOrWhiteSpace(item.Sentiment) ? string.Empty : $" ({item.Sentiment})";
+                var source = string.IsNullOrWhiteSpace(item.Source)
+                    ? "Unknown source"
+                    : item.Source;
 
                 lines.Add($"• {item.Title}");
-                lines.Add($"  Source: {source}{sentiment}{published}");
-                if (!string.IsNullOrWhiteSpace(item.Summary))
-                {
-                    lines.Add($"  {item.Summary}");
-                }
-                if (!string.IsNullOrWhiteSpace(item.Url))
-                {
-                    lines.Add($"  {item.Url}");
-                }
+                lines.Add($"  {source}{published}");
+                lines.Add(string.Empty);
             }
         }
 
-        lines.Add(string.Empty);
-        lines.Add($"Information retrieved: {result.RetrievedAtUtc.ToLocalTime():d MMM yyyy, HH:mm} SAST.");
         lines.Add("This is general market information, not personalised investment advice.");
 
-        return string.Join("", lines);
+        return string.Join(Environment.NewLine, lines);
     }
 
     private static string FormatPublishedTime(string publishedAt)

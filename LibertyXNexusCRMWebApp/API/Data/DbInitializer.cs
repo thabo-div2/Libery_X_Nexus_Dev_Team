@@ -31,6 +31,10 @@ namespace API.Data
                 await context.SaveChangesAsync();
             }
 
+            var alreadySeeded = await context.Clients.AnyAsync(c => c.AdvisorId == advisor.AdvisorId);
+            if (alreadySeeded)
+                return;
+
             // ---------------------------------------------------------
             // CATALOGUE POLICIES
             // ---------------------------------------------------------
