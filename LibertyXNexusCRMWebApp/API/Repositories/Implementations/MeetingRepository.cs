@@ -66,14 +66,15 @@ namespace API.Repositories.Implementations
             return meetings;
         }
 
-        public async Task<bool> HasConflictAsync(DateTime start, int durationMinutes, int? excludeMeetingId = null)
+        public async Task<bool> HasConflictAsync(DateTime start, int durationMinutes, int advisorId, int? excludeMeetingId = null)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
 
             var end = start.AddMinutes(durationMinutes);
 
             var query = context.Meetings
-                    .Where(m => m.Status != MeetingStatus.Cancelled);
+                    .Include(m => m.Client)
+                    .Where(m => m.Status != MeetingStatus.Cancelled && m.Client.AdvisorId == advisorId);
 
             if (excludeMeetingId.HasValue)
                 query = query.Where(m => m.MeetingId != excludeMeetingId.Value);

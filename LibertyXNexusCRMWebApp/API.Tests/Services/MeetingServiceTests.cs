@@ -83,7 +83,7 @@ namespace API.Tests.Services
             _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(MakeClient(1));
 
             _meetingRepository
-                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), 60, null))
+                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), 60, It.IsAny<int>()))
                 .ReturnsAsync(true);
 
             var request = new BookMeetingRequest
@@ -103,8 +103,9 @@ namespace API.Tests.Services
         public async Task BookAsync_WithValidRequest_CreatesAndReturnsMeeting()
         {
             _clientRepository.Setup(r => r.ExistsAsync(1)).ReturnsAsync(true);
+
             _meetingRepository
-                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), 60, null))
+                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), 60, It.IsAny<int>()))
                 .ReturnsAsync(false);
 
             var meetingDate = DateTime.UtcNow.AddDays(1);
