@@ -249,9 +249,16 @@ Service **Connection strings** section as `DefaultConnection`.
 -   Exposed or compromised credentials should be rotated immediately.
 -   HTTPS is used for communication between deployed services.
 
-## Youtub Presentation
+## Youtube Presentation
 
 - [Youtube](https://youtu.be/ybFxeS9y7XM)
+
+## Authors
+
+- Thabo Setsubi ST10445734
+- Sam Sossen ST10445164
+- Ethan Jansen ST10440914
+- Adam Malander ST10440725
 
 ## Reference
 - [ChatGPT](https://chatgpt.com/share/6ac3ec99-a1cc-83e9-a2ce-55da8710c37f)
