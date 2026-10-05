@@ -85,13 +85,26 @@ namespace API.Controllers
         [HttpPut("{id:int}/steps/{step}")]
         public async Task<ActionResult<CaseStatusDto>> MarkStepComplete(int id, CaseStep step)
         {
+            // Only advisors move a case along — clients get a read-only view.
+            if (!IsAdvisor)
+            {
+                return Forbid();
+            }
+
+            var clientId = await _caseService.GetClientIdForCaseAsync(id);
+
+            if (clientId is null || !await CanAccessClientAsync(clientId.Value))
+            {
+                return NotFound(new { message = "That case could not be found." });
+            }
+
             try
             {
-                return Ok(await _caseService.MarkStepCompleteAsync(id,step));
+                return Ok(await _caseService.MarkStepCompleteAsync(id, step));
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new {message = ex.Message});
+                return NotFound(new { message = ex.Message });
             }
         }
     }

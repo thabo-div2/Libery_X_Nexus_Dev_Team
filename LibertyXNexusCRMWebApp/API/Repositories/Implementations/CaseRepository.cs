@@ -20,6 +20,16 @@ namespace API.Repositories.Implementations
             return cas;
         }
 
+        public async Task<int?> GetClientIdForCaseAsync(int caseId)
+        {
+            using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            return await context.Cases
+                .Where(c => c.CaseId == caseId)
+                .Select(c => (int?)c.Policy.ClientId)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<Case>> GetByStatusAsync(CaseStatus status) 
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
