@@ -21,6 +21,9 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,6 +42,7 @@ jobs:
       - name: Run tests
         run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal
 
+
   # ============================================================
   # PUBLISH API
   # ============================================================
@@ -46,6 +50,9 @@ jobs:
     name: Publish API
     runs-on: ubuntu-latest
     needs: build-and-test
+
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -72,6 +79,7 @@ jobs:
           name: api-publish
           path: ./publish-api
 
+
   # ============================================================
   # PUBLISH FRONTEND
   # ============================================================
@@ -79,6 +87,9 @@ jobs:
     name: Publish Frontend
     runs-on: ubuntu-latest
     needs: build-and-test
+
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -105,6 +116,7 @@ jobs:
           name: frontend-publish
           path: ./publish-frontend
 
+
   # ============================================================
   # DEPLOY API
   # ============================================================
@@ -113,8 +125,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: publish-api
 
-    # Do NOT deploy pull requests.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Download API artifact
@@ -123,12 +138,20 @@ jobs:
           name: api-publish
           path: ./publish-api
 
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_39B9EAA644F3440486A656177BE30D86 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_491E6242DCB648F2900590E2E3EDF472 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FAF0BDFFBCD54A3A8233C7C6CD56DE0A }}
+
       - name: Deploy API to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: YOUR-API-APP-SERVICE-NAME
-          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
+          slot-name: Production
           package: ./publish-api
+
 
   # ============================================================
   # DEPLOY FRONTEND
@@ -139,8 +162,11 @@ jobs:
     environment: production
     needs: publish-frontend
 
-    # Do NOT deploy pull requests.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Download Frontend artifact
@@ -149,9 +175,16 @@ jobs:
           name: frontend-publish
           path: ./publish-frontend
 
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_39B9EAA644F3440486A656177BE30D86 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_491E6242DCB648F2900590E2E3EDF472 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FAF0BDFFBCD54A3A8233C7C6CD56DE0A }}
+
       - name: Deploy Frontend to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
-          app-name: YOUR-FRONTEND-APP-SERVICE-NAME
-          publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
+          app-name: libertyxnexus-web-thabo
+          slot-name: Production
           package: ./publish-frontend
