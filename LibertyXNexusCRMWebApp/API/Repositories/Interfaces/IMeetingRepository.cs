@@ -9,7 +9,7 @@ namespace API.Repositories.Interfaces
         Task<IEnumerable<Meeting>> GetUpcomingMeetingAsync(int? clientId = null);
         Task<IEnumerable<Meeting>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId);
         Task<IEnumerable<Meeting>> GetByStatusAsync(MeetingStatus status, int advisorId);
-        Task<bool> HasConflictAsync(DateTime start, int durationMinutes, int? excludeMeetingId = null);
+        Task<bool> HasConflictAsync(DateTime start, int durationMinutes, int advisorId, int? excludeMeetingId = null);
         Task<bool> BelongsToClientAsync(int meetingId, int clientId);
     }
 }

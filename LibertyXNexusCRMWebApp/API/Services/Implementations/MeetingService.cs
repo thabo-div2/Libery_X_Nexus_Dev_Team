@@ -114,9 +114,13 @@ namespace API.Services.Implementations
                  throw new KeyNotFoundException($"Client {request.ClientId} was not found");
              }
 
-            var hasConflict = await meetingRepository_.HasConflictAsync(request.MeetingDate, request.DurationMinutes);
-            if (hasConflict) {
-                throw new InvalidOperationException("The advisor already has a meeting in that time slot");
+            if (client.AdvisorId is int bookingAdvisorId)
+            {
+                var hasConflict = await meetingRepository_.HasConflictAsync(request.MeetingDate, request.DurationMinutes, bookingAdvisorId);
+                if (hasConflict)
+                {
+                    throw new InvalidOperationException("The advisor already has a meeting in that time slot");
+                }
             }
 
             var meeting = new Meeting
@@ -157,11 +161,11 @@ namespace API.Services.Implementations
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request) 
+        public async Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request)
         {
-          var meeting = await meetingRepository_.GetByIdAsync(meetingId) ?? throw new KeyNotFoundException($"Meeting {meetingId} does not exist");
+            var meeting = await meetingRepository_.GetByIdAsync(meetingId) ?? throw new KeyNotFoundException($"Meeting {meetingId} does not exist");
 
-            if (meeting.Status is MeetingStatus.Cancelled or MeetingStatus.Completed) 
+            if (meeting.Status is MeetingStatus.Cancelled or MeetingStatus.Completed)
             {
                 throw new InvalidOperationException($"A meeting with status '{meeting.Status}' cannot be rescheduled");
             }
@@ -170,20 +174,25 @@ namespace API.Services.Implementations
 
             var newDuration = request.DurationMinutes ?? meeting.DurationMinutes;
 
-            var hasConflict = await meetingRepository_.HasConflictAsync(request.NewMeetingDate, newDuration, excludeMeetingId: meetingId);
+            // Need the client up front now, so we know which advisor's calendar to check.
+            var client = await clientRepository_.GetByIdAsync(meeting.ClientId);
 
-            if (hasConflict)
+            if (client?.AdvisorId is int reschedulingAdvisorId)
             {
-                throw new InvalidOperationException("The advisor already has a meeting in that time slot");
+                var hasConflict = await meetingRepository_.HasConflictAsync(request.NewMeetingDate, newDuration, reschedulingAdvisorId, excludeMeetingId: meetingId);
+
+                if (hasConflict)
+                {
+                    throw new InvalidOperationException("The advisor already has a meeting in that time slot");
+                }
             }
+
             meeting.MeetingDate = request.NewMeetingDate;
             meeting.DurationMinutes = newDuration;
             meeting.Status = MeetingStatus.Requested;
             meeting.UpdatedAt = DateTime.UtcNow;
 
             await meetingRepository_.UpdateAsync(meeting);
-
-            var client = await clientRepository_.GetByIdAsync(meeting.ClientId);
 
             if (client?.AdvisorId is int advisorId)
             {
