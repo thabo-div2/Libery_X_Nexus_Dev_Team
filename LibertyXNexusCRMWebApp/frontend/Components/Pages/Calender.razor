@@ -203,43 +203,6 @@
             </section>
 
 
-            <!-- CLIENT BOOKING LINK -->
-            <section class="side-card booking-card">
-
-                <div class="side-card-header">
-                    <h2>Client booking link</h2>
-                </div>
-
-
-                <div class="booking-body">
-
-                    <p>
-                        Clients book straight into your open slots
-                        from their portal.
-                    </p>
-
-
-                    <div class="booking-link-container">
-
-                        <span class="booking-link">
-                            @(string.IsNullOrWhiteSpace(ClientBookingLink)
-                                ? "Booking link not configured"
-                                : ClientBookingLink)
-                        </span>
-
-
-                        <button type="button"
-                                class="copy-button"
-                                disabled="@string.IsNullOrWhiteSpace(ClientBookingLink)"
-                                @onclick="CopyBookingLink">
-                            @(_copied ? "Copied!" : "Copy")
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </section>
 
         </aside>
 
@@ -254,8 +217,6 @@
         new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
 
     private int? MeetingsThisWeek;
-
-    private string? ClientBookingLink;
 
     private List<CalendarEvent> Events { get; set; } = new();
 
@@ -290,7 +251,6 @@
         Notifier.MessageSent -= OnMeetingChanged;
     }
 
-    private bool _copied;
     private async Task LoadMeetings()
     {
         var (meetings, _) = await MeetingStore.GetForAdvisorAsync(AdvisorId);
@@ -318,7 +278,6 @@
         var weekEnd = weekStart.AddDays(7);
         MeetingsThisWeek = confirmed.Count(m => m.MeetingDate.ToLocalTime() >= weekStart && m.MeetingDate.ToLocalTime() < weekEnd);
 
-        ClientBookingLink = BuildBookingLink();
     }
 
     private static string MapDisplayStatus(string? backendStatus) => backendStatus?.ToLowerInvariant() switch
@@ -330,32 +289,7 @@
         _ => backendStatus ?? "Pending"
     };
 
-    private string? BuildBookingLink()
-    {
-        if (string.IsNullOrWhiteSpace(CurrentUser.FirstName) || string.IsNullOrWhiteSpace(CurrentUser.LastName))
-        {
-            return null;
-        }
 
-        var slug = $"{CurrentUser.FirstName}-{CurrentUser.LastName}".ToLowerInvariant().Replace(" ", "-");
-        return $"nexus.app/book/{slug}";
-    }
-
-    private async Task CopyBookingLink()
-    {
-        if (string.IsNullOrWhiteSpace(ClientBookingLink))
-        {
-            return;
-        }
-
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ClientBookingLink);
-
-        _copied = true;
-        StateHasChanged();
-        await Task.Delay(1500);
-        _copied = false;
-        StateHasChanged();
-    }
 
 
     private void PreviousMonth()
