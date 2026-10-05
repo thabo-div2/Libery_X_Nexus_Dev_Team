@@ -1,6 +1,7 @@
 ﻿@page "/documents"
 @layout MainLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using Shared.Models.Enums
 @using frontend.Services
 @inject DocumentService Document
 @inject CurrentUserService CurrentUser
@@ -302,24 +303,47 @@
                 return;
             }
 
-            DocumentItems = result.Documents
+            var documents = result.Documents ?? new List<DocumentSummary>();
+
+            // All documents
+            DocumentItems = documents
                 .Select(document => new DocumentItem
-                    {
-                        Id = document.DocumentId,
-                        Name = document.FileName,
-                        Type = document.DocumentType,
-                        DateText = FormatDate(document.UpdatedAt),
-                        Status = GetDocumentStatus(document)
-                    })
-                .ToList() ?? new List<DocumentItem>();
+                {
+                    Id = document.DocumentId,
+                    Name = document.FileName,
+                    Type = document.DocumentType,
+                    DateText = FormatDate(document.UpdatedAt),
+                    Status = GetDocumentStatus(document)
+                })
+                .ToList();
 
+            // Available document templates produced by the document factory.
+            Templates = new List<DocumentTemplate>
+        {
+            new()
+            {
+                Name = "Service Package Summary",
+                Type = DocumentType.ServicePackageSummary
+            },
+            new()
+            {
+                Name = "Policy Statement",
+                Type = DocumentType.PolicyStatement
+            },
+            new()
+            {
+                Name = "Amendment Form",
+                Type = DocumentType.AmendmentForm
+            }
+        };
 
-            Templates.Clear();
-            AwaitingSignatures.Clear();
+            // Signature status is not currently represented by the
+            // Document model/API, so don't infer it from visibility.
+            AwaitingSignatures = new List<SignatureItem>();
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"unable to load documents: {ex.Message}";
+            ErrorMessage = $"Unable to load documents: {ex.Message}";
         }
         finally
         {
@@ -392,6 +416,8 @@
     public class DocumentTemplate
     {
         public string Name { get; set; } = string.Empty;
+
+        public DocumentType Type { get; set; }
     }
 
 
