@@ -136,6 +136,8 @@ namespace API
             builder.Services.AddHttpClient<IMarketInformationService, MarketInformationService>();
             builder.Services.AddScoped<IFaqService, FaqService>();
 
+            builder.Services.AddMemoryCache();
+
 
             var app = builder.Build();
 
