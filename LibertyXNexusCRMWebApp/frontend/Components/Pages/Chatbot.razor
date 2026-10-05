@@ -526,7 +526,7 @@
         {
             lines.Add("Latest relevant financial news:");
 
-            foreach (var item in result.News.Take(5))
+            foreach (var item in result.News.Take(3))
             {
                 var published = FormatPublishedTime(item.PublishedAt);
                 var source = string.IsNullOrWhiteSpace(item.Source) ? "Unknown source" : item.Source;
