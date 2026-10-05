@@ -18,33 +18,6 @@ namespace API.Services.Implementations
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>
     /// Service for retrieving market information such as news and exchange rates from the Alpha Vantage API.
-    ///
-    /// PERFORMANCE NOTES (read before changing the fetch logic):
-    /// 1. The news and FX requests are independent of each other and now run
-    ///    CONCURRENTLY via Task.WhenAll instead of one after another -
-    ///    roughly halves latency on every call that actually reaches
-    ///    Alpha Vantage, since neither request depends on the other's result.
-    /// 2. The "query" parameter does not affect which Alpha Vantage data is
-    ///    fetched - topics and the currency pair are fixed, not derived from
-    ///    it. That means the underlying data is identical for every caller,
-    ///    which makes a single shared cache entry valid here - it is NOT a
-    ///    per-user or per-query cache. If query-specific fetching is added
-    ///    later (e.g. a specific stock symbol), the cache key below needs to
-    ///    incorporate that, or different queries will incorrectly share
-    ///    cached results.
-    /// 3. Cache "freshness" window is 3 minutes, but this is
-    ///    stale-while-revalidate, not a hard expiry: once ANY data has been
-    ///    fetched once, it never falls out of the cache entirely. A request
-    ///    arriving after the 3-minute window gets that slightly-old data
-    ///    back IMMEDIATELY, while a background task quietly refreshes it for
-    ///    next time. Net effect: only the very first call the app ever
-    ///    makes (empty cache, nothing to serve yet) blocks on Alpha Vantage.
-    ///    Every request after that returns near-instantly, and "current
-    ///    market news" is still never more than ~3 minutes stale in
-    ///    practice. _refreshGate ensures only one background refresh runs
-    ///    at a time, so a burst of requests in the stale window doesn't fire
-    ///    off a dozen redundant calls and blow through Alpha Vantage's
-    ///    5-calls/minute free-tier limit.
     /// </summary>
     public sealed class MarketInformationService : IMarketInformationService
     {
