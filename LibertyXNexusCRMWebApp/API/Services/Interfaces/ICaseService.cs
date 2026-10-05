@@ -7,6 +7,7 @@ namespace API.Services.Interfaces
     {
         Task<IEnumerable<CaseStatusDto>> GetForClientAsync(int clientId);
         Task<CaseStatusDto> MarkStepCompleteAsync(int caseId, CaseStep step);
+        Task<int?> GetClientIdForCaseAsync(int caseId);
     }
 }
 

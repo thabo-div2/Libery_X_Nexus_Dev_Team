@@ -36,6 +36,11 @@ namespace API.Services.Implementations
             return MapToDto(updated);
         }
 
+        public Task<int?> GetClientIdForCaseAsync(int caseId)
+        {
+            return caseRepository_.GetClientIdForCaseAsync(caseId);
+        }
+
         /// <summary>
         /// Turns a case into a DTO.
         /// </summary>

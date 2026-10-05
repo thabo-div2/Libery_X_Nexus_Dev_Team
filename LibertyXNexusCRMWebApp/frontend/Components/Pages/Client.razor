@@ -21,8 +21,8 @@
                 <div class="client-heading">
                     <h1>
                         Welcome back@(string.IsNullOrWhiteSpace(ClientFirstName)
-                                            ? "!"
-                                            : $", {ClientFirstName}!")
+                                                                    ? "!"
+                                                                    : $", {ClientFirstName}!")
                     </h1>
 
                     <p>
@@ -420,7 +420,7 @@
 </ErrorBoundary>
 
 
-                @code {
+@code {
 
     private string? ClientFirstName;
 
@@ -508,7 +508,6 @@
         {
             CurrentProduct = currentPolicy.PolicyName;
             CurrentInstitution = currentPolicy.Provider;
-            CurrentApplicationStatus = currentPolicy.Status;
         }
 
         // ---------------------------------------------------------
@@ -535,7 +534,9 @@
 
         // ---------------------------------------------------------
         // Load the client's case and build the application
-        // progress steps from the case status.
+        // progress steps from the case status. The "Active"/etc.
+        // badge is driven by the CASE's status, not the policy's,
+        // so it actually moves as the advisor works the case.
         // ---------------------------------------------------------
         var (cases, caseError) = await CaseDirectory.GetForClientAsync(clientId);
 
@@ -546,10 +547,11 @@
             if (currentCase is not null)
             {
                 ApplicationSteps = BuildApplicationSteps(currentCase);
+                CurrentApplicationStatus = FormatCaseStatus(currentCase.Status);
 
                 if (string.IsNullOrWhiteSpace(CurrentCaseNumber))
                 {
-                   CurrentCaseNumber = currentCase.CaseId.ToString();
+                    CurrentCaseNumber = currentCase.CaseId.ToString();
                 }
             }
         }
@@ -558,7 +560,7 @@
 
     private static List<ApplicationStep> BuildApplicationSteps(CaseSummary currentCase)
     {
-        var entries = new(string Label,DateTime? When)[]
+        var entries = new (string Label, DateTime? When)[]
         {
            ("Details submitted", currentCase.DetailsSubmittedAt),
             ("Adviser review", currentCase.AdviserReviewAt),
@@ -570,12 +572,12 @@
         var steps = new List<ApplicationStep>();
         int firstIncomplete = Array.FindIndex(entries, e => e.When is null);
 
-        for (int i = 0;i< entries.Length; i++)
+        for (int i = 0; i < entries.Length; i++)
         {
             steps.Add(new ApplicationStep
             {
-                Title = entries[i].Label,   
-                Status = entries[i].When.HasValue ? "complete": i == firstIncomplete? "current": "",
+                Title = entries[i].Label,
+                Status = entries[i].When.HasValue ? "complete" : i == firstIncomplete ? "current" : "",
                 DateText = entries[i].When?.ToString("dd MMM yyyy") ?? string.Empty
             });
         }
@@ -613,6 +615,19 @@
             "in review" => "document-review",
             "received" => "document-received",
             _ => "document-neutral"
+        };
+    }
+
+
+    private static string FormatCaseStatus(string status)
+    {
+        return status switch
+        {
+            "InProgress" => "In progress",
+            "AwaitingApproval" => "Awaiting approval",
+            "Completed" => "Completed",
+            "OnHold" => "On hold",
+            _ => status
         };
     }
 
