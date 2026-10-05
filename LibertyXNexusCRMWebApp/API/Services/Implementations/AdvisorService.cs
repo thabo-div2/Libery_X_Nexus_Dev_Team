@@ -37,14 +37,23 @@ namespace API.Services.Implementations
 
             var cases = await context.Cases
                 .AsNoTracking()
-                .Include(c => c.Policy)
-                .ThenInclude(p => p.Client)
-                .Include(c => c.Policy)
-                .ThenInclude(p => p.Documents)
                 .Where(c =>
                     c.Policy.Client != null &&
                     c.Policy.Client.AdvisorId == advisorId)
                 .OrderByDescending(c => c.UpdatedAt)
+                .Select(c => new
+                {
+                    c.Status,
+                    c.UpdatedAt,
+
+                    ClientFirstName = c.Policy.Client!.FirstName,
+                    ClientLastName = c.Policy.Client.LastName,
+
+                    PolicyName = c.Policy.PolicyName,
+                    Provider = c.Policy.Provider,
+
+                    HasDocuments = c.Policy.Documents.Any()
+                })
                 .ToListAsync();
 
             var activeCases = cases.Count(c =>
@@ -54,22 +63,13 @@ namespace API.Services.Implementations
             var waitingOnClient = cases.Count(c =>
                 c.Status == Shared.Models.Enums.CaseStatus.OnHold);
 
-            var awaitingDocuments = cases.Count(c =>
-                c.Policy.Documents.Count == 0);
+            var awaitingDocuments = cases.Count(c => !c.HasDocuments);
 
             var today = DateTime.UtcNow.Date;
 
             var totalClients = await context.Clients
                 .AsNoTracking()
                 .CountAsync(c => c.AdvisorId == advisorId);
-
-            var meetingsToday = await context.Meetings
-                .AsNoTracking()
-                .CountAsync(m =>
-                    m.Client.AdvisorId == advisorId &&
-                    m.MeetingDate >= today &&
-                    m.MeetingDate < today.AddDays(1) &&
-                    m.Status != MeetingStatus.Cancelled);
 
             var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
 
@@ -78,25 +78,31 @@ namespace API.Services.Implementations
             var previousWeekStart = startOfWeek.AddDays(-7);
             var previousWeekEnd = startOfWeek;
 
-            var meetingsThisWeek = await context.Meetings
+            var meetings = await context.Meetings
                 .AsNoTracking()
                 .Where(m =>
-                m.Client.AdvisorId == advisorId &&
-                m.MeetingDate >= startOfWeek &&
-                m.MeetingDate < endOfWeek &&
-                m.Status != Shared.Models.Enums.MeetingStatus.Cancelled)
-                .CountAsync();
+                    m.Client.AdvisorId == advisorId &&
+                    m.MeetingDate >= previousWeekStart &&
+                    m.MeetingDate < endOfWeek &&
+                    m.Status != MeetingStatus.Cancelled)
+                .Select(m => m.MeetingDate)
+                .ToListAsync();
 
-            var meetingsLastWeek = await context.Meetings
-                .AsNoTracking()
-                .Where(m =>
-                m.Client.AdvisorId == advisorId &&
-                m.MeetingDate >= previousWeekStart &&
-                m.MeetingDate < previousWeekEnd &&
-                m.Status != Shared.Models.Enums.MeetingStatus.Cancelled)
-                .CountAsync();
+            var meetingsToday = meetings.Count(d =>
+                d >= today &&
+                d < today.AddDays(1));
 
-            var meetingsChange = CalculatePercentageChange(meetingsThisWeek, meetingsLastWeek);
+            var meetingsThisWeek = meetings.Count(d =>
+                d >= startOfWeek &&
+                d < endOfWeek);
+
+            var meetingsLastWeek = meetings.Count(d =>
+                d >= previousWeekStart &&
+                d < previousWeekEnd);
+
+            var meetingsChange = CalculatePercentageChange(
+                meetingsThisWeek,
+                meetingsLastWeek);
 
             var pipelineValue = await context.Policies
                 .AsNoTracking()
@@ -153,12 +159,12 @@ namespace API.Services.Implementations
                 activeCasesLastWeek);
 
             var awaitingDocumentsThisWeek = cases.Count(c =>
-                c.Policy.Documents.Count == 0 &&
+                !c.HasDocuments &&
                 c.UpdatedAt >= startOfWeek &&
                 c.UpdatedAt < endOfWeek);
 
             var awaitingDocumentsLastWeek = cases.Count(c =>
-                c.Policy.Documents.Count == 0 &&
+                !c.HasDocuments &&
                 c.UpdatedAt >= previousWeekStart &&
                 c.UpdatedAt < previousWeekEnd);
 
@@ -170,9 +176,13 @@ namespace API.Services.Implementations
                 .Take(10)
                 .Select(c => new CasePipelineItemDto
                 {
-                    ClientName = c.Policy.Client?.FullName ?? "Unknown client",
-                    Product = c.Policy.PolicyName,
-                    Institution = c.Policy.Provider,
+                    ClientName = string.IsNullOrWhiteSpace(c.ClientFirstName) &&
+                                 string.IsNullOrWhiteSpace(c.ClientLastName)
+                        ? "Unknown client"
+                        : $"{c.ClientFirstName} {c.ClientLastName}".Trim(),
+
+                    Product = c.PolicyName,
+                    Institution = c.Provider,
                     Status = c.Status.ToString(),
                     UpdatedAt = c.UpdatedAt
                 })
@@ -202,7 +212,7 @@ namespace API.Services.Implementations
                 .ToListAsync();
 
             var institutionsGroups = cases
-                .GroupBy(c => c.Policy.Provider)
+                .GroupBy(c => c.Provider)
                 .Select(g => new
                 {
                     Name = g.Key,
