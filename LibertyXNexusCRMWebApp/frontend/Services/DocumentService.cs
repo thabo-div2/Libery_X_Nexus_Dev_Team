@@ -18,16 +18,9 @@ namespace frontend.Services
     /// <param name="UploadedBy">Username who uploaded the document.</param>
     /// <param name="UpdatedAt">Last update timestamp, if any.</param>
     public record DocumentSummary(
-        int DocumentId,
-        int ClientId,
-        int PolicyId,
-        string FileName,
-        string ContentType,
-        long FileSizeBytes,
-        string DocumentType,
-        bool VisibleToClient,
-        string? UploadedBy,
-        DateTime? UpdatedAt);
+    int DocumentId, int ClientId, int PolicyId, string FileName, string ContentType,
+    long FileSizeBytes, string DocumentType, bool VisibleToClient, string? UploadedBy,
+    string? SignatureStatus, DateTime? UpdateAt);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>

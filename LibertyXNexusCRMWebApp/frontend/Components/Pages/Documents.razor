@@ -4,6 +4,7 @@
 @using Shared.Models.Enums
 @using frontend.Services
 @inject DocumentService Document
+@inject ClientService ClientApi
 @inject CurrentUserService CurrentUser
 @inject NavigationManager Navigation
 
@@ -270,6 +271,7 @@
     {
         IsLoading = true;
         ErrorMessage = null;
+        var clientNames = new Dictionary<int, string>();
 
         try
         {
@@ -286,6 +288,10 @@
             if (CurrentUser.IsAdvisor)
             {
                 result = await Document.GetForAdvisorAsync(CurrentUser.Id.Value);
+                var clientResult = await ClientApi.SearchAsync(null, null);
+                clientNames = clientResult.Clients.ToDictionary(
+                    c => c.ClientId,
+                    c => string.IsNullOrWhiteSpace(c.FullName) ? $"{c.FirstName} {c.LastName}".Trim() : c.FullName);
             }
             else if (CurrentUser.IsClient)
             {
@@ -312,7 +318,7 @@
                     Id = document.DocumentId,
                     Name = document.FileName,
                     Type = document.DocumentType,
-                    DateText = FormatDate(document.UpdatedAt),
+                    DateText = FormatDate(document.UpdateAt),
                     Status = GetDocumentStatus(document)
                 })
                 .ToList();
@@ -337,9 +343,18 @@
             }
         };
 
-            // Signature status is not currently represented by the
-            // Document model/API, so don't infer it from visibility.
-            AwaitingSignatures = new List<SignatureItem>();
+            AwaitingSignatures = documents
+                .Where(d => d.SignatureStatus == "Awaiting")
+                .Select(d => new SignatureItem
+                {
+                    ClientName = clientNames.TryGetValue(d.ClientId, out var name) ? name : $"Client {d.ClientId}",
+                    DocumentName = d.FileName
+                })
+                .ToList();
+
+            Console.WriteLine($"[Documents] total={documents.Count} " +
+                $"seeded={documents.Count(d => d.UploadedBy == "seed-data")} " +
+                $"statuses=[{string.Join(", ", documents.Select(d => d.SignatureStatus ?? "null").Distinct())}]");
         }
         catch (Exception ex)
         {
@@ -358,15 +373,12 @@
             : string.Empty;
     }
 
-    private static string GetDocumentStatus(DocumentSummary document)
+    private static string GetDocumentStatus(DocumentSummary d) => d.SignatureStatus switch
     {
-        if (document.VisibleToClient)
-        {
-            return "Available";
-        }
-
-        return "Private";
-    }
+        "Awaiting" => "Awaiting signature",
+        "Signed" => "Signed",
+        _ => d.VisibleToClient ? "Available" : "Private"
+    };
 
     private static string GetStatusClass(string? status)
     {

@@ -258,6 +258,7 @@ namespace API.Services.Implementations
             FileSizeBytes = document.FileSizeBytes,
             DocumentType = document.DocumentType.ToString(),
             VisibleToClient = document.VisibleToClient,
+            SignatureStatus = document.SignatureStatus.ToString(),
             UploadedBy = document.UploadedBy,
             UpdateAt = document.UpdateAt
         };

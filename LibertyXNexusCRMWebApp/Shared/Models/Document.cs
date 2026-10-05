@@ -40,6 +40,8 @@ namespace Shared.Models
 
         public DocumentType DocumentType { get; set; } = DocumentType.Other;
 
+        public SignatureStatus SignatureStatus { get; set; } = SignatureStatus.NotRequired;
+
         public bool VisibleToClient { get; set; } = false;
         public DateTime? UpdateAt { get; set; }
 

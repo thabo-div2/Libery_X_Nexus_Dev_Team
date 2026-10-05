@@ -172,6 +172,14 @@ namespace API
                 {
                     await concreteBlobService.EnsureContainerExistsAsync();
                 }
+
+
+            }
+
+            if (app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>("Seed:SampleDocuments"))
+            {
+                using var scope = app.Services.CreateScope();
+                await DocumentSeeder.SeedAsync(scope.ServiceProvider);
             }
 
             app.UseHttpsRedirection();
