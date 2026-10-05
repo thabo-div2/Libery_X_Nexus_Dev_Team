@@ -93,8 +93,8 @@
     .notification-empty {
         margin: 0;
         padding: var(--space-5) var(--space-4);
-        color: var(--color-grey-430);
-        font-size: var(--text-base);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
         text-align: center;
     }
 

@@ -151,7 +151,7 @@
                 <div class="meeting-request-form">
                     <label>
                         Date &amp; time
-                        <input type="datetime-local" @bind="MeetingDateTimeInput" />
+                        <input type="datetime-local" min="@MinMeetingTime" @bind="MeetingDateTimeInput" />
                     </label>
 
                     <label>
@@ -355,6 +355,11 @@
 
     private bool ShowMeetingForm;
     private DateTime? MeetingDateTimeInput;
+
+    /// <summary>
+    /// Stops the date picker from showing times that have already passed.
+    /// </summary>
+    private string MinMeetingTime => DateTime.Now.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture);
     private string MeetingNotes = string.Empty;
     private string? MeetingFormError;
 
@@ -555,6 +560,12 @@
         if (MeetingDateTimeInput is null)
         {
             MeetingFormError = "Choose a date and time for the meeting.";
+            return;
+        }
+
+        if (MeetingDateTimeInput.Value <= DateTime.Now)
+        {
+            MeetingFormError = "Please choose a date and time in the future.";
             return;
         }
 

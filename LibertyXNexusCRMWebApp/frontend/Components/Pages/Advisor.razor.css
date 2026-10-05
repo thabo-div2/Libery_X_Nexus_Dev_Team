@@ -414,26 +414,27 @@
 }
 
 .empty-icon {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: var(--space-1);
-    border-radius: 50%;
-    background: var(--color-page-bg);
+    border-radius: var(--radius-full);
+    background: var(--color-blue-60);
     color: var(--color-text-muted);
     font-size: var(--text-lg);
 }
 
 .table-empty-state strong {
-    color: var(--color-slate-660);
+    color: var(--color-text);
     font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
 }
 
 .table-empty-state span {
-    color: var(--color-grey-390);
-    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
 }
 
 
@@ -571,8 +572,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-grey-390);
-    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
 }
 
 
@@ -768,16 +769,18 @@
 .invite-error {
     margin: var(--space-3) 0 0;
     color: var(--color-danger);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
 }
 
 .dashboard-error {
     margin: var(--space-6);
     padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
+    border-left: 3px solid var(--color-danger);
+    font-weight: var(--weight-medium);
 }
 
 /* ================================ EndOfFile ============================== */

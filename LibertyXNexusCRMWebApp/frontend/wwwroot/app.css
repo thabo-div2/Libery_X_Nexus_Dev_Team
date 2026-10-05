@@ -194,7 +194,8 @@
 }
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: var(--font-family);
+    color: var(--color-text);
 }
 
 html {

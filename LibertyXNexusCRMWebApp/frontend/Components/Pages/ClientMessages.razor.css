@@ -346,13 +346,13 @@
 
 .client-messages-error {
     color: var(--color-danger);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     margin-top: var(--space-2);
 }
 
 .client-messages-empty {
-    color: var(--color-grey-430);
-    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
     padding: var(--space-3) 0;
     text-align: center;
 }

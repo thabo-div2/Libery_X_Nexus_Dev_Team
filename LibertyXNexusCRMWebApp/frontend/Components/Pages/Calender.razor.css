@@ -487,25 +487,26 @@
 }
 
 .empty-calendar-icon {
-    width: 31px;
-    height: 31px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 2px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     background: var(--color-blue-60);
     color: var(--color-text-muted);
 }
 
 .empty-meetings strong {
-    color: var(--color-slate-640);
-    font-size: var(--text-xs);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
 }
 
 .empty-meetings span:last-child {
-    color: var(--color-grey-390);
-    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
 }
 
 

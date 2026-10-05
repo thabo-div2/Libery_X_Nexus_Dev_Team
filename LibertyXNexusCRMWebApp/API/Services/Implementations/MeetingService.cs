@@ -262,7 +262,10 @@ namespace API.Services.Implementations
         /// <exception cref="ArgumentException"></exception>
         private static void ValidateFutureDate(DateTime date)
         {
-            if (date <= DateTime.UtcNow)
+            // Make sure we compare UTC with UTC, even if the date came in as local time.
+            var utcDate = date.Kind == DateTimeKind.Local ? date.ToUniversalTime() : date;
+
+            if (utcDate <= DateTime.UtcNow)
             {
                 throw new ArgumentException("Meeting date must be in the future.");
             }
