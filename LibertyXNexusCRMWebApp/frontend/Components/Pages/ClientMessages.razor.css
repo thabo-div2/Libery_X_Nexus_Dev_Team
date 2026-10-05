@@ -7,22 +7,22 @@
     width: 100%;
     background: var(--color-page-bg);
     color: var(--color-blue-850);
-    font-family: Inter, "Segoe UI", Arial, sans-serif;
-    padding: 24px;
+    font-family: var(--font-family);
+    padding: var(--space-6);
     display: flex;
     flex-direction: column;
 }
 
 .client-messages-header h1 {
-    margin: 0 0 4px;
-    font-size: 22px;
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-xl);
     color: var(--color-text);
 }
 
 .client-messages-header p {
-    margin: 0 0 18px;
+    margin: 0 0 var(--space-5);
     color: var(--color-grey-430);
-    font-size: 14.5px;
+    font-size: var(--text-base);
 }
 
 
@@ -38,9 +38,9 @@
     display: flex;
     flex-direction: column;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: var(--color-white);
-    box-shadow: 0 2px 6px var(--color-shadow-04);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
 }
 
@@ -50,22 +50,22 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 0 16px;
+    gap: var(--space-3);
+    padding: 0 var(--space-4);
     border-bottom: 1px solid var(--color-border-light);
 }
 
 .chat-client {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
 }
 
 .chat-client h2 {
     margin: 0;
     color: var(--color-text);
-    font-size: 15.5px;
-    font-weight: 650;
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
 }
 
 .adviser-avatar {
@@ -78,21 +78,21 @@
     border-radius: 50%;
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: 13px;
-    font-weight: 650;
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
 }
 
 .meeting-toggle-button {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     background: var(--color-white);
     color: var(--color-primary);
-    font-size: 13px;
-    font-weight: 600;
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
     cursor: pointer;
 }
 
@@ -114,8 +114,8 @@
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 14px 16px;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-4);
     border-bottom: 1px solid var(--color-border-light);
     background: var(--color-white);
 }
@@ -123,48 +123,48 @@
     .meeting-request-form label {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: var(--space-1);
         color: var(--color-slate-610);
-        font-size: 12px;
-        font-weight: 600;
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
     }
 
     .meeting-request-form input {
-        padding: 8px 10px;
+        padding: var(--space-2) var(--space-3);
         border: 1px solid var(--color-border);
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         outline: none;
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: 13px;
+        font-size: var(--text-base);
     }
 
 .meeting-form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: var(--space-2);
 }
 
 .meeting-cancel-button {
-    padding: 8px 14px;
+    padding: var(--space-2) var(--space-4);
     border: 1px solid var(--color-border);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     background: var(--color-white);
     color: var(--color-slate-610);
-    font-size: 13px;
-    font-weight: 600;
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
     cursor: pointer;
 }
 
 .meeting-send-button {
-    padding: 8px 14px;
+    padding: var(--space-2) var(--space-4);
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: 13px;
-    font-weight: 600;
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
     cursor: pointer;
 }
 
@@ -182,8 +182,8 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 18px 16px;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-4);
     overflow-y: auto;
 }
 
@@ -198,22 +198,22 @@
     max-width: 340px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 12px 14px;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: var(--color-white);
     text-align: center;
 }
 
     .meeting-card strong {
         color: var(--color-text);
-        font-size: 13px;
+        font-size: var(--text-base);
     }
 
     .meeting-card span {
         color: var(--color-slate-610);
-        font-size: 12px;
+        font-size: var(--text-sm);
     }
 
 .meeting-card-notes {
@@ -221,8 +221,8 @@
 }
 
 .meeting-status-label {
-    margin-top: 4px;
-    font-weight: 650;
+    margin-top: var(--space-1);
+    font-weight: var(--weight-semibold);
 }
 
 .meeting-pending {
@@ -259,8 +259,8 @@
 
 .message-bubble {
     max-width: 70%;
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
     background: var(--color-blue-60);
     color: var(--color-slate-660);
 }
@@ -279,22 +279,22 @@
 
 .message-author {
     display: block;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
     opacity: 0.7;
     margin-bottom: 2px;
 }
 
 .message-bubble p {
     margin: 0;
-    font-size: 14.5px;
+    font-size: var(--text-base);
 }
 
 .message-time {
     display: block;
-    font-size: 11px;
+    font-size: var(--text-sm);
     opacity: 0.6;
-    margin-top: 4px;
+    margin-top: var(--space-1);
 }
 
 
@@ -305,18 +305,18 @@
 .client-messages-composer {
     flex-shrink: 0;
     display: flex;
-    gap: 10px;
-    padding: 12px 16px;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
     border-top: 1px solid var(--color-border-light);
     background: var(--color-white);
 }
 
 .client-messages-composer input {
     flex: 1;
-    padding: 10px 12px;
+    padding: var(--space-3) var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
-    font-size: 14.5px;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
 }
 
     .client-messages-composer input:disabled {
@@ -325,12 +325,12 @@
     }
 
 .client-messages-composer button {
-    padding: 10px 18px;
+    padding: var(--space-3) var(--space-5);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     background: var(--color-sidebar);
     color: var(--color-white);
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     cursor: pointer;
 }
 
@@ -346,14 +346,14 @@
 
 .client-messages-error {
     color: var(--color-danger);
-    font-size: 13px;
-    margin-top: 8px;
+    font-size: var(--text-base);
+    margin-top: var(--space-2);
 }
 
 .client-messages-empty {
     color: var(--color-grey-430);
-    font-size: 14.5px;
-    padding: 12px 0;
+    font-size: var(--text-base);
+    padding: var(--space-3) 0;
     text-align: center;
 }
 
