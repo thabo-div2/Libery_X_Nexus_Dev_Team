@@ -7,7 +7,7 @@
     min-height: 100vh;
     display: flex;
     background: var(--color-page-bg);
-    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    font-family: var(--font-family);
 }
 
 
@@ -21,7 +21,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 48px 64px;
+    padding: var(--space-12) 64px;
     color: var(--color-white);
     background: radial-gradient( circle at 25% 45%, var(--color-shadow-22) 0%, transparent 50% ), linear-gradient( 145deg, var(--color-blue-810) 0%, var(--color-sidebar) 35%, var(--color-blue-880) 100% );
 }
@@ -34,9 +34,9 @@
 .brand-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    font-weight: 700;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
     letter-spacing: 0.6px;
 }
 
@@ -46,11 +46,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
     background: var(--color-accent);
     color: var(--color-white);
-    font-size: 14.5px;
-    font-weight: 800;
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
 }
 
 
@@ -65,19 +65,19 @@
 }
 
     .brand-content h1 {
-        margin: 0 0 20px 0;
+        margin: 0 0 var(--space-5) 0;
         color: var(--color-white);
         font-size: clamp(37.5px, 3.6vw, 64px);
-        font-weight: 500;
+        font-weight: var(--weight-medium);
         line-height: 1.13;
         letter-spacing: -1.8px;
     }
 
 .brand-description {
     max-width: 490px;
-    margin: 0 0 32px 0;
+    margin: 0 0 var(--space-8) 0;
     color: var(--color-slate-190);
-    font-size: 15.5px;
+    font-size: var(--text-md);
     line-height: 1.7;
 }
 
@@ -89,15 +89,15 @@
 .brand-features {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--space-4);
 }
 
 .feature-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-3);
     color: var(--color-border);
-    font-size: 14.5px;
+    font-size: var(--text-base);
     line-height: 1.4;
 }
 
@@ -108,7 +108,7 @@
     justify-content: center;
     flex-shrink: 0;
     color: var(--color-accent);
-    font-size: 15.5px;
+    font-size: var(--text-md);
 }
 
 
@@ -119,7 +119,7 @@
 .brand-footer {
     margin-top: auto;
     color: var(--color-white-43);
-    font-size: 11px;
+    font-size: var(--text-sm);
     letter-spacing: 0.2px;
 }
 
@@ -134,7 +134,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 50px;
+    padding: var(--space-12);
     background: var(--color-page-bg);
 }
 
@@ -149,21 +149,21 @@
    ========================= */
 
 .register-heading {
-    margin-bottom: 26px;
+    margin-bottom: var(--space-6);
 }
 
     .register-heading h2 {
-        margin: 0 0 8px 0;
+        margin: 0 0 var(--space-2) 0;
         color: var(--color-blue-850);
-        font-size: 27.5px;
-        font-weight: 700;
+        font-size: var(--text-xl);
+        font-weight: var(--weight-bold);
         letter-spacing: -0.5px;
     }
 
     .register-heading p {
         margin: 0;
         color: var(--color-grey-430);
-        font-size: 13px;
+        font-size: var(--text-base);
         line-height: 1.5;
     }
 
@@ -174,29 +174,29 @@
 
 .form-group {
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
 }
 
     .form-group label {
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: var(--space-2);
         color: var(--color-grey-540);
-        font-size: 11px;
-        font-weight: 500;
+        font-size: var(--text-sm);
+        font-weight: var(--weight-medium);
     }
 
     .form-group input {
         width: 100%;
         height: 42px;
-        padding: 0 12px;
+        padding: 0 var(--space-3);
         border: 1px solid var(--color-border);
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         outline: none;
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
-        font-size: 12px;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        font-size: var(--text-sm);
+        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
 
         .form-group input::placeholder {
@@ -205,7 +205,7 @@
 
         .form-group input:focus {
             border-color: var(--color-blue-620);
-            box-shadow: 0 0 0 3px var(--color-shadow-08);
+            box-shadow: var(--shadow-focus);
         }
 
 
@@ -220,7 +220,7 @@
 }
 
     .password-input-wrapper input {
-        padding-right: 42px;
+        padding-right: var(--space-10);
     }
 
 .password-toggle-button {
@@ -232,7 +232,7 @@
     align-items: center;
     justify-content: center;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: transparent;
     color: var(--color-grey-460);
     cursor: pointer;
@@ -256,11 +256,11 @@
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: var(--space-3);
 }
 
     .name-row .form-group {
-        margin-bottom: 16px;
+        margin-bottom: var(--space-4);
     }
 
 
@@ -272,9 +272,9 @@
     width: 100%;
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: var(--space-2);
     margin-top: 2px;
-    margin-bottom: 18px;
+    margin-bottom: var(--space-5);
     cursor: pointer;
 }
 
@@ -289,7 +289,7 @@
 
     .consent-row span {
         color: var(--color-text-muted);
-        font-size: 11px;
+        font-size: var(--text-sm);
         line-height: 1.45;
     }
 
@@ -305,13 +305,13 @@
     align-items: center;
     justify-content: center;
     border: 1px solid var(--color-primary);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     background: var(--color-primary);
     color: var(--color-white);
-    font-size: 13px;
-    font-weight: 500;
+    font-size: var(--text-base);
+    font-weight: var(--weight-medium);
     text-decoration: none;
-    transition: background-color 0.15s ease, transform 0.1s ease;
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
 }
 
     .create-account-button:hover {
@@ -332,15 +332,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    margin-top: 18px;
+    gap: var(--space-1);
+    margin-top: var(--space-5);
     color: var(--color-grey-430);
-    font-size: 11px;
+    font-size: var(--text-sm);
 }
 
     .sign-in-section a {
         color: var(--color-blue-800);
-        font-weight: 600;
+        font-weight: var(--weight-semibold);
         text-decoration: none;
     }
 
@@ -357,20 +357,20 @@
 
     .brand-panel {
         width: 45%;
-        padding: 40px;
+        padding: var(--space-10);
     }
 
     .register-form-panel {
         width: 55%;
-        padding: 45px;
+        padding: var(--space-12);
     }
 
     .brand-content h1 {
-        font-size: 39.5px;
+        font-size: var(--text-3xl);
     }
 
     .brand-description {
-        font-size: 14.5px;
+        font-size: var(--text-base);
     }
 }
 
@@ -388,7 +388,7 @@
     .brand-panel {
         width: 100%;
         min-height: auto;
-        padding: 30px 28px 38px;
+        padding: var(--space-8) var(--space-8) var(--space-10);
     }
 
     .brand-logo {
@@ -400,7 +400,7 @@
     }
 
         .brand-content h1 {
-            font-size: 37.5px;
+            font-size: var(--text-3xl);
             letter-spacing: -1px;
         }
 
@@ -415,7 +415,7 @@
     .register-form-panel {
         width: 100%;
         min-height: auto;
-        padding: 55px 28px 70px;
+        padding: 55px var(--space-8) 70px;
     }
 
     .register-card {
@@ -431,11 +431,11 @@
 @media (max-width: 480px) {
 
     .brand-panel {
-        padding: 25px 22px 34px;
+        padding: var(--space-6) var(--space-6) var(--space-8);
     }
 
     .register-form-panel {
-        padding: 45px 22px 60px;
+        padding: var(--space-12) var(--space-6) 60px;
     }
 
     .brand-logo {
@@ -443,15 +443,15 @@
     }
 
     .brand-content h1 {
-        font-size: 33px;
+        font-size: var(--text-2xl);
     }
 
     .feature-item {
-        font-size: 13px;
+        font-size: var(--text-base);
     }
 
     .register-heading h2 {
-        font-size: 25.5px;
+        font-size: var(--text-xl);
     }
 
     .name-row {
@@ -461,12 +461,14 @@
 }
 
 .register-error {
-    margin: 0 0 14px;
-    padding: 10px 12px;
-    border-radius: 8px;
+    margin: 0 0 var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    font-size: 14.5px;
+    font-size: var(--text-sm);
+    border-left: 3px solid var(--color-danger);
+    font-weight: var(--weight-medium);
 }
 
 /* ================================ EndOfFile ============================== */

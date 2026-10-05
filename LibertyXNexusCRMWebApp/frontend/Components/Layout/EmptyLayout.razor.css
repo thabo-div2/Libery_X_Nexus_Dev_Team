@@ -19,14 +19,14 @@
     max-width: 460px;
     padding: 2rem;
     background: var(--color-surface);
-    border-radius: 12px;
-    box-shadow: 0 12px 32px var(--color-black-25);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
 }
 
 .brand {
     margin: 0 0 1.5rem;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: var(--weight-bold);
     color: var(--color-primary);
 }
 

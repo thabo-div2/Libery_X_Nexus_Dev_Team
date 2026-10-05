@@ -114,7 +114,7 @@ namespace frontend.Services
                     ClientId = clientId,
                     MeetingDate =  meetingDate,
                     DurationMinutes = 60,
-                    MeetingType = "Consulation",
+                    MeetingType = "Consultation",
                     Location = (string?)null,
                     Notes = notes
                 };
@@ -123,12 +123,7 @@ namespace frontend.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
-                    {
-                        return "You're busy at that time — please select another slot.";
-                    }
-
-                    return $"The server reported an error (status {(int)response.StatusCode}).";
+                    return await ReadErrorAsync(response);
                 }
 
                 _notifier.NotifyMessageSent(clientId);
@@ -271,12 +266,52 @@ namespace frontend.Services
         private static async Task<string> ReadErrorAsync(HttpResponseMessage response) 
         { 
             var body = await response.Content.ReadAsStringAsync();
-            
-            if (!string.IsNullOrWhiteSpace(body)) 
-            { 
-                return $"API returned HTTP {(int)response.StatusCode}: {body}"; 
-            } 
-            return $"The server reported an error " + $"(status {(int)response.StatusCode})."; 
+
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                // Pull out the API's own message, e.g. { "message": "Meeting date must be in the future." }
+                try
+                {
+                    using var json = System.Text.Json.JsonDocument.Parse(body);
+                    var root = json.RootElement;
+
+                    if (root.ValueKind == System.Text.Json.JsonValueKind.Object)
+                    {
+                        if (root.TryGetProperty("message", out var message) && message.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            return message.GetString()!;
+                        }
+
+                        // Validation errors look like { "errors": { "MeetingDate": [ "..." ] } }
+                        if (root.TryGetProperty("errors", out var errors) && errors.ValueKind == System.Text.Json.JsonValueKind.Object)
+                        {
+                            var messages = errors.EnumerateObject()
+                                .SelectMany(e => e.Value.EnumerateArray())
+                                .Select(e => e.GetString())
+                                .Where(m => !string.IsNullOrWhiteSpace(m));
+
+                            var joined = string.Join(" ", messages);
+                            if (!string.IsNullOrWhiteSpace(joined))
+                            {
+                                return joined;
+                            }
+                        }
+
+                        if (root.TryGetProperty("title", out var title) && title.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            return title.GetString()!;
+                        }
+                    }
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    // Not JSON, so just show the text below.
+                }
+
+                return $"API returned HTTP {(int)response.StatusCode}: {body}";
+            }
+
+            return $"The server reported an error (status {(int)response.StatusCode})."; 
         }
     }
 }

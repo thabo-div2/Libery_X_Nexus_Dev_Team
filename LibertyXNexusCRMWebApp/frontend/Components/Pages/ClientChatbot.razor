@@ -155,7 +155,7 @@
 
                     <label>
                         Date &amp; time
-                        <input type="datetime-local" @bind="MeetingDateTimeInput" />
+                        <input type="datetime-local" min="@MinMeetingTime" @bind="MeetingDateTimeInput" />
                     </label>
 
                     <label>
@@ -316,6 +316,11 @@
 
     private bool ShowMeetingForm;
     private DateTime? MeetingDateTimeInput;
+
+    /// <summary>
+    /// Stops the date picker from showing times that have already passed.
+    /// </summary>
+    private string MinMeetingTime => DateTime.Now.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture);
     private string MeetingNotes = string.Empty;
     private string? MeetingError;
 
@@ -448,6 +453,12 @@
         if (ClientId is null || AdvisorId is null)
         {
             MeetingError = "You don't have an adviser assigned yet.";
+            return;
+        }
+
+        if (MeetingDateTimeInput.Value <= DateTime.Now)
+        {
+            MeetingError = "Please choose a date and time in the future.";
             return;
         }
 
