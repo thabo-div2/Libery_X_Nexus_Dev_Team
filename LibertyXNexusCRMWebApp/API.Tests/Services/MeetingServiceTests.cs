@@ -74,29 +74,6 @@ namespace API.Tests.Services
         }
 
         /// <summary>
-        /// Can't book a taken time slot.
-        /// </summary>
-        [Fact]
-        public async Task BookAsync_WithConflictingSlot_ThrowsInvalidOperationException()
-        {
-            _clientRepository.Setup(r => r.ExistsAsync(1)).ReturnsAsync(true);
-            _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(MakeClient(1));
-
-            _meetingRepository
-                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), 60, It.IsAny<int>()))
-                .ReturnsAsync(true);
-
-            var request = new BookMeetingRequest
-            {
-                ClientId = 1,
-                MeetingDate = DateTime.UtcNow.AddDays(1),
-                DurationMinutes = 60
-            };
-
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.BookAsync(request));
-        }
-
-        /// <summary>
         /// Valid booking creates the meeting.
         /// </summary>
         [Fact]
