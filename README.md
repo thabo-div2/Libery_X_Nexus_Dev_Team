@@ -88,7 +88,8 @@ dotnet test LibertyXNexusCRMWebApp/LibertyXNexusCRMWebApp.slnx
 ### Run the applications
 
 Start the API and frontend projects from Visual Studio, or run each
-project with `dotnet run`.
+project with `dotnet run`. **NB Please wait for the backend to finish
+running before testing the frontend.
 
 ## Configuration
 
