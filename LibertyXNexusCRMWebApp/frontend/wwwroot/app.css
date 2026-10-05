@@ -144,6 +144,53 @@
     --color-white-07: rgba(255, 255, 255, 0.07);
     --color-white-08: rgba(255, 255, 255, 0.08);
     --color-white-43: rgba(255, 255, 255, 0.43);
+
+    /* ===== Design system: use these instead of typing numbers ===== */
+
+    /* Font */
+    --font-family: Inter, "Segoe UI", Arial, sans-serif;
+
+    /* Text sizes (smallest to biggest) */
+    --text-xs: 10px;     /* tiny labels, badges */
+    --text-sm: 12px;     /* small text, hints, table details */
+    --text-base: 14px;   /* normal text */
+    --text-md: 16px;     /* card titles, important text */
+    --text-lg: 18px;     /* section headings */
+    --text-xl: 24px;     /* page titles */
+    --text-2xl: 32px;    /* big numbers on the dashboard */
+    --text-3xl: 40px;    /* login / register heading */
+
+    /* Text weights */
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    /* Spacing (everything is a multiple of 4) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+
+    /* Rounded corners */
+    --radius-sm: 6px;    /* buttons, inputs, small boxes */
+    --radius-md: 8px;    /* cards */
+    --radius-lg: 12px;   /* big panels, pop-ups */
+    --radius-full: 999px; /* pills, round avatars */
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px var(--color-shadow-04);    /* slight lift */
+    --shadow-md: 0 2px 6px var(--color-shadow-04);    /* cards */
+    --shadow-lg: 0 12px 30px var(--color-shadow-14);  /* dropdowns, pop-ups */
+    --shadow-focus: 0 0 0 3px var(--color-shadow-05); /* glow around a selected input */
+
+    /* Hover / animation speed */
+    --transition-fast: 0.15s ease;
 }
 
 html, body {
