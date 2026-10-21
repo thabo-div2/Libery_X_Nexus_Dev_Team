@@ -68,6 +68,19 @@ jobs:
           --no-restore
           --output ./publish-api
 
+      - name: Install ER Core CLI
+        run: dotnet tool install --global dotnet-ef --version 10.0.12
+
+      - name: Create EF Core migration bundle
+        run: >
+          dotnet ef migration bundle
+          --project ${{ env.API_PROJECT }}
+          --startup-project ${{ env.API_PROJECT }}
+          --configuration Release
+          --runtime linux-x64
+          --self-contained
+          --output ./efbundle
+
       - name: Deploy API to Azure
         uses: azure/webapps-deploy@v3
         with:
