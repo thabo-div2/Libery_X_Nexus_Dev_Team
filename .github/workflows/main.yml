@@ -113,7 +113,7 @@ jobs:
       - name: Verify API health after deployment
         shell: bash
         run: | 
-          URL = "https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
+          URL="https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
   
           for attempt in {1..12}; do
             if curl --fail --silent --show-error \
