@@ -110,21 +110,21 @@ jobs:
           package: ./publish-frontend
           publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
   
-    - name: Verify API health after deployment
-      shell: bash
-      run: | 
-        URL = "https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
-
-        for attempt in {1..12}; do
-          if curl --fail --silent --show-error \
-            --max-time 15 "$URL"; then
-            echo "API health check passed."
-            exit 0
-          fi
-
-          echo "Health check attempt $attempt failed."
-          sleep 10
-        done
-
-        echo "API health check failed after deployment."
-        exit 1
+      - name: Verify API health after deployment
+        shell: bash
+        run: | 
+          URL = "https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
+  
+          for attempt in {1..12}; do
+            if curl --fail --silent --show-error \
+              --max-time 15 "$URL"; then
+              echo "API health check passed."
+              exit 0
+            fi
+  
+            echo "Health check attempt $attempt failed."
+            sleep 10
+          done
+  
+          echo "API health check failed after deployment."
+          exit 1
