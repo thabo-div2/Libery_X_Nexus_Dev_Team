@@ -150,19 +150,18 @@ namespace API
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+            if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
 
-                using (var scope = app.Services.CreateAsyncScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    await db.Database.MigrateAsync();
-                    await DbInitializer.SeedAsync(db);
-                    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
-                }
-
+            using (var scope = app.Services.CreateAsyncScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await db.Database.MigrateAsync();
+                await DbInitializer.SeedAsync(db);
+                await IdentitySeeder.SeedAsync(scope.ServiceProvider);
             }
 
             using (var scope = app.Services.CreateScope())
