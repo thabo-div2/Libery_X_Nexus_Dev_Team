@@ -173,7 +173,7 @@
         font-weight: var(--weight-medium);
     }
 
-    .form-group input {
+    .form-group ::deep input {
         width: 100%;
         height: 45px;
         border: 1px solid var(--color-border);
@@ -187,11 +187,11 @@
         transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
 
-        .form-group input::placeholder {
+        .form-group ::deep input::placeholder {
             color: var(--color-text-placeholder);
         }
 
-        .form-group input:focus {
+        .form-group ::deep input:focus {
             border-color: var(--color-blue-620);
             box-shadow: var(--shadow-focus);
         }
@@ -207,7 +207,7 @@
     align-items: center;
 }
 
-    .password-input-wrapper input {
+    .password-input-wrapper ::deep input {
         padding-right: var(--space-10);
     }
 
