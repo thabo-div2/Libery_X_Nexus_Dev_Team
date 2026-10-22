@@ -230,7 +230,7 @@
 }
 
 .stat-change.negative {
-     color: var(--color-red-510);
+     color: var(--color-danger);
 }
 
 
@@ -411,12 +411,12 @@
 
 .status-green {
     background: var(--color-green-40);
-    color: var(--color-green-670);
+    color: var(--color-green-690);
 }
 
 .status-yellow {
     background: var(--color-warning-bg);
-    color: var(--color-yellow-680);
+    color: var(--color-warning-text);
 }
 
 .status-red {
@@ -546,7 +546,7 @@
 
 .deadline-soon {
     background: var(--color-warning-bg);
-    color: var(--color-yellow-660);
+    color: var(--color-warning-text);
 }
 
 .deadline-normal {

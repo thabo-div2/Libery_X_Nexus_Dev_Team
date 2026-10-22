@@ -218,7 +218,7 @@
     padding: var(--space-3);
     border: 1px solid var(--color-yellow-200);
     border-radius: var(--radius-sm);
-    background: var(--color-yellow-50);
+    background: var(--color-warning-bg);
 }
 
 .handoff-heading {
@@ -482,7 +482,7 @@
 }
 
 .restriction-dot {
-    background: var(--color-red-390);
+    background: var(--color-red-450);
 }
 
 .compliance-note {

@@ -300,8 +300,8 @@
 }
 
 .status-signed {
-    background: var(--color-green-70);
-    color: var(--color-green-670);
+    background: var(--color-green-40);
+    color: var(--color-green-690);
 }
 
 .status-awaiting {

@@ -257,7 +257,7 @@
     justify-content: center;
     flex-shrink: 0;
     border-radius: 50%;
-    background: var(--color-orange-460);
+    background: var(--color-accent);
     color: var(--color-on-accent);
     font-size: var(--text-xs);
     font-weight: var(--weight-semibold);
@@ -551,7 +551,7 @@
 
 .meeting-pending {
     border-color: var(--color-yellow-300);
-    background: var(--color-yellow-40);
+    background: var(--color-warning-bg);
 }
 
     .meeting-pending .meeting-status-label {

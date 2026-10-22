@@ -314,13 +314,13 @@
 }
 
 .event-green {
-    background: var(--color-green-70);
+    background: var(--color-green-40);
     color: var(--color-green-690);
 }
 
 .event-yellow {
     background: var(--color-warning-bg);
-    color: var(--color-yellow-700);
+    color: var(--color-warning-text);
 }
 
 .event-red {
@@ -452,8 +452,8 @@
 }
 
 .status-confirmed {
-    background: var(--color-green-70);
-    color: var(--color-green-670);
+    background: var(--color-green-40);
+    color: var(--color-green-690);
 }
 
 .status-urgent {

@@ -59,20 +59,13 @@
 
     /* Reds */
     --color-red-240: #e3a3a3;
-    --color-red-390: #e25656;
     --color-red-410: #d65555;
     --color-red-450: #d34747;
     --color-red-500: #b84949;
-    --color-red-510: #d0392b;
     --color-red-550: #e50000;
     --color-red-620: #a3301f;
 
-    /* Oranges */
-    --color-orange-460: #f28a22;
-
     /* Yellows / golds */
-    --color-yellow-40: #fff8ea;
-    --color-yellow-50: #fff6e3;
     --color-yellow-200: #efd9a7;
     --color-yellow-250: #f0d58c;
     --color-yellow-300: #f0c775;
@@ -80,21 +73,15 @@
     --color-yellow-580: #d7a300;
     --color-yellow-620: #9d7a27;
     --color-yellow-625: #a3821f;
-    --color-yellow-660: #936a18;
     --color-yellow-670: #695b3d;
-    --color-yellow-680: #8a681a;
-    --color-yellow-700: #856015;
     --color-yellow-740: #5c4d2b;
     --color-yellow-770: #6b5109;
 
     /* Greens */
     --color-green-40: #eefaf1;
-    --color-green-70: #e4f6e9;
     --color-green-330: #8fc7a4;
     --color-green-570: #35a766;
     --color-green-580: #26b050;
-    --color-green-610: #2b9a5a;
-    --color-green-670: #288251;
     --color-green-690: #27764a;
     --color-green-710: #256f47;
 

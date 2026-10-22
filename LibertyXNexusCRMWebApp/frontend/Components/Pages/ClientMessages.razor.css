@@ -226,7 +226,7 @@
 
 .meeting-pending {
     border-color: var(--color-yellow-300);
-    background: var(--color-yellow-40);
+    background: var(--color-warning-bg);
 }
 
     .meeting-pending .meeting-status-label {
