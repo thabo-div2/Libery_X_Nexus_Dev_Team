@@ -126,26 +126,17 @@
     --color-green-610: #2b9a5a;
     --color-green-670: #288251;
     --color-green-690: #27764a;
-    --color-green-700: #2c6b3f;
     --color-green-710: #256f47;
-    --color-green-770: #2c4b3b;
 
     /* See-through colours (number = how see-through, e.g. 04 = 4%) */
-    --color-black-25: rgba(0, 0, 0, 0.25);
     --color-black-40: rgba(0, 0, 0, 0.4);
     --color-shadow-04: rgba(22, 48, 72, 0.04);
-    --color-shadow-04-2: rgba(18, 61, 94, 0.04);
     --color-shadow-05: rgba(17, 61, 94, 0.05);
-    --color-shadow-05-2: rgba(15, 43, 69, 0.05);
-    --color-shadow-05-3: rgba(23, 46, 70, 0.05);
     --color-shadow-06: rgba(16, 58, 91, 0.06);
-    --color-shadow-06-2: rgba(10, 35, 60, 0.06);
-    --color-shadow-08: rgba(34, 91, 132, 0.08);
     --color-shadow-12: rgba(5, 35, 60, 0.12);
     --color-shadow-14: rgba(18, 40, 62, 0.14);
     --color-shadow-22: rgba(17, 78, 122, 0.22);
     --color-white-06: rgba(255, 255, 255, 0.06);
-    --color-white-07: rgba(255, 255, 255, 0.07);
     --color-white-08: rgba(255, 255, 255, 0.08);
     --color-white-43: rgba(255, 255, 255, 0.43);
 
