@@ -113,6 +113,7 @@
     }
 
     .notification-item {
+        width: 100%;
         display: flex;
         align-items: flex-start;
         gap: var(--space-3);
@@ -123,9 +124,17 @@
         background: var(--color-white);
         box-shadow: 0 1px 3px var(--color-shadow-06);
         transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+        /* reset default button styling so it still looks like a list row */
+        border-top: 0;
+        border-left: 0;
+        border-right: 0;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
     }
 
-        .notification-item:last-child {
+        .notification-list li:last-child .notification-item {
             border-bottom: 0;
         }
 
