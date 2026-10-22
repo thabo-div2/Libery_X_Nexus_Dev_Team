@@ -48,15 +48,21 @@
             <EditForm EditContext="WizardContext" OnSubmit="HandleEnterKey" novalidate>
 
             <!-- STEP INDICATOR -->
-            <section class="stepper-card">
+            <section class="stepper-card" aria-label="New client progress">
                 @for (var i = 1; i <= 4; i++)
                 {
                     var stepIndex = i;
-                    <div class="step @(stepIndex == CurrentStep ? "active" : "") @(stepIndex < CurrentStep ? "complete" : "")"
-                         @onclick="() => TryJumpToStep(stepIndex)" style="cursor:pointer">
-                        <span class="step-number">@(stepIndex < CurrentStep ? "✓" : stepIndex.ToString())</span>
-                        <span class="step-name">@StepNames[stepIndex - 1]</span>
-                    </div>
+                    @* Real buttons so keyboard users can go back to an earlier step.
+                       Later steps are disabled because you can only reach them with Continue. *@
+                    <button type="button"
+                            class="step @(stepIndex == CurrentStep ? "active" : "") @(stepIndex < CurrentStep ? "complete" : "")"
+                            aria-current="@(stepIndex == CurrentStep ? "step" : null)"
+                            aria-label="@StepLabel(stepIndex)"
+                            disabled="@(stepIndex > CurrentStep)"
+                            @onclick="() => TryJumpToStep(stepIndex)">
+                        <span class="step-number" aria-hidden="true">@(stepIndex < CurrentStep ? "✓" : stepIndex.ToString())</span>
+                        <span class="step-name" aria-hidden="true">@StepNames[stepIndex - 1]</span>
+                    </button>
                     if (i < 4)
                     {
                         <div class="step-line"></div>
@@ -1138,6 +1144,15 @@
         {
             FieldErrors[key] = $"'{file.Name}' couldn't be read. Try choosing it again.";
         }
+    }
+
+    /// <summary>
+    /// What a screen reader says for each step, e.g. "Step 2 of 4: Financial profile, completed".
+    /// </summary>
+    private string StepLabel(int step)
+    {
+        var state = step < CurrentStep ? ", completed" : step == CurrentStep ? ", current step" : ", not started";
+        return $"Step {step} of 4: {StepNames[step - 1]}{state}";
     }
 
     private void TryJumpToStep(int step)
