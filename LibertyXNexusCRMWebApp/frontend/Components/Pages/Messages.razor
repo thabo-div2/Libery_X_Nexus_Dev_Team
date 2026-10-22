@@ -139,7 +139,7 @@
                     </span>
                 }
 
-                <button type="button" class="meeting-toggle-button" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(SelectedConversationId is null)">
+                <button type="button" class="meeting-toggle-button" @ref="MeetingToggleButton" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(SelectedConversationId is null)">
                     <span aria-hidden="true">♙</span>
                     Book meeting
                 </button>
@@ -148,7 +148,7 @@
 
             @if (ShowMeetingForm)
             {
-                <div class="meeting-request-form" role="region" aria-label="Book a meeting">
+                <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
                     <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
                         <DataAnnotationsValidator />
 
@@ -254,6 +254,7 @@
             <div class="reply-area">
 
                 <input type="text"
+                       aria-label="Reply to client"
                        @bind="ReplyText"
                        @bind:event="oninput"
                        @onkeydown="HandleReplyKeyDown"
@@ -553,6 +554,26 @@
     {
         ShowMeetingForm = !ShowMeetingForm;
         MeetingFormError = null;
+    }
+
+    /// <summary>
+    /// The Book meeting button, so focus can go back to it when the form closes.
+    /// </summary>
+    private ElementReference MeetingToggleButton;
+
+    /// <summary>
+    /// Escape inside the meeting form closes it and puts focus back on the Book meeting button,
+    /// so keyboard users aren't left stranded when it disappears.
+    /// </summary>
+    private async Task HandleMeetingFormKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            ShowMeetingForm = false;
+            MeetingFormError = null;
+            // The element can be missing if the page changed in the meantime; closing still worked.
+            try { await MeetingToggleButton.FocusAsync(); } catch (Exception) { }
+        }
     }
 
     private async Task SendMeetingRequest()

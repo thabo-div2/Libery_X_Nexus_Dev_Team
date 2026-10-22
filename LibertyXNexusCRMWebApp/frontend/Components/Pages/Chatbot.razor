@@ -166,7 +166,7 @@
 
             @if (ShowMeetingForm)
             {
-                <div class="meeting-request-form">
+                <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
                     <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
                         <DataAnnotationsValidator />
 
@@ -243,6 +243,8 @@
             <div class="message-input-area">
 
                 <input type="text"
+                       aria-label="Message the assistant"
+                       @ref="PromptInput"
                        @bind="PromptText"
                        @bind:event="oninput"
                        @onkeydown="HandlePromptKeyDown"
@@ -659,6 +661,25 @@
     {
         ShowMeetingForm = false;
         MeetingError = null;
+    }
+
+    /// <summary>
+    /// The chat box, so focus can go back to it when the meeting form closes.
+    /// </summary>
+    private ElementReference PromptInput;
+
+    /// <summary>
+    /// Escape inside the meeting form closes it and puts focus back on the chat box,
+    /// so keyboard users aren't left stranded when it disappears.
+    /// </summary>
+    private async Task HandleMeetingFormKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            CloseMeetingForm();
+            // The element can be missing if the page changed in the meantime; closing still worked.
+            try { await PromptInput.FocusAsync(); } catch (Exception) { }
+        }
     }
 
     private async Task SendMeetingRequest()
