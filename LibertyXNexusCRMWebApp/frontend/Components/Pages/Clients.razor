@@ -23,10 +23,10 @@
 
         <div class="header-actions">
 
-            <div class="search-box">
-                <span class="search-icon">⌕</span>
+            <div class="search-box" role="search">
+                <span class="search-icon" aria-hidden="true">⌕</span>
 
-                <input type="text"
+                <input aria-label="Search by name, email or status" type="text"
                        @bind="SearchText"
                        @bind:event="oninput"
                        placeholder="Search by name, email or status" />

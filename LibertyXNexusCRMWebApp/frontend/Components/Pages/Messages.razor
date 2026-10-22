@@ -38,10 +38,10 @@
 
         <div class="header-actions">
 
-            <div class="search-box">
-                <span class="search-icon">⌕</span>
+            <div class="search-box" role="search">
+                <span class="search-icon" aria-hidden="true">⌕</span>
 
-                <input type="text"
+                <input aria-label="Search clients, cases, documents" type="text"
                        placeholder="Search clients, cases, documents" />
             </div>
 
@@ -139,8 +139,8 @@
                     </span>
                 }
 
-                <button type="button" class="meeting-toggle-button" @onclick="ToggleMeetingForm" disabled="@(SelectedConversationId is null)">
-                    <span>♙</span>
+                <button type="button" class="meeting-toggle-button" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(SelectedConversationId is null)">
+                    <span aria-hidden="true">♙</span>
                     Book meeting
                 </button>
 
@@ -148,7 +148,7 @@
 
             @if (ShowMeetingForm)
             {
-                <div class="meeting-request-form">
+                <div class="meeting-request-form" role="region" aria-label="Book a meeting">
                     <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
                         <DataAnnotationsValidator />
 

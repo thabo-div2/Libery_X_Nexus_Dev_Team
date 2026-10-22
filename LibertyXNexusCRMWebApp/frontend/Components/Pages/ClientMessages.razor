@@ -48,15 +48,15 @@
                             <h2>@AdvisorName</h2>
                         </div>
 
-                        <button type="button" class="meeting-toggle-button" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
-                            <span>♙</span>
+                        <button type="button" class="meeting-toggle-button" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
+                            <span aria-hidden="true">♙</span>
                             Book meeting
                         </button>
                     </div>
 
                     @if (ShowMeetingForm)
                     {
-                        <div class="meeting-request-form">
+                        <div class="meeting-request-form" role="region" aria-label="Book a meeting">
                             <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
                                 <DataAnnotationsValidator />
 

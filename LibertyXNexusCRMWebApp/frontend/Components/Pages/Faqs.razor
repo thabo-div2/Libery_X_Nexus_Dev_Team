@@ -20,10 +20,10 @@
 
         <div class="header-actions">
 
-            <div class="search-box">
-                <span class="search-icon">⌕</span>
+            <div class="search-box" role="search">
+                <span class="search-icon" aria-hidden="true">⌕</span>
 
-                <input type="text"
+                <input aria-label="Search FAQs" type="text"
                        value="@SearchText"
                        @oninput="OnSearchInput"
                        placeholder="Search FAQs" />
@@ -74,16 +74,18 @@
 
                                 <button type="button"
                                         class="faq-question-button"
+                                        aria-expanded="@(ExpandedFaqId == faq.Id ? "true" : "false")"
+                                        aria-controls="faq-answer-@faq.Id"
                                         @onclick="() => ToggleFaq(faq.Id)">
 
                                     <span>@faq.Question</span>
-                                    <span class="faq-toggle-icon">@(ExpandedFaqId == faq.Id ? "−" : "+")</span>
+                                    <span class="faq-toggle-icon" aria-hidden="true">@(ExpandedFaqId == faq.Id ? "−" : "+")</span>
 
                                 </button>
 
                                 @if (ExpandedFaqId == faq.Id)
                                 {
-                                    <div class="faq-answer">
+                                    <div class="faq-answer" id="faq-answer-@faq.Id">
                                         <p>@faq.Answer</p>
 
                                         @if (faq.RequiresHandoff)
