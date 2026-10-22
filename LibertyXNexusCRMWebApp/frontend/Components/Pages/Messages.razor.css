@@ -258,7 +258,7 @@
     flex-shrink: 0;
     border-radius: 50%;
     background: var(--color-orange-460);
-    color: var(--color-white);
+    color: var(--color-on-accent);
     font-size: var(--text-xs);
     font-weight: var(--weight-semibold);
 }

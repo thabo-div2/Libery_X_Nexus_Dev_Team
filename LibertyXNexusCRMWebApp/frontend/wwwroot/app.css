@@ -6,6 +6,7 @@
 :root {
     /* Main colours */
     --color-accent: #ff8b1f;
+    --color-on-accent: var(--color-sidebar); /* text on orange/gold backgrounds (white fails contrast) */
     --color-border: #dbe2e8;
     --color-border-light: #e3e8ec;
     --color-danger: #c0392b;

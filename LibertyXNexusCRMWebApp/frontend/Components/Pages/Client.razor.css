@@ -260,7 +260,7 @@
 .step-current {
     border: 1px solid var(--color-yellow-470);
     background: var(--color-yellow-470);
-    color: var(--color-white);
+    color: var(--color-on-accent);
 }
 
 
