@@ -2,9 +2,9 @@ name: CI/CD - Liberty X Nexus
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["main"]
   pull_request:
-    branches: ["main", "dev"]
+    branches: ["main"]
 
 env:
   DOTNET_VERSION: "10.0.x"
@@ -68,6 +68,19 @@ jobs:
           --no-restore
           --output ./publish-api
 
+      - name: Install ER Core CLI
+        run: dotnet tool install --global dotnet-ef --version 10.0.12
+
+      - name: Create EF Core migration bundle
+        run: >
+          dotnet ef migration bundle
+          --project ${{ env.API_PROJECT }}
+          --startup-project ${{ env.API_PROJECT }}
+          --configuration Release
+          --runtime linux-x64
+          --self-contained
+          --output ./efbundle
+
       - name: Deploy API to Azure
         uses: azure/webapps-deploy@v3
         with:
@@ -110,21 +123,21 @@ jobs:
           package: ./publish-frontend
           publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
   
-      - name: Verify API health after deployment
-        shell: bash
-        run: | 
-          URL="https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
-  
-          for attempt in {1..12}; do
-            if curl --fail --silent --show-error \
-              --max-time 15 "$URL"; then
-              echo "API health check passed."
-              exit 0
-            fi
-  
-            echo "Health check attempt $attempt failed."
-            sleep 10
-          done
-  
-          echo "API health check failed after deployment."
-          exit 1
+    - name: Verify API health after deployment
+      shell: bash
+      run: | 
+        URL = "https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
+
+        for attempt in {1..12}; do
+          if curl --fail --silent --show-error \
+            --max-time 15 "$URL"; then
+            echo "API health check passed."
+            exit 0
+          fi
+
+          echo "Health check attempt $attempt failed."
+          sleep 10
+        done
+
+        echo "API health check failed after deployment."
+        exit 1
