@@ -226,7 +226,7 @@
 }
 
 .stat-change.positive {
-    color: var(--color-green-600, #2d8b59);
+    color: var(--color-success-text);
 }
 
 .stat-change.negative {

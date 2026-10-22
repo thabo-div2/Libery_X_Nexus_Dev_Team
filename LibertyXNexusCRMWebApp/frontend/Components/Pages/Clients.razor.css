@@ -455,12 +455,12 @@
 }
 
 .case-step-row:hover {
-    background: #f4f7f9;
+    background: var(--color-page-bg);
 
 }
 
 .case-step-row.is-complete {
-    background: #f2faf5;
+    background: var(--color-green-40);
 }
 
 .case-step-check {
@@ -486,19 +486,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1.5px solid #c6d0d9;
+    border: 1.5px solid var(--color-slate-180);
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--color-white);
     transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .case-step-check:hover .case-step-box {
-    border-color: #123b5b;
+    border-color: var(--color-blue-790);
 }
 
 .case-step-input:checked + .case-step-box {
-    background: #1f9d55;
-    border-color: #1f9d55;
+    background: var(--color-success);
+    border-color: var(--color-success);
     transform: scale(1.05);
 }
 
@@ -506,7 +506,7 @@
     width: 9px;
     height: 9px;
     fill: none;
-    stroke: #ffffff;
+    stroke: var(--color-white);
     stroke-width: 2.2;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -526,17 +526,17 @@
 }
 
 .case-step-label {
-    color: #172e43;
+    color: var(--color-text);
     font-size: var(--text-xs);
     font-weight: var(--weight-semibold);
 }
 
 .is-complete .case-step-label {
-    color: #1f9d55;
+    color: var(--color-success-text);
 }
 
 .case-step-date {
-    color: #8b98a3;
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 

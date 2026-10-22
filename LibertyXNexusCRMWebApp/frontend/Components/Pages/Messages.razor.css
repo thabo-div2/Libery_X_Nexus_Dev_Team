@@ -712,12 +712,12 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-white);
-    box-shadow: 0 1px 3px rgba(22, 48, 72, 0.05);
+    box-shadow: 0 1px 3px var(--color-shadow-05);
     transition: box-shadow var(--transition-fast);
 }
 
 .system-notification:hover {
-    box-shadow: 0 3px 8px rgba(22, 48, 72, 0.1);
+    box-shadow: 0 3px 8px var(--color-shadow-12);
 }
 
 .notification-type-icon {
@@ -729,7 +729,7 @@
     flex-shrink: 0;
     margin-top: 1px;
     font-size: var(--text-sm);
-    background: #f4f7f9;
+    background: var(--color-page-bg);
 }
 
 .notification-warning {
