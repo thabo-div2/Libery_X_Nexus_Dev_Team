@@ -467,7 +467,7 @@
 
 .policy-value {
     flex-shrink: 0;
-    color: var(--color-blue-800);
+    color: var(--color-blue-790);
     font-size: var(--text-xs);
     font-weight: var(--weight-semibold);
 }

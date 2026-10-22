@@ -27,27 +27,17 @@
 
     /* Blues (higher number = darker) */
     --color-blue-60: #eaf2f7;
-    --color-blue-70: #e3eff8;
     --color-blue-380: #6b9ed2;
     --color-blue-440: #258cfb;
-    --color-blue-500: #0087ff;
     --color-blue-570: #3b6ea2;
     --color-blue-575: #1b6ec2;
     --color-blue-620: #32698f;
     --color-blue-625: #1861ac;
-    --color-blue-640: #006bb7;
-    --color-blue-650: #315f80;
     --color-blue-710: #0e4a85;
-    --color-blue-720: #234e6c;
     --color-blue-740: #19496b;
     --color-blue-770: #08416b;
-    --color-blue-780: #1f3650;
     --color-blue-790: #123b5b;
-    --color-blue-795: #073b63;
-    --color-blue-800: #173650;
-    --color-blue-810: #07345a;
     --color-blue-850: #10253e;
-    --color-blue-880: #031f38;
 
     /* Slate blue-greys (higher number = darker) */
     --color-slate-100: #dce7ef;
@@ -198,7 +188,7 @@ html {
 }
 
 a, .btn-link {
-    color: var(--color-blue-640);
+    color: var(--color-blue-625);
 }
 
 .btn-primary {
