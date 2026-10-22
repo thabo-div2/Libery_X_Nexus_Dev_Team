@@ -169,7 +169,7 @@
 
     .notification-item-meta {
         font-size: var(--text-sm);
-        color: var(--color-grey-430);
+        color: var(--color-text-muted);
     }
 
     .notification-item.is-reminder .notification-item-meta {

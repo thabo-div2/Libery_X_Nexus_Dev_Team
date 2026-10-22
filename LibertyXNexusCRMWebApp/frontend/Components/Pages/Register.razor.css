@@ -162,7 +162,7 @@
 
     .register-heading p {
         margin: 0;
-        color: var(--color-grey-430);
+        color: var(--color-text-muted);
         font-size: var(--text-base);
         line-height: 1.5;
     }
@@ -200,7 +200,7 @@
     }
 
         .form-group input::placeholder {
-            color: var(--color-grey-360);
+            color: var(--color-text-placeholder);
         }
 
         .form-group input:focus {
@@ -234,7 +234,7 @@
     border: none;
     border-radius: var(--radius-sm);
     background: transparent;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     cursor: pointer;
 }
 
@@ -334,7 +334,7 @@
     justify-content: center;
     gap: var(--space-1);
     margin-top: var(--space-5);
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
 }
 

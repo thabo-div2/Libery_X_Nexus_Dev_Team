@@ -41,7 +41,7 @@
 
 .header-greeting p {
     margin: 0;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
 }
 
@@ -79,7 +79,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-360);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -220,7 +220,7 @@
 
 .stat-change {
     margin-top: auto;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
     font-weight: var(--weight-semibold);
 }
@@ -296,7 +296,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-full);
     background: var(--color-white);
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-family: inherit;
     font-size: var(--text-xs);
     cursor: pointer;
@@ -527,7 +527,7 @@
 }
 
 .deadline-client {
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -585,7 +585,7 @@
 }
 
 .institution-count {
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 

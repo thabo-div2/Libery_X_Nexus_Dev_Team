@@ -1,29 +1,57 @@
 /*
 /// <summary>
-/// Global colour variables. Change a colour here and it changes everywhere.
+/// NEXUS design tokens. This file is the single source of truth for every colour,
+/// size, space, radius and shadow in the app.
+///
+/// Rules for anyone adding styles:
+///   1. Never type a hex or rgba value in a page's .razor.css file. Use a token from here.
+///   2. Reach for a SEMANTIC token first (e.g. --color-text-muted, --color-danger).
+///      Only use a PALETTE shade (e.g. --color-blue-790) when no semantic token fits.
+///   3. Need a new colour? Add it here once, with a comment saying what it is for.
+///   4. Text must hit 4.5:1 contrast (WCAG AA). Contrast notes are kept next to the tokens.
 /// </summary>
 */
 :root {
-    /* Main colours */
-    --color-accent: #ff8b1f;
+    /* =========================================================
+       1. SEMANTIC COLOURS: use these first
+       ========================================================= */
+
+    /* Brand (Liberty navy + orange) */
+    --color-primary: #073253;        /* main brand navy: headings, primary buttons */
+    --color-sidebar: #062946;        /* side panel and dark brand panels */
+    --color-accent: #ff8b1f;         /* brand orange: highlights, badges, logo mark */
     --color-on-accent: var(--color-sidebar); /* text on orange/gold backgrounds (white fails contrast) */
-    --color-focus: var(--color-blue-710); /* keyboard focus ring on light backgrounds */
-    --color-focus-on-dark: var(--color-accent); /* keyboard focus ring on the navy sidebar */
+
+    /* Surfaces */
+    --color-white: #ffffff;
+    --color-surface: var(--color-white); /* cards and panels */
+    --color-page-bg: #f6f8fb;        /* page background behind cards */
+
+    /* Text */
+    --color-text: #172e43;           /* body text (about 13:1 on white) */
+    --color-text-muted: #5a6b7b;     /* secondary text, hints, timestamps (5.2:1 on page bg) */
+    --color-text-placeholder: #64717d; /* input placeholders (5.0:1 on white) */
+
+    /* Borders */
     --color-border: #dbe2e8;
     --color-border-light: #e3e8ec;
-    --color-danger: #c0392b;
-    --color-danger-bg: #fdecea;
-    --color-page-bg: #f6f8fb;
-    --color-primary: #073253;
-    --color-sidebar: #062946;
-    --color-success: #2d8b59;
+
+    /* Status */
+    --color-success: #2d8b59;        /* success fills and icons */
     --color-success-text: var(--color-green-690); /* green for text; --color-success is too light for small text */
-    --color-text: #172e43;
-    --color-text-muted: #5a6b7b; /* darkened from #718496 to pass WCAG AA 4.5:1 contrast */
+    --color-danger: #c0392b;         /* errors, destructive actions, notification badge */
+    --color-danger-bg: #fdecea;
     --color-warning-bg: #fff3da;
-    --color-warning-text: #8a6712;
-    --color-white: #ffffff;
-    --color-surface: var(--color-white);
+    --color-warning-text: #8a6712;   /* 4.7:1 on --color-warning-bg */
+
+    /* Keyboard focus (accessibility) */
+    --color-focus: var(--color-blue-710);        /* focus ring on light backgrounds */
+    --color-focus-on-dark: var(--color-accent);  /* focus ring on the navy sidebar */
+
+    /* =========================================================
+       2. PALETTE: raw shades for one-off cases
+          (number = lightness, higher = darker)
+       ========================================================= */
 
     /* Blues (higher number = darker) */
     --color-blue-60: #eaf2f7;
@@ -52,7 +80,6 @@
 
     /* Greys (higher number = darker) */
     --color-grey-360: #9aa4ad;
-    --color-grey-430: #84919e;
     --color-grey-435: #929292;
     --color-grey-490: #75818d;
     --color-grey-540: #667587;
@@ -85,7 +112,10 @@
     --color-green-690: #27764a;
     --color-green-710: #256f47;
 
-    /* See-through colours (number = how see-through, e.g. 04 = 4%) */
+    /* =========================================================
+       3. TRANSPARENT COLOURS: shadows and overlays
+          (number = opacity, e.g. 04 = 4%)
+       ========================================================= */
     --color-black-40: rgba(0, 0, 0, 0.4);
     --color-shadow-04: rgba(22, 48, 72, 0.04);
     --color-shadow-05: rgba(17, 61, 94, 0.05);
@@ -97,7 +127,9 @@
     --color-white-08: rgba(255, 255, 255, 0.08);
     --color-white-43: rgba(255, 255, 255, 0.43);
 
-    /* ===== Design system: use these instead of typing numbers ===== */
+    /* =========================================================
+       4. TYPE, SPACING, SHAPE AND MOTION: use these instead of typing numbers
+       ========================================================= */
 
     /* Font */
     --font-family: Inter, "Segoe UI", Arial, sans-serif;
@@ -449,7 +481,7 @@ textarea:focus-visible {
     }
 
     .nx-input::placeholder {
-        color: var(--color-grey-360);
+        color: var(--color-text-placeholder);
     }
 
     .nx-input:focus {

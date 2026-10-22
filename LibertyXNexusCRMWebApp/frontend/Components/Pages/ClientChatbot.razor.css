@@ -34,7 +34,7 @@
 
 .assistant-heading p {
     margin: 0;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -67,7 +67,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-430);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -212,7 +212,7 @@
 }
 
 .message-time {
-    color: var(--color-grey-360);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -409,7 +409,7 @@
     }
 
         .message-input-area input::placeholder {
-            color: var(--color-grey-360);
+            color: var(--color-text-placeholder);
         }
 
         .message-input-area input:focus {

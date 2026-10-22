@@ -41,7 +41,7 @@
 
 .messages-heading p {
     margin: 0;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -78,7 +78,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-430);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -228,7 +228,7 @@
 
 .conversation-time {
     flex-shrink: 0;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -243,7 +243,7 @@
     min-width: 0;
     flex: 1;
     overflow: hidden;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -472,7 +472,7 @@
 }
 
 .message-time {
-    color: var(--color-grey-360);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -643,7 +643,7 @@
     }
 
         .reply-area input::placeholder {
-            color: var(--color-grey-360);
+            color: var(--color-text-placeholder);
         }
 
         .reply-area input:focus {
@@ -741,7 +741,7 @@
 }
 
 .notification-calendar {
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
 }
 
 .notification-success {
@@ -767,7 +767,7 @@
     }
 
     .notification-details span {
-        color: var(--color-grey-430);
+        color: var(--color-text-muted);
         font-size: var(--text-xs);
     }
 

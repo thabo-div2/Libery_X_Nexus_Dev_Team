@@ -85,7 +85,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-430);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -184,7 +184,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-full);
     background: var(--color-white);
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
     font-weight: var(--weight-semibold);
     transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
@@ -304,7 +304,7 @@
     }
 
         .form-group input::placeholder {
-            color: var(--color-grey-360);
+            color: var(--color-text-placeholder);
         }
 
     .form-group select {
@@ -675,7 +675,7 @@
 }
 
 .upload-area span:last-child {
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
