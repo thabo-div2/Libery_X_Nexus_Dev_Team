@@ -85,7 +85,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-390);
+            color: var(--color-grey-430);
         }
 
         .search-box input:focus {
@@ -516,7 +516,7 @@
 }
 
     .filter-pill:hover {
-        border-color: var(--color-slate-280);
+        border-color: var(--color-slate-250);
         background: var(--color-page-bg);
     }
 
@@ -658,7 +658,7 @@
 }
 
     .upload-area:hover {
-        border-color: var(--color-slate-390);
+        border-color: var(--color-slate-360);
         background: var(--color-page-bg);
     }
 
@@ -675,7 +675,7 @@
 }
 
 .upload-area span:last-child {
-    color: var(--color-grey-390);
+    color: var(--color-grey-430);
     font-size: var(--text-xs);
 }
 

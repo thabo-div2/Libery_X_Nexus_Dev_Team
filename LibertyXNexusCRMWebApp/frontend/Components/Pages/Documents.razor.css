@@ -78,7 +78,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-390);
+            color: var(--color-grey-430);
         }
 
         .search-box input:focus {
@@ -244,7 +244,7 @@
 .document-icon {
     width: 17px;
     flex-shrink: 0;
-    color: var(--color-slate-520);
+    color: var(--color-grey-540);
     font-size: var(--text-base);
 }
 
@@ -265,7 +265,7 @@
     }
 
     .document-info > span {
-        color: var(--color-grey-390);
+        color: var(--color-grey-430);
         font-size: var(--text-xs);
     }
 
@@ -375,7 +375,7 @@
     margin-bottom: var(--space-2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    color: var(--color-slate-680);
+    color: var(--color-slate-660);
     font-size: var(--text-xs);
 }
 
@@ -438,7 +438,7 @@
     }
 
 .signature-icon {
-    color: var(--color-slate-500);
+    color: var(--color-slate-450);
     flex-shrink: 0;
 }
 

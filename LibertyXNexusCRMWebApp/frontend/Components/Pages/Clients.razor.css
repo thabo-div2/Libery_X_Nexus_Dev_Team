@@ -78,7 +78,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-390);
+            color: var(--color-grey-430);
         }
 
         .search-box input:focus {
@@ -250,7 +250,7 @@
 
 .client-item-email {
     overflow: hidden;
-    color: var(--color-grey-390);
+    color: var(--color-grey-430);
     font-size: var(--text-xs);
     text-overflow: ellipsis;
     white-space: nowrap;

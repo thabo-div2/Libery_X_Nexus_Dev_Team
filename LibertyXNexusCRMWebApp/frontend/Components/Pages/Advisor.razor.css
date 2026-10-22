@@ -520,14 +520,14 @@
 
 .deadline-title {
     overflow: hidden;
-    color: var(--color-slate-740);
+    color: var(--color-slate-770);
     font-size: var(--text-xs);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .deadline-client {
-    color: var(--color-grey-390);
+    color: var(--color-grey-430);
     font-size: var(--text-xs);
 }
 
@@ -551,7 +551,7 @@
 
 .deadline-normal {
     background: var(--color-blue-60);
-    color: var(--color-slate-570);
+    color: var(--color-slate-600);
 }
 
 
@@ -580,7 +580,7 @@
 }
 
 .institution-name {
-    color: var(--color-slate-710);
+    color: var(--color-slate-660);
     font-size: var(--text-xs);
 }
 
@@ -658,7 +658,7 @@
 
     .assistant-text span {
         overflow: hidden;
-        color: var(--color-slate-230);
+        color: var(--color-slate-180);
         font-size: var(--text-xs);
         text-overflow: ellipsis;
         white-space: nowrap;

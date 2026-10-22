@@ -42,39 +42,19 @@
     /* Slate blue-greys (higher number = darker) */
     --color-slate-100: #dce7ef;
     --color-slate-180: #c8d1da;
-    --color-slate-190: #c1cfdd;
-    --color-slate-230: #b8c6d0;
     --color-slate-250: #a9c0d3;
-    --color-slate-280: #a9bbc8;
-    --color-slate-310: #9db1c1;
     --color-slate-360: #8ea6b9;
-    --color-slate-390: #869eaf;
     --color-slate-450: #738da4;
-    --color-slate-500: #688195;
-    --color-slate-520: #667c8d;
-    --color-slate-560: #52788f;
-    --color-slate-570: #4e718b;
     --color-slate-600: #466b84;
     --color-slate-610: #536676;
-    --color-slate-630: #486275;
-    --color-slate-640: #4c5c6b;
     --color-slate-660: #40596c;
-    --color-slate-680: #3e5365;
-    --color-slate-710: #354b5e;
-    --color-slate-740: #2e4358;
     --color-slate-770: #263a4d;
 
     /* Greys (higher number = darker) */
-    --color-grey-70: #eaedef;
-    --color-grey-310: #a6b0bb;
-    --color-grey-340: #9da8b4;
     --color-grey-360: #9aa4ad;
-    --color-grey-390: #919ca7;
     --color-grey-430: #84919e;
     --color-grey-435: #929292;
-    --color-grey-460: #7c8a99;
     --color-grey-490: #75818d;
-    --color-grey-520: #6d7c88;
     --color-grey-540: #667587;
 
     /* Reds */
@@ -410,7 +390,7 @@ textarea:focus-visible {
 }
 
     .nx-card-hover:hover {
-        border-color: var(--color-slate-230);
+        border-color: var(--color-slate-180);
         box-shadow: var(--shadow-lg);
     }
 

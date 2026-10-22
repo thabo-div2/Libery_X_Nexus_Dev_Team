@@ -76,7 +76,7 @@
 .brand-description {
     max-width: 490px;
     margin: 0 0 var(--space-8) 0;
-    color: var(--color-slate-190);
+    color: var(--color-slate-180);
     font-size: var(--text-md);
     line-height: 1.7;
 }
@@ -200,7 +200,7 @@
     }
 
         .form-group input::placeholder {
-            color: var(--color-grey-340);
+            color: var(--color-grey-360);
         }
 
         .form-group input:focus {
@@ -234,7 +234,7 @@
     border: none;
     border-radius: var(--radius-sm);
     background: transparent;
-    color: var(--color-grey-460);
+    color: var(--color-grey-430);
     cursor: pointer;
 }
 
