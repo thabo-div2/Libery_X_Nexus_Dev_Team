@@ -152,27 +152,32 @@
             @if (ShowMeetingForm)
             {
                 <div class="meeting-request-form">
+                    <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
+                        <DataAnnotationsValidator />
 
-                    <label>
-                        Date &amp; time
-                        <input type="datetime-local" min="@MinMeetingTime" @bind="MeetingDateTimeInput" />
-                    </label>
+                        <label>
+                            Date &amp; time
+                            <InputDate Type="InputDateType.DateTimeLocal" min="@MinMeetingTime" @bind-Value="MeetingModel.MeetingDateTime" />
+                        </label>
+                        <ValidationMessage For="() => MeetingModel.MeetingDateTime" />
 
-                    <label>
-                        Notes (optional)
-                        <input type="text" @bind="MeetingNotes" placeholder="What would you like to discuss?" />
-                    </label>
+                        <label>
+                            Notes (optional)
+                            <InputText @bind-Value="MeetingModel.Notes" placeholder="What would you like to discuss?" />
+                        </label>
+                        <ValidationMessage For="() => MeetingModel.Notes" />
 
-                    <div class="meeting-form-actions">
-                        <button type="button" class="meeting-cancel-button" @onclick="CloseMeetingForm">Cancel</button>
-                        <button type="button" class="meeting-send-button" @onclick="SendMeetingRequest">Request meeting</button>
-                    </div>
+                        <div class="meeting-form-actions">
+                            <button type="button" class="meeting-cancel-button" @onclick="CloseMeetingForm">Cancel</button>
+                            <button type="submit" class="meeting-send-button">Request meeting</button>
+                        </div>
 
-                    @if (!string.IsNullOrEmpty(MeetingError))
-                    {
-                        <p class="assistant-form-error">@MeetingError</p>
-                    }
+                        @if (!string.IsNullOrEmpty(MeetingError))
+                        {
+                            <p class="assistant-form-error">@MeetingError</p>
+                        }
 
+                    </EditForm>
                 </div>
             }
 
@@ -315,13 +320,16 @@
     private int? AdvisorId;
 
     private bool ShowMeetingForm;
-    private DateTime? MeetingDateTimeInput;
+    /// <summary>
+    /// The meeting request form. Its rules (date required and in the future,
+    /// notes under 500 characters) live on MeetingRequestForm.
+    /// </summary>
+    private MeetingRequestForm MeetingModel = new();
 
     /// <summary>
     /// Stops the date picker from showing times that have already passed.
     /// </summary>
     private string MinMeetingTime => DateTime.Now.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture);
-    private string MeetingNotes = string.Empty;
     private string? MeetingError;
 
     protected override async Task OnInitializedAsync()
@@ -430,8 +438,7 @@
     {
         ShowMeetingForm = true;
         MeetingError = null;
-        MeetingDateTimeInput = null;
-        MeetingNotes = string.Empty;
+        MeetingModel = new();
     }
 
     private void CloseMeetingForm()
@@ -444,11 +451,6 @@
     {
         MeetingError = null;
 
-        if (MeetingDateTimeInput is null)
-        {
-            MeetingError = "Choose a date and time for the meeting.";
-            return;
-        }
 
         if (ClientId is null || AdvisorId is null)
         {
@@ -456,15 +458,9 @@
             return;
         }
 
-        if (MeetingDateTimeInput.Value <= DateTime.Now)
-        {
-            MeetingError = "Please choose a date and time in the future.";
-            return;
-        }
+        var meetingDateUtc = DateTime.SpecifyKind(MeetingModel.MeetingDateTime!.Value, DateTimeKind.Local).ToUniversalTime();
 
-        var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
-
-        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingNotes);
+        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingModel.Notes);
 
         if (error is not null)
         {
@@ -473,8 +469,7 @@
         }
 
         ShowMeetingForm = false;
-        MeetingDateTimeInput = null;
-        MeetingNotes = string.Empty;
+        MeetingModel = new();
 
         await TypeAssistantReply("Your meeting request has been sent to your adviser.");
     }

@@ -73,16 +73,27 @@
                         <h3>Invite a client</h3>
                         <p>Enter your client's email address and Nexus will send them a registration link.</p>
 
-                        <div class="invite-panel-row">
-                            <input type="email"
-                                   @bind="InviteEmail"
-                                   placeholder="client@example.co.za" />
+                        <EditForm Model="InviteModel" OnValidSubmit="GenerateInviteLink" novalidate>
+                        <DataAnnotationsValidator />
 
-                            <button type="button" class="new-client-button" @onclick="GenerateInviteLink">
+                        <div class="invite-panel-row">
+                            <div class="invite-email-field">
+                                <label for="invite-email" class="visually-hidden">Client email address</label>
+                                <InputText id="invite-email"
+                                           type="email"
+                                           autocomplete="off"
+                                           @bind-Value="InviteModel.Email"
+                                           placeholder="client@example.co.za" />
+
+                                <ValidationMessage For="() => InviteModel.Email" />
+                            </div>
+
+                            <button type="submit" class="new-client-button" disabled="@IsSendingInvite">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                                Send invitation
+                                @(IsSendingInvite ? "Sending..." : "Send invitation")
                             </button>
                         </div>
+                        </EditForm>
 
                         @if (!string.IsNullOrEmpty(InviteLink))
                         {
@@ -96,7 +107,7 @@
 
                         @if (!string.IsNullOrEmpty(InviteError))
                         {
-                            <p class="invite-error">@InviteError</p>
+                            <p class="invite-error" role="alert">@InviteError</p>
                         }
                     </div>
                 </section>
@@ -434,7 +445,11 @@
 
 
     private bool ShowInvitePanel;
-    private string InviteEmail = string.Empty;
+    /// <summary>
+    /// The invite box. Its rules (email required and valid) live on InviteClientForm.
+    /// </summary>
+    private InviteClientForm InviteModel = new();
+    private bool IsSendingInvite;
     private string? InviteLink;
     private string? InviteError;
     private string? InviteMessage;
@@ -475,19 +490,19 @@
         InviteMessage = null;
     }
 
+    /// <summary>
+    /// Runs only when the email passes its rules (EditForm OnValidSubmit).
+    /// </summary>
     private async Task GenerateInviteLink()
     {
         InviteError = null;
         InviteMessage = null;
         InviteLink = null;
 
-        if (string.IsNullOrWhiteSpace(InviteEmail))
-        {
-            InviteError = "Enter the client's email address";
-            return;
-        }
+        IsSendingInvite = true;
+        var result = await Invite.CreateAsync(InviteModel.Email.Trim());
+        IsSendingInvite = false;
 
-        var result = await Invite.CreateAsync(InviteEmail);
         if (!result.Success || result.Token is null)
         {
             InviteError = result.Message;

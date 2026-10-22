@@ -120,6 +120,14 @@
     background: var(--color-white);
 }
 
+    /* EditForm renders a <form> inside the box; lay it out the same way the box does */
+    .meeting-request-form ::deep form {
+        display: flex;
+        flex-direction: column;
+        gap: inherit;
+    }
+
+
     .meeting-request-form label {
         display: flex;
         flex-direction: column;
@@ -129,7 +137,7 @@
         font-weight: var(--weight-semibold);
     }
 
-    .meeting-request-form input {
+    .meeting-request-form ::deep input {
         padding: var(--space-2) var(--space-3);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-sm);

@@ -167,43 +167,50 @@
             @if (ShowMeetingForm)
             {
                 <div class="meeting-request-form">
+                    <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
+                        <DataAnnotationsValidator />
 
-                    <label>
-                        Client
-                        <select @bind="SelectedClientId">
-                            <option value="">Select a client…</option>
-                            @foreach (var client in AdvisorClients)
-                            {
-                                <option value="@client.ClientId">@client.FirstName @client.LastName</option>
-                            }
-                        </select>
-                    </label>
+                        <label>
+                            Client
+                            <InputSelect @bind-Value="MeetingModel.ClientId">
+                                <option value="">Select a client…</option>
+                                @foreach (var client in AdvisorClients)
+                                {
+                                    <option value="@client.ClientId">@client.FirstName @client.LastName</option>
+                                }
+                            </InputSelect>
+                        </label>
 
-                    @if (!string.IsNullOrWhiteSpace(MatchedClientName))
-                    {
-                        <p class="meeting-match-note">Booking with @MatchedClientName — change above if that's not who you meant.</p>
-                    }
+                        <ValidationMessage For="() => MeetingModel.ClientId" />
 
-                    <label>
-                        Date &amp; time
-                        <input type="datetime-local" min="@MinMeetingTime" @bind="MeetingDateTimeInput" />
-                    </label>
+                        @if (!string.IsNullOrWhiteSpace(MatchedClientName))
+                        {
+                            <p class="meeting-match-note">Booking with @MatchedClientName — change above if that's not who you meant.</p>
+                        }
 
-                    <label>
-                        Notes (optional)
-                        <input type="text" @bind="MeetingNotes" placeholder="What would you like to discuss?" />
-                    </label>
+                        <label>
+                            Date &amp; time
+                            <InputDate Type="InputDateType.DateTimeLocal" min="@MinMeetingTime" @bind-Value="MeetingModel.MeetingDateTime" />
+                        </label>
+                        <ValidationMessage For="() => MeetingModel.MeetingDateTime" />
 
-                    <div class="meeting-form-actions">
-                        <button type="button" class="meeting-cancel-button" @onclick="CloseMeetingForm">Cancel</button>
-                        <button type="button" class="meeting-send-button" @onclick="SendMeetingRequest">Request meeting</button>
-                    </div>
+                        <label>
+                            Notes (optional)
+                            <InputText @bind-Value="MeetingModel.Notes" placeholder="What would you like to discuss?" />
+                        </label>
+                        <ValidationMessage For="() => MeetingModel.Notes" />
 
-                    @if (!string.IsNullOrEmpty(MeetingError))
-                    {
-                        <p class="assistant-form-error">@MeetingError</p>
-                    }
+                        <div class="meeting-form-actions">
+                            <button type="button" class="meeting-cancel-button" @onclick="CloseMeetingForm">Cancel</button>
+                            <button type="submit" class="meeting-send-button">Request meeting</button>
+                        </div>
 
+                        @if (!string.IsNullOrEmpty(MeetingError))
+                        {
+                            <p class="assistant-form-error">@MeetingError</p>
+                        }
+
+                    </EditForm>
                 </div>
             }
 
@@ -358,17 +365,19 @@
     private int AdvisorId;
 
     private List<ClientProfile> AdvisorClients = new();
-    private int? SelectedClientId;
     private string? MatchedClientName;
 
     private bool ShowMeetingForm;
-    private DateTime? MeetingDateTimeInput;
+    /// <summary>
+    /// The meeting request form. Its rules (date required and in the future, client required,
+    /// notes under 500 characters) live on AdvisorMeetingRequestForm.
+    /// </summary>
+    private AdvisorMeetingRequestForm MeetingModel = new();
 
     /// <summary>
     /// Stops the date picker from showing times that have already passed.
     /// </summary>
     private string MinMeetingTime => DateTime.Now.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture);
-    private string MeetingNotes = string.Empty;
     private string? MeetingError;
 
     protected override async Task OnInitializedAsync()
@@ -621,9 +630,7 @@
     {
         ShowMeetingForm = true;
         MeetingError = null;
-        MeetingDateTimeInput = null;
-        MeetingNotes = string.Empty;
-        SelectedClientId = null;
+        MeetingModel = new();
         MatchedClientName = null;
 
         if (!string.IsNullOrWhiteSpace(clientNameHint))
@@ -631,7 +638,7 @@
             var match = FindClientByName(clientNameHint);
             if (match is not null)
             {
-                SelectedClientId = match.ClientId;
+                MeetingModel.ClientId = match.ClientId;
                 MatchedClientName = $"{match.FirstName} {match.LastName}";
             }
         }
@@ -658,27 +665,9 @@
     {
         MeetingError = null;
 
-        if (MeetingDateTimeInput is null)
-        {
-            MeetingError = "Choose a date and time for the meeting.";
-            return;
-        }
+        var meetingDateUtc = DateTime.SpecifyKind(MeetingModel.MeetingDateTime!.Value, DateTimeKind.Local).ToUniversalTime();
 
-        if (SelectedClientId is null)
-        {
-            MeetingError = "Select a client for this meeting.";
-            return;
-        }
-
-        if (MeetingDateTimeInput.Value <= DateTime.Now)
-        {
-            MeetingError = "Please choose a date and time in the future.";
-            return;
-        }
-
-        var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
-
-        var error = await MeetingStore.RequestAsync(SelectedClientId.Value, AdvisorId, fromAdvisor: true, meetingDateUtc, MeetingNotes);
+        var error = await MeetingStore.RequestAsync(MeetingModel.ClientId!.Value, AdvisorId, fromAdvisor: true, meetingDateUtc, MeetingModel.Notes);
 
         if (error is not null)
         {
@@ -686,13 +675,11 @@
             return;
         }
 
-        var client = AdvisorClients.FirstOrDefault(c => c.ClientId == SelectedClientId.Value);
+        var client = AdvisorClients.FirstOrDefault(c => c.ClientId == MeetingModel.ClientId);
         var confirmationText = $"Meeting booked with {client?.FirstName} {client?.LastName} for {meetingDateUtc.ToLocalTime():d MMM yyyy, HH:mm}.";
 
         ShowMeetingForm = false;
-        MeetingDateTimeInput = null;
-        MeetingNotes = string.Empty;
-        SelectedClientId = null;
+        MeetingModel = new();
         MatchedClientName = null;
 
         await TypeAssistantReply(confirmationText);
