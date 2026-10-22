@@ -39,7 +39,7 @@ namespace API.Controllers
         {
             if (string.IsNullOrWhiteSpace(q))
             {
-                return BadRequest("A market information question is required.");
+                return BadRequest(new { message = "A market information question is required." });
             }
 
             try
@@ -49,7 +49,7 @@ namespace API.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return StatusCode(StatusCodes.Status503ServiceUnavailable, ex.Message);
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = ex.Message });
             }
         }
     }
