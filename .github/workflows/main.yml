@@ -139,5 +139,5 @@ jobs:
             sleep 10
           done
 
-        echo "API health check failed after deployment."
-        exit 1
+          echo "API health check failed after deployment."
+          exit 1
