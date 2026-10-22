@@ -85,7 +85,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-390);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -144,6 +144,14 @@
     gap: var(--space-4);
 }
 
+    /* EditForm renders a <form> inside the column; lay it out the same way */
+    .content-column ::deep form {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: inherit;
+    }
+
 .side-column {
     min-width: 0;
     display: flex;
@@ -173,7 +181,19 @@
     gap: var(--space-2);
     flex-shrink: 0;
     cursor: pointer;
+    /* reset default button styling */
+    padding: var(--space-1);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
 }
+
+    /* Steps you haven't reached yet can't be clicked */
+    .step:disabled {
+        cursor: default;
+    }
 
 .step-number {
     width: 28px;
@@ -184,7 +204,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-full);
     background: var(--color-white);
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
     font-weight: var(--weight-semibold);
     transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
@@ -304,7 +324,7 @@
     }
 
         .form-group input::placeholder {
-            color: var(--color-grey-360);
+            color: var(--color-text-placeholder);
         }
 
     .form-group select {
@@ -453,7 +473,7 @@
     padding: var(--space-3) var(--space-4);
     border: 1px solid var(--color-yellow-250);
     border-radius: var(--radius-md);
-    background: var(--color-yellow-50);
+    background: var(--color-warning-bg);
     border-left: 3px solid var(--color-warning-text);
 }
 
@@ -516,7 +536,7 @@
 }
 
     .filter-pill:hover {
-        border-color: var(--color-slate-280);
+        border-color: var(--color-slate-250);
         background: var(--color-page-bg);
     }
 
@@ -595,7 +615,7 @@
 
     /* Orange outline when someone reaches it with the Tab key */
     .upload-button:focus-within {
-        outline: 2px solid var(--color-accent);
+        outline: 2px solid var(--color-focus);
         outline-offset: 2px;
     }
 
@@ -658,7 +678,7 @@
 }
 
     .upload-area:hover {
-        border-color: var(--color-slate-390);
+        border-color: var(--color-slate-360);
         background: var(--color-page-bg);
     }
 
@@ -675,7 +695,7 @@
 }
 
 .upload-area span:last-child {
-    color: var(--color-grey-390);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -993,7 +1013,7 @@
     border: 1px solid var(--color-yellow-250);
     border-left: 3px solid var(--color-warning-text);
     border-radius: var(--radius-sm);
-    background: var(--color-yellow-50);
+    background: var(--color-warning-bg);
     color: var(--color-warning-text);
     font-size: var(--text-sm);
 }

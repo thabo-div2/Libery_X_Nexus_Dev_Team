@@ -70,30 +70,35 @@
                 <p>Sign in to your Nexus account.</p>
             </div>
 
+            <EditForm Model="LoginModel" OnValidSubmit="HandleLogin" novalidate>
+            <DataAnnotationsValidator />
+
             @if (!string.IsNullOrEmpty(ErrorMessage))
             {
-                <p class="login-error">@ErrorMessage</p>
+                <p class="login-error" role="alert">@ErrorMessage</p>
             }
 
             <div class="form-group">
                 <label for="email">Email address</label>
 
-                <input id="email"
-                       type="email"
-                       placeholder="you@example.co.za"
-                       autocomplete="email"
-                       @bind="Email" />
+                <InputText id="email"
+                           type="email"
+                           placeholder="you@example.co.za"
+                           autocomplete="email"
+                           @bind-Value="LoginModel.Email" />
+
+                <ValidationMessage For="() => LoginModel.Email" />
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
 
                 <div class="password-input-wrapper">
-                    <input id="password"
-                           type="@(ShowPassword ? "text" : "password")"
-                           placeholder="••••••••"
-                           autocomplete="current-password"
-                           @bind="Password" />
+                    <InputText id="password"
+                               type="@(ShowPassword ? "text" : "password")"
+                               placeholder="••••••••"
+                               autocomplete="current-password"
+                               @bind-Value="LoginModel.Password" />
 
                     <button type="button"
                             class="password-toggle-button"
@@ -102,6 +107,8 @@
                         @((MarkupString)(ShowPassword ? EyeOffIcon : EyeIcon))
                     </button>
                 </div>
+
+                <ValidationMessage For="() => LoginModel.Password" />
             </div>
 
             <div class="form-options">
@@ -117,10 +124,14 @@
 
             </div>
 
-            <button type="button" class="sign-in-button" @onclick="HandleLogin">
-                <span>Sign in</span>
-                <span class="arrow">→</span>
+            <button type="submit" class="sign-in-button" disabled="@IsBusy">
+                <span>@(IsBusy ? "Signing in..." : "Sign in")</span>
+                @if (!IsBusy)
+                {
+                    <span class="arrow">→</span>
+                }
             </button>
+            </EditForm>
 
             <a href="/client" class="client-button">
                 Continue as client
@@ -148,9 +159,12 @@
     private const string EyeIcon = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>";
     private const string EyeOffIcon = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-7-11-7a21.3 21.3 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.3 21.3 0 0 1-3.22 4.36M14.12 14.12a3 3 0 1 1-4.24-4.24\"/><line x1=\"1\" y1=\"1\" x2=\"23\" y2=\"23\"/></svg>";
 
-    private string Email = string.Empty;
-    private string Password = string.Empty;
+    /// <summary>
+    /// What the user typed. The rules (required, valid email) live on LoginForm.
+    /// </summary>
+    private readonly LoginForm LoginModel = new();
     private bool ShowPassword;
+    private bool IsBusy;
     private string? ErrorMessage;
 
     private void GoToForgotPassword()
@@ -158,9 +172,18 @@
         Navigation.NavigateTo("/forgot-password");
     }
 
+    /// <summary>
+    /// Runs only when every field passes its rules (EditForm OnValidSubmit).
+    /// </summary>
     private async Task HandleLogin()
     {
-        var result = await Auth.LoginAsync(Email, Password);
+        ErrorMessage = null;
+        IsBusy = true;
+
+        var result = await Auth.LoginAsync(LoginModel.Email.Trim(), LoginModel.Password);
+
+        IsBusy = false;
+
         if (!result.Success)
         {
             ErrorMessage = result.Message;

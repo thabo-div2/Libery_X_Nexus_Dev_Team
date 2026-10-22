@@ -2,13 +2,19 @@
 @inject NavigationManager Navigation
 @using frontend.Services
 
+@* First thing a keyboard user reaches: jumps past the sidebar links straight to the page content.
+   Hidden until it gets keyboard focus. *@
+<a href="#main-content"
+   class="skip-link"
+   onclick="document.getElementById('main-content')?.focus()">Skip to main content</a>
+
 <div class="nexus-app">
 
-    <aside class="nexus-sidebar">
+    <aside class="nexus-sidebar" aria-label="Main navigation">
         <NavMenu IsClientView="@IsClientRoute" />
     </aside>
 
-    <main class="nexus-main">
+    <main id="main-content" class="nexus-main" tabindex="-1">
         @Body
     </main>
 

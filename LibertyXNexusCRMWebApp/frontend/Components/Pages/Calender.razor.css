@@ -41,7 +41,7 @@
 
 .calendar-heading p {
     margin: 0;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -78,7 +78,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-390);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -314,13 +314,13 @@
 }
 
 .event-green {
-    background: var(--color-green-70);
+    background: var(--color-green-40);
     color: var(--color-green-690);
 }
 
 .event-yellow {
     background: var(--color-warning-bg);
-    color: var(--color-yellow-700);
+    color: var(--color-warning-text);
 }
 
 .event-red {
@@ -329,8 +329,8 @@
 }
 
 .event-blue {
-    background: var(--color-blue-70);
-    color: var(--color-blue-650);
+    background: var(--color-blue-60);
+    color: var(--color-blue-620);
 }
 
 .event-neutral {
@@ -390,12 +390,12 @@
     display: flex;
     align-items: center;
     gap: var(--space-1);
-    color: var(--color-grey-460);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
 .clock-icon {
-    color: var(--color-slate-520);
+    color: var(--color-grey-540);
     font-size: var(--text-sm);
 }
 
@@ -420,7 +420,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-1);
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -452,8 +452,8 @@
 }
 
 .status-confirmed {
-    background: var(--color-green-70);
-    color: var(--color-green-670);
+    background: var(--color-green-40);
+    color: var(--color-green-690);
 }
 
 .status-urgent {
@@ -468,7 +468,7 @@
 
 .status-neutral {
     background: var(--color-blue-60);
-    color: var(--color-grey-520);
+    color: var(--color-grey-490);
 }
 
 
@@ -520,7 +520,7 @@
 
     .booking-body p {
         margin: 0 0 var(--space-3);
-        color: var(--color-grey-430);
+        color: var(--color-text-muted);
         font-size: var(--text-xs);
         line-height: 1.5;
     }
@@ -539,7 +539,7 @@
     flex: 1;
     overflow: hidden;
     padding: 0 var(--space-3);
-    color: var(--color-slate-630);
+    color: var(--color-slate-610);
     font-size: var(--text-xs);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -562,7 +562,7 @@
     }
 
     .copy-button:disabled {
-        color: var(--color-grey-390);
+        color: var(--color-text-muted);
         cursor: default;
     }
 
