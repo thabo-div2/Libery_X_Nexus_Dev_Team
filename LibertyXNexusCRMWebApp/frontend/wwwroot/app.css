@@ -15,7 +15,7 @@
     --color-sidebar: #062946;
     --color-success: #2d8b59;
     --color-text: #172e43;
-    --color-text-muted: #718496;
+    --color-text-muted: #5a6b7b; /* darkened from #718496 to pass WCAG AA 4.5:1 contrast */
     --color-warning-bg: #fff3da;
     --color-warning-text: #8a6712;
     --color-white: #ffffff;
