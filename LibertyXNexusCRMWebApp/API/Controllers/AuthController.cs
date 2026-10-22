@@ -40,7 +40,7 @@ namespace API.Controllers
 
             if (result is null)
             {
-                return Unauthorized(new { messsage = "Invalid email or password" });
+                return Unauthorized(new { message = "Invalid email or password" });
 
             }
             return Ok(result);
