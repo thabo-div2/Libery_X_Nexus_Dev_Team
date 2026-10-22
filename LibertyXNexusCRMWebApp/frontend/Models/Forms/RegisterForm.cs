@@ -32,6 +32,10 @@ namespace frontend.Models.Forms
         [StrongPassword]
         [MaxLength(128)]
         public string Password { get; set; } = string.Empty;
+
+        // A checkbox can't be [Required] (false is still a value), so it must be exactly true.
+        [Range(typeof(bool), "true", "true", ErrorMessage = "Tick the box to agree to POPIA processing before creating your account.")]
+        public bool PopiaConsent { get; set; }
     }
 }
 
