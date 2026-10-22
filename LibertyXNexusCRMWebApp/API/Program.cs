@@ -3,6 +3,7 @@ using API.HealthChecks;
 using API.Identity;
 using API.Repositories.Implementations;
 using API.Repositories.Interfaces;
+using API.Security;
 using API.Services.Implementations;
 using API.Services.Interfaces;
 using Azure.Storage.Blobs;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -38,6 +40,19 @@ namespace API
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Azure App Service sits in front of the API, so read the caller's real address from the
+            // forwarded headers. Rate limiting counts requests by address, so it needs the real one.
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardLimit = 1;
+                options.KnownIPNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
+            // Rate limiting: slows down password guessing, invitation guessing, email flooding and request floods.
+            builder.Services.AddApiRateLimiting(builder.Configuration);
 
             builder.Services.AddCors(options =>
             {
@@ -149,6 +164,8 @@ namespace API
 
             var app = builder.Build();
 
+            app.UseForwardedHeaders();
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             {
@@ -184,6 +201,7 @@ namespace API
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseRateLimiter();
             app.UseAuthorization();
 
             app.UseCors();
@@ -209,7 +227,7 @@ namespace API
 
                     await context.Response.WriteAsync(result);
                 }
-            }).AllowAnonymous();
+            }).AllowAnonymous().DisableRateLimiting(); // Azure's health probes must never get a 429
 
             app.Run();
         }
