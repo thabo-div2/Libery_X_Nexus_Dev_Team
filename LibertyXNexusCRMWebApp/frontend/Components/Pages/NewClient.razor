@@ -42,6 +42,10 @@
     <main class="new-client-content">
 
         <div class="content-column">
+            @* The wizard's own step checks write their errors into this EditContext,
+               so Blazor's form validation state always matches what the user sees.
+               Pressing Enter in a field moves to the next step. *@
+            <EditForm EditContext="WizardContext" OnSubmit="HandleEnterKey" novalidate>
 
             <!-- STEP INDICATOR -->
             <section class="stepper-card">
@@ -490,6 +494,7 @@
                 </section>
             }
 
+            </EditForm>
         </div>
 
 
@@ -598,9 +603,95 @@
     // ---------------------------------------------------------
 
     /// <summary>
-    /// Errors for each field, e.g. "Email" -> "Enter a valid email address".
+    /// Blazor form state for the wizard. EditForm uses it, and every field error
+    /// below is mirrored into it so the form knows which fields are invalid.
     /// </summary>
-    private readonly Dictionary<string, string> FieldErrors = new();
+    private EditContext? _wizardContext;
+    private EditContext WizardContext => _wizardContext ??= new EditContext(Model);
+
+    /// <summary>
+    /// Errors for each field, e.g. "Email" -> "Enter a valid email address".
+    /// Works like a dictionary but also keeps the EditContext's validation messages in sync.
+    /// </summary>
+    private WizardErrors? _fieldErrors;
+    private WizardErrors FieldErrors => _fieldErrors ??= new WizardErrors(WizardContext);
+
+    /// <summary>
+    /// A small dictionary of field errors that writes every change through to an
+    /// EditContext's ValidationMessageStore. Keys are model property names (e.g. "Email")
+    /// or document keys (e.g. "Doc_IdDocument").
+    /// </summary>
+    private sealed class WizardErrors
+    {
+        private readonly Dictionary<string, string> _messages = new();
+        private readonly EditContext _context;
+        private readonly ValidationMessageStore _store;
+
+        public WizardErrors(EditContext context)
+        {
+            _context = context;
+            _store = new ValidationMessageStore(context);
+        }
+
+        public string this[string field]
+        {
+            get => _messages[field];
+            set
+            {
+                _messages[field] = value;
+                Sync();
+            }
+        }
+
+        public IEnumerable<string> Keys => _messages.Keys;
+
+        public bool ContainsKey(string field) => _messages.ContainsKey(field);
+
+        public bool TryGetValue(string field, out string? message)
+        {
+            var found = _messages.TryGetValue(field, out var value);
+            message = value;
+            return found;
+        }
+
+        public bool Remove(string field)
+        {
+            var removed = _messages.Remove(field);
+            if (removed)
+            {
+                Sync();
+            }
+            return removed;
+        }
+
+        public void Clear()
+        {
+            _messages.Clear();
+            Sync();
+        }
+
+        private void Sync()
+        {
+            _store.Clear();
+            foreach (var (field, message) in _messages)
+            {
+                _store.Add(_context.Field(field), message);
+            }
+            _context.NotifyValidationStateChanged();
+        }
+    }
+
+    /// <summary>
+    /// Enter in any field submits the EditForm; on steps 1-3 that means "continue".
+    /// The final submit stays on its own button so a stray Enter can't create a client.
+    /// </summary>
+    private async Task HandleEnterKey()
+    {
+        if (CurrentStep < 4 && !IsSubmitting)
+        {
+            await GoToStep(CurrentStep + 1);
+        }
+    }
 
     /// <summary>
     /// Set when the page should jump to the first field with an error after it redraws.

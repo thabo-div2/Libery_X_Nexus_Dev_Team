@@ -144,6 +144,14 @@
     gap: var(--space-4);
 }
 
+    /* EditForm renders a <form> inside the column; lay it out the same way */
+    .content-column ::deep form {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: inherit;
+    }
+
 .side-column {
     min-width: 0;
     display: flex;
