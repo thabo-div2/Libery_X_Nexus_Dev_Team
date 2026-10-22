@@ -1,4 +1,6 @@
-﻿using API.DTOs.Documents;
+﻿using API.Security;
+using Microsoft.AspNetCore.RateLimiting;
+using API.DTOs.Documents;
 using API.Identity;
 using API.Services.Implementations;
 using API.Services.Interfaces;
@@ -196,6 +198,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = AppRoles.Advisor)]
+        [EnableRateLimiting(RateLimitPolicies.Upload)]
         [Consumes("multipart/form-data")]
         [RequestSizeLimit(30_000_000)]
         public async Task<ActionResult<DocumentDto>> Upload([FromForm] UploadDocumentRequest request)

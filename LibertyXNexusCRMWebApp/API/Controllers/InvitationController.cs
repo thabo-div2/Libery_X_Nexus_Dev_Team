@@ -1,4 +1,6 @@
-﻿using API.DTOs.Invitations;
+﻿using API.Security;
+using Microsoft.AspNetCore.RateLimiting;
+using API.DTOs.Invitations;
 using API.Identity;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
@@ -62,6 +64,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpGet("validate/{token}")]
         [AllowAnonymous]
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
         public async Task<ActionResult<InvitationValidationResponse>> Validate(string token)
         {
             var result = await _invitationService.ValidateAsync(token);

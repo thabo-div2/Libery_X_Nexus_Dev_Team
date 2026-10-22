@@ -1,4 +1,6 @@
-﻿using API.DTOs.Auth;
+﻿using API.Security;
+using Microsoft.AspNetCore.RateLimiting;
+using API.DTOs.Auth;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -34,6 +36,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPost("login")]
         [AllowAnonymous]
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
         public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
         {
             var result = await _authService.LoginAsync(request);
@@ -54,6 +57,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPost("register")]
         [AllowAnonymous]
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
         public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request)
         {
             var result = await _authService.RegisterAsync(request);
@@ -73,6 +77,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPost("forgot-password")]
         [AllowAnonymous]
+        [EnableRateLimiting(RateLimitPolicies.PasswordReset)]
         public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
             var result = await _authService.ForgotPasswordAsync(request);
@@ -87,6 +92,7 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpPost("reset-password")]
         [AllowAnonymous]
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
         public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             var result = await _authService.ResetPasswordAsync(request);
