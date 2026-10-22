@@ -324,3 +324,11 @@
 }
 
 /* ================================ EndOfFile ============================== */
+
+/* Keyboard focus on the dark sidebar: orange shows up on navy, the default dark ring does not */
+.nav-menu a:focus-visible,
+.nav-menu button:focus-visible,
+.nav-links ::deep .nav-item:focus-visible {
+    outline: 2px solid var(--color-focus-on-dark);
+    outline-offset: 2px;
+}

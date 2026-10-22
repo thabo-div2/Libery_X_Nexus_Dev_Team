@@ -813,7 +813,6 @@
     font-size: var(--text-sm);
     color: var(--color-text);
     background: var(--color-page-bg);
-    outline: none;
 }
 
 .invite-error {

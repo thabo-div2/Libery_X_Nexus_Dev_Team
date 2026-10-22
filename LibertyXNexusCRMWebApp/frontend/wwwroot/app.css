@@ -7,6 +7,8 @@
     /* Main colours */
     --color-accent: #ff8b1f;
     --color-on-accent: var(--color-sidebar); /* text on orange/gold backgrounds (white fails contrast) */
+    --color-focus: var(--color-blue-710); /* keyboard focus ring on light backgrounds */
+    --color-focus-on-dark: var(--color-accent); /* keyboard focus ring on the navy sidebar */
     --color-border: #dbe2e8;
     --color-border-light: #e3e8ec;
     --color-danger: #c0392b;
@@ -188,7 +190,7 @@
     --shadow-sm: 0 1px 2px var(--color-shadow-04);    /* slight lift */
     --shadow-md: 0 2px 6px var(--color-shadow-04);    /* cards */
     --shadow-lg: 0 12px 30px var(--color-shadow-14);  /* dropdowns, pop-ups */
-    --shadow-focus: 0 0 0 3px var(--color-shadow-05); /* glow around a selected input */
+    --shadow-focus: 0 0 0 2px var(--color-focus); /* visible ring around a focused input (was a 5% glow keyboard users could not see) */
 
     /* Hover / animation speed */
     --transition-fast: 0.15s ease;
@@ -275,8 +277,16 @@ a:focus-visible,
 button:focus-visible,
 [role="button"]:focus-visible,
 summary:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
+}
+
+/* Form fields: shows a ring for any input that does not draw its own focus style */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
 }
 
 /* ===============================
