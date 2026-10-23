@@ -23,7 +23,7 @@
     flex-direction: column;
     padding: var(--space-12) 64px;
     color: var(--color-white);
-    background: radial-gradient( circle at 25% 45%, var(--color-shadow-22) 0%, transparent 50% ), linear-gradient( 145deg, var(--color-blue-810) 0%, var(--color-sidebar) 35%, var(--color-blue-880) 100% );
+    background: radial-gradient( circle at 25% 45%, var(--color-shadow-22) 0%, transparent 50% ), linear-gradient( 145deg, var(--color-blue-790) 0%, var(--color-sidebar) 35%, var(--color-blue-850) 100% );
 }
 
 
@@ -46,7 +46,7 @@
     align-items: center;
     justify-content: center;
     background: var(--color-accent);
-    color: var(--color-white);
+    color: var(--color-on-accent);
     font-size: var(--text-base);
     font-weight: var(--weight-bold);
 }
@@ -72,7 +72,7 @@
 .brand-description {
     max-width: 490px;
     margin: 0 0 var(--space-8) 0;
-    color: var(--color-slate-190);
+    color: var(--color-slate-180);
     font-size: var(--text-md);
     line-height: 1.7;
 }
@@ -152,7 +152,7 @@
 
     .login-heading p {
         margin: 0;
-        color: var(--color-grey-430);
+        color: var(--color-text-muted);
         font-size: var(--text-base);
     }
 
@@ -173,7 +173,7 @@
         font-weight: var(--weight-medium);
     }
 
-    .form-group input {
+    .form-group ::deep input {
         width: 100%;
         height: 45px;
         border: 1px solid var(--color-border);
@@ -187,11 +187,11 @@
         transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
 
-        .form-group input::placeholder {
-            color: var(--color-grey-310);
+        .form-group ::deep input::placeholder {
+            color: var(--color-text-placeholder);
         }
 
-        .form-group input:focus {
+        .form-group ::deep input:focus {
             border-color: var(--color-blue-620);
             box-shadow: var(--shadow-focus);
         }
@@ -207,7 +207,7 @@
     align-items: center;
 }
 
-    .password-input-wrapper input {
+    .password-input-wrapper ::deep input {
         padding-right: var(--space-10);
     }
 
@@ -222,7 +222,7 @@
     border: none;
     border-radius: var(--radius-sm);
     background: transparent;
-    color: var(--color-grey-460);
+    color: var(--color-text-muted);
     cursor: pointer;
 }
 
@@ -268,7 +268,7 @@
     border: none;
     background: transparent;
     padding: 0;
-    color: var(--color-blue-800);
+    color: var(--color-blue-790);
     font-family: inherit;
     font-size: var(--text-sm);
     cursor: pointer;
@@ -309,7 +309,7 @@
 }
 
     .sign-in-button:hover {
-        background: var(--color-blue-795);
+        background: var(--color-blue-770);
     }
 
     .sign-in-button:active {
@@ -348,12 +348,12 @@
     justify-content: center;
     gap: var(--space-1);
     margin-top: var(--space-5);
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-sm);
 }
 
     .register-section a {
-        color: var(--color-blue-800);
+        color: var(--color-blue-790);
         font-weight: var(--weight-semibold);
         text-decoration: none;
     }

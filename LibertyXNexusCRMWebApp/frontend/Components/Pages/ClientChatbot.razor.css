@@ -34,7 +34,7 @@
 
 .assistant-heading p {
     margin: 0;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -67,7 +67,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-390);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -212,7 +212,7 @@
 }
 
 .message-time {
-    color: var(--color-grey-360);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -222,7 +222,7 @@
     padding: var(--space-3);
     border: 1px solid var(--color-yellow-200);
     border-radius: var(--radius-sm);
-    background: var(--color-yellow-50);
+    background: var(--color-warning-bg);
 }
 
 .handoff-heading {
@@ -298,7 +298,7 @@
 }
 
     .prompt-chip:hover {
-        border-color: var(--color-slate-230);
+        border-color: var(--color-slate-180);
         background: var(--color-page-bg);
         color: var(--color-slate-660);
     }
@@ -321,6 +321,14 @@
     background: var(--color-white);
 }
 
+    /* EditForm renders a <form> inside the box; lay it out the same way the box does */
+    .meeting-request-form ::deep form {
+        display: flex;
+        flex-direction: column;
+        gap: inherit;
+    }
+
+
     .meeting-request-form label {
         display: flex;
         flex-direction: column;
@@ -330,12 +338,11 @@
         font-weight: var(--weight-semibold);
     }
 
-    .meeting-request-form input,
-    .meeting-request-form select {
+    .meeting-request-form ::deep input,
+    .meeting-request-form ::deep select {
         padding: var(--space-2) var(--space-2);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-sm);
-        outline: none;
         background: var(--color-white);
         color: var(--color-slate-770);
         font-family: inherit;
@@ -404,13 +411,13 @@
         border-radius: var(--radius-sm);
         outline: none;
         background: var(--color-white);
-        color: var(--color-slate-710);
+        color: var(--color-slate-660);
         font-family: inherit;
         font-size: var(--text-base);
     }
 
         .message-input-area input::placeholder {
-            color: var(--color-grey-360);
+            color: var(--color-text-placeholder);
         }
 
         .message-input-area input:focus {
@@ -487,7 +494,7 @@
 }
 
 .restriction-dot {
-    background: var(--color-red-390);
+    background: var(--color-red-450);
 }
 
 .compliance-note {

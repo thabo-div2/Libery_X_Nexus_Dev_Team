@@ -41,7 +41,7 @@
 
 .documents-heading p {
     margin: 0;
-    color: var(--color-grey-430);
+    color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
 
@@ -78,7 +78,7 @@
     }
 
         .search-box input::placeholder {
-            color: var(--color-grey-390);
+            color: var(--color-text-placeholder);
         }
 
         .search-box input:focus {
@@ -244,7 +244,7 @@
 .document-icon {
     width: 17px;
     flex-shrink: 0;
-    color: var(--color-slate-520);
+    color: var(--color-grey-540);
     font-size: var(--text-base);
 }
 
@@ -265,7 +265,7 @@
     }
 
     .document-info > span {
-        color: var(--color-grey-390);
+        color: var(--color-text-muted);
         font-size: var(--text-xs);
     }
 
@@ -300,8 +300,8 @@
 }
 
 .status-signed {
-    background: var(--color-green-70);
-    color: var(--color-green-670);
+    background: var(--color-green-40);
+    color: var(--color-green-690);
 }
 
 .status-awaiting {
@@ -352,7 +352,7 @@
     }
 
     .download-button:focus-visible {
-        outline: 2px solid var(--color-accent);
+        outline: 2px solid var(--color-focus);
         outline-offset: 2px;
     }
 
@@ -375,7 +375,7 @@
     margin-bottom: var(--space-2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    color: var(--color-slate-680);
+    color: var(--color-slate-660);
     font-size: var(--text-xs);
 }
 
@@ -438,7 +438,7 @@
     }
 
 .signature-icon {
-    color: var(--color-slate-500);
+    color: var(--color-slate-450);
     flex-shrink: 0;
 }
 
@@ -447,7 +447,7 @@
     padding: 0;
     border: none;
     background: transparent;
-    color: var(--color-blue-720);
+    color: var(--color-blue-740);
     font-family: inherit;
     font-size: var(--text-xs);
     font-weight: var(--weight-semibold);

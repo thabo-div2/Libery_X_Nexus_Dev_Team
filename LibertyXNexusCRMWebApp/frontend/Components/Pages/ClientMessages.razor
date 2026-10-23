@@ -48,34 +48,40 @@
                             <h2>@AdvisorName</h2>
                         </div>
 
-                        <button type="button" class="meeting-toggle-button" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
-                            <span>♙</span>
+                        <button type="button" class="meeting-toggle-button" @ref="MeetingToggleButton" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
+                            <span aria-hidden="true">♙</span>
                             Book meeting
                         </button>
                     </div>
 
                     @if (ShowMeetingForm)
                     {
-                        <div class="meeting-request-form">
-                            <label>
-                                Date &amp; time
-                                <input type="datetime-local" min="@MinMeetingTime" @bind="MeetingDateTimeInput" />
-                            </label>
+                        <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
+                            <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
+                                <DataAnnotationsValidator />
 
-                            <label>
-                                Notes (optional)
-                                <input type="text" @bind="MeetingNotes" placeholder="What would you like to discuss?" />
-                            </label>
+                                <label>
+                                    Date &amp; time
+                                    <InputDate Type="InputDateType.DateTimeLocal" min="@MinMeetingTime" @bind-Value="MeetingModel.MeetingDateTime" />
+                                </label>
+                                <ValidationMessage For="() => MeetingModel.MeetingDateTime" />
 
-                            <div class="meeting-form-actions">
-                                <button type="button" class="meeting-cancel-button" @onclick="ToggleMeetingForm">Cancel</button>
-                                <button type="button" class="meeting-send-button" @onclick="SendMeetingRequest">Request meeting</button>
-                            </div>
+                                <label>
+                                    Notes (optional)
+                                    <InputText @bind-Value="MeetingModel.Notes" placeholder="What would you like to discuss?" />
+                                </label>
+                                <ValidationMessage For="() => MeetingModel.Notes" />
 
-                            @if (!string.IsNullOrEmpty(MeetingError))
-                            {
-                                <p class="client-messages-error">@MeetingError</p>
-                            }
+                                <div class="meeting-form-actions">
+                                    <button type="button" class="meeting-cancel-button" @onclick="ToggleMeetingForm">Cancel</button>
+                                    <button type="submit" class="meeting-send-button">Request meeting</button>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(MeetingError))
+                                {
+                                    <p class="client-messages-error">@MeetingError</p>
+                                }
+                            </EditForm>
                         </div>
                     }
 
@@ -116,6 +122,7 @@
 
                     <div class="client-messages-composer">
                         <input type="text"
+                               aria-label="Message your adviser"
                                @bind="Draft"
                                @bind:event="oninput"
                                @onkeydown="HandleComposerKeyDown"
@@ -157,13 +164,16 @@
     private bool IsLoading = true;
 
     private bool ShowMeetingForm;
-    private DateTime? MeetingDateTimeInput;
+    /// <summary>
+    /// The meeting request form. Its rules (date required and in the future,
+    /// notes under 500 characters) live on MeetingRequestForm.
+    /// </summary>
+    private MeetingRequestForm MeetingModel = new();
 
     /// <summary>
     /// Stops the date picker from showing times that have already passed.
     /// </summary>
     private string MinMeetingTime => DateTime.Now.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture);
-    private string MeetingNotes = string.Empty;
     private string? MeetingError;
 
     private ElementReference ChatBodyRef;
@@ -278,6 +288,26 @@
         MeetingError = null;
     }
 
+    /// <summary>
+    /// The Book meeting button, so focus can go back to it when the form closes.
+    /// </summary>
+    private ElementReference MeetingToggleButton;
+
+    /// <summary>
+    /// Escape inside the meeting form closes it and puts focus back on the Book meeting button,
+    /// so keyboard users aren't left stranded when it disappears.
+    /// </summary>
+    private async Task HandleMeetingFormKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            ShowMeetingForm = false;
+            MeetingError = null;
+            // The element can be missing if the page changed in the meantime; closing still worked.
+            try { await MeetingToggleButton.FocusAsync(); } catch (Exception) { }
+        }
+    }
+
     private async Task SendMeetingRequest()
     {
         MeetingError = null;
@@ -288,29 +318,16 @@
             return;
         }
 
-        if (MeetingDateTimeInput is null)
-        {
-            MeetingError = "Choose a date and time for the meeting.";
-            return;
-        }
+        var meetingDateUtc = DateTime.SpecifyKind(MeetingModel.MeetingDateTime!.Value, DateTimeKind.Local).ToUniversalTime();
 
-        if (MeetingDateTimeInput.Value <= DateTime.Now)
-        {
-            MeetingError = "Please choose a date and time in the future.";
-            return;
-        }
-
-        var meetingDateUtc = DateTime.SpecifyKind(MeetingDateTimeInput.Value, DateTimeKind.Local).ToUniversalTime();
-
-        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingNotes);
+        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingModel.Notes);
         if (error is not null)
         {
             MeetingError = error;
             return;
         }
 
-        MeetingDateTimeInput = null;
-        MeetingNotes = string.Empty;
+        MeetingModel = new();
         ShowMeetingForm = false;
 
         await RefreshThreadAsync();
