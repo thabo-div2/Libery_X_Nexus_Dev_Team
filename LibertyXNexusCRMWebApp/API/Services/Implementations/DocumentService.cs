@@ -47,21 +47,11 @@ namespace API.Services.Implementations
         /// <returns></returns>
         public async Task<DocumentDto?> GetByIdAsync(int documentId) 
         {
-            var document = await _documentRepository.GetByIdAsync(documentId) ?? new Document();
+            var document = await _documentRepository.GetByIdAsync(documentId);
 
-            return new DocumentDto
-            {
-                DocumentId = document.DocumentId,
-                ClientId = document.ClientId,
-                PolicyId = document.PolicyId,
-                FileName = document.FileName,
-                ContentType = document.ContentType,
-                FileSizeBytes = document.FileSizeBytes,
-                DocumentType = document.DocumentType.ToString(),
-                VisibleToClient = document.VisibleToClient,
-                UploadedBy = document.UploadedBy,
-                UpdateAt = document.UpdateAt
-            };
+            return document is null ? null : MapToDto(document);
+
+            
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -119,9 +109,9 @@ namespace API.Services.Implementations
         /// </summary>
         /// <param name="documentType"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<DocumentDto>> GetByTypeAsync(DocumentType documentType)
+        public async Task<IEnumerable<DocumentDto>> GetByTypeAsync(DocumentType documentType, int advisorId)
         {
-            var documents = await _documentRepository.GetByTypeAsync(documentType);
+            var documents = await _documentRepository.GetByTypeAsync(documentType, advisorId);
             return documents.Select(MapToDto);
         }
 

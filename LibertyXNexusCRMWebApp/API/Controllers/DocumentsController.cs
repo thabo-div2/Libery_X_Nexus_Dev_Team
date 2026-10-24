@@ -86,10 +86,10 @@ namespace API.Controllers
         public async Task<ActionResult<DocumentDto>> GetById(int id)
         {
             var document = await documentService_.GetByIdAsync(id);
-            if (document is null || !await CanAccessClientAsync(document.ClientId))
+            if (document is null
+                 || !await CanAccessClientAsync(document.ClientId)
+                 || (!IsAdvisor && !document.VisibleToClient))
             {
-                // Same message either way - don't reveal whether the id
-                // exists to a caller who isn't allowed to see it.
                 return NotFound(new { message = $"Document {id} was not found" });
             }
             return Ok(document);
@@ -125,7 +125,13 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<DocumentDto>>> GetForClient(int clientId)
         {
             if (!await CanAccessClientAsync(clientId)) return Forbid();
-            return Ok(await documentService_.GetForClientAsync(clientId));
+
+            var documents = await documentService_.GetForClientAsync(clientId);
+            if (!IsAdvisor)
+            {
+                documents = documents.Where(d => d.VisibleToClient);
+            }
+            return Ok(documents);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -185,7 +191,7 @@ namespace API.Controllers
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<DocumentDto>>> GetByType(DocumentType documentType)
         {
-            return Ok(await documentService_.GetByTypeAsync(documentType));
+            return Ok(await documentService_.GetByTypeAsync(documentType, CurrentAdvisorId));
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
