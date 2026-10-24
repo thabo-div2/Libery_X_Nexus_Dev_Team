@@ -7,7 +7,7 @@ public class MathService : IMathService
     private const string Num = @"(\d+(?:\.\d+)?)";
 
     private static decimal D(string s) => decimal.Parse(s, CultureInfo.InvariantCulture);
-
+    private static string F(decimal value) => value.ToString("N2", CultureInfo.InvariantCulture);
     public bool LooksLikeMathQuestion(string input)
     {
         var text = input.ToLower();
@@ -38,7 +38,7 @@ public class MathService : IMathService
                 var value = D(percentMatch.Groups[2].Value);
 
                 var result = (percent / 100m) * value;
-                return $"That is {result:N2}.";
+                return $"That is {F(result)}.";
             }
 
             // 2. Increase: "increase 1200 by 8%" or "1200 increase by 18%"
@@ -53,7 +53,7 @@ public class MathService : IMathService
                 var percent = D(increaseMatch.Groups[2].Value);
 
                 var result = baseVal * (1 + percent / 100m);
-                return $"After increase: {result:N2}.";
+                return $"After increase: {F(result)}.";
             }
 
             // 3. Difference: "difference between 4200000 and 3700000"
@@ -64,7 +64,7 @@ public class MathService : IMathService
                 var b = D(diffMatch.Groups[2].Value);
 
                 var result = Math.Abs(a - b);
-                return $"The difference is {result:N2}.";
+                return $"The difference is {F(result)}.";
             }
 
             // 4. Monthly savings: "2000 per month for 10 years"
@@ -75,7 +75,7 @@ public class MathService : IMathService
                 var years = D(monthlyMatch.Groups[2].Value);
 
                 var total = monthly * 12 * years;
-                return $"Total contribution: {total:N2}.";
+                return $"Total contribution: {F(total)}.";
             }
 
             return "I couldn't fully understand the calculation. Try something like '15% of 500000' or '2000 per month for 10 years'.";
