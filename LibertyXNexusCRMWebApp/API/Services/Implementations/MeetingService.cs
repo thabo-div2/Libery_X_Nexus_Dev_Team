@@ -198,8 +198,8 @@ namespace API.Services.Implementations
             {
                 await notificationService_.NotifyAdvisorAsync(
                     advisorId,
-                    NotificationType.MeetingCancelled,
-                    $"{client.FullName} cancelled a meeting for {meeting.MeetingDate:ddd d MMM, HH:mm}.",
+                    NotificationType.MeetingRescheduled,
+                    $"{client.FullName} moved a meeting to {meeting.MeetingDate:ddd d MMM, HH:mm}.",
                     "/calendar",
                     client.ClientId);
             }
@@ -227,6 +227,18 @@ namespace API.Services.Implementations
             meeting.UpdatedAt = DateTime.UtcNow;
 
             await meetingRepository_.UpdateAsync(meeting);
+
+            var client = await clientRepository_.GetByIdAsync(meeting.ClientId);
+            if (client?.AdvisorId is int advisorId)
+            {
+                await notificationService_.NotifyAdvisorAsync(
+                    advisorId,
+                    NotificationType.MeetingCancelled,
+                    $"{client.FullName} cancelled the meeting for {meeting.MeetingDate:ddd d MMM, HH:mm}.",
+                    "/calendar",
+                    client.ClientId);
+            }
+
             return await MapToDtoAsync(meeting);
         }
 
