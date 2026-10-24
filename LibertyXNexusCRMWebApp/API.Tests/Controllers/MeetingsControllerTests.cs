@@ -114,7 +114,7 @@ namespace API.Tests.Controllers
             var result = await _sut.GetUpcoming(null);
 
             Assert.IsType<ForbidResult>(result.Result);
-            _meetingService.Verify(s => s.GetUpcomingAsync(It.IsAny<int?>()), Times.Never);
+            _meetingService.Verify(s => s.GetUpcomingAsync(It.IsAny<int?>(), It.IsAny<int?>()), Times.Never);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace API.Tests.Controllers
         public async Task GetUpcoming_WhenAdvisorDoesNotNameAClient_ReturnsAllUpcoming()
         {
             var meetings = new List<MeetingDto> { MeetingOf(8, 1) };
-            _meetingService.Setup(s => s.GetUpcomingAsync(null)).ReturnsAsync(meetings);
+            _meetingService.Setup(s => s.GetUpcomingAsync(null, MyAdvisorId)).ReturnsAsync(meetings);
             _sut.AsAdvisor(MyAdvisorId);
 
             var result = await _sut.GetUpcoming(null);

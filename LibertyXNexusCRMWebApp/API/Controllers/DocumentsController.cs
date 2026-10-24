@@ -86,10 +86,10 @@ namespace API.Controllers
         public async Task<ActionResult<DocumentDto>> GetById(int id)
         {
             var document = await documentService_.GetByIdAsync(id);
-            if (document is null || !await CanAccessClientAsync(document.ClientId))
+            if (document is null
+                 || !await CanAccessClientAsync(document.ClientId)
+                 || (!IsAdvisor && !document.VisibleToClient))
             {
-                // Same message either way - don't reveal whether the id
-                // exists to a caller who isn't allowed to see it.
                 return NotFound(new { message = $"Document {id} was not found" });
             }
             return Ok(document);
@@ -125,7 +125,13 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<DocumentDto>>> GetForClient(int clientId)
         {
             if (!await CanAccessClientAsync(clientId)) return Forbid();
-            return Ok(await documentService_.GetForClientAsync(clientId));
+
+            var documents = await documentService_.GetForClientAsync(clientId);
+            if (!IsAdvisor)
+            {
+                documents = documents.Where(d => d.VisibleToClient);
+            }
+            return Ok(documents);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -161,6 +167,11 @@ namespace API.Controllers
                 });
             }
 
+            if (policy.ClientId is null)
+            {
+                return NotFound(new { message = "Policy is not linked to a client." });
+            }
+
             var client = await _clientService.GetByIdAsync(policy.ClientId.Value);
 
             if (client is null || client.AdvisorId != CurrentAdvisorId)
@@ -185,7 +196,7 @@ namespace API.Controllers
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<DocumentDto>>> GetByType(DocumentType documentType)
         {
-            return Ok(await documentService_.GetByTypeAsync(documentType));
+            return Ok(await documentService_.GetByTypeAsync(documentType, CurrentAdvisorId));
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -209,10 +220,10 @@ namespace API.Controllers
                 return Forbid();
             }
 
-            // Set the UploadedBy field to the current user's name or email, or a fallback identifier if neither is available.
-            request.UploadedBy = User.FindFirstValue(ClaimTypes.Name)
-                ?? User.FindFirstValue(ClaimTypes.Email)
-                ?? $"advisor-{CurrentAdvisorId}";
+            var uploaderName = $"{User.FindFirstValue("firstName")} {User.FindFirstValue("lastName")}".Trim();
+            request.UploadedBy = string.IsNullOrWhiteSpace(uploaderName)
+                ? $"advisor-{CurrentAdvisorId}"
+                : uploaderName;
 
             try
             {
