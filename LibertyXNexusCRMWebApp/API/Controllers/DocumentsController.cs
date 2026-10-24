@@ -167,6 +167,11 @@ namespace API.Controllers
                 });
             }
 
+            if (policy.ClientId is null)
+            {
+                return NotFound(new { message = "Policy is not linked to a client." });
+            }
+
             var client = await _clientService.GetByIdAsync(policy.ClientId.Value);
 
             if (client is null || client.AdvisorId != CurrentAdvisorId)
@@ -215,10 +220,10 @@ namespace API.Controllers
                 return Forbid();
             }
 
-            // Set the UploadedBy field to the current user's name or email, or a fallback identifier if neither is available.
-            request.UploadedBy = User.FindFirstValue(ClaimTypes.Name)
-                ?? User.FindFirstValue(ClaimTypes.Email)
-                ?? $"advisor-{CurrentAdvisorId}";
+            var uploaderName = $"{User.FindFirstValue("firstName")} {User.FindFirstValue("lastName")}".Trim();
+            request.UploadedBy = string.IsNullOrWhiteSpace(uploaderName)
+                ? $"advisor-{CurrentAdvisorId}"
+                : uploaderName;
 
             try
             {
