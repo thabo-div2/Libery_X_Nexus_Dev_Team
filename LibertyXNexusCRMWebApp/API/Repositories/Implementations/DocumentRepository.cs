@@ -50,13 +50,15 @@ namespace API.Repositories.Implementations
             return docs;
         }
 
-        public async Task<IEnumerable<Document>> GetByTypeAsync(DocumentType documentType) 
+        public async Task<IEnumerable<Document>> GetByTypeAsync(DocumentType documentType, int advisorId)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var docs = await context.Documents.Where(d => d.DocumentType == documentType).OrderByDescending(d => d.UpdateAt).AsNoTracking().ToListAsync();
-
-            return docs;
+            return await context.Documents
+                .Where(d => d.DocumentType == documentType && d.Client.AdvisorId == advisorId)
+                .OrderByDescending(d => d.UpdateAt)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<bool> BelongsToClientAsync(int documentId, int clientId)

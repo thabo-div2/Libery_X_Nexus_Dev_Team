@@ -119,7 +119,7 @@ namespace API.Services.Implementations
             var notification = new Notification
             {
                 AdvisorId = advisorId,
-                ClientId = null,
+                ClientId = clientId,
                 Type = type,
                 Message = message,
                 LinkUrl = linkUrl,

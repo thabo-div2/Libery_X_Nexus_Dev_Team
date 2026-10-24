@@ -357,18 +357,19 @@ namespace API.Tests.Services
 
             Assert.False(result.Success);
             Assert.NotNull(result.Error);
+            Assert.Equal("The reset link is invalid or has expired.", result.Error);
         }
 
         /// <summary>
-        /// Bad token can't reset.
+        /// Bad token gets the same generic error as an unknown email.
         /// </summary>
         [Fact]
-        public async Task ResetPasswordAsync_WithInvalidToken_FailsWithIdentityError()
+        public async Task ResetPasswordAsync_WithInvalidToken_ReturnsGenericError()
         {
             var user = MakeUser("client@nexus.test");
             _userManager.Setup(m => m.FindByEmailAsync(user.Email!)).ReturnsAsync(user);
 
-            var failure = IdentityResult.Failed(new IdentityError { Description = "Invalid token." });
+            var failure = IdentityResult.Failed(new IdentityError { Code = "InvalidToken", Description = "Invalid token." });
             _userManager.Setup(m => m.ResetPasswordAsync(user, "bad-token", "NewPassword123")).ReturnsAsync(failure);
 
             var result = await _sut.ResetPasswordAsync(new ResetPasswordRequest
@@ -379,7 +380,93 @@ namespace API.Tests.Services
             });
 
             Assert.False(result.Success);
-            Assert.Contains("Invalid token.", result.Error);
+            Assert.Equal("The reset link is invalid or has expired.", result.Error);
+        }
+
+        /// <summary>
+        /// Role assignment failing rolls the login back.
+        /// </summary>
+        [Fact]
+        public async Task RegisterAsync_WhenRoleAssignmentFails_DeletesUserAndFails()
+        {
+            var invitation = new Invitation { InvitationId = 1, AdvisorId = 1, Email = "new@nexus.test", Token = "good-token" };
+            _invitationRepository.Setup(r => r.GetValidByTokenAsync("good-token")).ReturnsAsync(invitation);
+            _userManager.Setup(m => m.FindByEmailAsync(invitation.Email)).ReturnsAsync((ApplicationUser?)null);
+            _userManager.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), "Password123")).ReturnsAsync(IdentityResult.Success);
+            _userManager.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), AppRoles.Client))
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "role failed" }));
+            _userManager.Setup(m => m.DeleteAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(IdentityResult.Success);
+
+            var result = await _sut.RegisterAsync(new RegisterRequest
+            {
+                InvitationToken = "good-token",
+                FirstName = "Jane",
+                LastName = "Doe",
+                Password = "Password123"
+            });
+
+            Assert.False(result.Success);
+            _userManager.Verify(m => m.DeleteAsync(It.IsAny<ApplicationUser>()), Times.Once);
+            _clientRepository.Verify(r => r.AddAsync(It.IsAny<Client>()), Times.Never);
+        }
+
+        /// <summary>
+        /// A client the advisor already created is linked, not duplicated.
+        /// </summary>
+        [Fact]
+        public async Task RegisterAsync_WhenAdvisorAlreadyCreatedClient_LinksExistingClient()
+        {
+            var invitation = new Invitation { InvitationId = 1, AdvisorId = 1, Email = "new@nexus.test", Token = "good-token" };
+            var existingClient = new Client { ClientId = 42, FirstName = "Old", LastName = "Name", Email = invitation.Email, AdvisorId = 1 };
+
+            _invitationRepository.Setup(r => r.GetValidByTokenAsync("good-token")).ReturnsAsync(invitation);
+            _userManager.Setup(m => m.FindByEmailAsync(invitation.Email)).ReturnsAsync((ApplicationUser?)null);
+            _userManager.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), "Password123")).ReturnsAsync(IdentityResult.Success);
+            _userManager.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), AppRoles.Client)).ReturnsAsync(IdentityResult.Success);
+            _clientRepository.Setup(r => r.GetByEmailAsync(invitation.Email)).ReturnsAsync(existingClient);
+            _invitationRepository.Setup(r => r.MarkRedeemedAsync(invitation.InvitationId, 42)).Returns(Task.CompletedTask);
+
+            var result = await _sut.RegisterAsync(new RegisterRequest
+            {
+                InvitationToken = "good-token",
+                FirstName = "Jane",
+                LastName = "Doe",
+                Password = "Password123"
+            });
+
+            Assert.True(result.Success);
+            Assert.False(string.IsNullOrEmpty(existingClient.IdentityProviderSubjectId));
+            _clientRepository.Verify(r => r.UpdateAsync(existingClient), Times.Once);
+            _clientRepository.Verify(r => r.AddAsync(It.IsAny<Client>()), Times.Never);
+        }
+
+        /// <summary>
+        /// An email that belongs to another advisor's client can't be registered.
+        /// </summary>
+        [Fact]
+        public async Task RegisterAsync_WhenEmailBelongsToAnotherAdvisorsClient_FailsAndDeletesUser()
+        {
+            var invitation = new Invitation { InvitationId = 1, AdvisorId = 1, Email = "new@nexus.test", Token = "good-token" };
+            var otherClient = new Client { ClientId = 50, Email = invitation.Email, AdvisorId = 2 };
+
+            _invitationRepository.Setup(r => r.GetValidByTokenAsync("good-token")).ReturnsAsync(invitation);
+            _userManager.Setup(m => m.FindByEmailAsync(invitation.Email)).ReturnsAsync((ApplicationUser?)null);
+            _userManager.Setup(m => m.CreateAsync(It.IsAny<ApplicationUser>(), "Password123")).ReturnsAsync(IdentityResult.Success);
+            _userManager.Setup(m => m.AddToRoleAsync(It.IsAny<ApplicationUser>(), AppRoles.Client)).ReturnsAsync(IdentityResult.Success);
+            _userManager.Setup(m => m.DeleteAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(IdentityResult.Success);
+            _clientRepository.Setup(r => r.GetByEmailAsync(invitation.Email)).ReturnsAsync(otherClient);
+
+            var result = await _sut.RegisterAsync(new RegisterRequest
+            {
+                InvitationToken = "good-token",
+                FirstName = "Jane",
+                LastName = "Doe",
+                Password = "Password123"
+            });
+
+            Assert.False(result.Success);
+            _userManager.Verify(m => m.DeleteAsync(It.IsAny<ApplicationUser>()), Times.Once);
+            _clientRepository.Verify(r => r.AddAsync(It.IsAny<Client>()), Times.Never);
         }
     }
 }

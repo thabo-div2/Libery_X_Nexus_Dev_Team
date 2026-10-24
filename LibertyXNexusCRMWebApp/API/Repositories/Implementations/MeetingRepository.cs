@@ -23,7 +23,7 @@ namespace API.Repositories.Implementations
             return meetings;
         }
 
-        public async Task<IEnumerable<Meeting>> GetUpcomingMeetingAsync(int? clientId = null)
+        public async Task<IEnumerable<Meeting>> GetUpcomingMeetingAsync(int? clientId = null, int? advisorId = null)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
 
@@ -34,6 +34,8 @@ namespace API.Repositories.Implementations
 
             if (clientId.HasValue)
                 query = query.Where(m => m.ClientId == clientId.Value);
+            else if (advisorId.HasValue)
+                query = query.Where(m => m.Client.AdvisorId == advisorId.Value);
 
             return await query.OrderBy(m => m.MeetingDate).AsNoTracking().ToListAsync();
         }
