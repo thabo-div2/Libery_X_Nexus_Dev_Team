@@ -83,9 +83,9 @@ namespace API.Services.Implementations
         /// </summary>
         /// <param name="status"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PolicyDto>> GetByStatusAsync(PolicyStatus status)
+        public async Task<IEnumerable<PolicyDto>> GetByStatusAsync(PolicyStatus status, int advisorId)
         {
-            var policies = await policyRepository_.GetByStatusAsync(status);
+            var policies = await policyRepository_.GetByStatusAsync(status, advisorId);
             return policies.Select(MapToDto);
         }
 
@@ -234,12 +234,16 @@ namespace API.Services.Implementations
         public async Task<bool> DeleteAsync(int policyId)
         {
             var exists = await policyRepository_.ExistsAsync(policyId);
-            if (!exists)
-            {
-                return false;
-            }
+            if (!exists) return false;
 
-            await policyRepository_.DeleteAsync(policyId);
+            try
+            {
+                await policyRepository_.DeleteAsync(policyId);
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                throw new InvalidOperationException("This policy still has documents. Delete its documents first.");
+            }
             return true;
         }
 
