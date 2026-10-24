@@ -59,9 +59,9 @@ namespace API.Services.Implementations
         /// </summary>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<MeetingDto>> GetUpcomingAsync(int? clientId)
+        public async Task<IEnumerable<MeetingDto>> GetUpcomingAsync(int? clientId, int? advisorId)
         {
-            var meetings = await meetingRepository_.GetUpcomingMeetingAsync(clientId);
+            var meetings = await meetingRepository_.GetUpcomingMeetingAsync(clientId, advisorId);
             return await MapManyAsync(meetings);
         }
 

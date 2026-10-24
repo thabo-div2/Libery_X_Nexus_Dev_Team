@@ -6,7 +6,7 @@ namespace API.Repositories.Interfaces
     public interface IMeetingRepository : IGenericRepository<Meeting>
     {
         Task<IEnumerable<Meeting>> GetClientIdAsync(int clientId);
-        Task<IEnumerable<Meeting>> GetUpcomingMeetingAsync(int? clientId = null);
+        Task<IEnumerable<Meeting>> GetUpcomingMeetingAsync(int? clientId = null, int? advisorId = null);
         Task<IEnumerable<Meeting>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId);
         Task<IEnumerable<Meeting>> GetByStatusAsync(MeetingStatus status, int advisorId);
         Task<bool> HasConflictAsync(DateTime start, int durationMinutes, int advisorId, int? excludeMeetingId = null);
