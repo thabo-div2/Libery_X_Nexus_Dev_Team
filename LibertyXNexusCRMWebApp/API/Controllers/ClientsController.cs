@@ -157,16 +157,23 @@ namespace API.Controllers
                 return NotFound(new { message = $"Client {id} was not found" });
             }
 
-            var updated = await _clientService.UpdateAsync(id, request);
+            try
+            {
+                var updated = await _clientService.UpdateAsync(id, request);
 
-            await _auditLogRepository.LogAsync(
-                userId: CurrentAdvisorId,
-                userRole: UserRole.FinancialAdviser,
-                actionType: AuditActionType.Update,
-                entityAffected: "Client",
-                details: $"Advisor updated client {id}.");
+                await _auditLogRepository.LogAsync(
+                    userId: CurrentAdvisorId,
+                    userRole: UserRole.FinancialAdviser,
+                    actionType: AuditActionType.Update,
+                    entityAffected: "Client",
+                    details: $"Advisor updated client {id}.");
 
-            return Ok(updated);
+                return Ok(updated);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
