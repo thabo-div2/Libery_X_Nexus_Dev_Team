@@ -1,5 +1,6 @@
 using System.Data;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace frontend.Services
 {
@@ -63,6 +64,7 @@ namespace frontend.Services
         private readonly HttpClient _http;
         private readonly TokenStorageService _tokenStorage;
         private readonly CurrentUserService _currentUser;
+        private readonly ProtectedLocalStorage _localStorage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthService"/> class.
@@ -70,11 +72,12 @@ namespace frontend.Services
         /// <param name="http"></param>
         /// <param name="tokenStorage"></param>
         /// <param name="currentUser"></param>
-        public AuthService(HttpClient http, TokenStorageService tokenStorage, CurrentUserService currentUser)
+        public AuthService(HttpClient http, TokenStorageService tokenStorage, CurrentUserService currentUser, ProtectedLocalStorage localStorage)
         {
             _http = http;
             _tokenStorage = tokenStorage;
             _currentUser = currentUser;
+            _localStorage = localStorage;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -397,6 +400,15 @@ namespace frontend.Services
             await _tokenStorage.ClearTokenAsync();
 
             await _currentUser.SignOutAsync();
+
+            try
+            {
+                await _localStorage.DeleteAsync(NewClientDraftStorageKey);
+            }
+            catch
+            {
+
+            }
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
