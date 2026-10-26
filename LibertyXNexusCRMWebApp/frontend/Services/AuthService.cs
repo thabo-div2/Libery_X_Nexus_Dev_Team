@@ -61,6 +61,7 @@ namespace frontend.Services
     /// </summary>
     public class AuthService
     {
+        private const string NewClientDraftStorageKey = "newClientDraft";
         private readonly HttpClient _http;
         private readonly TokenStorageService _tokenStorage;
         private readonly CurrentUserService _currentUser;
