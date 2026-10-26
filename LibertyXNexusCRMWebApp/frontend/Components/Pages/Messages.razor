@@ -376,8 +376,7 @@
     private List<NotificationItem> NotificationItems { get; set; } = new();
 
 
-    private const int DefaultAdvisorId = 1;
-    private int AdvisorId => CurrentUser.Id ?? DefaultAdvisorId;
+    private int AdvisorId => CurrentUser.Id!.Value;
 
     private string? LoadError;
     private string? SendError;

@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @using frontend.Services
+@inject CurrentUserService CurrentUser
 
 @* First thing a keyboard user reaches: jumps past the sidebar links straight to the page content.
    Hidden until it gets keyboard focus. *@
@@ -15,7 +16,10 @@
     </aside>
 
     <main id="main-content" class="nexus-main" tabindex="-1">
-        @Body
+        @if (_accessChecked && _accessGranted)
+        {
+            @Body
+        }
     </main>
 
 </div>
@@ -34,6 +38,17 @@
         "client", "client-messages", "client-chatbot", "client-faqs"
     };
 
+    private static readonly string[] AdvisorPaths =
+    {
+        "advisor", "clients", "new-client", "chatbot", "calendar", "messages", "faqs"
+    };
+
+    //routes that never require a signed in user.
+    private static readonly string[] PublicPaths =
+    {
+        "home", "not-found", "error"
+    };
+
     private bool IsClientRoute
     {
         get
@@ -41,6 +56,74 @@
             var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?')[0].ToLowerInvariant();
             return ClientPaths.Contains(path);
         }
+    }
+
+    private bool _accessChecked;
+    private bool _accessGranted;
+
+    private async void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            await CheckAccessAsync();
+            StateHasChanged();
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+        await CheckAccessAsync();
+    }
+
+    private async Task CheckAccessAsync()
+    {
+        _accessChecked = false;
+        _accessGranted = false;
+
+        var path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?')[0].ToLowerInvariant();
+
+        if (PublicPaths.Contains(path))
+        {
+            _accessChecked = true;
+            _accessGranted = true;
+            return;
+        }
+
+        await CurrentUser.EnsureRestoredAsync();
+
+        if (CurrentUser.Id is null)
+        {
+            _accessChecked = true;
+            Navigation.NavigateTo("/", forceLoad: false);
+            return;
+        }
+
+        var requiresClient = ClientPaths.Contains(path);
+        var requiresAdvisor = AdvisorPaths.Contains(path);
+
+        if (requiresClient && !CurrentUser.IsClient)
+        {
+            _accessChecked = true;
+            Navigation.NavigateTo(CurrentUser.IsAdvisor ? "/advisor" : "/", forceLoad: false);
+            return;
+        }
+
+        if (requiresAdvisor && !CurrentUser.IsAdvisor)
+        {
+            _accessChecked = true;
+            Navigation.NavigateTo(CurrentUser.IsClient ? "/client" : "/", forceLoad: false);
+            return;
+        }
+
+        _accessChecked = true;
+        _accessGranted = true;
+    }
+
+    public void Dispose()
+
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }
 

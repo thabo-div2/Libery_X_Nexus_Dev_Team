@@ -34,9 +34,16 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure application logging.
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
+
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            builder.Services.AddProblemDetails();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -164,6 +171,12 @@ namespace API
 
             var app = builder.Build();
 
+            // Handle unhandled exceptions safely in production.
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler();
+            }
+
             app.UseForwardedHeaders();
 
             // Configure the HTTP request pipeline.
@@ -173,12 +186,30 @@ namespace API
                 app.UseSwaggerUI();
             }
 
-            using (var scope = app.Services.CreateAsyncScope())
+            // Database migrations and seeding are controlled by configuration.
+            var migrateOnStartup = app.Configuration.GetValue<bool>(
+                "Database:MigrateOnStartup");
+
+            var seedDemoData = app.Configuration.GetValue<bool>(
+                "Seed:DemoData");
+
+            if (migrateOnStartup || seedDemoData)
             {
-                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await db.Database.MigrateAsync();
-                await DbInitializer.SeedAsync(db);
-                await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+                await using var scope = app.Services.CreateAsyncScope();
+
+                var db = scope.ServiceProvider
+                    .GetRequiredService<ApplicationDbContext>();
+
+                if (migrateOnStartup)
+                {
+                    await db.Database.MigrateAsync();
+                }
+
+                if (seedDemoData)
+                {
+                    await DbInitializer.SeedAsync(db);
+                    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+                }
             }
 
             using (var scope = app.Services.CreateScope())
