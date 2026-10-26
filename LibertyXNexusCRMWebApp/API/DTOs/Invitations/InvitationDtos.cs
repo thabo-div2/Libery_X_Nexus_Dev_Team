@@ -1,7 +1,17 @@
-﻿namespace API.DTOs.Invitations
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.DTOs.Invitations
 {
+    /// <summary>
+    /// Body of POST api/invitation/create. [ApiController] checks these rules before the
+    /// action runs, so a missing or badly formed email returns 400 with a JSON error object
+    /// instead of reaching the database. Same rules as the Invitation model's Email column.
+    /// </summary>
     public class CreateInvitationRequest
     {
+        [Required(ErrorMessage = "Enter the client's email address.")]
+        [EmailAddress(ErrorMessage = "Enter a valid email address.")]
+        [MaxLength(256, ErrorMessage = "Email can be at most 256 characters.")]
         public string Email { get; set; } = string.Empty;
     }
 
