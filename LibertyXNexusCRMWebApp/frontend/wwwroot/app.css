@@ -135,7 +135,7 @@
     --font-family: Inter, "Segoe UI", Arial, sans-serif;
 
     /* Text sizes (smallest to biggest) */
-    --text-xs: 10px;     /* tiny labels, badges */
+    --text-xs: 11px;     /* tiny labels, badges (was 10px; raised for readability) */
     --text-sm: 12px;     /* small text, hints, table details */
     --text-base: 14px;   /* normal text */
     --text-md: 16px;     /* card titles, important text */
