@@ -11,6 +11,8 @@
 @inject CurrentUserService CurrentUser
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@inject ProtectedLocalStorage DraftStorage
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 
 <PageTitle>New Client | Nexus</PageTitle>
 
@@ -937,17 +939,12 @@
     {
         try
         {
-            var json = await JS.InvokeAsync<string?>("localStorage.getItem", DraftStorageKey);
+            var result = await DraftStorage.GetAsync<DraftPayload>(DraftStorageKey);
 
-            if (!string.IsNullOrWhiteSpace(json))
+            if (result.Success && result.Value is not null)
             {
-                var draft = JsonSerializer.Deserialize<DraftPayload>(json);
-
-                if (draft is not null)
-                {
-                    PendingDraft = draft;
-                    ShowDraftBanner = true;
-                }
+                PendingDraft = result.Value;
+                ShowDraftBanner = true;
             }
         }
         catch
@@ -1046,9 +1043,8 @@
     {
         try
         {
-            var payload = BuildDraftPayload();
-            var json = JsonSerializer.Serialize(payload);
-            await JS.InvokeVoidAsync("localStorage.setItem", DraftStorageKey, json);
+            var payload = BuildDraftPayload();          
+            await DraftStorage.SetAsync(DraftStorageKey, payload);
             DraftSavedMessage = $"Draft saved at {DateTime.Now:HH:mm} — you can safely come back to this later.";
         }
         catch
@@ -1061,7 +1057,7 @@
     {
         try
         {
-            await JS.InvokeVoidAsync("localStorage.removeItem", DraftStorageKey);
+            await DraftStorage.DeleteAsync(DraftStorageKey);
         }
         catch
         {

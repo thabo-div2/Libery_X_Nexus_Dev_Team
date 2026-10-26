@@ -225,8 +225,7 @@
     private List<CalendarDay> CalendarDays => BuildCalendarDays();
 
 
-    private const int DefaultAdvisorId = 1;
-    private int AdvisorId => CurrentUser.Id ?? DefaultAdvisorId;
+    private int AdvisorId => CurrentUser.Id!.Value;
 
     protected override async Task OnInitializedAsync()
     {

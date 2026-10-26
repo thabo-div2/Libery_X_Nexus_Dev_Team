@@ -15,6 +15,7 @@ public partial class Program
         // Add services for protected session storage and token management
         builder.Services.AddScoped<ProtectedSessionStorage>();
         builder.Services.AddScoped<TokenStorageService>();
+        builder.Services.AddScoped<ProtectedLocalStorage>();
 
         builder.Services.AddScoped<JwtAuthenticationHandler>();
 
