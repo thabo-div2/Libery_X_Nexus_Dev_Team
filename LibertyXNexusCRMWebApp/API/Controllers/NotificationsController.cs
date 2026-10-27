@@ -61,12 +61,21 @@ namespace API.Controllers
 
         /// <summary>
         /// Marks one notification as read.
+        /// Returns 204 when it worked, or 404 with a JSON message when the notification
+        /// doesn't exist or belongs to another advisor (the same message either way,
+        /// so it doesn't reveal that another advisor's notification exists).
         /// </summary>
         [HttpPut("{id:int}/read")]
         public async Task<IActionResult> MarkAsRead(int id)
         {
             var updated = await _notificationService.MarkAsReadForAdvisorAsync(id, CurrentAdvisorId);
-            return updated ? NoContent() : NotFound();
+
+            if (!updated)
+            {
+                return NotFound(new { message = "Notification not found." });
+            }
+
+            return NoContent();
         }
 
         /// <summary>
