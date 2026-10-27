@@ -32,6 +32,17 @@
                        placeholder="Search by name, email or status" />
             </div>
 
+            @* Filter the list by lifecycle status (FR-11). Works together with the search box. *@
+            <select class="status-filter"
+                    aria-label="Filter clients by status"
+                    @bind="StatusFilter">
+                <option value="">All statuses</option>
+                @foreach (var status in Enum.GetValues<ClientStatus>())
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+
             <NotificationBell />
 
         </div>
@@ -62,7 +73,7 @@
                 else if (!FilteredClients.Any())
                 {
                     <div class="clients-empty-state">
-                        <span>No clients found.</span>
+                        <span>@(HasActiveFilters ? "No clients match your search or filter." : "No clients found.")</span>
                     </div>
                 }
                 else
@@ -213,7 +224,16 @@
     private CaseSummary? SelectedCase;
     private string? CaseError;
 
+    /// <summary>
+    /// The status chosen in the filter dropdown. Empty means "All statuses".
+    /// </summary>
+    private string StatusFilter = "";
+
+    private bool HasActiveFilters => !string.IsNullOrEmpty(SearchText) || !string.IsNullOrEmpty(StatusFilter);
+
     private IEnumerable<ClientProfile> FilteredClients => ClientResults
+        .Where(c => string.IsNullOrEmpty(StatusFilter) ||
+                    string.Equals(c.Status, StatusFilter, StringComparison.OrdinalIgnoreCase))
         .Where(c => string.IsNullOrEmpty(SearchText) ||
                     c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                     c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
