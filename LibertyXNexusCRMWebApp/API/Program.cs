@@ -3,6 +3,7 @@ using API.HealthChecks;
 using API.Identity;
 using API.Repositories.Implementations;
 using API.Repositories.Interfaces;
+using API.Security;
 using API.Services.Implementations;
 using API.Services.Interfaces;
 using Azure.Storage.Blobs;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -32,12 +34,32 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure application logging.
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
+
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            builder.Services.AddProblemDetails();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Azure App Service sits in front of the API, so read the caller's real address from the
+            // forwarded headers. Rate limiting counts requests by address, so it needs the real one.
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardLimit = 1;
+                options.KnownIPNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
+            // Rate limiting: slows down password guessing, invitation guessing, email flooding and request floods.
+            builder.Services.AddApiRateLimiting(builder.Configuration);
 
             builder.Services.AddCors(options =>
             {
@@ -149,20 +171,45 @@ namespace API
 
             var app = builder.Build();
 
+            // Handle unhandled exceptions safely in production.
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler();
+            }
+
+            app.UseForwardedHeaders();
+
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+            if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
 
-                using (var scope = app.Services.CreateAsyncScope())
+            // Database migrations and seeding are controlled by configuration.
+            var migrateOnStartup = app.Configuration.GetValue<bool>(
+                "Database:MigrateOnStartup");
+
+            var seedDemoData = app.Configuration.GetValue<bool>(
+                "Seed:DemoData");
+
+            if (migrateOnStartup || seedDemoData)
+            {
+                await using var scope = app.Services.CreateAsyncScope();
+
+                var db = scope.ServiceProvider
+                    .GetRequiredService<ApplicationDbContext>();
+
+                if (migrateOnStartup)
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     await db.Database.MigrateAsync();
+                }
+
+                if (seedDemoData)
+                {
                     await DbInitializer.SeedAsync(db);
                     await IdentitySeeder.SeedAsync(scope.ServiceProvider);
                 }
-
             }
 
             using (var scope = app.Services.CreateScope())
@@ -184,6 +231,7 @@ namespace API
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseRateLimiter();
             app.UseAuthorization();
 
             app.UseCors();
@@ -209,7 +257,7 @@ namespace API
 
                     await context.Response.WriteAsync(result);
                 }
-            }).AllowAnonymous();
+            }).AllowAnonymous().DisableRateLimiting(); // Azure's health probes must never get a 429
 
             app.Run();
         }

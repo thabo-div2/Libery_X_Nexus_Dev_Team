@@ -351,7 +351,6 @@
 @code {
 
     private const int TypingDelayMs = 15;
-    private const int DefaultAdvisorId = 1;
 
     private static readonly string[] MeetingKeywords =
     {
@@ -388,7 +387,7 @@
     {
         await CurrentUser.EnsureRestoredAsync();
 
-        AdvisorId = CurrentUser.Id ?? DefaultAdvisorId;
+        AdvisorId = CurrentUser.Id!.Value;
         var (clients, _) = await ClientDirectory.SearchAsync(null, null);
         AdvisorClients = clients;
     }

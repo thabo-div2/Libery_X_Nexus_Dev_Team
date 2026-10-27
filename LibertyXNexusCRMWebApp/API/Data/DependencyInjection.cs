@@ -69,27 +69,38 @@ namespace API.Data
                     options.ContainerName = containerName;
             });
 
-            services.AddSingleton(sp =>
+            services.AddSingleton<BlobServiceClient>(sp =>
             {
-                // Local development: use connection string if one is configured.
+                var environment = sp.GetRequiredService<IHostEnvironment>();
+
+                // Azure/Production: use managed identity authentication.
+                if (!environment.IsDevelopment())
+                {
+                    if (string.IsNullOrWhiteSpace(accountUrl))
+                        throw new InvalidOperationException(
+                            "BlobStorage:AccountUrl is required in production.");
+
+                    return new BlobServiceClient(
+                        new Uri(accountUrl),
+                        new DefaultAzureCredential());
+                }
+
+                // Local development: optionally use a storage connection string.
                 if (!string.IsNullOrWhiteSpace(connectionString))
                 {
                     return new BlobServiceClient(connectionString);
                 }
 
-                // Azure deployment: fall back to managed identity / DefaultAzureCredential.
+                // Local development: authenticate using Visual Studio or Azure CLI.
                 if (!string.IsNullOrWhiteSpace(accountUrl))
                 {
-                    var credential = new DefaultAzureCredential();
-
                     return new BlobServiceClient(
                         new Uri(accountUrl),
-                        credential);
+                        new DefaultAzureCredential());
                 }
 
                 throw new InvalidOperationException(
-                    "Blob Storage is not configured. Set ConnectionStrings:BlobStorage " +
-                    "for local development or BlobStorage:AccountUrl for Azure.");
+                    "Blob Storage is not configured.");
             });
 
             services.AddSingleton<IBlobStorageService, BlobStorageService>();

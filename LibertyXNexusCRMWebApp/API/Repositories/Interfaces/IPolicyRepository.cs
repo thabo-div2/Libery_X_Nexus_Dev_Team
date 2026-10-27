@@ -8,7 +8,7 @@ namespace API.Repositories.Interfaces
     {
         Task<IEnumerable<Policy>> GetByClientIdAsync(int clientId);
         Task<IEnumerable<Policy>> GetCatalogoueAsync();
-        Task<IEnumerable<Policy>> GetByStatusAsync(PolicyStatus status);
+        Task<IEnumerable<Policy>> GetByStatusAsync(PolicyStatus status, int advisorId);
         Task<Policy?> GetWithDocumentAsync(int policyId);
         Task<bool> BelongsToClientAsync(int policyId, int clientId);
     }

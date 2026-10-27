@@ -1,4 +1,5 @@
-﻿using API.DTOs.Documents;
+﻿using System.IO;
+using API.DTOs.Documents;
 using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Shared.Models;
@@ -13,8 +14,30 @@ namespace API.Services.Implementations
     {
         private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
         {
-         "application/pdf","image/png","image/jpeg","application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+           "application/pdf","image/png","image/jpeg","application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         };
+
+        private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
+        {
+           ".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx"
+        };
+
+        private static bool HasValidSignature(Stream stream, string extension)
+        {
+            Span<byte> h = stackalloc byte[8];
+            var read = stream.Read(h);
+            stream.Position = 0;
+
+            return extension.ToLowerInvariant() switch
+            {
+                ".pdf" => read >= 4 && h[0] == 0x25 && h[1] == 0x50 && h[2] == 0x44 && h[3] == 0x46,
+                ".png" => read >= 8 && h[0] == 0x89 && h[1] == 0x50 && h[2] == 0x4E && h[3] == 0x47,
+                ".jpg" or ".jpeg" => read >= 3 && h[0] == 0xFF && h[1] == 0xD8 && h[2] == 0xFF,
+                ".docx" => read >= 4 && h[0] == 0x50 && h[1] == 0x4B,                                   // zip container
+                ".doc" => read >= 4 && h[0] == 0xD0 && h[1] == 0xCF && h[2] == 0x11 && h[3] == 0xE0,
+                _ => false
+            };
+        }
 
         private const long MaxFileSizeBytes = 25 * 1024 * 1024; // 25 MB
 
@@ -47,21 +70,11 @@ namespace API.Services.Implementations
         /// <returns></returns>
         public async Task<DocumentDto?> GetByIdAsync(int documentId) 
         {
-            var document = await _documentRepository.GetByIdAsync(documentId) ?? new Document();
+            var document = await _documentRepository.GetByIdAsync(documentId);
 
-            return new DocumentDto
-            {
-                DocumentId = document.DocumentId,
-                ClientId = document.ClientId,
-                PolicyId = document.PolicyId,
-                FileName = document.FileName,
-                ContentType = document.ContentType,
-                FileSizeBytes = document.FileSizeBytes,
-                DocumentType = document.DocumentType.ToString(),
-                VisibleToClient = document.VisibleToClient,
-                UploadedBy = document.UploadedBy,
-                UpdateAt = document.UpdateAt
-            };
+            return document is null ? null : MapToDto(document);
+
+            
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -119,9 +132,9 @@ namespace API.Services.Implementations
         /// </summary>
         /// <param name="documentType"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<DocumentDto>> GetByTypeAsync(DocumentType documentType)
+        public async Task<IEnumerable<DocumentDto>> GetByTypeAsync(DocumentType documentType, int advisorId)
         {
-            var documents = await _documentRepository.GetByTypeAsync(documentType);
+            var documents = await _documentRepository.GetByTypeAsync(documentType, advisorId);
             return documents.Select(MapToDto);
         }
 
@@ -151,6 +164,27 @@ namespace API.Services.Implementations
                 throw new ArgumentException($"File type '{request.File.ContentType}' is not permitted.");
             }
 
+            var safeFileName = Path.GetFileName(request.File.FileName);
+            var extension = Path.GetExtension(safeFileName);
+
+            if (string.IsNullOrWhiteSpace(safeFileName) || !AllowedExtensions.Contains(extension))
+            {
+                throw new ArgumentException("File type is not permitted.");
+            }
+
+            await using (var check = request.File.OpenReadStream())
+            {
+                if (!check.CanSeek)
+                {
+                    throw new ArgumentException("The file could not be read.");
+                }
+
+                if (!HasValidSignature(check, extension))
+                {
+                    throw new ArgumentException("The file content does not match its file type.");
+                }
+            }
+
             var clientExists = await _clientRepository.ExistsAsync(request.ClientId);
             if (!clientExists)
             {
@@ -171,13 +205,13 @@ namespace API.Services.Implementations
             }
 
             await using var stream = request.File.OpenReadStream();
-            var blobReference = await _blobStorageService.UploadAsync(stream, request.File.FileName, request.File.ContentType);
+            var blobReference = await _blobStorageService.UploadAsync(stream, safeFileName, request.File.ContentType);
 
             var document = new Document
             {
                 ClientId = request.ClientId,
                 PolicyId = request.PolicyId,
-                FileName = request.File.FileName,
+                FileName = safeFileName,
                 BlobReference = blobReference,
                 ContentType = request.File.ContentType,
                 FileSizeBytes = request.File.Length,
@@ -232,13 +266,18 @@ namespace API.Services.Implementations
         public async Task<bool> DeleteAsync(int documentId)
         {
             var document = await _documentRepository.GetByIdAsync(documentId);
-            if (document is null)
-            {
-                return false;
-            }
+            if (document is null) return false;
 
-            await _blobStorageService.DeleteAsync(document.BlobReference);
             await _documentRepository.DeleteAsync(documentId);
+
+            try
+            {
+                await _blobStorageService.DeleteAsync(document.BlobReference);
+            }
+            catch
+            {
+                // The record is gone
+            }
             return true;
         }
 

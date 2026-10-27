@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd.vs/ 
+
+# Entity Framework migration bundles
+efbundle
+efbundle.exe
+**/efbundle
+**/efbundle.exe
