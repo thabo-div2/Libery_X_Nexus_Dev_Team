@@ -32,6 +32,17 @@
                        placeholder="Search by name, email or status" />
             </div>
 
+            @* Filter the list by lifecycle status (FR-11). Works together with the search box. *@
+            <select class="status-filter"
+                    aria-label="Filter clients by status"
+                    @bind="StatusFilter">
+                <option value="">All statuses</option>
+                @foreach (var status in Enum.GetValues<ClientStatus>())
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+
             <NotificationBell />
 
         </div>
@@ -62,7 +73,7 @@
                 else if (!FilteredClients.Any())
                 {
                     <div class="clients-empty-state">
-                        <span>No clients found.</span>
+                        <span>@(HasActiveFilters ? "No clients match your search or filter." : "No clients found.")</span>
                     </div>
                 }
                 else
@@ -213,7 +224,16 @@
     private CaseSummary? SelectedCase;
     private string? CaseError;
 
+    /// <summary>
+    /// The status chosen in the filter dropdown. Empty means "All statuses".
+    /// </summary>
+    private string StatusFilter = "";
+
+    private bool HasActiveFilters => !string.IsNullOrEmpty(SearchText) || !string.IsNullOrEmpty(StatusFilter);
+
     private IEnumerable<ClientProfile> FilteredClients => ClientResults
+        .Where(c => string.IsNullOrEmpty(StatusFilter) ||
+                    string.Equals(c.Status, StatusFilter, StringComparison.OrdinalIgnoreCase))
         .Where(c => string.IsNullOrEmpty(SearchText) ||
                     c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                     c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
@@ -230,28 +250,36 @@
         await Search();
     }
 
-    private async Task OnSearchInput(ChangeEventArgs e)
-    {
-        SearchText = e.Value?.ToString() ?? string.Empty;
-        SearchText = SearchQuery ?? string.Empty;
-        await Search();
-    }
+    /// <summary>
+    /// The ?search= value that has already been copied into the search box.
+    /// The page re-receives its parameters on every re-render (e.g. when the layout updates),
+    /// and the old code copied ?search= into the box each time, wiping what the user had typed.
+    /// Now the URL value is only applied when it actually changes, e.g. a new search from the dashboard.
+    /// </summary>
+    private string? _appliedSearchQuery;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        if (SearchQuery is not null && SearchQuery != SearchText)
+        if (SearchQuery == _appliedSearchQuery)
         {
-            SearchText = SearchQuery;
-            await Search();
+            return;
         }
+
+        _appliedSearchQuery = SearchQuery;
+        SearchText = SearchQuery ?? string.Empty;
     }
 
+    /// <summary>
+    /// Loads all of the advisor's clients once. Typing in the search box then filters
+    /// this list instantly on the page (see FilteredClients), so clearing the box always
+    /// brings every client back, even when the page was opened with ?search= from the dashboard.
+    /// </summary>
     private async Task Search()
     {
         IsLoading = true;
         LoadError = null;
 
-        var (clients, error) = await ClientDirectory.SearchAsync(SearchText, null);
+        var (clients, error) = await ClientDirectory.SearchAsync(null, null);
         ClientResults = clients;
         LoadError = error;
         IsLoading = false;

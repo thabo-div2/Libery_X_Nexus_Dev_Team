@@ -4,7 +4,6 @@
     {
         public int MeetingId { get; set; }
         public int ClientId { get; set; }
-        public int MeetidId { get; set; }
         public string? ClientName { get; set; }
 
         public DateTime MeetingDate { get; set; }
