@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Globalization;
+using System.Xml.Linq;
 using System.Text.Json;
 
 namespace API.Services.Implementations
@@ -173,58 +174,69 @@ namespace API.Services.Implementations
         };
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-        private async Task<List<MarketNewsItem>> FetchNewsAsync(CancellationToken cancellationToken)
+        private async Task<List<MarketNewsItem>> FetchNewsAsync(
+            CancellationToken cancellationToken)
         {
             var news = new List<MarketNewsItem>();
 
-            var newsUrl = BuildUrl(
-                "NEWS_SENTIMENT",
-                ("topics", "financial_markets,economy_monetary,economy_macro,finance"),
-                ("sort", "LATEST"),
-                ("limit", "8"));
+            const string rssUrl =
+                "https://news.google.com/rss/search?q=financial+markets+economy+when:7d&hl=en-ZA&gl=ZA&ceid=ZA:en";
 
             try
             {
-                using var newsResponse = await _httpClient.GetAsync(newsUrl, cancellationToken);
-                newsResponse.EnsureSuccessStatusCode();
+                using var response = await _httpClient.GetAsync(
+                    rssUrl, cancellationToken);
 
-                await using var newsStream = await newsResponse.Content.ReadAsStreamAsync(cancellationToken);
-                using var newsDocument = await JsonDocument.ParseAsync(newsStream, cancellationToken: cancellationToken);
+                response.EnsureSuccessStatusCode();
 
-                if (newsDocument.RootElement.TryGetProperty("feed", out var feed) &&
-                    feed.ValueKind == JsonValueKind.Array)
+                await using var stream =
+                    await response.Content.ReadAsStreamAsync(cancellationToken);
+
+                var document = await XDocument.LoadAsync(
+                    stream, LoadOptions.None, cancellationToken);
+
+                var items = document.Descendants("item").Take(8);
+
+                foreach (var item in items)
                 {
-                    foreach (var item in feed.EnumerateArray())
+                    var title = item.Element("title")?.Value;
+                    var url = item.Element("link")?.Value;
+
+                    if (string.IsNullOrWhiteSpace(title) ||
+                        string.IsNullOrWhiteSpace(url))
                     {
-                        var title = GetString(item, "title");
-                        if (string.IsNullOrWhiteSpace(title))
-                        {
-                            continue;
-                        }
-
-                        news.Add(new MarketNewsItem
-                        {
-                            Title = title,
-                            Source = GetString(item, "source"),
-                            PublishedAt = GetString(item, "time_published"),
-                            Url = GetString(item, "url"),
-                            Summary = GetString(item, "summary"),
-                            Sentiment = GetSentiment(item)
-                        });
+                        continue;
                     }
+
+                    news.Add(new MarketNewsItem
+                    {
+                        Title = title,
+                        Source = item.Element("source")?.Value
+                            ?? "Google News",
+                        PublishedAt = item.Element("pubDate")?.Value
+                            ?? string.Empty,
+                        Url = url,
+                        Summary = string.Empty,
+                        Sentiment = null
+                    });
                 }
-                else if (newsDocument.RootElement.TryGetProperty("Note", out var note))
-                {
-                    _logger.LogWarning("Alpha Vantage returned a rate-limit note: {Note}", note.GetString());
-                }
+
+                _logger.LogInformation(
+                    "Retrieved {Count} financial news articles from RSS.",
+                    news.Count);
             }
-            catch (Exception ex) when (ex is HttpRequestException or JsonException)
+            catch (Exception ex) when (
+                ex is HttpRequestException or
+                System.Xml.XmlException or
+                InvalidOperationException)
             {
-                _logger.LogError(ex, "Unable to retrieve market news from Alpha Vantage.");
+                _logger.LogWarning(
+                    ex, "Unable to retrieve financial news from RSS.");
             }
 
             return news;
         }
+
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         private async Task<string?> FetchFxRateAsync(CancellationToken cancellationToken)
@@ -241,6 +253,27 @@ namespace API.Services.Implementations
 
                 await using var fxStream = await fxResponse.Content.ReadAsStreamAsync(cancellationToken);
                 using var fxDocument = await JsonDocument.ParseAsync(fxStream, cancellationToken: cancellationToken);
+
+                var root = fxDocument.RootElement;
+
+                if (root.TryGetProperty("Note", out var note))
+                {
+                    _logger.LogWarning(
+                        "Alpha Vantage USD/ZAR note: {Message}",
+                        note.GetString());
+                }
+                else if (root.TryGetProperty("Information", out var information))
+                {
+                    _logger.LogWarning(
+                        "Alpha Vantage USD/ZAR information: {Message}",
+                        information.GetString());
+                }
+                else if (root.TryGetProperty("Error Message", out var error))
+                {
+                    _logger.LogWarning(
+                        "Alpha Vantage USD/ZAR error: {Message}",
+                        error.GetString());
+                }
 
                 if (fxDocument.RootElement.TryGetProperty("Realtime Currency Exchange Rate", out var rate))
                 {

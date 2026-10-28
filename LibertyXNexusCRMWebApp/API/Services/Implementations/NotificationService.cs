@@ -116,10 +116,20 @@ namespace API.Services.Implementations
         /// <returns></returns>
         public async Task NotifyAdvisorAsync(int advisorId, NotificationType type, string message, string? linkUrl = null, int? clientId = null)
         {
+            if (advisorId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(advisorId));
+            }
+
             var notification = new Notification
             {
                 AdvisorId = advisorId,
-                ClientId = clientId,
+
+                // The advisor is the notification recipient.
+                // ClientId must remain null to satisfy
+                // CK_Notification_SingleRecipient.
+                ClientId = null,
+
                 Type = type,
                 Message = message,
                 LinkUrl = linkUrl,

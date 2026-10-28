@@ -70,10 +70,18 @@
         });
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Navigation.LocationChanged += OnLocationChanged;
-        await CheckAccessAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckAccessAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task CheckAccessAsync()
@@ -91,6 +99,12 @@
         }
 
         await CurrentUser.EnsureRestoredAsync();
+
+        Console.WriteLine(
+            $"[AUTH DEBUG] Path={path}, " +
+            $"IdPresent={CurrentUser.Id is not null}, " +
+            $"IsAdvisor={CurrentUser.IsAdvisor}, " +
+            $"IsClient={CurrentUser.IsClient}");
 
         if (CurrentUser.Id is null)
         {

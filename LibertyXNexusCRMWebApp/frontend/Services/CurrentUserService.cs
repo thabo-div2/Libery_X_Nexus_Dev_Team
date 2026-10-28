@@ -138,8 +138,11 @@ namespace frontend.Services
                     LastName = result.Value.LastName;
                     Email = result.Value.Email;
                 }
+
+                // Mark restoration complete only after storage was accessible.
+                _restoreAttempted = true;
             }
-            catch
+            catch(InvalidOperationException)
             {
                 // Browser storage isn't available; the user will just need to log in again.
             }
