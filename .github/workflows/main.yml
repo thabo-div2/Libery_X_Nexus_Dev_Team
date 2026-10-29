@@ -15,6 +15,7 @@ env:
   SOLUTION_PATH: "LibertyXNexusCRMWebApp/LibertyXNexusCRMWebApp.slnx"
   API_PROJECT: "LibertyXNexusCRMWebApp/API/API.csproj"
   FRONTEND_PROJECT: "LibertyXNexusCRMWebApp/frontend/frontend.csproj"
+  TEST_PROJECT: "LibertyXNexusCRMWebApp/API.Tests/API.Tests.csproj"
 
 jobs:
   build-and-test:
