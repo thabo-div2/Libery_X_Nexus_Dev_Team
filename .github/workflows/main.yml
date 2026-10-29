@@ -2,11 +2,11 @@ name: CI/CD - Liberty X Nexus
 
 on:
   push:
-    branches: 
+    branches:
       - main
       - dev
   pull_request:
-    branches: 
+    branches:
       - main
       - dev
 
@@ -46,6 +46,25 @@ jobs:
           --configuration Release
           --verbosity normal
 
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef --version 10.0.12
+
+      - name: Generate database migration script
+        run: |
+          dotnet ef migrations script \
+            --project ${{ env.API_PROJECT }} \
+            --startup-project ${{ env.API_PROJECT }} \
+            --configuration Release \
+            --idempotent \
+            --output ./migration.sql
+
+      - name: Upload migration script
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-migration-script
+          path: ./migration.sql
+          retention-days: 7
+
   deploy-api:
     name: Deploy API
     runs-on: ubuntu-latest
@@ -71,22 +90,6 @@ jobs:
           --configuration Release
           --no-restore
           --output ./publish-api
-
-      - name: Install ER Core CLI
-        run: dotnet tool install --global dotnet-ef --version 10.0.12
-
-      - name: Restore API for Linux
-        run: dotnet restore ${{ env.API_PROJECT }} --runtime linux-x64
-
-      - name: Create EF Core migration bundle
-        run: |
-          dotnet ef migrations bundle \
-            --project LibertyXNexusCRMWebApp/API/API.csproj \
-            --startup-project LibertyXNexusCRMWebApp/API/API.csproj \
-            --configuration Release \
-            --runtime linux-x64 \
-            --self-contained \
-            --output ./efbundle
 
       - name: Deploy API to Azure
         uses: azure/webapps-deploy@v3
@@ -129,19 +132,19 @@ jobs:
           app-name: libertyxnexus-web-thabo
           package: ./publish-frontend
           publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
-  
+
       - name: Verify API health after deployment
         shell: bash
-        run: | 
+        run: |
           URL="https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
-  
+
           for attempt in {1..12}; do
             if curl --fail --silent --show-error \
               --max-time 15 "$URL"; then
               echo "API health check passed."
               exit 0
             fi
-  
+
             echo "Health check attempt $attempt failed."
             sleep 10
           done
