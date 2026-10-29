@@ -33,18 +33,56 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
+      - name: Scan NuGet dependencies for vulnerabilities
+        shell: bash
+        run: |
+          set -o pipefail
+
+          dotnet list ${{ env.SOLUTION_PATH }} package \
+            --vulnerable \
+            --include-transitive \
+            2>&1 | tee vulnerability-report.txt
+
+          if grep -Eqi \
+            'has the following vulnerable packages|has the following vulnerable transitive packages' \
+            vulnerability-report.txt; then
+            echo "::error::Vulnerable NuGet packages detected."
+            exit 1
+          fi
+
+      - name: Upload vulnerability scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-vulnerability-report
+          path: vulnerability-report.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+
       - name: Build solution
         run: >
           dotnet build ${{ env.SOLUTION_PATH }}
           --no-restore
           --configuration Release
 
-      - name: Run tests
-        run: >
-          dotnet test ${{ env.SOLUTION_PATH }}
-          --no-build
-          --configuration Release
-          --verbosity normal
+      - name: Run tests with code coverage
+        run: |
+          dotnet test ${{ env.API_PROJECT }} \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults \
+            --verbosity normal
+
+      - name: Upload code coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-code-coverage
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Install EF Core CLI
         run: dotnet tool install --global dotnet-ef --version 10.0.12
