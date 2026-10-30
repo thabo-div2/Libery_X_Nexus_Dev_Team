@@ -257,9 +257,7 @@ namespace API
                         checks = report.Entries.Select(e => new
                         {
                             name = e.Key,
-                            status = e.Value.Status.ToString(),
-                            description = e.Value.Description,
-                            error = e.Value.Exception?.Message
+                            status = e.Value.Status.ToString()
                         })
                     });
 
