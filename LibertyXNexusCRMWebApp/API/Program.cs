@@ -61,13 +61,21 @@ namespace API
             // Rate limiting: slows down password guessing, invitation guessing, email flooding and request floods.
             builder.Services.AddApiRateLimiting(builder.Configuration);
 
+            var frontendOrigin = builder.Configuration["Frontend:BaseUrl"];
+
+            if (string.IsNullOrWhiteSpace(frontendOrigin))
+            {
+                throw new InvalidOperationException(
+                    "Frontend:BaseUrl is not configured.");
+            }
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("Frontend", policy =>
                 {
                     policy
                         .WithOrigins(
-                           builder.Configuration["Frontend:BaseUrl"]!
+                           frontendOrigin.Trim().TrimEnd('/')
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod();
@@ -230,11 +238,11 @@ namespace API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("Frontend");
             app.UseAuthentication();
             app.UseRateLimiter();
             app.UseAuthorization();
-
-            app.UseCors();
 
             app.MapControllers();
             app.MapHealthChecks("/health", new HealthCheckOptions
@@ -249,9 +257,7 @@ namespace API
                         checks = report.Entries.Select(e => new
                         {
                             name = e.Key,
-                            status = e.Value.Status.ToString(),
-                            description = e.Value.Description,
-                            error = e.Value.Exception?.Message
+                            status = e.Value.Status.ToString()
                         })
                     });
 

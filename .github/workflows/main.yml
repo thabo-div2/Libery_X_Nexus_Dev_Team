@@ -2,15 +2,20 @@ name: CI/CD - Liberty X Nexus
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
+      - dev
 
 env:
   DOTNET_VERSION: "10.0.x"
   SOLUTION_PATH: "LibertyXNexusCRMWebApp/LibertyXNexusCRMWebApp.slnx"
   API_PROJECT: "LibertyXNexusCRMWebApp/API/API.csproj"
   FRONTEND_PROJECT: "LibertyXNexusCRMWebApp/frontend/frontend.csproj"
+  TEST_PROJECT: "LibertyXNexusCRMWebApp/API.Tests/API.Tests.csproj"
 
 jobs:
   build-and-test:
@@ -29,23 +34,125 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
+      - name: Scan NuGet dependencies for vulnerabilities
+        shell: bash
+        run: |
+          set -o pipefail
+
+          dotnet list ${{ env.SOLUTION_PATH }} package \
+            --vulnerable \
+            --include-transitive \
+            2>&1 | tee vulnerability-report.txt
+
+          if grep -Eqi \
+            'has the following vulnerable packages|has the following vulnerable transitive packages' \
+            vulnerability-report.txt; then
+            echo "::error::Vulnerable NuGet packages detected."
+            exit 1
+          fi
+
+      - name: Upload vulnerability scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-vulnerability-report
+          path: vulnerability-report.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+
       - name: Build solution
         run: >
           dotnet build ${{ env.SOLUTION_PATH }}
           --no-restore
           --configuration Release
 
-      - name: Run tests
-        run: >
-          dotnet test ${{ env.SOLUTION_PATH }}
-          --no-build
-          --configuration Release
-          --verbosity normal
+      
+      - name: Run tests with code coverage
+        run: |
+          dotnet test ${{ env.TEST_PROJECT }} \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults \
+            --verbosity normal
+
+      - name: Upload code coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-code-coverage
+          path: TestResults/**/coverage.cobertura.xml
+          if-no-files-found: error
+          retention-days: 14
+
+
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef --version 10.0.12
+
+      - name: Generate database migration script
+        run: |
+          dotnet ef migrations script \
+            --project ${{ env.API_PROJECT }} \
+            --startup-project ${{ env.API_PROJECT }} \
+            --configuration Release \
+            --idempotent \
+            --output ./migration.sql
+
+      - name: Upload migration script
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-migration-script
+          path: ./migration.sql
+          retention-days: 7
+
+  
+  migrate-database:
+    name: Apply Azure SQL Migrations
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install EF Core CLI
+        run: dotnet tool install --global dotnet-ef --version 10.0.12
+
+      - name: Restore API for Linux
+        run: dotnet restore ${{ env.API_PROJECT }} --runtime linux-x64
+
+      - name: Create migration bundle
+        run: |
+          dotnet ef migrations bundle \
+            --project ${{ env.API_PROJECT }} \
+            --startup-project ${{ env.API_PROJECT }} \
+            --configuration Release \
+            --runtime linux-x64 \
+            --self-contained \
+            --output ./efbundle
+
+      - name: Apply migrations to Azure SQL
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+        run: |
+          chmod +x ./efbundle
+          ./efbundle --connection "$ConnectionStrings__DefaultConnection"
+
 
   deploy-api:
     name: Deploy API
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: 
+      - build-and-test
+      - migrate-database
 
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
@@ -67,22 +174,6 @@ jobs:
           --configuration Release
           --no-restore
           --output ./publish-api
-
-      - name: Install ER Core CLI
-        run: dotnet tool install --global dotnet-ef --version 10.0.12
-
-      - name: Restore API for Linux
-        run: dotnet restore ${{ env.API_PROJECT }} --runtime linux-x64
-
-      - name: Create EF Core migration bundle
-        run: |
-          dotnet ef migrations bundle \
-            --project LibertyXNexusCRMWebApp/API/API.csproj \
-            --startup-project LibertyXNexusCRMWebApp/API/API.csproj \
-            --configuration Release \
-            --runtime linux-x64 \
-            --self-contained \
-            --output ./efbundle
 
       - name: Deploy API to Azure
         uses: azure/webapps-deploy@v3
@@ -125,19 +216,19 @@ jobs:
           app-name: libertyxnexus-web-thabo
           package: ./publish-frontend
           publish-profile: ${{ secrets.AZURE_FRONTEND_PUBLISH_PROFILE }}
-  
+
       - name: Verify API health after deployment
         shell: bash
-        run: | 
+        run: |
           URL="https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
-  
+
           for attempt in {1..12}; do
             if curl --fail --silent --show-error \
               --max-time 15 "$URL"; then
               echo "API health check passed."
               exit 0
             fi
-  
+
             echo "Health check attempt $attempt failed."
             sleep 10
           done
