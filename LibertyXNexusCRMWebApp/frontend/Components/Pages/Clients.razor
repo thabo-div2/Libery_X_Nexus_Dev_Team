@@ -232,13 +232,13 @@
     private bool HasActiveFilters => !string.IsNullOrEmpty(SearchText) || !string.IsNullOrEmpty(StatusFilter);
 
     private IEnumerable<ClientProfile> FilteredClients => ClientResults
-        .Where(c => string.IsNullOrEmpty(StatusFilter) ||
-                    string.Equals(c.Status, StatusFilter, StringComparison.OrdinalIgnoreCase))
-        .Where(c => string.IsNullOrEmpty(SearchText) ||
-                    c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    c.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    c.Status.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+    .Where(c => string.IsNullOrEmpty(StatusFilter) ||
+                string.Equals(c.Status, StatusFilter, StringComparison.OrdinalIgnoreCase))
+    .Where(c => string.IsNullOrWhiteSpace(SearchText) ||
+                $"{c.FirstName} {c.LastName}".Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                $"{c.LastName} {c.FirstName}".Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                c.Email.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                c.Status.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase));
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "search")]
