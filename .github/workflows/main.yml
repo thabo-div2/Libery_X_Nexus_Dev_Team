@@ -142,6 +142,7 @@ jobs:
       - name: Apply migrations to Azure SQL
         env:
           ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          Frontend__BaseUrl: ${{ vars.AZURE_FRONTEND_URL }}
         run: |
           chmod +x ./efbundle
           ./efbundle --connection "$ConnectionStrings__DefaultConnection"
