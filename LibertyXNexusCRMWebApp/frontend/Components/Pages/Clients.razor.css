@@ -306,6 +306,14 @@
     border-bottom: 1px solid var(--color-border-light);
 }
 
+.client-detail-heading {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
 .client-detail-heading h2 {
     margin: 0;
     color: var(--color-text);
@@ -562,5 +570,72 @@
     color: var(--color-text-muted);
     font-size: var(--text-xs);
 }
+
+/* ===============================
+   CLIENT DETAIL: ACTIONS + EDIT FORM
+   =============================== */
+
+.client-detail-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
+.client-detail-alert {
+    margin: var(--space-3) var(--space-5) 0;
+}
+
+.client-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.client-edit-intro {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.client-edit-error {
+    margin: 0;
+}
+
+/* First and last name side by side */
+.client-edit-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+}
+
+.client-edit-field {
+    min-width: 0;
+}
+
+.client-edit-optional {
+    color: var(--color-text-muted);
+    font-weight: var(--weight-regular);
+}
+
+.client-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-light);
+}
+
+@media (max-width: 600px) {
+
+    .client-edit-row {
+        grid-template-columns: 1fr;
+    }
+
+    .client-edit-actions .nx-btn {
+        flex: 1;
+    }
+}
+
 
 /* ================================ EndOfFile ============================== */
