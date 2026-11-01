@@ -63,6 +63,11 @@
 
                     <h2>@CurrentMonth.ToString("MMMM yyyy")</h2>
 
+                    @if (IsLoadingMonth)
+                    {
+                        <span class="month-loading" role="status">Loading…</span>
+                    }
+
                     <button type="button"
                             class="month-button"
                             @onclick="NextMonth"
@@ -72,6 +77,17 @@
 
                 </div>
 
+
+                @if (!string.IsNullOrEmpty(LoadError))
+                {
+                    <p class="nx-alert nx-alert-danger calendar-load-error" role="alert">@LoadError</p>
+                }
+
+                <!-- KEY -->
+                <div class="calendar-key" aria-label="Colour key">
+                    <span class="calendar-key-item"><span class="calendar-key-swatch event-green" aria-hidden="true"></span>Confirmed</span>
+                    <span class="calendar-key-item"><span class="calendar-key-swatch event-yellow" aria-hidden="true"></span>Awaiting confirmation</span>
+                </div>
 
                 <!-- DAYS OF WEEK -->
                 <div class="week-header">
@@ -106,8 +122,10 @@
                                 @foreach (var calendarEvent in GetEventsForDate(day.Date))
                                 {
                                     <button type="button"
-                                            class="calendar-event @GetEventClass(calendarEvent.Type)">
+                                            class="calendar-event @GetEventClass(calendarEvent.Type)"
+                                            title="@calendarEvent.Time @calendarEvent.Title (@calendarEvent.StatusText)">
 
+                                        <span class="calendar-event-time">@calendarEvent.Time</span>
                                         @calendarEvent.Title
 
                                     </button>
@@ -218,6 +236,14 @@
 
     private int? MeetingsThisWeek;
 
+    /// <summary>
+    /// Every meeting loaded for the visible grid and the current week, any status.
+    /// </summary>
+    private List<MeetingSummary> LoadedMeetings { get; set; } = new();
+
+    private bool IsLoadingMonth;
+    private string? LoadError;
+
     private List<CalendarEvent> Events { get; set; } = new();
 
     private List<MeetingItem> TodayMeetings { get; set; } = new();
@@ -250,20 +276,52 @@
         Notifier.MessageSent -= OnMeetingChanged;
     }
 
+    /// <summary>
+    /// Monday of the week that contains the given date (the grid starts on Monday).
+    /// </summary>
+    private static DateTime StartOfWeek(DateTime date) => date.Date.AddDays(-(((int)date.DayOfWeek + 6) % 7));
+
+    /// <summary>
+    /// Loads every meeting in the visible grid (including the grey days from the
+    /// months either side) plus the current week, so "Today" and "this week" stay
+    /// right even when you browse to another month. Uses the API's range endpoint
+    /// instead of "upcoming", so past meetings still show when you go back a month.
+    /// </summary>
     private async Task LoadMeetings()
     {
-        var (meetings, _) = await MeetingStore.GetForAdvisorAsync(AdvisorId);
+        var gridStart = StartOfWeek(new DateTime(CurrentMonth.Year, CurrentMonth.Month, 1));
+        var gridEnd = gridStart.AddDays(42);
+        var weekStart = StartOfWeek(DateTime.Today);
+        var weekEnd = weekStart.AddDays(7);
 
-        var confirmed = meetings.Where(m => string.Equals(m.Status, "Confirmed", StringComparison.OrdinalIgnoreCase)).ToList();
+        var from = gridStart < weekStart ? gridStart : weekStart;
+        var to = gridEnd > weekEnd ? gridEnd : weekEnd;
 
-        Events = confirmed.Select(m => new CalendarEvent
+        IsLoadingMonth = true;
+        var (meetings, error) = await MeetingStore.GetForRangeAsync(from, to);
+        IsLoadingMonth = false;
+        LoadError = error;
+
+        // Cancelled meetings are left off the calendar.
+        LoadedMeetings = meetings
+            .Where(m => !string.Equals(m.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(m => m.MeetingDate)
+            .ToList();
+
+        var confirmed = LoadedMeetings.Where(m => string.Equals(m.Status, "Confirmed", StringComparison.OrdinalIgnoreCase)).ToList();
+
+        Events = LoadedMeetings.Select(m => new CalendarEvent
         {
+            MeetingId = m.MeetingId,
             Title = m.ClientName,
             Date = m.MeetingDate.ToLocalTime(),
-            Type = "meeting"
+            Time = m.MeetingDate.ToLocalTime().ToString("HH:mm"),
+            // Confirmed = green; requested or rescheduled = waiting for a yes, amber.
+            Type = string.Equals(m.Status, "Confirmed", StringComparison.OrdinalIgnoreCase) ? "meeting" : "review",
+            StatusText = MapDisplayStatus(m.Status)
         }).ToList();
 
-        TodayMeetings = meetings
+        TodayMeetings = LoadedMeetings
             .Where(m => m.MeetingDate.ToLocalTime().Date == DateTime.Today && !string.Equals(m.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)).OrderBy(m => m.MeetingDate)
             .Select(m => new MeetingItem
             {
@@ -273,8 +331,6 @@
                 Status = MapDisplayStatus(m.Status)
             }).ToList();
 
-        var weekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-        var weekEnd = weekStart.AddDays(7);
         MeetingsThisWeek = confirmed.Count(m => m.MeetingDate.ToLocalTime() >= weekStart && m.MeetingDate.ToLocalTime() < weekEnd);
 
     }
@@ -282,7 +338,7 @@
     private static string MapDisplayStatus(string? backendStatus) => backendStatus?.ToLowerInvariant() switch
     {
         "confirmed" => "Confirmed",
-        "requested" => "Urgent",
+        "requested" => "Awaiting confirmation",
         "completed" => "Completed",
         "rescheduled" => "Rescheduled",
         _ => backendStatus ?? "Pending"
@@ -291,15 +347,17 @@
 
 
 
-    private void PreviousMonth()
+    private async Task PreviousMonth()
     {
         CurrentMonth = CurrentMonth.AddMonths(-1);
+        await LoadMeetings();
     }
 
 
-    private void NextMonth()
+    private async Task NextMonth()
     {
         CurrentMonth = CurrentMonth.AddMonths(1);
+        await LoadMeetings();
     }
 
 
@@ -363,7 +421,7 @@
         {
             "confirmed" => "status-confirmed",
             "urgent" => "status-urgent",
-            "pending" or "rescheduled" => "status-pending",
+            "pending" or "rescheduled" or "awaiting confirmation" => "status-pending",
             _ => "status-neutral"
         };
     }
@@ -397,6 +455,12 @@
 
     public class CalendarEvent
     {
+        public int MeetingId { get; set; }
+
+        public string Time { get; set; } = string.Empty;
+
+        public string StatusText { get; set; } = string.Empty;
+
         public string Title { get; set; } = string.Empty;
 
         public DateTime Date { get; set; }
