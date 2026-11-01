@@ -171,7 +171,7 @@
 
                         <div class="meeting-form-actions">
                             <button type="button" class="meeting-cancel-button" @onclick="CloseMeetingForm">Cancel</button>
-                            <button type="submit" class="meeting-send-button">Request meeting</button>
+                            <button type="submit" class="meeting-send-button" disabled="@IsSendingMeeting">@(IsSendingMeeting ? "Sending…" : "Request meeting")</button>
                         </div>
 
                         @if (!string.IsNullOrEmpty(MeetingError))
@@ -470,7 +470,38 @@
         }
     }
 
-    private async Task SendMeetingRequest()
+    /// <summary>
+    /// True while a meeting request is being sent, so a double-click can't send it twice.
+    /// </summary>
+    private bool IsSendingMeeting;
+
+    /// <summary>
+    /// Runs only when the form passes its rules. Reads the values from the form that was
+    /// actually submitted (context.Model) and copies them first: after the first click
+    /// succeeds the page swaps MeetingModel for a fresh empty one, and a second queued
+    /// click used to read that empty model and crash with "Nullable object must have a value".
+    /// </summary>
+    private async Task SendMeetingRequest(EditContext context)
+    {
+        if (IsSendingMeeting || context.Model is not MeetingRequestForm submitted || submitted.MeetingDateTime is not DateTime meetingLocal)
+        {
+            return;
+        }
+
+        var notes = submitted.Notes;
+        IsSendingMeeting = true;
+
+        try
+        {
+            await SendMeetingRequestCore(submitted, meetingLocal, notes);
+        }
+        finally
+        {
+            IsSendingMeeting = false;
+        }
+    }
+
+    private async Task SendMeetingRequestCore(MeetingRequestForm submitted, DateTime meetingLocal, string? notes)
     {
         MeetingError = null;
 
@@ -481,9 +512,9 @@
             return;
         }
 
-        var meetingDateUtc = DateTime.SpecifyKind(MeetingModel.MeetingDateTime!.Value, DateTimeKind.Local).ToUniversalTime();
+        var meetingDateUtc = DateTime.SpecifyKind(meetingLocal, DateTimeKind.Local).ToUniversalTime();
 
-        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, MeetingModel.Notes);
+        var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, meetingDateUtc, notes);
 
         if (error is not null)
         {
