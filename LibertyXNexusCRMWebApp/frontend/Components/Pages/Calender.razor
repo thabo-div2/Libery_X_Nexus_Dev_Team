@@ -263,7 +263,7 @@
                                     <ValidationMessage For="() => RescheduleModel.DurationMinutes" />
                                 </div>
 
-                                <p class="meeting-details-hint">@SelectedMeeting.ClientName will be told about the new time.</p>
+                                <p class="meeting-details-hint">The meeting stays confirmed. @SelectedMeeting.ClientName will see the new time on their Messages page.</p>
 
                                 <div class="meeting-details-actions">
                                     <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" @onclick="BackToView" disabled="@IsWorking">

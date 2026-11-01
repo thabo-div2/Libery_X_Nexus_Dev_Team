@@ -238,7 +238,7 @@ namespace API.Tests.Controllers
             var result = await _sut.Reschedule(8, new RescheduleMeetingRequest { NewMeetingDate = DateTime.UtcNow.AddDays(3) });
 
             Assert.IsType<NotFoundObjectResult>(result.Result);
-            _meetingService.Verify(s => s.RescheduleAsync(It.IsAny<int>(), It.IsAny<RescheduleMeetingRequest>()), Times.Never);
+            _meetingService.Verify(s => s.RescheduleAsync(It.IsAny<int>(), It.IsAny<RescheduleMeetingRequest>(), It.IsAny<bool>()), Times.Never);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace API.Tests.Controllers
             var cancelled = MeetingOf(8, 1);
             cancelled.Status = "Cancelled";
             _meetingService.Setup(s => s.GetByIdAsync(8)).ReturnsAsync(MeetingOf(8, 1));
-            _meetingService.Setup(s => s.CancelAsync(8)).ReturnsAsync(cancelled);
+            _meetingService.Setup(s => s.CancelAsync(8, false)).ReturnsAsync(cancelled);
             _sut.AsClient(1);
 
             var result = await _sut.Cancel(8);
@@ -267,13 +267,28 @@ namespace API.Tests.Controllers
         {
             _meetingService.Setup(s => s.GetByIdAsync(8)).ReturnsAsync(MeetingOf(8, 1));
             _meetingService
-                .Setup(s => s.CancelAsync(8))
+                .Setup(s => s.CancelAsync(8, It.IsAny<bool>()))
                 .ThrowsAsync(new InvalidOperationException("A completed meeting cannot be cancelled."));
             _sut.AsClient(1);
 
             var result = await _sut.Cancel(8);
 
             Assert.IsType<ConflictObjectResult>(result.Result);
+        }
+
+        /// <summary>
+        /// When a client cancels, the service is told it was not the advisor (so the advisor gets notified).
+        /// </summary>
+        [Fact]
+        public async Task Cancel_ByClient_PassesByAdvisorFalse()
+        {
+            _meetingService.Setup(s => s.GetByIdAsync(8)).ReturnsAsync(MeetingOf(8, 1));
+            _meetingService.Setup(s => s.CancelAsync(8, It.IsAny<bool>())).ReturnsAsync(MeetingOf(8, 1));
+            _sut.AsClient(1);
+
+            await _sut.Cancel(8);
+
+            _meetingService.Verify(s => s.CancelAsync(8, false), Times.Once);
         }
 
         /// <summary>

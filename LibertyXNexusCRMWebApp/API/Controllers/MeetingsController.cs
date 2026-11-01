@@ -210,7 +210,7 @@ namespace API.Controllers
 
             try
             {
-                return Ok(await meetingService_.RescheduleAsync(id, request));
+                return Ok(await meetingService_.RescheduleAsync(id, request, byAdvisor: IsAdvisor));
             }
             catch (ArgumentException ex)
             {
@@ -243,7 +243,7 @@ namespace API.Controllers
 
             try
             {
-                return Ok(await meetingService_.CancelAsync(id));
+                return Ok(await meetingService_.CancelAsync(id, byAdvisor: IsAdvisor));
             }
             catch (KeyNotFoundException ex)
             {
