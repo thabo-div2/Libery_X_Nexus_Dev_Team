@@ -240,6 +240,41 @@ namespace frontend.Services
         /// </summary>
         /// <param name="meetingId"></param>
         /// <returns></returns>
+        /// <summary>
+        /// Moves a meeting to a new local date and time (and optionally a new length).
+        /// Returns the updated meeting, or the API's error (e.g. a clash with another meeting).
+        /// </summary>
+        public async Task<(MeetingSummary? Meeting, string? Error)> RescheduleAsync(int meetingId, int clientId, DateTime newLocalDateTime, int durationMinutes)
+        {
+            try
+            {
+                var request = new
+                {
+                    NewMeetingDate = DateTime.SpecifyKind(newLocalDateTime, DateTimeKind.Local).ToUniversalTime(),
+                    DurationMinutes = durationMinutes
+                };
+
+                var response = await _http.PutAsJsonAsync($"meetings/{meetingId}/reschedule", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, await ReadErrorAsync(response));
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<MeetingSummary>();
+                _notifier.NotifyMessageSent(clientId);
+                return (result, result is null ? "The server sent back an unexpected response." : null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
         public async Task<string?> CancelAsync(int meetingId) 
         { 
             try 

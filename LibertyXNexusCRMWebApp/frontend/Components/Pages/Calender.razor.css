@@ -313,6 +313,12 @@
     cursor: pointer;
 }
 
+/* The meeting whose details are open */
+.calendar-event.is-selected {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
 .calendar-event-time {
     margin-right: var(--space-1);
     font-weight: var(--weight-semibold);
@@ -376,12 +382,25 @@
 }
 
 .meeting-card {
+    width: 100%;
     min-height: 88px;
     padding: var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-white);
+    /* it's a button now: keep the card look */
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
+
+    .meeting-card:hover,
+    .meeting-card.is-selected {
+        border-color: var(--color-primary);
+        box-shadow: var(--shadow-sm);
+    }
 
 .meeting-top {
     display: flex;
@@ -674,5 +693,131 @@
     height: 10px;
     border-radius: 3px;
 }
+
+/* =====================================
+   MEETING DETAILS PANEL
+   ===================================== */
+
+.meeting-details-card {
+    border-color: var(--color-primary);
+}
+
+    .meeting-details-card:focus {
+        outline: none;
+    }
+
+    .meeting-details-card:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+
+.meeting-details-header {
+    justify-content: space-between;
+}
+
+.meeting-details-close {
+    width: 28px;
+    min-height: 28px;
+    height: 28px;
+    font-size: var(--text-sm);
+}
+
+.meeting-details-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+}
+
+.meeting-details-who {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+    .meeting-details-who strong {
+        color: var(--color-text);
+        font-size: var(--text-base);
+    }
+
+.meeting-details-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+}
+
+    .meeting-details-list dt {
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+        font-weight: var(--weight-semibold);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .meeting-details-list dd {
+        margin: 2px 0 0;
+        color: var(--color-text);
+        font-size: var(--text-sm);
+    }
+
+.meeting-details-notes {
+    grid-column: 1 / -1;
+}
+
+.meeting-details-hint {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+}
+
+.meeting-details-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.reschedule-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* Cancel confirmation */
+.meeting-cancel-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--color-red-240);
+    border-left: 3px solid var(--color-danger);
+    border-radius: var(--radius-sm);
+    background: var(--color-danger-bg);
+}
+
+    .meeting-cancel-confirm strong {
+        color: var(--color-danger);
+        font-size: var(--text-sm);
+    }
+
+    .meeting-cancel-confirm p {
+        margin: 0;
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        line-height: 1.5;
+    }
+
+    .meeting-cancel-confirm .meeting-cancel-error {
+        color: var(--color-danger);
+        font-weight: var(--weight-semibold);
+    }
+
+    .meeting-cancel-confirm .meeting-details-actions {
+        border-top-color: var(--color-red-240);
+    }
 
 /* ================================ EndOfFile ============================== */
