@@ -272,6 +272,34 @@ namespace frontend.Services
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Permanently deletes a client and everything linked to them (advisor only).
+        /// Returns null when it worked, otherwise the error to show.
+        /// </summary>
+        public async Task<string?> DeleteAsync(int id)
+        {
+            try
+            {
+                var response = await _http.DeleteAsync($"clients/{id}");
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return "That client could not be found. They may already have been deleted.";
+                }
+
+                return response.IsSuccessStatusCode ? null : await ReadErrorAsync(response);
+            }
+            catch (HttpRequestException)
+            {
+                return "Can't reach the server. Make sure the Backend project is running.";
+            }
+            catch (Exception ex)
+            {
+                return $"Something went wrong: {ex.Message}";
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Reads the error message from an HTTP response and formats it for display.
         /// </summary>
         /// <param name="response"></param>

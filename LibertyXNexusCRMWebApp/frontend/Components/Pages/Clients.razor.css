@@ -626,6 +626,48 @@
     border-top: 1px solid var(--color-border-light);
 }
 
+/* Delete confirmation, shown under the panel header */
+.client-delete-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: var(--space-3) var(--space-5) 0;
+    padding: var(--space-4);
+    border: 1px solid var(--color-red-240);
+    border-left: 3px solid var(--color-danger);
+    border-radius: var(--radius-sm);
+    background: var(--color-danger-bg);
+}
+
+    .client-delete-confirm strong {
+        color: var(--color-danger);
+        font-size: var(--text-sm);
+    }
+
+    .client-delete-confirm p {
+        margin: 0;
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        line-height: 1.5;
+    }
+
+    .client-delete-confirm .client-delete-error {
+        color: var(--color-danger);
+        font-weight: var(--weight-semibold);
+    }
+
+.client-delete-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+}
+
+/* "Client deleted" message above the list */
+.clients-list-alert {
+    margin: var(--space-3) var(--space-4) 0;
+}
+
 @media (max-width: 600px) {
 
     .client-edit-row {

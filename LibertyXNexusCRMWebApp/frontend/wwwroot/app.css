@@ -378,6 +378,18 @@ textarea:focus-visible {
         box-shadow: var(--shadow-sm);
     }
 
+/* Dangerous action that isn't the final step, e.g. the "Delete" that opens a confirmation */
+.nx-btn-danger-outline {
+    border-color: var(--color-red-240);
+    background: var(--color-white);
+    color: var(--color-danger);
+}
+
+    .nx-btn-danger-outline:hover:not(:disabled) {
+        border-color: var(--color-danger);
+        background: var(--color-danger-bg);
+    }
+
 /* Smaller button */
 .nx-btn-sm {
     min-height: 30px;
