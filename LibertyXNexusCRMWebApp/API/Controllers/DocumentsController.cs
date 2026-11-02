@@ -81,6 +81,19 @@ namespace API.Controllers
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Lets a client know their advisor shared a document with them.
+        /// </summary>
+        private Task NotifyClientOfSharedDocumentAsync(int clientId, string fileName)
+        {
+            return _notificationService.NotifyClientAsync(
+                clientId,
+                NotificationType.DocumentUploaded,
+                $"Your advisor shared a document with you: {fileName}.",
+                "/client-documents");
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Gets a document by its ID. Returns 404 if the document does not exist or if the current user does not have access to it.
         /// </summary>
         /// <param name="id"></param>
@@ -280,11 +293,11 @@ namespace API.Controllers
                 return Conflict(new { message = ex.Message });
             }
 
-            // Let the advisor know their client sent something. The file is already saved,
+            // Tell the other side about the new document. The file is already saved,
             // so a failed notification shouldn't turn the upload into an error.
-            if (!IsAdvisor && client.AdvisorId is int advisorId)
+            try
             {
-                try
+                if (!IsAdvisor && client.AdvisorId is int advisorId)
                 {
                     await _notificationService.NotifyAdvisorAsync(
                         advisorId,
@@ -293,10 +306,14 @@ namespace API.Controllers
                         "/documents",
                         request.ClientId);
                 }
-                catch (Exception)
+                else if (IsAdvisor && request.VisibleToClient)
                 {
-                    // Ignore - the upload itself worked.
+                    await NotifyClientOfSharedDocumentAsync(request.ClientId, created.FileName);
                 }
+            }
+            catch (Exception)
+            {
+                // Ignore - the upload itself worked.
             }
 
             return CreatedAtAction(nameof(GetById), new { id = created.DocumentId }, created);
@@ -353,14 +370,30 @@ namespace API.Controllers
                 return NotFound(new { message = $"Document {id} was not found." });
             }
 
+            DocumentDto updated;
             try
             {
-                return Ok(await documentService_.SetVisibilityAsync(id, request.VisibleToClient));
+                updated = await documentService_.SetVisibilityAsync(id, request.VisibleToClient);
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
+
+            // Only tell the client when a hidden document becomes visible, not every time it's saved.
+            if (!document.VisibleToClient && request.VisibleToClient)
+            {
+                try
+                {
+                    await NotifyClientOfSharedDocumentAsync(document.ClientId, document.FileName);
+                }
+                catch (Exception)
+                {
+                    // Ignore - the visibility change itself worked.
+                }
+            }
+
+            return Ok(updated);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

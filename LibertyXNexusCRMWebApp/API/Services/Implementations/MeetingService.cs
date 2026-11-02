@@ -212,6 +212,14 @@ namespace API.Services.Implementations
                     "/calendar",
                     client.ClientId);
             }
+            else if (byAdvisor)
+            {
+                await notificationService_.NotifyClientAsync(
+                    meeting.ClientId,
+                    NotificationType.MeetingRescheduled,
+                    $"Your advisor moved your meeting to {DisplayTime.Format(meeting.MeetingDate)}.",
+                    "/client-calendar");
+            }
 
             return await MapToDtoAsync(meeting);
         }
@@ -254,6 +262,14 @@ namespace API.Services.Implementations
                     "/calendar",
                     client.ClientId);
             }
+            else if (byAdvisor)
+            {
+                await notificationService_.NotifyClientAsync(
+                    meeting.ClientId,
+                    NotificationType.MeetingCancelled,
+                    $"Your advisor cancelled your meeting on {DisplayTime.Format(meeting.MeetingDate)}.",
+                    "/client-calendar");
+            }
 
             return await MapToDtoAsync(meeting);
         }
@@ -279,6 +295,14 @@ namespace API.Services.Implementations
             meeting.UpdatedAt = DateTime.UtcNow;
 
             await meetingRepository_.UpdateAsync(meeting);
+
+            // Only advisors can confirm, so let the client know it's on.
+            await notificationService_.NotifyClientAsync(
+                meeting.ClientId,
+                NotificationType.MeetingConfirmed,
+                $"Your meeting on {DisplayTime.Format(meeting.MeetingDate)} is confirmed.",
+                "/client-calendar");
+
             return await MapToDtoAsync(meeting);
         }
 

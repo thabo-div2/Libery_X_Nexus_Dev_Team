@@ -164,6 +164,8 @@ namespace API.Tests.Services
             var result = await _sut.ConfirmAsync(1);
 
             Assert.Equal("Confirmed", result.Status);
+            _notificationService.Verify(n => n.NotifyClientAsync(
+                1, NotificationType.MeetingConfirmed, It.IsAny<string>(), "/client-calendar"), Times.Once);
         }
 
         /// <summary>
@@ -308,6 +310,10 @@ namespace API.Tests.Services
             Assert.Equal(MeetingStatus.Cancelled, meeting.Status);
             _notificationService.Verify(n => n.NotifyAdvisorAsync(
                 It.IsAny<int>(), It.IsAny<NotificationType>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Never);
+
+            // ...but the client is told their meeting was cancelled.
+            _notificationService.Verify(n => n.NotifyClientAsync(
+                1, NotificationType.MeetingCancelled, It.IsAny<string>(), "/client-calendar"), Times.Once);
         }
 
         [Fact]
@@ -324,6 +330,10 @@ namespace API.Tests.Services
 
             _notificationService.Verify(n => n.NotifyAdvisorAsync(
                 5, NotificationType.MeetingCancelled, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Once);
+
+            // The client cancelled it themselves, so they don't get told about their own action.
+            _notificationService.Verify(n => n.NotifyClientAsync(
+                It.IsAny<int>(), It.IsAny<NotificationType>(), It.IsAny<string>(), It.IsAny<string?>()), Times.Never);
         }
     }
 }
