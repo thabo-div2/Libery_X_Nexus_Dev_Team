@@ -236,6 +236,70 @@ namespace frontend.Services
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Updates a client's name, phone, ID number and risk profile (advisor only).
+        /// Returns the updated profile, or the API's error message.
+        /// </summary>
+        public async Task<(ClientProfile? Client, string? Error)> UpdateAsync(int id, Shared.DTOs.Clients.UpdateClientRequest request)
+        {
+            try
+            {
+                var response = await _http.PutAsJsonAsync($"clients/{id}", request);
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return (null, "That client could not be found. They may have been deleted.");
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, await ReadErrorAsync(response));
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<ClientProfile>();
+                result?.NormalizeName();
+
+                return (result, result is null ? "The server sent back an unexpected response." : null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Permanently deletes a client and everything linked to them (advisor only).
+        /// Returns null when it worked, otherwise the error to show.
+        /// </summary>
+        public async Task<string?> DeleteAsync(int id)
+        {
+            try
+            {
+                var response = await _http.DeleteAsync($"clients/{id}");
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return "That client could not be found. They may already have been deleted.";
+                }
+
+                return response.IsSuccessStatusCode ? null : await ReadErrorAsync(response);
+            }
+            catch (HttpRequestException)
+            {
+                return "Can't reach the server. Make sure the Backend project is running.";
+            }
+            catch (Exception ex)
+            {
+                return $"Something went wrong: {ex.Message}";
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Reads the error message from an HTTP response and formats it for display.
         /// </summary>
         /// <param name="response"></param>

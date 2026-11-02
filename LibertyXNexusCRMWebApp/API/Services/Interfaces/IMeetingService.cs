@@ -12,7 +12,11 @@ namespace API.Services.Interfaces
         Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status, int advisorId);
         Task<MeetingDto> BookAsync(BookMeetingRequest request);
         Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request);
+        /// <summary>byAdvisor = true when the advisor made the change: the meeting stays confirmed and the advisor isn't notified about their own action.</summary>
+        Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request, bool byAdvisor);
         Task<MeetingDto> CancelAsync(int meetingId);
+        /// <summary>byAdvisor = true when the advisor cancelled (or declined a request): the advisor isn't notified about their own action.</summary>
+        Task<MeetingDto> CancelAsync(int meetingId, bool byAdvisor);
         Task<MeetingDto> ConfirmAsync(int meetingId);
     }
 }

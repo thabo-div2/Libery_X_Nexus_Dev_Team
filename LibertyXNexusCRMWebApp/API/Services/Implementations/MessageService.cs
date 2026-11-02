@@ -168,6 +168,14 @@ namespace API.Services.Implementations
                     "/messages",
                     client.ClientId);
             }
+            else
+            {
+                await _notificationService.NotifyClientAsync(
+                    client.ClientId,
+                    NotificationType.MessageReceived,
+                    "Your advisor sent you a new message.",
+                    "/client-messages");
+            }
 
             return new MessageDto(
                 message.MessageId,

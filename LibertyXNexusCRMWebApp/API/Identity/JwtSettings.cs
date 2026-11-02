@@ -11,6 +11,9 @@
         public string Key { get; set; } = string.Empty;
 
         public int ExpiryMinutes { get; set; } = 60;
+
+        // How long a "Keep me signed in" login lasts.
+        public int RememberMeExpiryDays { get; set; } = 7;
     }
 }
 
