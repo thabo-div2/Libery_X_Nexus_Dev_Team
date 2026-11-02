@@ -1,0 +1,40 @@
+﻿/* ===================================
+   DOCUMENT UPLOAD (client)
+   =================================== */
+
+.doc-upload {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.doc-upload-fields {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.doc-upload-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+::deep .doc-upload-file {
+    padding: 6px;
+    cursor: pointer;
+}
+
+.doc-upload-hint,
+.doc-upload-note {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.doc-upload-button {
+    width: 100%;
+}
+
+.doc-upload .nx-alert {
+    margin: 0;
+}
