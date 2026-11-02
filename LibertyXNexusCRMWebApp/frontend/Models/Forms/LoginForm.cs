@@ -15,6 +15,9 @@ namespace frontend.Models.Forms
         [Required(ErrorMessage = "Enter your password.")]
         [MaxLength(128)]
         public string Password { get; set; } = string.Empty;
+
+        /// <summary>"Keep me signed in" - stay logged in after closing the browser.</summary>
+        public bool RememberMe { get; set; }
     }
 }
 
