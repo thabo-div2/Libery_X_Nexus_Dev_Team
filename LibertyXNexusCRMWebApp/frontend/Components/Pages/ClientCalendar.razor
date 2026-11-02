@@ -1,0 +1,896 @@
+﻿@page "/client-calendar"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
+@using frontend.Services
+@inject CurrentUserService CurrentUser
+@inject MeetingService MeetingStore
+@inject MessageNotifier Notifier
+@inject IJSRuntime JS
+
+<PageTitle>My calendar | Nexus</PageTitle>
+
+<div class="calendar-page">
+
+    <!-- PAGE HEADER -->
+    <header class="calendar-header">
+
+        <div class="calendar-heading">
+            <h1>My calendar</h1>
+
+            <p>
+                @CurrentMonth.ToString("MMMM yyyy")
+                @if (MeetingsThisWeek.HasValue)
+                {
+                    <span> · @MeetingsThisWeek meetings this week</span>
+                }
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            @* Meetings are requested from the Messages page, where the client and advisor talk. *@
+            <a href="/client-messages" class="nx-btn nx-btn-primary nx-btn-sm">Request a meeting</a>
+
+        </div>
+
+    </header>
+
+
+    <!-- PAGE CONTENT -->
+    <main class="calendar-content">
+
+        <!-- LEFT COLUMN -->
+        <section class="calendar-main-column">
+
+            <!-- CALENDAR CARD -->
+            <article class="calendar-card">
+
+                <div class="calendar-card-header">
+
+                    <button type="button"
+                            class="month-button"
+                            @onclick="PreviousMonth"
+                            aria-label="Previous month">
+                        ‹
+                    </button>
+
+                    <h2>@CurrentMonth.ToString("MMMM yyyy")</h2>
+
+                    @if (IsLoadingMonth)
+                    {
+                        <span class="month-loading" role="status">Loading…</span>
+                    }
+
+                    <button type="button"
+                            class="month-button"
+                            @onclick="NextMonth"
+                            aria-label="Next month">
+                        ›
+                    </button>
+
+                </div>
+
+
+                @if (!string.IsNullOrEmpty(LoadError))
+                {
+                    <p class="nx-alert nx-alert-danger calendar-load-error" role="alert">@LoadError</p>
+                }
+
+                <!-- KEY -->
+                <div class="calendar-key" aria-label="Colour key">
+                    <span class="calendar-key-item"><span class="calendar-key-swatch event-green" aria-hidden="true"></span>Confirmed</span>
+                    <span class="calendar-key-item"><span class="calendar-key-swatch event-yellow" aria-hidden="true"></span>Awaiting confirmation</span>
+                </div>
+
+                <!-- DAYS OF WEEK -->
+                <div class="week-header">
+
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                    <div>Sun</div>
+
+                </div>
+
+
+                <!-- CALENDAR GRID -->
+                <div class="calendar-grid">
+
+                    @foreach (var day in CalendarDays)
+                    {
+                        <div class="calendar-day
+                            @(day.IsCurrentMonth ? "" : "other-month")
+                            @(day.IsToday ? "today" : "")">
+
+                            <div class="day-number">
+                                <span>@day.Date.Day</span>
+                            </div>
+
+
+                            <div class="day-events">
+
+                                @foreach (var calendarEvent in GetEventsForDate(day.Date))
+                                {
+                                    <button type="button"
+                                            class="calendar-event @GetEventClass(calendarEvent.Type) @(SelectedMeeting?.MeetingId == calendarEvent.MeetingId ? "is-selected" : "")"
+                                            title="@calendarEvent.Time @calendarEvent.Title (@calendarEvent.StatusText)"
+                                            aria-label="@calendarEvent.Time, @calendarEvent.Title, @calendarEvent.StatusText. Open meeting details"
+                                            aria-pressed="@(SelectedMeeting?.MeetingId == calendarEvent.MeetingId ? "true" : "false")"
+                                            @onclick="() => SelectMeeting(calendarEvent.MeetingId)">
+
+                                        <span class="calendar-event-time">@calendarEvent.Time</span>
+                                        @calendarEvent.Title
+
+                                    </button>
+                                }
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- RIGHT COLUMN -->
+        <aside class="calendar-side-column">
+
+            @if (!string.IsNullOrEmpty(PanelMessage))
+            {
+                <p class="nx-alert nx-alert-success" role="status">@PanelMessage</p>
+            }
+
+            <!-- MEETING DETAILS (opens when a meeting is clicked) -->
+            @if (SelectedMeeting is not null)
+            {
+                <section class="side-card meeting-details-card"
+                         aria-labelledby="meeting-details-title"
+                         tabindex="-1"
+                         @ref="DetailsCard"
+                         @onkeydown="HandleDetailsKeyDown">
+
+                    <div class="side-card-header meeting-details-header">
+                        <h2 id="meeting-details-title">Meeting details</h2>
+                        <button type="button"
+                                class="nx-btn nx-btn-icon nx-btn-sm meeting-details-close"
+                                aria-label="Close meeting details"
+                                @onclick="CloseDetails">
+                            ✕
+                        </button>
+                    </div>
+
+                    <div class="meeting-details-body">
+
+                        <div class="meeting-details-who">
+                            <strong>@MeetingTitle(SelectedMeeting)</strong>
+                            <span class="meeting-status @GetMeetingStatusClass(MapDisplayStatus(SelectedMeeting.Status))">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                @MapDisplayStatus(SelectedMeeting.Status)
+                            </span>
+                        </div>
+
+                        <dl class="meeting-details-list">
+                            <div>
+                                <dt>When</dt>
+                                <dd>@SelectedMeeting.MeetingDate.ToLocalTime().ToString("ddd d MMM yyyy, HH:mm")</dd>
+                            </div>
+                            <div>
+                                <dt>Duration</dt>
+                                <dd>@FormatDuration(SelectedMeeting.DurationMinutes)</dd>
+                            </div>
+                            <div>
+                                <dt>Type</dt>
+                                <dd>@(string.IsNullOrWhiteSpace(SelectedMeeting.MeetingType) ? "—" : SelectedMeeting.MeetingType)</dd>
+                            </div>
+                            <div>
+                                <dt>Location</dt>
+                                <dd>@(string.IsNullOrWhiteSpace(SelectedMeeting.Location) ? "—" : SelectedMeeting.Location)</dd>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(SelectedMeeting.Notes))
+                            {
+                                <div class="meeting-details-notes">
+                                    <dt>Notes</dt>
+                                    <dd>@SelectedMeeting.Notes</dd>
+                                </div>
+                            }
+                        </dl>
+
+                        @if (IsPastMeeting(SelectedMeeting))
+                        {
+                            <p class="meeting-details-hint">This meeting has already happened, so it can't be changed.</p>
+                        }
+                        else if (Mode == DetailsMode.View)
+                        {
+                            <div class="meeting-details-actions">
+                                <button type="button"
+                                        class="nx-btn nx-btn-secondary nx-btn-sm"
+                                        @ref="RescheduleButton"
+                                        @onclick="StartReschedule">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                                    Reschedule
+                                </button>
+                                <button type="button"
+                                        class="nx-btn nx-btn-danger-outline nx-btn-sm"
+                                        @ref="CancelMeetingButton"
+                                        @onclick="AskToCancel">
+                                    Cancel meeting
+                                </button>
+                            </div>
+                        }
+                        else if (Mode == DetailsMode.Reschedule)
+                        {
+                            <EditForm Model="RescheduleModel" OnValidSubmit="SaveRescheduleAsync" class="reschedule-form" novalidate>
+                                <DataAnnotationsValidator />
+
+                                @if (!string.IsNullOrEmpty(PanelError))
+                                {
+                                    <p class="nx-alert nx-alert-danger" role="alert">@PanelError</p>
+                                }
+
+                                <div>
+                                    <label class="nx-label" for="reschedule-when">New date and time</label>
+                                    <InputDate Type="InputDateType.DateTimeLocal"
+                                               id="reschedule-when"
+                                               class="nx-input"
+                                               min="@MinMeetingTime"
+                                               @ref="RescheduleWhenInput"
+                                               @bind-Value="RescheduleModel.NewMeetingDateTime" />
+                                    <ValidationMessage For="() => RescheduleModel.NewMeetingDateTime" />
+                                </div>
+
+                                <div>
+                                    <label class="nx-label" for="reschedule-duration">Duration</label>
+                                    <InputSelect id="reschedule-duration" class="nx-input" @bind-Value="RescheduleModel.DurationMinutes">
+                                        @foreach (var minutes in DurationOptions(SelectedMeeting.DurationMinutes))
+                                        {
+                                            <option value="@minutes">@FormatDuration(minutes)</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => RescheduleModel.DurationMinutes" />
+                                </div>
+
+                                <p class="meeting-details-hint">Your advisor will need to confirm the new time. Until then it shows as awaiting confirmation.</p>
+
+                                <div class="meeting-details-actions">
+                                    <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" @onclick="BackToView" disabled="@IsWorking">
+                                        Back
+                                    </button>
+                                    <button type="submit" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@IsWorking">
+                                        @(IsWorking ? "Saving…" : "Save new time")
+                                    </button>
+                                </div>
+                            </EditForm>
+                        }
+                        else if (Mode == DetailsMode.ConfirmCancel)
+                        {
+                            <div class="meeting-cancel-confirm" role="alertdialog" aria-labelledby="cancel-confirm-title" aria-describedby="cancel-confirm-text">
+                                <strong id="cancel-confirm-title">Cancel this meeting?</strong>
+                                <p id="cancel-confirm-text">
+                                    Your meeting on
+                                    @SelectedMeeting.MeetingDate.ToLocalTime().ToString("ddd d MMM 'at' HH:mm")
+                                    will be cancelled and your advisor will be told.
+                                </p>
+
+                                @if (!string.IsNullOrEmpty(PanelError))
+                                {
+                                    <p class="meeting-cancel-error" role="alert">@PanelError</p>
+                                }
+
+                                <div class="meeting-details-actions">
+                                    <button type="button"
+                                            class="nx-btn nx-btn-secondary nx-btn-sm"
+                                            @ref="KeepMeetingButton"
+                                            @onclick="BackToView"
+                                            disabled="@IsWorking">
+                                        Keep meeting
+                                    </button>
+                                    <button type="button"
+                                            class="nx-btn nx-btn-danger nx-btn-sm"
+                                            @onclick="CancelMeetingAsync"
+                                            disabled="@IsWorking">
+                                        @(IsWorking ? "Cancelling…" : "Cancel meeting")
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </section>
+            }
+
+
+            <!-- TODAY -->
+            <section class="side-card today-card">
+
+                <div class="side-card-header">
+
+                    <h2>
+                        Today · @DateTime.Today.ToString("d MMMM")
+                    </h2>
+
+                </div>
+
+
+                <div class="today-body">
+
+                    @if (TodayMeetings.Count > 0)
+                    {
+                        @foreach (var meeting in TodayMeetings)
+                        {
+                            <button type="button"
+                                    class="meeting-card @(SelectedMeeting?.MeetingId == meeting.MeetingId ? "is-selected" : "")"
+                                    aria-label="@meeting.Time, @meeting.Title, @meeting.Status. Open meeting details"
+                                    @onclick="() => SelectMeeting(meeting.MeetingId)">
+
+                                <div class="meeting-top">
+
+                                    <div class="meeting-time">
+                                        <span class="clock-icon">◷</span>
+                                        <span>@meeting.Time</span>
+                                    </div>
+
+                                    <span class="meeting-status @GetMeetingStatusClass(meeting.Status)">
+                                        <span class="status-dot"></span>
+                                        @meeting.Status
+                                    </span>
+
+                                </div>
+
+
+                                <strong class="meeting-title">
+                                    @meeting.Title
+                                </strong>
+
+
+                                @if (!string.IsNullOrWhiteSpace(meeting.Method))
+                                {
+                                    <div class="meeting-method">
+                                        <span class="method-icon">
+                                            @GetMeetingMethodIcon(meeting.Method)
+                                        </span>
+
+                                        <span>@meeting.Method</span>
+                                    </div>
+                                }
+
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-meetings">
+
+                            <span class="empty-calendar-icon">□</span>
+
+                            <strong>No meetings today</strong>
+
+                            <span>
+                                Meetings with your advisor will appear here.
+                            </span>
+
+                        </div>
+                    }
+
+                </div>
+
+            </section>
+
+
+
+        </aside>
+
+    </main>
+
+</div>
+
+
+            @code {
+
+    private DateTime CurrentMonth { get; set; } =
+        new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+
+    private int? MeetingsThisWeek;
+
+    /// <summary>
+    /// Every meeting loaded for the visible grid and the current week, any status.
+    /// </summary>
+    private List<MeetingSummary> LoadedMeetings { get; set; } = new();
+
+    private bool IsLoadingMonth;
+    private string? LoadError;
+
+    private List<CalendarEvent> Events { get; set; } = new();
+
+    private List<MeetingItem> TodayMeetings { get; set; } = new();
+
+    private List<CalendarDay> CalendarDays => BuildCalendarDays();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureRestoredAsync();
+
+        await LoadMeetings();
+
+        Notifier.MessageSent += OnMeetingChanged;
+    }
+
+    // Refresh when one of this client's meetings changes (e.g. the advisor confirms or moves it).
+    private void OnMeetingChanged(int clientId)
+    {
+        if (clientId != CurrentUser.Id)
+        {
+            return;
+        }
+
+        _ = InvokeAsync(async () =>
+        {
+            await LoadMeetings();
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        Notifier.MessageSent -= OnMeetingChanged;
+    }
+
+    /// <summary>
+    /// Monday of the week that contains the given date (the grid starts on Monday).
+    /// </summary>
+    private static DateTime StartOfWeek(DateTime date) => date.Date.AddDays(-(((int)date.DayOfWeek + 6) % 7));
+
+    /// <summary>
+    /// Loads all of this client's meetings. A client only has a handful, so they're
+    /// fetched once and the month buttons just move through them (the range endpoint
+    /// the advisor calendar uses is advisor-only).
+    /// </summary>
+    private async Task LoadMeetings()
+    {
+        var weekStart = StartOfWeek(DateTime.Today);
+        var weekEnd = weekStart.AddDays(7);
+
+        if (CurrentUser.Id is not int clientId)
+        {
+            LoadError = "You need to be signed in to see your calendar.";
+            return;
+        }
+
+        IsLoadingMonth = true;
+        var (meetings, error) = await MeetingStore.GetForClientAsync(clientId);
+        IsLoadingMonth = false;
+        LoadError = error;
+
+        // Cancelled meetings are left off the calendar.
+        LoadedMeetings = meetings
+            .Where(m => !string.Equals(m.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(m => m.MeetingDate)
+            .ToList();
+
+        var confirmed = LoadedMeetings.Where(m => string.Equals(m.Status, "Confirmed", StringComparison.OrdinalIgnoreCase)).ToList();
+
+        Events = LoadedMeetings.Select(m => new CalendarEvent
+        {
+            MeetingId = m.MeetingId,
+            Title = MeetingTitle(m),
+            Date = m.MeetingDate.ToLocalTime(),
+            Time = m.MeetingDate.ToLocalTime().ToString("HH:mm"),
+            // Confirmed = green; requested or rescheduled = waiting for a yes, amber.
+            Type = string.Equals(m.Status, "Confirmed", StringComparison.OrdinalIgnoreCase) ? "meeting" : "review",
+            StatusText = MapDisplayStatus(m.Status)
+        }).ToList();
+
+        TodayMeetings = LoadedMeetings
+            .Where(m => m.MeetingDate.ToLocalTime().Date == DateTime.Today && !string.Equals(m.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)).OrderBy(m => m.MeetingDate)
+            .Select(m => new MeetingItem
+            {
+                MeetingId = m.MeetingId,
+                Time = m.MeetingDate.ToLocalTime().ToString("HH:mm"),
+                Title = MeetingTitle(m),
+                Method = m.Location ?? string.Empty,
+                Status = MapDisplayStatus(m.Status)
+            }).ToList();
+
+        MeetingsThisWeek = confirmed.Count(m => m.MeetingDate.ToLocalTime() >= weekStart && m.MeetingDate.ToLocalTime() < weekEnd);
+
+    }
+
+    // The client always meets their own advisor, so show what the meeting is about instead of a name.
+    private static string MeetingTitle(MeetingSummary meeting) =>
+        string.IsNullOrWhiteSpace(meeting.MeetingType) ? "Meeting with your advisor" : meeting.MeetingType;
+
+    private static string MapDisplayStatus(string? backendStatus) => backendStatus?.ToLowerInvariant() switch
+    {
+        "confirmed" => "Confirmed",
+        "requested" => "Awaiting confirmation",
+        "completed" => "Completed",
+        "rescheduled" => "Rescheduled",
+        _ => backendStatus ?? "Pending"
+    };
+
+
+
+
+    // Every meeting is already loaded, so changing month only redraws the grid.
+    private void PreviousMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(-1);
+    }
+
+
+    private void NextMonth()
+    {
+        CurrentMonth = CurrentMonth.AddMonths(1);
+    }
+
+
+    private List<CalendarDay> BuildCalendarDays()
+    {
+        var firstDay = new DateTime(
+            CurrentMonth.Year,
+            CurrentMonth.Month,
+            1);
+
+        int daysFromMonday =
+            ((int)firstDay.DayOfWeek + 6) % 7;
+
+        var calendarStart =
+            firstDay.AddDays(-daysFromMonday);
+
+        var days = new List<CalendarDay>();
+
+        for (int i = 0; i < 42; i++)
+        {
+            var date = calendarStart.AddDays(i);
+
+            days.Add(new CalendarDay
+            {
+                Date = date,
+                IsCurrentMonth =
+                    date.Month == CurrentMonth.Month &&
+                    date.Year == CurrentMonth.Year,
+
+                IsToday =
+                    date.Date == DateTime.Today
+            });
+        }
+
+        return days;
+    }
+
+
+    private IEnumerable<CalendarEvent> GetEventsForDate(DateTime date)
+    {
+        return Events.Where(x => x.Date.Date == date.Date);
+    }
+
+
+    private static string GetEventClass(string? type)
+    {
+        return type?.ToLowerInvariant() switch
+        {
+            "meeting" => "event-green",
+            "review" => "event-yellow",
+            "urgent" => "event-red",
+            "personal" => "event-blue",
+            _ => "event-neutral"
+        };
+    }
+
+
+    private static string GetMeetingStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "confirmed" => "status-confirmed",
+            "urgent" => "status-urgent",
+            "pending" or "rescheduled" or "awaiting confirmation" => "status-pending",
+            _ => "status-neutral"
+        };
+    }
+
+
+    private static string GetMeetingMethodIcon(string? method)
+    {
+        if (string.IsNullOrWhiteSpace(method))
+        {
+            return "•";
+        }
+
+        var lower = method.ToLowerInvariant();
+
+        if (lower.Contains("team")) return "▣";
+        if (lower.Contains("call") || lower.Contains("phone")) return "◔";
+        if (lower.Contains("office")) return "⌂";
+        return "•";
+    }
+
+
+
+    // ---------------------------------------------------------
+    // Meeting details: view, reschedule, cancel
+    // ---------------------------------------------------------
+
+    private enum DetailsMode { View, Reschedule, ConfirmCancel }
+
+    private MeetingSummary? SelectedMeeting;
+    private DetailsMode Mode = DetailsMode.View;
+    private RescheduleMeetingForm RescheduleModel = new();
+    private bool IsWorking;
+    private string? PanelError;
+
+    /// <summary>
+    /// Green confirmation above the side column, e.g. "Meeting moved to …".
+    /// </summary>
+    private string? PanelMessage;
+
+    private ElementReference DetailsCard;
+    private ElementReference RescheduleButton;
+    private ElementReference CancelMeetingButton;
+    private ElementReference KeepMeetingButton;
+    private InputDate<DateTime?>? RescheduleWhenInput;
+
+    /// <summary>
+    /// Where keyboard focus should go after the next render.
+    /// </summary>
+    private enum FocusTarget { None, Details, RescheduleButton, CancelButton, WhenInput, KeepButton }
+    private FocusTarget PendingFocus = FocusTarget.None;
+
+    /// <summary>
+    /// Stops the date picker from offering times that have already passed.
+    /// </summary>
+    private static string MinMeetingTime => DateTime.Now.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture);
+
+    private static readonly int[] StandardDurations = { 15, 30, 45, 60, 90, 120 };
+
+    /// <summary>
+    /// The standard lengths, plus the meeting's current one if it is unusual.
+    /// </summary>
+    private static IEnumerable<int> DurationOptions(int current) =>
+        StandardDurations.Contains(current) ? StandardDurations : StandardDurations.Append(current).OrderBy(m => m);
+
+    private static string FormatDuration(int minutes) => minutes switch
+    {
+        < 60 => $"{minutes} minutes",
+        60 => "1 hour",
+        _ when minutes % 60 == 0 => $"{minutes / 60} hours",
+        _ => $"{minutes / 60} h {minutes % 60} min"
+    };
+
+    private static bool IsPastMeeting(MeetingSummary meeting) =>
+        meeting.MeetingDate.ToLocalTime() <= DateTime.Now ||
+        string.Equals(meeting.Status, "Completed", StringComparison.OrdinalIgnoreCase);
+
+    private void SelectMeeting(int meetingId)
+    {
+        SelectedMeeting = LoadedMeetings.FirstOrDefault(m => m.MeetingId == meetingId);
+        Mode = DetailsMode.View;
+        PanelError = null;
+        PanelMessage = null;
+        PendingFocus = FocusTarget.Details;
+    }
+
+    private void CloseDetails()
+    {
+        SelectedMeeting = null;
+        Mode = DetailsMode.View;
+        PanelError = null;
+    }
+
+    private void BackToView()
+    {
+        var cameFrom = Mode;
+        Mode = DetailsMode.View;
+        PanelError = null;
+        PendingFocus = cameFrom == DetailsMode.ConfirmCancel ? FocusTarget.CancelButton : FocusTarget.RescheduleButton;
+    }
+
+    /// <summary>
+    /// Escape steps back: from a form to the details, from the details to closed.
+    /// </summary>
+    private void HandleDetailsKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key != "Escape" || IsWorking)
+        {
+            return;
+        }
+
+        if (Mode == DetailsMode.View)
+        {
+            CloseDetails();
+        }
+        else
+        {
+            BackToView();
+        }
+    }
+
+    private void StartReschedule()
+    {
+        if (SelectedMeeting is null)
+        {
+            return;
+        }
+
+        RescheduleModel = new RescheduleMeetingForm
+        {
+            NewMeetingDateTime = SelectedMeeting.MeetingDate.ToLocalTime(),
+            DurationMinutes = SelectedMeeting.DurationMinutes
+        };
+
+        PanelError = null;
+        Mode = DetailsMode.Reschedule;
+        PendingFocus = FocusTarget.WhenInput;
+    }
+
+    private void AskToCancel()
+    {
+        PanelError = null;
+        Mode = DetailsMode.ConfirmCancel;
+        // Focus starts on "Keep meeting", so a stray Enter never cancels anything.
+        PendingFocus = FocusTarget.KeepButton;
+    }
+
+    /// <summary>
+    /// Runs only when the new time passes its rules (EditForm OnValidSubmit).
+    /// </summary>
+    private async Task SaveRescheduleAsync()
+    {
+        if (SelectedMeeting is null || RescheduleModel.NewMeetingDateTime is not DateTime newTime)
+        {
+            return;
+        }
+
+        IsWorking = true;
+        PanelError = null;
+
+        var (updated, error) = await MeetingStore.RescheduleAsync(
+            SelectedMeeting.MeetingId, SelectedMeeting.ClientId, newTime, RescheduleModel.DurationMinutes);
+
+        IsWorking = false;
+
+        if (error is not null)
+        {
+            // e.g. "The advisor already has a meeting in that time slot"
+            PanelError = error;
+            return;
+        }
+
+        var meetingId = SelectedMeeting.MeetingId;
+
+        // Show the month the meeting moved to, so it is visible straight away.
+        CurrentMonth = new DateTime(newTime.Year, newTime.Month, 1);
+        await LoadMeetings();
+
+        SelectedMeeting = LoadedMeetings.FirstOrDefault(m => m.MeetingId == meetingId) ?? updated;
+        Mode = DetailsMode.View;
+        PendingFocus = FocusTarget.RescheduleButton;
+        ShowPanelMessage($"Asked to move your meeting to {newTime:ddd d MMM 'at' HH:mm}. Your advisor will confirm it.");
+    }
+
+    private async Task CancelMeetingAsync()
+    {
+        if (SelectedMeeting is null)
+        {
+            return;
+        }
+
+        IsWorking = true;
+        PanelError = null;
+
+        var cancelled = SelectedMeeting;
+        var error = await MeetingStore.CancelAsync(cancelled.MeetingId, cancelled.ClientId);
+
+        IsWorking = false;
+
+        if (error is not null)
+        {
+            PanelError = error;
+            return;
+        }
+
+        CloseDetails();
+        await LoadMeetings();
+        ShowPanelMessage($"Your meeting on {cancelled.MeetingDate.ToLocalTime():ddd d MMM} was cancelled. Your advisor has been told.");
+    }
+
+    private void ShowPanelMessage(string message)
+    {
+        PanelMessage = message;
+
+        _ = Task.Delay(5000).ContinueWith(_ => InvokeAsync(() =>
+        {
+            if (PanelMessage == message)
+            {
+                PanelMessage = null;
+                StateHasChanged();
+            }
+        }));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (PendingFocus == FocusTarget.None)
+        {
+            return;
+        }
+
+        var target = PendingFocus;
+        PendingFocus = FocusTarget.None;
+
+        try
+        {
+            switch (target)
+            {
+                case FocusTarget.Details:
+                    await DetailsCard.FocusAsync();
+                    break;
+                case FocusTarget.RescheduleButton:
+                    await RescheduleButton.FocusAsync();
+                    break;
+                case FocusTarget.CancelButton:
+                    await CancelMeetingButton.FocusAsync();
+                    break;
+                case FocusTarget.KeepButton:
+                    await KeepMeetingButton.FocusAsync();
+                    break;
+                case FocusTarget.WhenInput when RescheduleWhenInput?.Element is ElementReference dateInput:
+                    await dateInput.FocusAsync();
+                    break;
+            }
+        }
+        catch (Exception)
+        {
+            // The element can disappear if the panel closed in the meantime; nothing to do.
+        }
+    }
+
+    public class CalendarDay
+    {
+        public DateTime Date { get; set; }
+
+        public bool IsCurrentMonth { get; set; }
+
+        public bool IsToday { get; set; }
+    }
+
+
+    public class CalendarEvent
+    {
+        public int MeetingId { get; set; }
+
+        public string Time { get; set; } = string.Empty;
+
+        public string StatusText { get; set; } = string.Empty;
+
+        public string Title { get; set; } = string.Empty;
+
+        public DateTime Date { get; set; }
+
+        public string Type { get; set; } = string.Empty;
+    }
+
+
+    public class MeetingItem
+    {
+        public int MeetingId { get; set; }
+
+        public string Time { get; set; } = string.Empty;
+
+        public string Title { get; set; } = string.Empty;
+
+        public string Method { get; set; } = string.Empty;
+
+        public string Status { get; set; } = string.Empty;
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

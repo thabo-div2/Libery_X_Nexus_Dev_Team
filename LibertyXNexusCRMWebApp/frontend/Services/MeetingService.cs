@@ -275,7 +275,11 @@ namespace frontend.Services
             }
         }
 
-        public async Task<string?> CancelAsync(int meetingId) 
+        /// <summary>
+        /// Cancels a meeting. Pass the client's id so any open calendar or messages page for
+        /// that client refreshes straight away.
+        /// </summary>
+        public async Task<string?> CancelAsync(int meetingId, int? clientId = null) 
         { 
             try 
             { 
@@ -284,6 +288,12 @@ namespace frontend.Services
                 {
                     return await ReadErrorAsync(response); 
                 } 
+
+                if (clientId is int id)
+                {
+                    _notifier.NotifyMessageSent(id);
+                }
+
                 return null; 
             } 
             catch (HttpRequestException) 

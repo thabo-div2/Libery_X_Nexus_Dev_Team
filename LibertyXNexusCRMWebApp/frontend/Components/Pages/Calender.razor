@@ -787,7 +787,7 @@
         PanelError = null;
 
         var cancelled = SelectedMeeting;
-        var error = await MeetingStore.CancelAsync(cancelled.MeetingId);
+        var error = await MeetingStore.CancelAsync(cancelled.MeetingId, cancelled.ClientId);
 
         IsWorking = false;
 
