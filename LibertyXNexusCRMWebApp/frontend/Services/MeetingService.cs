@@ -105,6 +105,36 @@ namespace frontend.Services
         /// <param name="meetingDate"></param>
         /// <param name="notes"></param>
         /// <returns></returns>
+        /// <summary>
+        /// Gets the advisor's meetings between two local dates (any status), for the calendar.
+        /// The API stores meeting times in UTC, so the range is sent in UTC.
+        /// </summary>
+        public async Task<(List<MeetingSummary> Meetings, string? Error)> GetForRangeAsync(DateTime fromLocal, DateTime toLocal)
+        {
+            try
+            {
+                var from = Uri.EscapeDataString(fromLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss"));
+                var to = Uri.EscapeDataString(toLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss"));
+
+                var response = await _http.GetAsync($"meetings/range?from={from}&to={to}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (new List<MeetingSummary>(), $"The server reported an error (status {(int)response.StatusCode}).");
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<List<MeetingSummary>>();
+                return (result ?? new List<MeetingSummary>(), null);
+            }
+            catch (HttpRequestException)
+            {
+                return (new List<MeetingSummary>(), "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (new List<MeetingSummary>(), $"Something went wrong: {ex.Message}");
+            }
+        }
+
         public async Task<string?> RequestAsync(int clientId, int advisorId, bool fromAdvisor, DateTime meetingDate, string? notes)
         {
             try
@@ -210,7 +240,46 @@ namespace frontend.Services
         /// </summary>
         /// <param name="meetingId"></param>
         /// <returns></returns>
-        public async Task<string?> CancelAsync(int meetingId) 
+        /// <summary>
+        /// Moves a meeting to a new local date and time (and optionally a new length).
+        /// Returns the updated meeting, or the API's error (e.g. a clash with another meeting).
+        /// </summary>
+        public async Task<(MeetingSummary? Meeting, string? Error)> RescheduleAsync(int meetingId, int clientId, DateTime newLocalDateTime, int durationMinutes)
+        {
+            try
+            {
+                var request = new
+                {
+                    NewMeetingDate = DateTime.SpecifyKind(newLocalDateTime, DateTimeKind.Local).ToUniversalTime(),
+                    DurationMinutes = durationMinutes
+                };
+
+                var response = await _http.PutAsJsonAsync($"meetings/{meetingId}/reschedule", request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, await ReadErrorAsync(response));
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<MeetingSummary>();
+                _notifier.NotifyMessageSent(clientId);
+                return (result, result is null ? "The server sent back an unexpected response." : null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Cancels a meeting. Pass the client's id so any open calendar or messages page for
+        /// that client refreshes straight away.
+        /// </summary>
+        public async Task<string?> CancelAsync(int meetingId, int? clientId = null) 
         { 
             try 
             { 
@@ -219,6 +288,12 @@ namespace frontend.Services
                 {
                     return await ReadErrorAsync(response); 
                 } 
+
+                if (clientId is int id)
+                {
+                    _notifier.NotifyMessageSent(id);
+                }
+
                 return null; 
             } 
             catch (HttpRequestException) 

@@ -22,6 +22,7 @@ namespace API.Controllers
         private readonly IDocumentService documentService_;
         private readonly IClientService _clientService;
         private readonly IPolicyService _policyService;
+        private readonly INotificationService _notificationService;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -30,11 +31,13 @@ namespace API.Controllers
         /// <param name="documentService"></param>
         /// <param name="clientService"></param>
         /// <param name="policyService"></param>
-        public DocumentsController(IDocumentService documentService, IClientService clientService, IPolicyService policyService)
+        /// <param name="notificationService"></param>
+        public DocumentsController(IDocumentService documentService, IClientService clientService, IPolicyService policyService, INotificationService notificationService)
         {
             documentService_ = documentService;
             _clientService = clientService;
             _policyService = policyService;
+            _notificationService = notificationService;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -74,6 +77,19 @@ namespace API.Controllers
 
             var client = await _clientService.GetByIdAsync(clientId);
             return client is not null && client.AdvisorId == CurrentAdvisorId;
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Lets a client know their advisor shared a document with them.
+        /// </summary>
+        private Task NotifyClientOfSharedDocumentAsync(int clientId, string fileName)
+        {
+            return _notificationService.NotifyClientAsync(
+                clientId,
+                NotificationType.DocumentUploaded,
+                $"Your advisor shared a document with you: {fileName}.",
+                "/client-documents");
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -201,34 +217,68 @@ namespace API.Controllers
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
-        /// Uploads a new document for a specific client. 
-        /// This endpoint is restricted to advisors only, and the uploaded document will be associated with the specified client and policy. 
+        /// Uploads a new document for a specific client.
+        /// Advisors can upload for any of their own clients and choose whether the client can see it.
+        /// Clients can only upload for themselves; their uploads are always visible to them, and if they
+        /// don't pick a policy the document is filed under their first policy. The advisor gets a notification.
         /// The uploaded file must be sent as multipart/form-data, and the request size limit is set to 30 MB.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = AppRoles.Advisor)]
+        [Authorize(Roles = AppRoles.Advisor + "," + AppRoles.Client)]
         [EnableRateLimiting(RateLimitPolicies.Upload)]
         [Consumes("multipart/form-data")]
         [RequestSizeLimit(30_000_000)]
         public async Task<ActionResult<DocumentDto>> Upload([FromForm] UploadDocumentRequest request)
         {
             var client = await _clientService.GetByIdAsync(request.ClientId);
-            if (client is null || client.AdvisorId != CurrentAdvisorId)
+
+            if (IsAdvisor)
             {
-                return Forbid();
+                if (client is null || client.AdvisorId != CurrentAdvisorId)
+                {
+                    return Forbid();
+                }
+
+                var uploaderName = $"{User.FindFirstValue("firstName")} {User.FindFirstValue("lastName")}".Trim();
+                request.UploadedBy = string.IsNullOrWhiteSpace(uploaderName)
+                    ? $"advisor-{CurrentAdvisorId}"
+                    : uploaderName;
+            }
+            else
+            {
+                // A client can only ever upload to their own profile.
+                if (client is null || request.ClientId != CurrentClientId)
+                {
+                    return Forbid();
+                }
+
+                // Every document has to belong to a policy, so fall back to the client's first one.
+                if (request.PolicyId <= 0)
+                {
+                    var policies = await _policyService.GetForClientAsync(request.ClientId);
+                    var firstPolicy = policies.FirstOrDefault();
+                    if (firstPolicy is null)
+                    {
+                        return BadRequest(new { message = "You need a policy on your profile before you can upload documents. Please contact your advisor." });
+                    }
+                    request.PolicyId = firstPolicy.PolicyId;
+                }
+
+                // Clients should always be able to see what they uploaded themselves.
+                request.VisibleToClient = true;
+
+                var clientName = $"{client.FirstName} {client.LastName}".Trim();
+                request.UploadedBy = string.IsNullOrWhiteSpace(clientName)
+                    ? $"client-{request.ClientId}"
+                    : clientName;
             }
 
-            var uploaderName = $"{User.FindFirstValue("firstName")} {User.FindFirstValue("lastName")}".Trim();
-            request.UploadedBy = string.IsNullOrWhiteSpace(uploaderName)
-                ? $"advisor-{CurrentAdvisorId}"
-                : uploaderName;
-
+            DocumentDto created;
             try
             {
-                var created = await documentService_.UploadAsync(request);
-                return CreatedAtAction(nameof(GetById), new { id = created.DocumentId }, created);
+                created = await documentService_.UploadAsync(request);
             }
             catch (ArgumentException ex)
             {
@@ -242,6 +292,31 @@ namespace API.Controllers
             {
                 return Conflict(new { message = ex.Message });
             }
+
+            // Tell the other side about the new document. The file is already saved,
+            // so a failed notification shouldn't turn the upload into an error.
+            try
+            {
+                if (!IsAdvisor && client.AdvisorId is int advisorId)
+                {
+                    await _notificationService.NotifyAdvisorAsync(
+                        advisorId,
+                        NotificationType.DocumentUploaded,
+                        $"{request.UploadedBy} uploaded a document: {created.FileName}.",
+                        "/documents",
+                        request.ClientId);
+                }
+                else if (IsAdvisor && request.VisibleToClient)
+                {
+                    await NotifyClientOfSharedDocumentAsync(request.ClientId, created.FileName);
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore - the upload itself worked.
+            }
+
+            return CreatedAtAction(nameof(GetById), new { id = created.DocumentId }, created);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -295,14 +370,30 @@ namespace API.Controllers
                 return NotFound(new { message = $"Document {id} was not found." });
             }
 
+            DocumentDto updated;
             try
             {
-                return Ok(await documentService_.SetVisibilityAsync(id, request.VisibleToClient));
+                updated = await documentService_.SetVisibilityAsync(id, request.VisibleToClient);
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
+
+            // Only tell the client when a hidden document becomes visible, not every time it's saved.
+            if (!document.VisibleToClient && request.VisibleToClient)
+            {
+                try
+                {
+                    await NotifyClientOfSharedDocumentAsync(document.ClientId, document.FileName);
+                }
+                catch (Exception)
+                {
+                    // Ignore - the visibility change itself worked.
+                }
+            }
+
+            return Ok(updated);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

@@ -38,6 +38,18 @@ namespace API.Services.Implementations
         ApplicationUser user,
         IEnumerable<string> roles,
         IEnumerable<Claim>? extraClaims = null)
+            => CreateToken(user, roles, extraClaims, rememberMe: false);
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Creates a JWT token. When <paramref name="rememberMe"/> is true ("Keep me signed in"),
+        /// the token lasts <see cref="JwtSettings.RememberMeExpiryDays"/> days instead of the normal minutes.
+        /// </summary>
+        public (string Token, DateTime ExpiresAtUtc) CreateToken(
+        ApplicationUser user,
+        IEnumerable<string> roles,
+        IEnumerable<Claim>? extraClaims,
+        bool rememberMe)
         {
             var claims = new List<Claim>
             {
@@ -54,7 +66,9 @@ namespace API.Services.Implementations
             }
 
             var now = DateTime.UtcNow;
-            var expires = now.AddMinutes(_settings.ExpiryMinutes);
+            var expires = rememberMe
+                ? now.AddDays(_settings.RememberMeExpiryDays)
+                : now.AddMinutes(_settings.ExpiryMinutes);
 
             var descriptor = new SecurityTokenDescriptor
             {

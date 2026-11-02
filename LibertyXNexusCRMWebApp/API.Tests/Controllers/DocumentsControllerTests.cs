@@ -6,6 +6,7 @@ using API.Services.Interfaces;
 using API.Tests.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Shared.Models.Enums;
 using Xunit;
 
 namespace API.Tests.Controllers
@@ -21,6 +22,7 @@ namespace API.Tests.Controllers
         private readonly Mock<IDocumentService> _documentService = new();
         private readonly Mock<IClientService> _clientService = new();
         private readonly Mock<IPolicyService> _policyService = new();
+        private readonly Mock<INotificationService> _notificationService = new();
         private readonly DocumentsController _sut;
 
         /// <summary>
@@ -28,8 +30,12 @@ namespace API.Tests.Controllers
         /// </summary>
         public DocumentsControllerTests()
         {
-            _sut = new DocumentsController(_documentService.Object, _clientService.Object, _policyService.Object)
-                .AsAdvisor(MyAdvisorId);
+            _sut = NewController().AsAdvisor(MyAdvisorId);
+        }
+
+        private DocumentsController NewController()
+        {
+            return new DocumentsController(_documentService.Object, _clientService.Object, _policyService.Object, _notificationService.Object);
         }
 
         /// <summary>
@@ -92,6 +98,79 @@ namespace API.Tests.Controllers
 
             var ok = Assert.IsType<OkObjectResult>(result.Result);
             Assert.Same(documents, ok.Value);
+        }
+
+        /// <summary>
+        /// An advisor can't upload a document onto another advisor's client.
+        /// </summary>
+        [Fact]
+        public async Task Upload_AsAdvisor_ForAnotherAdvisorsClient_ReturnsForbid()
+        {
+            _clientService.Setup(s => s.GetByIdAsync(7)).ReturnsAsync(new ClientDetailDto { ClientId = 7, AdvisorId = OtherAdvisorId });
+
+            var result = await _sut.Upload(new UploadDocumentRequest { ClientId = 7, PolicyId = 1 });
+
+            Assert.IsType<ForbidResult>(result.Result);
+            _documentService.Verify(s => s.UploadAsync(It.IsAny<UploadDocumentRequest>()), Times.Never);
+        }
+
+        /// <summary>
+        /// A client can't upload a document onto someone else's profile.
+        /// </summary>
+        [Fact]
+        public async Task Upload_AsClient_ForAnotherClient_ReturnsForbid()
+        {
+            var sut = NewController().AsClient(7);
+            _clientService.Setup(s => s.GetByIdAsync(8)).ReturnsAsync(new ClientDetailDto { ClientId = 8, AdvisorId = MyAdvisorId });
+
+            var result = await sut.Upload(new UploadDocumentRequest { ClientId = 8, PolicyId = 1 });
+
+            Assert.IsType<ForbidResult>(result.Result);
+            _documentService.Verify(s => s.UploadAsync(It.IsAny<UploadDocumentRequest>()), Times.Never);
+        }
+
+        /// <summary>
+        /// A client with no policies gets a clear message instead of a crash.
+        /// </summary>
+        [Fact]
+        public async Task Upload_AsClient_WithNoPolicies_ReturnsBadRequestWithMessage()
+        {
+            var sut = NewController().AsClient(7);
+            _clientService.Setup(s => s.GetByIdAsync(7)).ReturnsAsync(new ClientDetailDto { ClientId = 7, AdvisorId = MyAdvisorId });
+            _policyService.Setup(s => s.GetForClientAsync(7)).ReturnsAsync(new List<PolicyDto>());
+
+            var result = await sut.Upload(new UploadDocumentRequest { ClientId = 7 });
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Contains("policy", ControllerTestHelper.MessageOf(badRequest.Value));
+            _documentService.Verify(s => s.UploadAsync(It.IsAny<UploadDocumentRequest>()), Times.Never);
+        }
+
+        /// <summary>
+        /// A client's own upload is filed under their first policy, is always visible to them,
+        /// is named after them, and their advisor gets told about it.
+        /// </summary>
+        [Fact]
+        public async Task Upload_AsClient_ForThemselves_UploadsVisibleDocumentAndNotifiesAdvisor()
+        {
+            var sut = NewController().AsClient(7);
+            _clientService.Setup(s => s.GetByIdAsync(7)).ReturnsAsync(new ClientDetailDto { ClientId = 7, AdvisorId = MyAdvisorId, FirstName = "Jane", LastName = "Doe" });
+            _policyService.Setup(s => s.GetForClientAsync(7)).ReturnsAsync(new List<PolicyDto> { new() { PolicyId = 3, ClientId = 7 } });
+
+            UploadDocumentRequest? sent = null;
+            _documentService.Setup(s => s.UploadAsync(It.IsAny<UploadDocumentRequest>()))
+                .Callback<UploadDocumentRequest>(r => sent = r)
+                .ReturnsAsync(new DocumentDto { DocumentId = 11, FileName = "payslip.pdf" });
+
+            var result = await sut.Upload(new UploadDocumentRequest { ClientId = 7, VisibleToClient = false });
+
+            Assert.IsType<CreatedAtActionResult>(result.Result);
+            Assert.NotNull(sent);
+            Assert.Equal(3, sent!.PolicyId);
+            Assert.True(sent.VisibleToClient);
+            Assert.Equal("Jane Doe", sent.UploadedBy);
+            _notificationService.Verify(s => s.NotifyAdvisorAsync(
+                MyAdvisorId, NotificationType.DocumentUploaded, It.IsAny<string>(), "/documents", 7), Times.Once);
         }
     }
 }

@@ -90,6 +90,11 @@
         _ => $"Notifications, {UnreadCount} unread"
     };
     private NotificationFeed Feed = new(0, new List<NotificationItem>());
+
+    /// <summary>
+    /// The same bell works for advisors and clients; it just asks the API for the right person's list.
+    /// </summary>
+    private bool IsClient => CurrentUser.IsClient;
     private int UnreadCount;
     private PeriodicTimer? _timer;
     private CancellationTokenSource? _cts;
@@ -98,9 +103,9 @@
     {
         await CurrentUser.EnsureRestoredAsync();
 
-        if (CurrentUser.Id is int advisorId)
+        if (CurrentUser.Id is int userId)
         {
-            UnreadCount = await Notifications.GetUnreadCountForAdvisorAsync(advisorId);
+            UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient);
         }
 
         _cts = new CancellationTokenSource();
@@ -114,13 +119,13 @@
         {
             while (_timer is not null && await _timer.WaitForNextTickAsync(token))
             {
-                if (CurrentUser.Id is not int advisorId) continue;
+                if (CurrentUser.Id is not int userId) continue;
 
-                UnreadCount = await Notifications.GetUnreadCountForAdvisorAsync(advisorId);
+                UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient);
 
                 if (IsOpen)
                 {
-                    Feed = await Notifications.GetFeedForAdvisorAsync(advisorId);
+                    Feed = await Notifications.GetFeedAsync(userId, IsClient);
                 }
 
                 await InvokeAsync(StateHasChanged);
@@ -136,10 +141,10 @@
     {
         IsOpen = !IsOpen;
 
-        if (IsOpen && CurrentUser.Id is int advisorId)
+        if (IsOpen && CurrentUser.Id is int userId)
         {
             IsLoading = true;
-            Feed = await Notifications.GetFeedForAdvisorAsync(advisorId);
+            Feed = await Notifications.GetFeedAsync(userId, IsClient);
             UnreadCount = Feed.UnreadCount;
             IsLoading = false;
         }
@@ -163,9 +168,9 @@
         {
             await Notifications.MarkAsReadAsync(item.NotificationId);
 
-            if (CurrentUser.Id is int advisorId)
+            if (CurrentUser.Id is int userId)
             {
-                UnreadCount = await Notifications.GetUnreadCountForAdvisorAsync(advisorId);
+                UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient);
             }
 
             Feed = Feed with
@@ -186,9 +191,9 @@
 
     private async Task MarkAllAsReadAsync()
     {
-        if (CurrentUser.Id is not int advisorId) return;
+        if (CurrentUser.Id is not int userId) return;
 
-        await Notifications.MarkAllAsReadAsync(advisorId);
+        await Notifications.MarkAllAsReadAsync(userId, IsClient);
         UnreadCount = 0;
 
         Feed = Feed with

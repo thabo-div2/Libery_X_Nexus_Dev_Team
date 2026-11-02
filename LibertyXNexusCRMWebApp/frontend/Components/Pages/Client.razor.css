@@ -401,29 +401,8 @@
 
 .upload-wrapper {
     margin-top: var(--space-3);
-}
-
-.upload-button {
-    width: 100%;
-    min-height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-sm);
-    background: var(--color-primary);
-    color: var(--color-white);
-    font-size: var(--text-xs);
-    font-weight: var(--weight-medium);
-    cursor: pointer;
-    transition: background var(--transition-fast);
-}
-
-    .upload-button:hover {
-        background: var(--color-blue-770);
-    }
-
-.file-input {
-    display: none;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
 }
 
 

@@ -16,8 +16,9 @@ namespace API.DTOs.Documents
 
         public bool VisibleToClient { get; set; } = false;
 
-        [Required, MaxLength(100)]
-        public string UploadedBy { get; set; } = string.Empty; //temporary until auth exists, TODO: replace with advisors identity from the token instead oif client supplied value
+        // Filled in by the API from the signed-in user's token, so the caller doesn't need to send it.
+        [MaxLength(100)]
+        public string UploadedBy { get; set; } = string.Empty;
 
         public IFormFile File { get; set; } = null!;
     }

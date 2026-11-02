@@ -66,6 +66,50 @@ namespace API.Tests.Controllers
 
             _notificationService.Verify(s => s.MarkAsReadForAdvisorAsync(10, MyAdvisorId), Times.Once);
         }
+
+        /// <summary>
+        /// A client marking a notification as read is checked against their own client id,
+        /// never the advisor path.
+        /// </summary>
+        [Fact]
+        public async Task MarkAsRead_AsClient_UsesTheClientIdFromTheToken()
+        {
+            var sut = new NotificationsController(_notificationService.Object).AsClient(7);
+            _notificationService.Setup(s => s.MarkAsReadForClientAsync(10, 7)).ReturnsAsync(true);
+
+            var result = await sut.MarkAsRead(10);
+
+            Assert.IsType<NoContentResult>(result);
+            _notificationService.Verify(s => s.MarkAsReadForAdvisorAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+        }
+
+        /// <summary>
+        /// A client can't read another client's notifications.
+        /// </summary>
+        [Fact]
+        public async Task GetClientFeed_ForAnotherClient_ReturnsForbid()
+        {
+            var sut = new NotificationsController(_notificationService.Object).AsClient(7);
+
+            var result = await sut.GetClientFeed(8);
+
+            Assert.IsType<ForbidResult>(result);
+            _notificationService.Verify(s => s.GetFeedForClientAsync(It.IsAny<int>()), Times.Never);
+        }
+
+        /// <summary>
+        /// A client can mark all of their own notifications as read.
+        /// </summary>
+        [Fact]
+        public async Task MarkAllClientAsRead_ForThemselves_ReturnsNoContent()
+        {
+            var sut = new NotificationsController(_notificationService.Object).AsClient(7);
+
+            var result = await sut.MarkAllClientAsRead(7);
+
+            Assert.IsType<NoContentResult>(result);
+            _notificationService.Verify(s => s.MarkAllAsReadForClientAsync(7), Times.Once);
+        }
     }
 }
 

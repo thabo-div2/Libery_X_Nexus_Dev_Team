@@ -8,7 +8,7 @@ namespace frontend.Services
     /// <summary>
     /// Login data.
     /// </summary>
-    public record LoginRequest(string Email, string Password);
+    public record LoginRequest(string Email, string Password, bool RememberMe = false);
 
     /// <summary>
     /// Register data.
@@ -87,12 +87,13 @@ namespace frontend.Services
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
+        /// <param name="rememberMe">"Keep me signed in" - keeps the login after the browser closes.</param>
         /// <returns></returns>
-        public async Task<AuthResult> LoginAsync(string email, string password)
+        public async Task<AuthResult> LoginAsync(string email, string password, bool rememberMe = false)
         {
             try
             {
-                var response = await _http.PostAsJsonAsync("auth/login", new LoginRequest(email, password));
+                var response = await _http.PostAsJsonAsync("auth/login", new LoginRequest(email, password, rememberMe));
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -137,7 +138,7 @@ namespace frontend.Services
                         );
                 }
 
-                await _tokenStorage.SetTokenAsync(authResponse.AccessToken);
+                await _tokenStorage.SetTokenAsync(authResponse.AccessToken, authResponse.ExpiresAtUtc, rememberMe);
 
                 var meResponse = await _http.GetAsync("auth/me");
 
@@ -274,7 +275,7 @@ namespace frontend.Services
                         );
                 }
 
-                await _tokenStorage.SetTokenAsync(authResponse.AccessToken);
+                await _tokenStorage.SetTokenAsync(authResponse.AccessToken, authResponse.ExpiresAtUtc);
 
                 var currentUser = await GetCurrentUserAsync();
 

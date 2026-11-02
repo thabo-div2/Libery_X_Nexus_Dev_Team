@@ -9,6 +9,9 @@ namespace API.DTOs.Auth
 
         [Required, MaxLength(128)]
         public string Password { get; set; } = string.Empty;
+
+        // "Keep me signed in" ticked: the login lasts days instead of an hour.
+        public bool RememberMe { get; set; }
     }
 }
 
