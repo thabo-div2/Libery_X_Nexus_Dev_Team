@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
 @inject NavigationManager Navigation
 @using frontend.Services
 @inject CurrentUserService CurrentUser
@@ -40,13 +41,13 @@
 
     private static readonly string[] AdvisorPaths =
     {
-        "advisor", "clients", "new-client", "chatbot", "calendar", "messages", "faqs"
+        "advisor", "clients", "new-client", "documents", "chatbot", "calendar", "messages", "faqs"
     };
 
     //routes that never require a signed in user.
     private static readonly string[] PublicPaths =
     {
-        "home", "not-found", "error"
+        "not-found", "error"
     };
 
     private bool IsClientRoute
@@ -134,8 +135,9 @@
         _accessGranted = true;
     }
 
+    // Stop listening for page changes when the layout goes away,
+    // otherwise the old layout keeps running checks in the background.
     public void Dispose()
-
     {
         Navigation.LocationChanged -= OnLocationChanged;
     }
