@@ -8,7 +8,7 @@
    Hidden until it gets keyboard focus. *@
 <a href="#main-content"
    class="skip-link"
-   onclick="document.getElementById('main-content')?.focus()">Skip to main content</a>
+   onclick="event.preventDefault(); document.getElementById('main-content')?.focus();">Skip to main content</a>
 
 <div class="nexus-app">
 
