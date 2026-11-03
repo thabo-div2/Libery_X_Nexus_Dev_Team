@@ -82,8 +82,6 @@ namespace frontend.Services
             _localStorage = localStorage;
         }
 
-        private const string NewClientDraftStorageKey = "nexus-new-client-draft";
-
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
         /// Attempts to log in a user with the provided email and password.
