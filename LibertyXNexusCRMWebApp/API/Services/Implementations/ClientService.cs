@@ -58,7 +58,6 @@ namespace API.Services.Implementations
 
             var client = new Client
             {
-                IdentityProviderSubjectId = request.IdentityProviderSubjectId,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
@@ -93,6 +92,11 @@ namespace API.Services.Implementations
                 PopiaConsentAt = DateTime.UtcNow
             };
 
+            if (!string.IsNullOrWhiteSpace(request.IdentificationNumber) && !IsValidSaId(request.IdentificationNumber))
+            {
+                throw new ArgumentException("The identification number is not a valid South African ID number.");
+            }
+
             var created = await clientRepository_.AddAsync(client);
             return MapToDetailDto(created);
         }
@@ -108,6 +112,11 @@ namespace API.Services.Implementations
             if (client is null)
             {
                 return null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.IdentificationNumber) && !IsValidSaId(request.IdentificationNumber))
+            {
+                throw new ArgumentException("The identification number is not a valid South African ID number.");
             }
 
             client.FirstName = request.FirstName;
@@ -190,6 +199,26 @@ namespace API.Services.Implementations
             AdvisorId = client.AdvisorId,
             CreatedAt = client.CreatedAt,
         };
+
+        // For a valid South African Id Number
+        private static bool IsValidSaId(string id)
+        {
+            id = id.Trim();
+            if (id.Length != 13 || !id.All(char.IsDigit)) return false;
+
+            int sum = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                int d = id[i] - '0';
+                if (i % 2 == 1)
+                {
+                    d *= 2;
+                    if (d > 9) d -= 9;
+                }
+                sum += d;
+            }
+            return (10 - sum % 10) % 10 == id[12] - '0';
+        }
 
     }
 }

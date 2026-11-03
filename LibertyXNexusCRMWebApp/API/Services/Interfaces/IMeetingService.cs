@@ -7,7 +7,7 @@ namespace API.Services.Interfaces
     {
         Task<MeetingDto?> GetByIdAsync(int meetingId);
         Task<IEnumerable<MeetingDto>> GetForClientAsync(int clientId);
-        Task<IEnumerable<MeetingDto>> GetUpcomingAsync(int? clientId);
+        Task<IEnumerable<MeetingDto>> GetUpcomingAsync(int? clientId, int? advisorId);
         Task<IEnumerable<MeetingDto>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId);
         Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status, int advisorId);
         Task<MeetingDto> BookAsync(BookMeetingRequest request);

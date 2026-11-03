@@ -87,7 +87,6 @@ namespace API.Tests.Services
 
             var request = new CreateClientRequest
             {
-                IdentityProviderSubjectId = "sub-1",
                 FirstName = "Jane",
                 LastName = "Doe",
                 Email = "taken@nexus.test",
@@ -113,7 +112,6 @@ namespace API.Tests.Services
 
             var request = new CreateClientRequest
             {
-                IdentityProviderSubjectId = "sub-2",
                 FirstName = "Jane",
                 LastName = "Doe",
                 Email = "new@nexus.test",

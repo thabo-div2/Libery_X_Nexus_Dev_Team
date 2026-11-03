@@ -152,7 +152,7 @@ namespace API.Controllers
         [Authorize(Roles = AppRoles.Advisor)]
         public async Task<ActionResult<IEnumerable<PolicyDto>>> GetByStatus(PolicyStatus status)
         {
-            return Ok(await policyService_.GetByStatusAsync(status));
+            return Ok(await policyService_.GetByStatusAsync(status, CurrentAdvisorId));
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -275,8 +275,15 @@ namespace API.Controllers
                 return NotFound(new { message = $"Policy {id} was not found." });
             }
 
-            var deleted = await policyService_.DeleteAsync(id);
-            return deleted ? NoContent() : NotFound(new { message = $"Policy {id} was not found." });
+            try
+            {
+                var deleted = await policyService_.DeleteAsync(id);
+                return deleted ? NoContent() : NotFound(new { message = $"Policy {id} was not found." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ namespace API.Services.Interfaces
         Task<PolicyDto?> GetWithDocumentsAsync(int policyId);
         Task<IEnumerable<PolicyDto>> GetCatalogueAsync();
         Task<IEnumerable<PolicyDto>> GetForClientAsync(int clientId);
-        Task<IEnumerable<PolicyDto>> GetByStatusAsync(PolicyStatus status);
+        Task<IEnumerable<PolicyDto>> GetByStatusAsync(PolicyStatus status, int advisorId);
         Task<PolicyDto> CreateCatalogueItemAsync(CreateCataloguePolicyRequest request);
         Task<PolicyDto> CreateClientPolicyAsync(int clientId, CreateClientPolicyRequest request);
         Task<PolicyDto?> UpdateAsync(int policyId, UpdatePolicyRequest request);

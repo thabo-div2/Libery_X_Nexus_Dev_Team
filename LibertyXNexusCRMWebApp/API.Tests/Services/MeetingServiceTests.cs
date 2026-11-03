@@ -204,6 +204,48 @@ namespace API.Tests.Services
 
             await Assert.ThrowsAsync<ArgumentException>(() => _sut.GetByDateRangeAsync(from, to, 1));
         }
+
+        [Fact]
+        public async Task RescheduleAsync_RaisesMeetingRescheduledNotification()
+        {
+            var meeting = new Meeting
+            {
+                MeetingId = 1,
+                ClientId = 1,
+                MeetingDate = DateTime.UtcNow.AddDays(2),
+                DurationMinutes = 60,
+                Status = MeetingStatus.Confirmed
+            };
+            var client = MakeClient();
+            client.AdvisorId = 5;
+
+            _meetingRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(meeting);
+            _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(client);
+            _meetingRepository
+                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>()))
+                .ReturnsAsync(false);
+
+            await _sut.RescheduleAsync(1, new RescheduleMeetingRequest { NewMeetingDate = DateTime.UtcNow.AddDays(3) });
+
+            _notificationService.Verify(n => n.NotifyAdvisorAsync(
+                5, NotificationType.MeetingRescheduled, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task CancelAsync_RaisesMeetingCancelledNotification()
+        {
+            var meeting = new Meeting { MeetingId = 2, ClientId = 1, MeetingDate = DateTime.UtcNow.AddDays(2), Status = MeetingStatus.Requested };
+            var client = MakeClient();
+            client.AdvisorId = 5;
+
+            _meetingRepository.Setup(r => r.GetByIdAsync(2)).ReturnsAsync(meeting);
+            _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(client);
+
+            await _sut.CancelAsync(2);
+
+            _notificationService.Verify(n => n.NotifyAdvisorAsync(
+                5, NotificationType.MeetingCancelled, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Once);
+        }
     }
 }
 

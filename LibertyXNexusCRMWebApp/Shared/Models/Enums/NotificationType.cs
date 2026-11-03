@@ -18,7 +18,8 @@ namespace Shared.Models.Enums
         CaseUpdated,
         ClientRegistered,
         PendingAction,
-        MessageReceived
+        MessageReceived,
+        MeetingRescheduled,
     }
 }
 //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------//

@@ -183,30 +183,76 @@ namespace API.Services.Implementations
                 };
             }
 
-            await _userManager.AddToRoleAsync(user, AppRoles.Client);
-
-            var client = new Client
+            var roleResult = await _userManager.AddToRoleAsync(user, AppRoles.Client);
+            if (!roleResult.Succeeded)
             {
-                IdentityProviderSubjectId = user.Id,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = invitation.Email,
-                Phone = request.Phone,
-                AdvisorId = invitation.AdvisorId,
-                Status = ClientStatus.Registered,
-                CreatedAt = DateTime.UtcNow
-            };
+                await _userManager.DeleteAsync(user);
+                return new RegisterResult
+                {
+                    Success = false,
+                    Error = "Registration could not be completed. Please try again."
+                };
+            }
 
-            var createdClient = await _clientRepository.AddAsync(client);
+            Client createdClient;
 
-            await _invitationRepository.MarkRedeemedAsync(invitation.InvitationId, createdClient.ClientId);
+            try
+            {
+                var existingClient = await _clientRepository.GetByEmailAsync(invitation.Email);
+
+                if (existingClient is null)
+                {
+                    createdClient = await _clientRepository.AddAsync(new Client
+                    {
+                        IdentityProviderSubjectId = user.Id,
+                        FirstName = request.FirstName,
+                        LastName = request.LastName,
+                        Email = invitation.Email,
+                        Phone = request.Phone,
+                        AdvisorId = invitation.AdvisorId,
+                        Status = ClientStatus.Registered,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+                else if (existingClient.AdvisorId == invitation.AdvisorId
+                         && string.IsNullOrEmpty(existingClient.IdentityProviderSubjectId))
+                {
+                    // The advisor already created this client; link the new login to it.
+                    existingClient.IdentityProviderSubjectId = user.Id;
+                    existingClient.FirstName = request.FirstName;
+                    existingClient.LastName = request.LastName;
+                    existingClient.Phone = request.Phone ?? existingClient.Phone;
+                    existingClient.Status = ClientStatus.Registered;
+                    existingClient.UpdatedAt = DateTime.UtcNow;
+
+                    await _clientRepository.UpdateAsync(existingClient);
+                    createdClient = existingClient;
+                }
+                else
+                {
+                    await _userManager.DeleteAsync(user);
+                    return new RegisterResult
+                    {
+                        Success = false,
+                        Error = "This email address cannot be registered."
+                    };
+                }
+
+                await _invitationRepository.MarkRedeemedAsync(invitation.InvitationId, createdClient.ClientId);
+            }
+            catch
+            {
+                // Do not leave a login behind that blocks the email address.
+                await _userManager.DeleteAsync(user);
+                throw;
+            }
 
             await _auditLogRepository.LogAsync(
                 userId: createdClient.ClientId,
                 userRole: UserRole.RegisteredClient,
                 actionType: AuditActionType.Create,
                 entityAffected: "Client",
-                details: $"Client self-registered from a invitation {invitation.InvitationId}");
+                details: $"Client self-registered from an invitation {invitation.InvitationId}");
 
             await _notificationService.NotifyAdvisorAsync(
                 invitation.AdvisorId,
@@ -217,7 +263,9 @@ namespace API.Services.Implementations
 
             var extraClaims = new[]
             {
-                new Claim("clientId", createdClient.ClientId.ToString())
+               new Claim("clientId", createdClient.ClientId.ToString()),
+               new Claim("firstName", createdClient.FirstName ?? string.Empty),
+               new Claim("lastName", createdClient.LastName ?? string.Empty)
             };
 
             var (token, expiresAtUtc) = _jwtTokenService.CreateToken(user, new[] { AppRoles.Client }, extraClaims);
@@ -299,27 +347,33 @@ namespace API.Services.Implementations
         /// </summary>
         public async Task<ResetPasswordResult> ResetPasswordAsync(ResetPasswordRequest request)
         {
+            const string genericError = "The reset link is invalid or has expired.";
+
             var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user is null || !user.IsActive)
             {
-                return new ResetPasswordResult
-                {
-                    Success = false,
-                    Error = "No account was found for that email."
-                };
+                return new ResetPasswordResult { Success = false, Error = genericError };
             }
 
             var result = await _userManager.ResetPasswordAsync(user, request.ResetToken, request.NewPassword);
 
             if (!result.Succeeded)
             {
+                // A bad token must look the same as an unknown email.
+                var tokenProblem = result.Errors.Any(e => e.Code == "InvalidToken");
+
                 return new ResetPasswordResult
                 {
                     Success = false,
-                    Error = string.Join("; ", result.Errors.Select(e => e.Description))
+                    Error = tokenProblem
+                        ? genericError
+                        : string.Join("; ", result.Errors.Select(e => e.Description))
                 };
             }
+
+            // Old tokens stop working after a reset.
+            await _userManager.UpdateSecurityStampAsync(user);
 
             // A successful reset clears any lockout, same as a successful login would.
             await _userManager.ResetAccessFailedCountAsync(user);

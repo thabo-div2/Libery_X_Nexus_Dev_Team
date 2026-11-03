@@ -22,6 +22,7 @@ namespace API.Services.Implementations
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
         private readonly ILogger<InvitationService> _logger;
+        private readonly IClientRepository _clientRepository;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -39,7 +40,8 @@ namespace API.Services.Implementations
             IAuditLogRepository auditLogRepository,
             IEmailService emailService,
             IConfiguration configuration,
-            ILogger<InvitationService> logger)
+            ILogger<InvitationService> logger,
+            IClientRepository clientRepository)
         {
             _invitationRepository = invitationRepository;
             _advisorRepository = advisorRepository;
@@ -47,6 +49,7 @@ namespace API.Services.Implementations
             _emailService = emailService;
             _configuration = configuration;
             _logger = logger;
+            _clientRepository = clientRepository;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -69,6 +72,21 @@ namespace API.Services.Implementations
             if (advisor is null)
             {
                 return new InvitationResponse { Success = false, Message = "The advisor could not be found." };
+            }
+
+            var existingClient = await _clientRepository.GetByEmailAsync(email);
+            if (existingClient is not null && !string.IsNullOrEmpty(existingClient.IdentityProviderSubjectId))
+            {
+                return new InvitationResponse { Success = false, Message = "A client with this email address is already registered." };
+            }
+
+            var pending = (await _invitationRepository.GetByAdvisorAsync(advisorId))
+                .Any(i => i.Status == InvitationStatus.Pending
+                          && i.ExpiresAt > DateTime.UtcNow
+                          && string.Equals(i.Email, email, StringComparison.OrdinalIgnoreCase));
+            if (pending)
+            {
+                return new InvitationResponse { Success = false, Message = "An invitation for this email address is already pending." };
             }
 
             var invitation = new Invitation

@@ -36,16 +36,17 @@ namespace API.Repositories.Implementations
             return policies;
         }
 
-        public async Task<IEnumerable<Policy>> GetByStatusAsync(PolicyStatus status)
+        public async Task<IEnumerable<Policy>> GetByStatusAsync(PolicyStatus status, int advisorId)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            var policies = await context.Policies
-                                    .Where(p => p.Status == status && !p.IsCatalogueItem)
-                                    .AsNoTracking()
-                                    .ToListAsync();
-
-            return policies;
+            return await context.Policies
+                .Where(p => p.Status == status
+                            && !p.IsCatalogueItem
+                            && p.Client != null
+                            && p.Client.AdvisorId == advisorId)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<Policy?> GetWithDocumentAsync(int policyId)

@@ -4,8 +4,8 @@ namespace API.DTOs.Clients
 {
     public class CreateClientRequest
     {
-        [MaxLength(100)]
-        public string? IdentityProviderSubjectId { get; set; }
+        //[MaxLength(100)]
+        //public string? IdentityProviderSubjectId { get; set; }
 
         [Required, MaxLength(100)]
         public string FirstName { get; set; } = string.Empty;

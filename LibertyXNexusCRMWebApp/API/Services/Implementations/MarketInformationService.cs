@@ -22,7 +22,7 @@ namespace API.Services.Implementations
     public sealed class MarketInformationService : IMarketInformationService
     {
         private const string CacheKey = "AlphaVantage:MarketInformation";
-        private static readonly TimeSpan FreshnessWindow = TimeSpan.FromMinutes(3);
+        private static readonly TimeSpan FreshnessWindow = TimeSpan.FromHours(6);
 
         // Not disposed - this service is registered via AddHttpClient, which
         // makes it transient, but a static gate is intentional here: the
@@ -73,7 +73,7 @@ namespace API.Services.Implementations
                     _logger.LogDebug(
                         "Serving stale market information ({AgeSeconds}s old) and refreshing in the background.",
                         (int)age.TotalSeconds);
-                    TriggerBackgroundRefresh();
+                    TriggerBackgroundRefresh(cached);
                 }
                 else
                 {
@@ -97,12 +97,10 @@ namespace API.Services.Implementations
         /// cancellation token is disposed; it's refreshing shared cache for
         /// future callers, not serving the current one.
         /// </summary>
-        private void TriggerBackgroundRefresh()
+        private void TriggerBackgroundRefresh(CachedMarketData stale)
         {
             if (!_refreshGate.Wait(0))
             {
-                // A refresh is already in flight from an earlier request in
-                // this same stale window - don't start a second one.
                 return;
             }
 
@@ -116,12 +114,15 @@ namespace API.Services.Implementations
                 }
                 catch (Exception ex)
                 {
-                    // Deliberately swallowed beyond logging - this is a
-                    // background best-effort refresh. The stale cached data
-                    // stays in place and gets served/retried on the next
-                    // request; there is no caller waiting on this result to
-                    // propagate a failure to.
-                    _logger.LogWarning(ex, "Background market information refresh failed; stale data remains cached.");
+                    // Keep serving the old data and wait 15 minutes before trying again,
+                    // so a failing call does not burn the daily limit.
+                    _cache.Set(CacheKey, new CachedMarketData
+                    {
+                        News = stale.News,
+                        UsdZarRate = stale.UsdZarRate,
+                        RetrievedAtUtc = DateTime.UtcNow - FreshnessWindow + TimeSpan.FromMinutes(15)
+                    });
+                    _logger.LogWarning(ex, "Background market information refresh failed; stale data kept for 15 more minutes.");
                 }
                 finally
                 {

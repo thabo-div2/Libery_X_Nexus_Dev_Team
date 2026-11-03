@@ -81,7 +81,27 @@ namespace API.Repositories.Implementations
             var caseRecord = await context.Cases.Include(c => c.Policy).FirstOrDefaultAsync(c => c.CaseId == caseId);
 
             if (caseRecord is null)
-             throw new KeyNotFoundException($"Case with id {caseId} was not found.");
+                throw new KeyNotFoundException($"Case with id {caseId} was not found.");
+
+            // Steps must happen in order and only once.
+            var stepTimes = new Dictionary<CaseStep, DateTime?>
+            {
+                [CaseStep.DetailsSubmitted] = caseRecord.DetailsSubmittedAt,
+                [CaseStep.AdviserReview] = caseRecord.AdviserReviewAt,
+                [CaseStep.FicaVerification] = caseRecord.FicaVerifiedAt,
+                [CaseStep.SubmittedToLiberty] = caseRecord.SubmittedToLibertyAt,
+                [CaseStep.PolicyIssued] = caseRecord.PolicyIssuedAt
+            };
+
+            if (stepTimes[step].HasValue)
+                throw new InvalidOperationException($"The step '{step}' has already been completed.");
+
+            if (step != CaseStep.DetailsSubmitted)
+            {
+                var previous = (CaseStep)((int)step - 1);
+                if (!stepTimes[previous].HasValue)
+                    throw new InvalidOperationException($"Complete '{previous}' before '{step}'.");
+            }
 
             var now = DateTime.UtcNow;
 

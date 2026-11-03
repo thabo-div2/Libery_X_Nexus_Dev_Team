@@ -113,12 +113,12 @@ namespace API.Controllers
             if (clientId.HasValue)
             {
                 if (!await CanAccessClientAsync(clientId.Value)) return Forbid();
-                return Ok(await meetingService_.GetUpcomingAsync(clientId));
+                return Ok(await meetingService_.GetUpcomingAsync(clientId, null)); // Client Branch
             }
 
             // If no clientId is provided, only an advisor can access all upcoming meetings.
             if (!IsAdvisor) return Forbid();
-            return Ok(await meetingService_.GetUpcomingAsync(null));
+            return Ok(await meetingService_.GetUpcomingAsync(null, CurrentAdvisorId)); // Advisor Branch
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

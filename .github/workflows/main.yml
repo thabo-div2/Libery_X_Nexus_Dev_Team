@@ -71,6 +71,9 @@ jobs:
       - name: Install ER Core CLI
         run: dotnet tool install --global dotnet-ef --version 10.0.12
 
+      - name: Restore API for Linux
+        run: dotnet restore ${{ env.API_PROJECT }} --runtime linux-x64
+
       - name: Create EF Core migration bundle
         run: >
           dotnet ef migration bundle
@@ -126,7 +129,7 @@ jobs:
       - name: Verify API health after deployment
         shell: bash
         run: | 
-          URL = "https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
+          URL="https://nexus-devteam-g8ece0ftgwbwevdt.centralindia-01.azurewebsites.net/health"
   
           for attempt in {1..12}; do
             if curl --fail --silent --show-error \
