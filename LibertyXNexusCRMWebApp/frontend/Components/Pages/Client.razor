@@ -51,14 +51,16 @@
 
                 <div class="header-actions">
 
-                    <div class="search-box" role="search">
+                    @* Hidden: this search box was not connected to anything, so typing in it did nothing.
+                       Bring it back once it filters this page (the Clients and FAQ pages have working examples). *@
+                    @* <div class="search-box" role="search">
 
                         <span class="search-icon" aria-hidden="true">⌕</span>
 
                         <input aria-label="Search clients, cases, documents" type="text"
                                placeholder="Search clients, cases, documents" />
 
-                    </div>
+                    </div> *@
 
                     <NotificationBell />
 
@@ -160,7 +162,7 @@
 
                             <h2>Outstanding documents</h2>
 
-                        
+                            <a href="/client-documents" class="view-all-link">View all</a>
 
                         </div>
 
@@ -201,21 +203,14 @@
 
 
                             <!-- Upload document -->
-                            <div class="upload-wrapper">
-
-                                <label for="documentUpload"
-                                       class="upload-button">
-
-                                    Upload a document
-
-                                </label>
-
-                                <input id="documentUpload"
-                                       class="file-input"
-                                       type="file"
-                                       accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
-
-                            </div>
+                            @if (CurrentUser.Id is int uploadClientId)
+                            {
+                                <div class="upload-wrapper">
+                                    <DocumentUploader ClientId="uploadClientId"
+                                                      Policies="RawPolicies"
+                                                      OnUploaded="OnDocumentUploaded" />
+                                </div>
+                            }
 
                         </div>
 
@@ -435,6 +430,9 @@
 
     private List<ClientPolicy> Policies { get; set; } = new();
 
+    // The policies as the API sent them, so the uploader can file documents under one.
+    private List<PolicySummary> RawPolicies { get; set; } = new();
+
     private List<ClientUpdate> Updates { get; set; } = new();
 
 
@@ -482,6 +480,8 @@
 
         if (policyError is null)
         {
+            RawPolicies = policies;
+
             Policies = policies
                 .Select(policy => new ClientPolicy
                 {
@@ -551,6 +551,16 @@
             }
         }
 
+    }
+
+    // Show a freshly uploaded document in the list straight away.
+    private void OnDocumentUploaded(DocumentSummary document)
+    {
+        Documents.Insert(0, new ClientDocument
+        {
+            Name = document.FileName,
+            Status = "Received"
+        });
     }
 
     private static List<ApplicationStep> BuildApplicationSteps(CaseSummary currentCase)

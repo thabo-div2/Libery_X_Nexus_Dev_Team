@@ -161,7 +161,16 @@ namespace API.Services.Implementations
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request)
+        public Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request)
+            => RescheduleAsync(meetingId, request, byAdvisor: false);
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Reschedules a meeting. When the client moves it, it goes back to Requested and the advisor is
+        /// notified so they can accept the new time. When the advisor moves it, they have already agreed
+        /// to the new time, so it is Confirmed and no notification is sent to the advisor about their own change.
+        /// </summary>
+        public async Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request, bool byAdvisor)
         {
             var meeting = await meetingRepository_.GetByIdAsync(meetingId) ?? throw new KeyNotFoundException($"Meeting {meetingId} does not exist");
 
@@ -189,12 +198,12 @@ namespace API.Services.Implementations
 
             meeting.MeetingDate = request.NewMeetingDate;
             meeting.DurationMinutes = newDuration;
-            meeting.Status = MeetingStatus.Requested;
+            meeting.Status = byAdvisor ? MeetingStatus.Confirmed : MeetingStatus.Requested;
             meeting.UpdatedAt = DateTime.UtcNow;
 
             await meetingRepository_.UpdateAsync(meeting);
 
-            if (client?.AdvisorId is int advisorId)
+            if (!byAdvisor && client?.AdvisorId is int advisorId)
             {
                 await notificationService_.NotifyAdvisorAsync(
                     advisorId,
@@ -202,6 +211,14 @@ namespace API.Services.Implementations
                     $"{client.FullName} moved a meeting to {meeting.MeetingDate:ddd d MMM, HH:mm}.",
                     "/calendar",
                     client.ClientId);
+            }
+            else if (byAdvisor)
+            {
+                await notificationService_.NotifyClientAsync(
+                    meeting.ClientId,
+                    NotificationType.MeetingRescheduled,
+                    $"Your advisor moved your meeting to {DisplayTime.Format(meeting.MeetingDate)}.",
+                    "/client-calendar");
             }
 
             return await MapToDtoAsync(meeting);
@@ -215,7 +232,14 @@ namespace API.Services.Implementations
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<MeetingDto> CancelAsync(int meetingId)
+        public Task<MeetingDto> CancelAsync(int meetingId)
+            => CancelAsync(meetingId, byAdvisor: false);
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Cancels a meeting. The advisor is only notified when the client cancelled it.
+        /// </summary>
+        public async Task<MeetingDto> CancelAsync(int meetingId, bool byAdvisor)
         {
             var meeting = await meetingRepository_.GetByIdAsync(meetingId) ?? throw new KeyNotFoundException($"Meeting {meetingId} was not found.");
 
@@ -229,7 +253,7 @@ namespace API.Services.Implementations
             await meetingRepository_.UpdateAsync(meeting);
 
             var client = await clientRepository_.GetByIdAsync(meeting.ClientId);
-            if (client?.AdvisorId is int advisorId)
+            if (!byAdvisor && client?.AdvisorId is int advisorId)
             {
                 await notificationService_.NotifyAdvisorAsync(
                     advisorId,
@@ -237,6 +261,14 @@ namespace API.Services.Implementations
                     $"{client.FullName} cancelled the meeting for {meeting.MeetingDate:ddd d MMM, HH:mm}.",
                     "/calendar",
                     client.ClientId);
+            }
+            else if (byAdvisor)
+            {
+                await notificationService_.NotifyClientAsync(
+                    meeting.ClientId,
+                    NotificationType.MeetingCancelled,
+                    $"Your advisor cancelled your meeting on {DisplayTime.Format(meeting.MeetingDate)}.",
+                    "/client-calendar");
             }
 
             return await MapToDtoAsync(meeting);
@@ -263,6 +295,14 @@ namespace API.Services.Implementations
             meeting.UpdatedAt = DateTime.UtcNow;
 
             await meetingRepository_.UpdateAsync(meeting);
+
+            // Only advisors can confirm, so let the client know it's on.
+            await notificationService_.NotifyClientAsync(
+                meeting.ClientId,
+                NotificationType.MeetingConfirmed,
+                $"Your meeting on {DisplayTime.Format(meeting.MeetingDate)} is confirmed.",
+                "/client-calendar");
+
             return await MapToDtoAsync(meeting);
         }
 

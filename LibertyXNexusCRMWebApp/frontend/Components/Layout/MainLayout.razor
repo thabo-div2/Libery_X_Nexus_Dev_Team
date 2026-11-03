@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
 @inject NavigationManager Navigation
 @using frontend.Services
 @inject CurrentUserService CurrentUser
@@ -7,7 +8,7 @@
    Hidden until it gets keyboard focus. *@
 <a href="#main-content"
    class="skip-link"
-   onclick="document.getElementById('main-content')?.focus()">Skip to main content</a>
+   onclick="event.preventDefault(); document.getElementById('main-content')?.focus();">Skip to main content</a>
 
 <div class="nexus-app">
 
@@ -35,18 +36,18 @@
     // URL matching with no dependency on restoration timing.
     private static readonly string[] ClientPaths =
     {
-        "client", "client-messages", "client-chatbot", "client-faqs"
+        "client", "client-documents", "client-calendar", "client-messages", "client-chatbot", "client-faqs"
     };
 
     private static readonly string[] AdvisorPaths =
     {
-        "advisor", "clients", "new-client", "chatbot", "calendar", "messages", "faqs"
+        "advisor", "clients", "new-client", "documents", "chatbot", "calendar", "messages", "faqs"
     };
 
     //routes that never require a signed in user.
     private static readonly string[] PublicPaths =
     {
-        "home", "not-found", "error"
+        "not-found", "error"
     };
 
     private bool IsClientRoute
@@ -70,10 +71,18 @@
         });
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Navigation.LocationChanged += OnLocationChanged;
-        await CheckAccessAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckAccessAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task CheckAccessAsync()
@@ -91,6 +100,12 @@
         }
 
         await CurrentUser.EnsureRestoredAsync();
+
+        Console.WriteLine(
+            $"[AUTH DEBUG] Path={path}, " +
+            $"IdPresent={CurrentUser.Id is not null}, " +
+            $"IsAdvisor={CurrentUser.IsAdvisor}, " +
+            $"IsClient={CurrentUser.IsClient}");
 
         if (CurrentUser.Id is null)
         {
@@ -120,8 +135,9 @@
         _accessGranted = true;
     }
 
+    // Stop listening for page changes when the layout goes away,
+    // otherwise the old layout keeps running checks in the background.
     public void Dispose()
-
     {
         Navigation.LocationChanged -= OnLocationChanged;
     }

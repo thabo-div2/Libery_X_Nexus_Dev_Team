@@ -117,7 +117,9 @@ namespace API.Services.Implementations
                 userRole = UserRole.RegisteredClient;
             }
 
-            var (token, expiresAtUtc) = _jwtTokenService.CreateToken(user, roles, extraClaims);
+            var (token, expiresAtUtc) = request.RememberMe
+                ? _jwtTokenService.CreateToken(user, roles, extraClaims, rememberMe: true)
+                : _jwtTokenService.CreateToken(user, roles, extraClaims);
 
             await _auditLogRepository.LogAsync(
                 userId: domainUserId,
@@ -372,7 +374,8 @@ namespace API.Services.Implementations
                 };
             }
 
-            // Old tokens stop working after a reset.
+            // Changes the account's security stamp so any other Identity-based sign-ins are invalidated.
+            // Note: JWTs already issued stay valid until they expire (60 minutes), because the API does not check them against the stamp.
             await _userManager.UpdateSecurityStampAsync(user);
 
             // A successful reset clears any lockout, same as a successful login would.

@@ -32,6 +32,17 @@
                        placeholder="Search by name, email or status" />
             </div>
 
+            @* Filter the list by lifecycle status (FR-11). Works together with the search box. *@
+            <select class="status-filter"
+                    aria-label="Filter clients by status"
+                    @bind="StatusFilter">
+                <option value="">All statuses</option>
+                @foreach (var status in Enum.GetValues<ClientStatus>())
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+
             <NotificationBell />
 
         </div>
@@ -51,6 +62,11 @@
                 <h2>@(IsLoading ? "Clients" : $"Clients ({FilteredClients.Count()})")</h2>
             </div>
 
+            @if (!string.IsNullOrEmpty(ListMessage))
+            {
+                <p class="nx-alert nx-alert-success clients-list-alert" role="status">@ListMessage</p>
+            }
+
             <div class="clients-list">
 
                 @if (IsLoading)
@@ -62,7 +78,7 @@
                 else if (!FilteredClients.Any())
                 {
                     <div class="clients-empty-state">
-                        <span>No clients found.</span>
+                        <span>@(HasActiveFilters ? "No clients match your search or filter." : "No clients found.")</span>
                     </div>
                 }
                 else
@@ -104,15 +120,167 @@
 
                     <div class="client-detail-heading">
                         <h2>@SelectedClient.FirstName @SelectedClient.LastName</h2>
+
+                        <span class="case-status">
+                            <span class="status-dot" aria-hidden="true"></span>
+                            @SelectedClient.Status
+                        </span>
                     </div>
 
-                    <span class="case-status">
-                        <span class="status-dot"></span>
-                        @SelectedClient.Status
-                    </span>
+                    @if (!IsEditing)
+                    {
+                        <div class="client-detail-actions">
+                            <button type="button"
+                                    class="nx-btn nx-btn-secondary nx-btn-sm"
+                                    aria-label="Edit @SelectedClient.FirstName @SelectedClient.LastName"
+                                    @ref="EditButton"
+                                    @onclick="StartEditing">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                                Edit
+                            </button>
+
+                            <button type="button"
+                                    class="nx-btn nx-btn-danger-outline nx-btn-sm"
+                                    aria-label="Delete @SelectedClient.FirstName @SelectedClient.LastName"
+                                    @ref="DeleteButton"
+                                    @onclick="AskToDelete"
+                                    disabled="@ConfirmingDelete">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                                Delete
+                            </button>
+                        </div>
+                    }
 
                 </div>
 
+                @if (!string.IsNullOrEmpty(DetailMessage))
+                {
+                    <p class="nx-alert nx-alert-success client-detail-alert" role="status">@DetailMessage</p>
+                }
+
+                @if (ConfirmingDelete)
+                {
+                    <div class="client-delete-confirm"
+                         role="alertdialog"
+                         aria-labelledby="delete-confirm-title"
+                         aria-describedby="delete-confirm-text"
+                         @onkeydown="HandleDeleteKeyDown">
+
+                        <strong id="delete-confirm-title">Delete @SelectedClient.FirstName @SelectedClient.LastName?</strong>
+
+                        <p id="delete-confirm-text">
+                            This permanently removes their profile, policies, cases, meetings, documents and messages.
+                            It can't be undone.
+                        </p>
+
+                        @if (!string.IsNullOrEmpty(DeleteError))
+                        {
+                            <p class="client-delete-error" role="alert">@DeleteError</p>
+                        }
+
+                        <div class="client-delete-actions">
+                            <button type="button"
+                                    class="nx-btn nx-btn-secondary nx-btn-sm"
+                                    @ref="KeepClientButton"
+                                    @onclick="CancelDelete"
+                                    disabled="@IsDeleting">
+                                Keep client
+                            </button>
+                            <button type="button"
+                                    class="nx-btn nx-btn-danger nx-btn-sm"
+                                    @onclick="DeleteClientAsync"
+                                    disabled="@IsDeleting">
+                                @(IsDeleting ? "Deleting…" : "Delete client")
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                @if (IsEditing)
+                {
+                    <div class="client-detail-body" @onkeydown="HandleEditKeyDown">
+
+                        <EditForm Model="EditModel" OnValidSubmit="SaveClientAsync" class="client-edit-form" novalidate>
+                            <DataAnnotationsValidator />
+
+                            <p class="client-edit-intro">Update @SelectedClient.FirstName's details. Email and status can't be changed here.</p>
+
+                            @if (!string.IsNullOrEmpty(EditError))
+                            {
+                                <p class="clients-error client-edit-error" role="alert">@EditError</p>
+                            }
+
+                            <div class="client-edit-row">
+                                <div class="client-edit-field">
+                                    <label class="nx-label" for="edit-first-name">First name</label>
+                                    <InputText id="edit-first-name"
+                                               class="nx-input"
+                                               autocomplete="off"
+                                               @ref="FirstNameInput"
+                                               @bind-Value="EditModel.FirstName" />
+                                    <ValidationMessage For="() => EditModel.FirstName" />
+                                </div>
+
+                                <div class="client-edit-field">
+                                    <label class="nx-label" for="edit-last-name">Last name</label>
+                                    <InputText id="edit-last-name"
+                                               class="nx-input"
+                                               autocomplete="off"
+                                               @bind-Value="EditModel.LastName" />
+                                    <ValidationMessage For="() => EditModel.LastName" />
+                                </div>
+                            </div>
+
+                            <div class="client-edit-field">
+                                <label class="nx-label" for="edit-email">Email</label>
+                                <input id="edit-email" class="nx-input" type="email" value="@SelectedClient.Email" disabled />
+                            </div>
+
+                            <div class="client-edit-field">
+                                <label class="nx-label" for="edit-phone">Phone <span class="client-edit-optional">(optional)</span></label>
+                                <InputText id="edit-phone"
+                                           class="nx-input"
+                                           type="tel"
+                                           placeholder="+27 82 000 0000"
+                                           @bind-Value="EditModel.Phone" />
+                                <ValidationMessage For="() => EditModel.Phone" />
+                            </div>
+
+                            <div class="client-edit-field">
+                                <label class="nx-label" for="edit-id-number">ID number <span class="client-edit-optional">(optional)</span></label>
+                                <InputText id="edit-id-number"
+                                           class="nx-input"
+                                           inputmode="numeric"
+                                           placeholder="9001015800086"
+                                           @bind-Value="EditModel.IdentificationNumber" />
+                                <ValidationMessage For="() => EditModel.IdentificationNumber" />
+                            </div>
+
+                            <div class="client-edit-field">
+                                <label class="nx-label" for="edit-risk">Risk profile <span class="client-edit-optional">(optional)</span></label>
+                                <InputSelect id="edit-risk" class="nx-input" @bind-Value="EditModel.RiskProfile">
+                                    <option value="">Not set</option>
+                                    @foreach (var option in RiskOptionsFor(SelectedClient.RiskProfile))
+                                    {
+                                        <option value="@option">@option</option>
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="client-edit-actions">
+                                <button type="button" class="nx-btn nx-btn-secondary" @onclick="CancelEditingAsync" disabled="@IsSaving">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="nx-btn nx-btn-primary" disabled="@IsSaving">
+                                    @(IsSaving ? "Saving…" : "Save changes")
+                                </button>
+                            </div>
+                        </EditForm>
+
+                    </div>
+                }
+                else
+                {
                 <div class="client-detail-body">
 
                     <div class="detail-field">
@@ -122,17 +290,17 @@
 
                     <div class="detail-field">
                         <span class="detail-label">Phone</span>
-                        <span class="detail-value">@(SelectedClient.Phone ?? "—")</span>
+                        <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.Phone) ? "—" : SelectedClient.Phone)</span>
                     </div>
 
                     <div class="detail-field">
                         <span class="detail-label">ID number</span>
-                        <span class="detail-value">@(SelectedClient.IdentityNumber ?? "—")</span>
+                        <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.IdentificationNumber) ? "—" : SelectedClient.IdentificationNumber)</span>
                     </div>
 
                     <div class="detail-field">
                         <span class="detail-label">Risk profile</span>
-                        <span class="detail-value">@(SelectedClient.RiskProfile ?? "—")</span>
+                        <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.RiskProfile) ? "—" : SelectedClient.RiskProfile)</span>
                     </div>
 
                     <div class="detail-field">
@@ -189,6 +357,7 @@
                     </div>
 
                 </div>
+                }
             }
 
         </section>
@@ -213,12 +382,21 @@
     private CaseSummary? SelectedCase;
     private string? CaseError;
 
+    /// <summary>
+    /// The status chosen in the filter dropdown. Empty means "All statuses".
+    /// </summary>
+    private string StatusFilter = "";
+
+    private bool HasActiveFilters => !string.IsNullOrEmpty(SearchText) || !string.IsNullOrEmpty(StatusFilter);
+
     private IEnumerable<ClientProfile> FilteredClients => ClientResults
-        .Where(c => string.IsNullOrEmpty(SearchText) ||
-                    c.FirstName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    c.LastName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    c.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    c.Status.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+    .Where(c => string.IsNullOrEmpty(StatusFilter) ||
+                string.Equals(c.Status, StatusFilter, StringComparison.OrdinalIgnoreCase))
+    .Where(c => string.IsNullOrWhiteSpace(SearchText) ||
+                $"{c.FirstName} {c.LastName}".Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                $"{c.LastName} {c.FirstName}".Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                c.Email.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                c.Status.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase));
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "search")]
@@ -230,28 +408,36 @@
         await Search();
     }
 
-    private async Task OnSearchInput(ChangeEventArgs e)
-    {
-        SearchText = e.Value?.ToString() ?? string.Empty;
-        SearchText = SearchQuery ?? string.Empty;
-        await Search();
-    }
+    /// <summary>
+    /// The ?search= value that has already been copied into the search box.
+    /// The page re-receives its parameters on every re-render (e.g. when the layout updates),
+    /// and the old code copied ?search= into the box each time, wiping what the user had typed.
+    /// Now the URL value is only applied when it actually changes, e.g. a new search from the dashboard.
+    /// </summary>
+    private string? _appliedSearchQuery;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        if (SearchQuery is not null && SearchQuery != SearchText)
+        if (SearchQuery == _appliedSearchQuery)
         {
-            SearchText = SearchQuery;
-            await Search();
+            return;
         }
+
+        _appliedSearchQuery = SearchQuery;
+        SearchText = SearchQuery ?? string.Empty;
     }
 
+    /// <summary>
+    /// Loads all of the advisor's clients once. Typing in the search box then filters
+    /// this list instantly on the page (see FilteredClients), so clearing the box always
+    /// brings every client back, even when the page was opened with ?search= from the dashboard.
+    /// </summary>
     private async Task Search()
     {
         IsLoading = true;
         LoadError = null;
 
-        var (clients, error) = await ClientDirectory.SearchAsync(SearchText, null);
+        var (clients, error) = await ClientDirectory.SearchAsync(null, null);
         ClientResults = clients;
         LoadError = error;
         IsLoading = false;
@@ -273,6 +459,13 @@
 
     private async Task SelectClient(ClientProfile client)
     {
+        // Picking another client leaves edit mode (and any delete question) without saving.
+        IsEditing = false;
+        ConfirmingDelete = false;
+        DeleteError = null;
+        EditError = null;
+        DetailMessage = null;
+
         SelectedClient = client;
 
         // Fetch the full profile Phone, ID number, Risk profile
@@ -356,6 +549,255 @@
         return when?.ToString("dd MMM yyyy");
     }
 
+
+    // ---------------------------------------------------------
+    // Editing a client
+    // ---------------------------------------------------------
+
+    /// <summary>
+    /// Same choices as the New Client wizard.
+    /// </summary>
+    private static readonly string[] RiskOptions = { "Conservative", "Moderate", "Balanced", "Aggressive" };
+
+    private bool IsEditing;
+    private bool IsSaving;
+    private string? EditError;
+    private EditClientForm EditModel = new();
+
+    /// <summary>
+    /// A short green confirmation under the panel header, e.g. "Client updated".
+    /// </summary>
+    private string? DetailMessage;
+
+    private ElementReference EditButton;
+    private InputText? FirstNameInput;
+    private bool FocusFirstField;
+    private bool FocusEditButton;
+
+    /// <summary>
+    /// Keeps a risk profile that isn't one of the standard options (older data) selectable.
+    /// </summary>
+    private static IEnumerable<string> RiskOptionsFor(string? current) =>
+        string.IsNullOrWhiteSpace(current) || RiskOptions.Contains(current)
+            ? RiskOptions
+            : RiskOptions.Append(current);
+
+    private void StartEditing()
+    {
+        if (SelectedClient is null)
+        {
+            return;
+        }
+
+        EditModel = new EditClientForm
+        {
+            FirstName = SelectedClient.FirstName,
+            LastName = SelectedClient.LastName,
+            Phone = SelectedClient.Phone,
+            IdentificationNumber = SelectedClient.IdentificationNumber,
+            RiskProfile = SelectedClient.RiskProfile
+        };
+
+        EditError = null;
+        DetailMessage = null;
+        ConfirmingDelete = false;
+        IsEditing = true;
+        FocusFirstField = true;
+    }
+
+    private Task CancelEditingAsync()
+    {
+        IsEditing = false;
+        EditError = null;
+        FocusEditButton = true;
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Escape leaves the form without saving, like the other panels in the app.
+    /// </summary>
+    private async Task HandleEditKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && !IsSaving)
+        {
+            await CancelEditingAsync();
+        }
+    }
+
+    /// <summary>
+    /// Runs only when every field passes its rules (EditForm OnValidSubmit).
+    /// </summary>
+    private async Task SaveClientAsync()
+    {
+        if (SelectedClient is null)
+        {
+            return;
+        }
+
+        IsSaving = true;
+        EditError = null;
+
+        // Empty optional boxes are sent as null: the API's [Phone] rule rejects an empty string.
+        static string? OrNull(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+        var request = new Shared.DTOs.Clients.UpdateClientRequest
+        {
+            FirstName = EditModel.FirstName.Trim(),
+            LastName = EditModel.LastName.Trim(),
+            Phone = OrNull(EditModel.Phone),
+            IdentificationNumber = OrNull(EditModel.IdentificationNumber),
+            RiskProfile = OrNull(EditModel.RiskProfile)
+        };
+
+        var (updated, error) = await ClientDirectory.UpdateAsync(SelectedClient.ClientId, request);
+
+        IsSaving = false;
+
+        if (updated is null)
+        {
+            EditError = error ?? "The client could not be saved.";
+            return;
+        }
+
+        // Keep the list on the left in step with the panel.
+        var index = ClientResults.FindIndex(c => c.ClientId == updated.ClientId);
+        if (index >= 0)
+        {
+            ClientResults[index] = updated;
+        }
+
+        SelectedClient = updated;
+        IsEditing = false;
+        FocusEditButton = true;
+        ShowDetailMessage($"{updated.FirstName} {updated.LastName}'s details were updated.");
+    }
+
+    /// <summary>
+    /// Shows a confirmation for a few seconds, then hides it.
+    /// </summary>
+    private void ShowDetailMessage(string message)
+    {
+        DetailMessage = message;
+
+        _ = Task.Delay(4000).ContinueWith(_ => InvokeAsync(() =>
+        {
+            if (DetailMessage == message)
+            {
+                DetailMessage = null;
+                StateHasChanged();
+            }
+        }));
+    }
+
+
+    // ---------------------------------------------------------
+    // Deleting a client
+    // ---------------------------------------------------------
+
+    private bool ConfirmingDelete;
+    private bool IsDeleting;
+    private string? DeleteError;
+
+    /// <summary>
+    /// Shown above the list after a delete, since the detail panel closes.
+    /// </summary>
+    private string? ListMessage;
+
+    private ElementReference DeleteButton;
+    private ElementReference KeepClientButton;
+    private bool FocusKeepButton;
+    private bool FocusDeleteButton;
+
+    private void AskToDelete()
+    {
+        DetailMessage = null;
+        DeleteError = null;
+        ConfirmingDelete = true;
+        // Focus starts on "Keep client", so a stray Enter never deletes anyone.
+        FocusKeepButton = true;
+    }
+
+    private void CancelDelete()
+    {
+        ConfirmingDelete = false;
+        DeleteError = null;
+        FocusDeleteButton = true;
+    }
+
+    private void HandleDeleteKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && !IsDeleting)
+        {
+            CancelDelete();
+        }
+    }
+
+    private async Task DeleteClientAsync()
+    {
+        if (SelectedClient is null)
+        {
+            return;
+        }
+
+        IsDeleting = true;
+        DeleteError = null;
+
+        var deleted = SelectedClient;
+        var error = await ClientDirectory.DeleteAsync(deleted.ClientId);
+
+        IsDeleting = false;
+
+        if (error is not null)
+        {
+            DeleteError = error;
+            return;
+        }
+
+        ClientResults.RemoveAll(c => c.ClientId == deleted.ClientId);
+        ConfirmingDelete = false;
+        SelectedClient = null;
+        SelectedCase = null;
+        ShowListMessage($"{deleted.FirstName} {deleted.LastName} was deleted.");
+    }
+
+    private void ShowListMessage(string message)
+    {
+        ListMessage = message;
+
+        _ = Task.Delay(5000).ContinueWith(_ => InvokeAsync(() =>
+        {
+            if (ListMessage == message)
+            {
+                ListMessage = null;
+                StateHasChanged();
+            }
+        }));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Move keyboard focus to the right place after the panel switches mode.
+        if (FocusFirstField && FirstNameInput?.Element is ElementReference first)
+        {
+            FocusFirstField = false;
+            await first.FocusAsync();
+        }
+        else if (FocusEditButton && !IsEditing)
+        {
+            FocusEditButton = false;
+            try { await EditButton.FocusAsync(); } catch (Exception) { }
+        }
+        else if (FocusKeepButton && ConfirmingDelete)
+        {
+            FocusKeepButton = false;
+            try { await KeepClientButton.FocusAsync(); } catch (Exception) { }
+        }
+        else if (FocusDeleteButton && !ConfirmingDelete)
+        {
+            FocusDeleteButton = false;
+            try { await DeleteButton.FocusAsync(); } catch (Exception) { }
+        }
+    }
 }
 
 @* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

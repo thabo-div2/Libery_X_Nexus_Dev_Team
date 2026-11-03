@@ -35,13 +35,14 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets the advisor's notifications.
+        /// Gets the signed-in user's notifications. Clients and advisors have separate
+        /// API routes, so pass whether this is a client.
         /// </summary>
-        public async Task<NotificationFeed> GetFeedForAdvisorAsync(int advisorId)
+        public async Task<NotificationFeed> GetFeedAsync(int userId, bool isClient)
         {
             try
             {
-                var response = await _http.GetAsync($"notifications/advisor/{advisorId}");
+                var response = await _http.GetAsync($"notifications/{Owner(isClient)}/{userId}");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -58,13 +59,18 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Gets the unread count.
+        /// Gets the advisor's notifications.
         /// </summary>
-        public async Task<int> GetUnreadCountForAdvisorAsync(int advisorId)
+        public Task<NotificationFeed> GetFeedForAdvisorAsync(int advisorId) => GetFeedAsync(advisorId, isClient: false);
+
+        /// <summary>
+        /// Gets the signed-in user's unread count.
+        /// </summary>
+        public async Task<int> GetUnreadCountAsync(int userId, bool isClient)
         {
             try
             {
-                var response = await _http.GetAsync($"notifications/advisor/{advisorId}/unread-count");
+                var response = await _http.GetAsync($"notifications/{Owner(isClient)}/{userId}/unread-count");
                 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -78,6 +84,13 @@ namespace frontend.Services
                 return 0;
             }
         }
+
+        /// <summary>
+        /// Gets the advisor's unread count.
+        /// </summary>
+        public Task<int> GetUnreadCountForAdvisorAsync(int advisorId) => GetUnreadCountAsync(advisorId, isClient: false);
+
+        private static string Owner(bool isClient) => isClient ? "client" : "advisor";
 
         /// <summary>
         /// Marks one as read.
@@ -96,13 +109,13 @@ namespace frontend.Services
         }
 
         /// <summary>
-        /// Marks all as read.
+        /// Marks all of the signed-in user's notifications as read.
         /// </summary>
-        public async Task<bool> MarkAllAsReadAsync(int advisorId)
+        public async Task<bool> MarkAllAsReadAsync(int userId, bool isClient = false)
         {
             try
             {
-                var response = await _http.PutAsync($"notifications/advisor/{advisorId}/read-all", new StringContent(string.Empty));
+                var response = await _http.PutAsync($"notifications/{Owner(isClient)}/{userId}/read-all", new StringContent(string.Empty));
                 return response.IsSuccessStatusCode;
             }
             catch (HttpRequestException)

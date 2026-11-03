@@ -363,3 +363,9 @@ MigrationBackup/
 FodyWeavers.xsd
 LibertyXNexusCRMWebApp/.vs/LibertyXNexusCRMWebApp.slnx/v18/.suo
 LibertyXNexusCRMWebApp/.vs/LibertyXNexusCRMWebApp.slnx/v18/DocumentLayout.json
+
+# Entity Framework migration bundles
+efbundle
+efbundle.exe
+**/efbundle
+**/efbundle.exe

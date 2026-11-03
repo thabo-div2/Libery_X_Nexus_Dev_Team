@@ -9,6 +9,8 @@ namespace frontend.Services
     {
         private const string StorageKey = "nexus-current-user";
         private readonly ProtectedSessionStorage _storage;
+        private readonly ProtectedLocalStorage _localStorage;
+        private readonly TokenStorageService _tokens;
         private bool _restoreAttempted;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -16,9 +18,11 @@ namespace frontend.Services
         /// Initializes a new instance of the <see cref="CurrentUserService"/> class with the specified <see cref="ProtectedSessionStorage"/> for managing user session data.
         /// </summary>
         /// <param name="storage"></param>
-        public CurrentUserService(ProtectedSessionStorage storage)
+        public CurrentUserService(ProtectedSessionStorage storage, ProtectedLocalStorage localStorage, TokenStorageService tokens)
         {
             _storage = storage;
+            _localStorage = localStorage;
+            _tokens = tokens;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -70,7 +74,7 @@ namespace frontend.Services
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        public async Task SignInAsync(AuthResult result)
+        public async Task SignInAsync(AuthResult result, bool rememberMe = false)
         {
             Id = result.Id;
             Role = result.Role;
@@ -81,7 +85,19 @@ namespace frontend.Services
 
             try
             {
-                await _storage.SetAsync(StorageKey, new StoredUser(Id, Role, FirstName, LastName, Email));
+                var user = new StoredUser(Id, Role, FirstName, LastName, Email);
+
+                // "Keep me signed in" keeps the user in local storage so it survives closing the browser.
+                if (rememberMe)
+                {
+                    await _localStorage.SetAsync(StorageKey, user);
+                    await _storage.DeleteAsync(StorageKey);
+                }
+                else
+                {
+                    await _storage.SetAsync(StorageKey, user);
+                    await _localStorage.DeleteAsync(StorageKey);
+                }
             }
             catch
             {
@@ -106,6 +122,7 @@ namespace frontend.Services
             try
             {
                 await _storage.DeleteAsync(StorageKey);
+                await _localStorage.DeleteAsync(StorageKey);
             }
             catch
             {
@@ -120,7 +137,19 @@ namespace frontend.Services
         /// <returns></returns>
         public async Task EnsureRestoredAsync()
         {
-            if (_restoreAttempted || Id is not null)
+            if (Id is not null)
+            {
+                // Already signed in: make sure the login hasn't run out. If it has, sign out
+                // so the layout sends the user back to the login page instead of showing API errors.
+                if (await _tokens.GetTokenAsync() is null)
+                {
+                    await SignOutAsync();
+                }
+
+                return;
+            }
+
+            if (_restoreAttempted)
             {
                 return;
             }
@@ -129,17 +158,33 @@ namespace frontend.Services
 
             try
             {
+                // This tab's login first, then a "Keep me signed in" one.
                 var result = await _storage.GetAsync<StoredUser>(StorageKey);
+                if (!result.Success || result.Value is null)
+                {
+                    result = await _localStorage.GetAsync<StoredUser>(StorageKey);
+                }
+
                 if (result.Success && result.Value is not null)
                 {
+                    // Only restore the user if their login token is still valid.
+                    if (await _tokens.GetTokenAsync() is null)
+                    {
+                        await SignOutAsync();
+                        return;
+                    }
+
                     Id = result.Value.Id;
                     Role = result.Value.Role;
                     FirstName = result.Value.FirstName;
                     LastName = result.Value.LastName;
                     Email = result.Value.Email;
                 }
+
+                // Mark restoration complete only after storage was accessible.
+                _restoreAttempted = true;
             }
-            catch
+            catch(InvalidOperationException)
             {
                 // Browser storage isn't available; the user will just need to log in again.
             }

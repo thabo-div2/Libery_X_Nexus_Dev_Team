@@ -1,0 +1,251 @@
+﻿@page "/client-documents"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject DocumentService DocumentDirectory
+@inject PolicyService PolicyDirectory
+@inject CurrentUserService CurrentUser
+@inject NavigationManager Navigation
+
+<PageTitle>My documents | Nexus</PageTitle>
+
+<div class="cdocs-page">
+
+    <header class="cdocs-header">
+
+        <div class="cdocs-heading">
+            <h1>My documents</h1>
+            <p>Documents you've sent your advisor and ones they've shared with you</p>
+        </div>
+
+        <div class="header-actions">
+            <NotificationBell />
+        </div>
+
+    </header>
+
+
+    <main class="cdocs-content">
+
+        <section class="main-column">
+
+            <article class="cdocs-card">
+
+                <div class="card-header">
+                    <h2>Your documents</h2>
+                </div>
+
+                <div class="cdocs-list">
+
+                    @if (!string.IsNullOrWhiteSpace(DownloadError))
+                    {
+                        <p class="nx-alert nx-alert-danger cdocs-alert" role="alert">@DownloadError</p>
+                    }
+
+                    @if (IsLoading)
+                    {
+                        <div class="empty-state" role="status">
+                            <strong>Loading...</strong>
+                            <span>Please wait while your documents are retrieved.</span>
+                        </div>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                    {
+                        <div class="empty-state" role="alert">
+                            <strong>Unable to load documents</strong>
+                            <span>@ErrorMessage</span>
+                        </div>
+                    }
+                    else if (Documents.Count > 0)
+                    {
+                        @foreach (var document in Documents)
+                        {
+                            <div class="document-row">
+
+                                <div class="document-main">
+
+                                    <span class="document-icon" aria-hidden="true">▤</span>
+
+                                    <div class="document-info">
+
+                                        <strong>@document.FileName</strong>
+
+                                        <span>
+                                            <span>@FormatType(document.DocumentType)</span>
+
+                                            @if (document.UpdateAt is DateTime updatedAt)
+                                            {
+                                                <span> · @updatedAt.ToLocalTime().ToString("dd MMM yyyy")</span>
+                                            }
+
+                                            @if (!string.IsNullOrWhiteSpace(document.UploadedBy))
+                                            {
+                                                <span> · From @document.UploadedBy</span>
+                                            }
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="document-actions">
+
+                                    <button type="button"
+                                            class="download-button"
+                                            title="Download"
+                                            aria-label="@($"Download {document.FileName}")"
+                                            @onclick="() => DownloadAsync(document.DocumentId)">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+
+                            <div class="empty-icon" aria-hidden="true">▤</div>
+
+                            <strong>No documents yet</strong>
+
+                            <span>
+                                Documents you upload, and ones your advisor shares with you, will appear here.
+                            </span>
+
+                        </div>
+                    }
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <aside class="side-column">
+
+            <section class="side-card">
+
+                <div class="side-card-header">
+                    <h2>Send a document</h2>
+                </div>
+
+                <div class="side-card-body">
+
+                    <p class="side-card-intro">
+                        Your advisor may ask for things like a certified ID copy, proof of address,
+                        payslips or bank statements. Upload them here and they'll be notified.
+                    </p>
+
+                    @if (!IsLoading && CurrentUser.Id is int clientId)
+                    {
+                        <DocumentUploader ClientId="clientId"
+                                          Policies="Policies"
+                                          OnUploaded="OnDocumentUploaded" />
+                    }
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </main>
+
+</div>
+
+@code {
+
+    private List<DocumentSummary> Documents { get; set; } = new();
+
+    private List<PolicySummary> Policies { get; set; } = new();
+
+    private bool IsLoading { get; set; } = true;
+
+    private string? ErrorMessage { get; set; }
+
+    private string? DownloadError { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await CurrentUser.EnsureRestoredAsync();
+
+            if (CurrentUser.Id is not int clientId)
+            {
+                ErrorMessage = "You need to be signed in to view your documents.";
+                return;
+            }
+
+            // The API only returns the documents this client is allowed to see.
+            var (documents, documentError) = await DocumentDirectory.GetForClientAsync(clientId);
+
+            if (documentError is not null || documents is null)
+            {
+                ErrorMessage = documentError ?? "Your documents couldn't be loaded.";
+            }
+            else
+            {
+                Documents = documents
+                    .OrderByDescending(d => d.UpdateAt ?? DateTime.MinValue)
+                    .ToList();
+            }
+
+            // Needed by the uploader so each document can be filed under a policy.
+            var (policies, policyError) = await PolicyDirectory.GetForClientAsync(clientId);
+            if (policyError is null)
+            {
+                Policies = policies;
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    // Show a freshly uploaded document at the top of the list straight away.
+    private void OnDocumentUploaded(DocumentSummary document)
+    {
+        Documents.Insert(0, document);
+    }
+
+    private async Task DownloadAsync(int documentId)
+    {
+        DownloadError = null;
+
+        var (url, error) = await DocumentDirectory.GetDownloadUrlAsync(documentId);
+
+        if (!string.IsNullOrWhiteSpace(error) || string.IsNullOrWhiteSpace(url))
+        {
+            DownloadError = error ?? "That document couldn't be downloaded. Please try again.";
+            return;
+        }
+
+        Navigation.NavigateTo(url, forceLoad: true);
+    }
+
+    // "ProofOfAddress" -> "Proof of address"
+    private static string FormatType(string? type)
+    {
+        if (string.IsNullOrWhiteSpace(type))
+        {
+            return "Document";
+        }
+
+        if (type == "CertifiedIdCopy")
+        {
+            return "Certified ID copy";
+        }
+
+        var spaced = System.Text.RegularExpressions.Regex.Replace(type, "(?<!^)([A-Z])", " $1").ToLowerInvariant();
+        return char.ToUpperInvariant(spaced[0]) + spaced[1..];
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

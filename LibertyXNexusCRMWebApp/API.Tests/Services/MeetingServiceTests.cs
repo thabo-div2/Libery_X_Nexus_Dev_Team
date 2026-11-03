@@ -164,6 +164,8 @@ namespace API.Tests.Services
             var result = await _sut.ConfirmAsync(1);
 
             Assert.Equal("Confirmed", result.Status);
+            _notificationService.Verify(n => n.NotifyClientAsync(
+                1, NotificationType.MeetingConfirmed, It.IsAny<string>(), "/client-calendar"), Times.Once);
         }
 
         /// <summary>
@@ -231,6 +233,89 @@ namespace API.Tests.Services
                 5, NotificationType.MeetingRescheduled, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Once);
         }
 
+        /// <summary>
+        /// When the advisor moves a meeting it stays confirmed, and the advisor
+        /// is not sent a notification about their own change.
+        /// </summary>
+        [Fact]
+        public async Task RescheduleAsync_ByAdvisor_KeepsMeetingConfirmed_AndDoesNotNotifyAdvisor()
+        {
+            var meeting = new Meeting
+            {
+                MeetingId = 1,
+                ClientId = 1,
+                MeetingDate = DateTime.UtcNow.AddDays(2),
+                DurationMinutes = 60,
+                Status = MeetingStatus.Confirmed
+            };
+            var client = MakeClient();
+            client.AdvisorId = 5;
+
+            _meetingRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(meeting);
+            _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(client);
+            _meetingRepository
+                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>()))
+                .ReturnsAsync(false);
+
+            await _sut.RescheduleAsync(1, new RescheduleMeetingRequest { NewMeetingDate = DateTime.UtcNow.AddDays(3) }, byAdvisor: true);
+
+            Assert.Equal(MeetingStatus.Confirmed, meeting.Status);
+            _notificationService.Verify(n => n.NotifyAdvisorAsync(
+                It.IsAny<int>(), It.IsAny<NotificationType>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Never);
+        }
+
+        /// <summary>
+        /// When the client moves a meeting it goes back to Requested so the advisor can accept the new time.
+        /// </summary>
+        [Fact]
+        public async Task RescheduleAsync_ByClient_SetsMeetingBackToRequested()
+        {
+            var meeting = new Meeting
+            {
+                MeetingId = 1,
+                ClientId = 1,
+                MeetingDate = DateTime.UtcNow.AddDays(2),
+                DurationMinutes = 60,
+                Status = MeetingStatus.Confirmed
+            };
+            var client = MakeClient();
+            client.AdvisorId = 5;
+
+            _meetingRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(meeting);
+            _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(client);
+            _meetingRepository
+                .Setup(r => r.HasConflictAsync(It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>()))
+                .ReturnsAsync(false);
+
+            await _sut.RescheduleAsync(1, new RescheduleMeetingRequest { NewMeetingDate = DateTime.UtcNow.AddDays(3) }, byAdvisor: false);
+
+            Assert.Equal(MeetingStatus.Requested, meeting.Status);
+        }
+
+        /// <summary>
+        /// When the advisor cancels (or declines a request), the advisor is not notified about their own action.
+        /// </summary>
+        [Fact]
+        public async Task CancelAsync_ByAdvisor_DoesNotNotifyAdvisor()
+        {
+            var meeting = new Meeting { MeetingId = 2, ClientId = 1, MeetingDate = DateTime.UtcNow.AddDays(2), Status = MeetingStatus.Confirmed };
+            var client = MakeClient();
+            client.AdvisorId = 5;
+
+            _meetingRepository.Setup(r => r.GetByIdAsync(2)).ReturnsAsync(meeting);
+            _clientRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(client);
+
+            await _sut.CancelAsync(2, byAdvisor: true);
+
+            Assert.Equal(MeetingStatus.Cancelled, meeting.Status);
+            _notificationService.Verify(n => n.NotifyAdvisorAsync(
+                It.IsAny<int>(), It.IsAny<NotificationType>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Never);
+
+            // ...but the client is told their meeting was cancelled.
+            _notificationService.Verify(n => n.NotifyClientAsync(
+                1, NotificationType.MeetingCancelled, It.IsAny<string>(), "/client-calendar"), Times.Once);
+        }
+
         [Fact]
         public async Task CancelAsync_RaisesMeetingCancelledNotification()
         {
@@ -245,6 +330,10 @@ namespace API.Tests.Services
 
             _notificationService.Verify(n => n.NotifyAdvisorAsync(
                 5, NotificationType.MeetingCancelled, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<int?>()), Times.Once);
+
+            // The client cancelled it themselves, so they don't get told about their own action.
+            _notificationService.Verify(n => n.NotifyClientAsync(
+                It.IsAny<int>(), It.IsAny<NotificationType>(), It.IsAny<string>(), It.IsAny<string?>()), Times.Never);
         }
     }
 }

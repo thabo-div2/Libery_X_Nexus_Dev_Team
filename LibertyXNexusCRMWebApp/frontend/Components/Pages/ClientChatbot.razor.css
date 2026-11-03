@@ -102,24 +102,6 @@
         background: var(--color-page-bg);
     }
 
-.notification-button {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-white);
-    color: var(--color-blue-790);
-    font-size: var(--text-base);
-    cursor: pointer;
-}
-
-    .notification-button:hover {
-        background: var(--color-page-bg);
-    }
-
 .assistant-content {
     width: 100%;
     display: grid;

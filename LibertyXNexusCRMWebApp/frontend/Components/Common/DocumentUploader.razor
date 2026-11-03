@@ -1,0 +1,228 @@
+﻿@using frontend.Services
+@using Shared.Models.Enums
+@inject DocumentService DocumentDirectory
+
+@* Lets a signed-in client send a document to their advisor.
+   Used on the client dashboard and the client Documents page. *@
+
+<div class="doc-upload">
+
+    @if (Policies.Count == 0)
+    {
+        <p class="doc-upload-note">
+            You'll be able to upload documents once your advisor has added a policy to your profile.
+        </p>
+    }
+    else
+    {
+        <div class="doc-upload-fields">
+
+            @if (Policies.Count > 1)
+            {
+                <div class="doc-upload-field">
+                    <label class="nx-label" for="@($"{_idPrefix}-policy")">Policy</label>
+                    <select id="@($"{_idPrefix}-policy")" class="nx-input" @bind="SelectedPolicyId" disabled="@IsUploading">
+                        @foreach (var policy in Policies)
+                        {
+                            <option value="@policy.PolicyId">@policy.PolicyName</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            <div class="doc-upload-field">
+                <label class="nx-label" for="@($"{_idPrefix}-type")">What is it?</label>
+                <select id="@($"{_idPrefix}-type")" class="nx-input" @bind="SelectedType" disabled="@IsUploading">
+                    @foreach (var type in ClientDocumentTypes)
+                    {
+                        <option value="@type">@FormatType(type)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="doc-upload-field">
+                <label class="nx-label" for="@($"{_idPrefix}-file")">File</label>
+                <InputFile @key="_inputKey"
+                           id="@($"{_idPrefix}-file")"
+                           class="nx-input doc-upload-file"
+                           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                           disabled="@IsUploading"
+                           aria-describedby="@($"{_idPrefix}-hint")"
+                           OnChange="OnFileSelected" />
+                <span id="@($"{_idPrefix}-hint")" class="doc-upload-hint">PDF, Word, JPG or PNG, up to 25MB.</span>
+            </div>
+
+        </div>
+
+        <button type="button"
+                class="nx-btn nx-btn-primary doc-upload-button"
+                disabled="@(PickedFile is null || IsUploading)"
+                @onclick="UploadAsync">
+            @(IsUploading ? "Uploading…" : "Upload a document")
+        </button>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(SuccessMessage))
+    {
+        <p class="nx-alert nx-alert-success" role="status">@SuccessMessage</p>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <p class="nx-alert nx-alert-danger" role="alert">@ErrorMessage</p>
+    }
+
+</div>
+
+@code {
+    /// <summary>The signed-in client's id.</summary>
+    [Parameter, EditorRequired] public int ClientId { get; set; }
+
+    /// <summary>The client's policies. Every document has to be filed under one.</summary>
+    [Parameter] public IReadOnlyList<PolicySummary> Policies { get; set; } = Array.Empty<PolicySummary>();
+
+    /// <summary>Runs after a document has been uploaded so the page can show it straight away.</summary>
+    [Parameter] public EventCallback<DocumentSummary> OnUploaded { get; set; }
+
+    private const long MaxFileSize = 25 * 1024 * 1024;
+
+    // The document types a client would realistically send their advisor.
+    private static readonly DocumentType[] ClientDocumentTypes =
+    {
+        DocumentType.CertifiedIdCopy,
+        DocumentType.ProofOfAddress,
+        DocumentType.BankStatement,
+        DocumentType.Payslip,
+        DocumentType.TaxCertificate,
+        DocumentType.Other
+    };
+
+    // The API checks the file type, so send the proper one instead of trusting the browser.
+    private static readonly Dictionary<string, string> ContentTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [".pdf"] = "application/pdf",
+        [".png"] = "image/png",
+        [".jpg"] = "image/jpeg",
+        [".jpeg"] = "image/jpeg",
+        [".doc"] = "application/msword",
+        [".docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    };
+
+    private readonly string _idPrefix = $"upload-{Guid.NewGuid():N}";
+    private Guid _inputKey = Guid.NewGuid();
+
+    private int SelectedPolicyId;
+    private DocumentType SelectedType = DocumentType.CertifiedIdCopy;
+    private IBrowserFile? PickedFile;
+    private bool IsUploading;
+    private string? SuccessMessage;
+    private string? ErrorMessage;
+
+    protected override void OnParametersSet()
+    {
+        // Default to the first policy, and fix the choice if the list changed underneath it.
+        if (Policies.Count > 0 && !Policies.Any(p => p.PolicyId == SelectedPolicyId))
+        {
+            SelectedPolicyId = Policies[0].PolicyId;
+        }
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        SuccessMessage = null;
+        ErrorMessage = null;
+        PickedFile = null;
+
+        var file = e.File;
+        var extension = Path.GetExtension(file.Name);
+
+        if (!ContentTypes.ContainsKey(extension))
+        {
+            ErrorMessage = $"'{file.Name}' isn't a PDF, Word, JPG or PNG file.";
+            return;
+        }
+
+        if (file.Size == 0)
+        {
+            ErrorMessage = $"'{file.Name}' is empty. Choose another file.";
+            return;
+        }
+
+        if (file.Size > MaxFileSize)
+        {
+            ErrorMessage = $"'{file.Name}' is {file.Size / 1_048_576.0:0.#}MB. The limit is 25MB.";
+            return;
+        }
+
+        PickedFile = file;
+    }
+
+    private async Task UploadAsync()
+    {
+        // Stops a double click from sending the same file twice.
+        if (PickedFile is null || IsUploading)
+        {
+            return;
+        }
+
+        IsUploading = true;
+        SuccessMessage = null;
+        ErrorMessage = null;
+
+        try
+        {
+            byte[] bytes;
+            await using (var stream = PickedFile.OpenReadStream(MaxFileSize))
+            using (var memory = new MemoryStream())
+            {
+                await stream.CopyToAsync(memory);
+                bytes = memory.ToArray();
+            }
+
+            var extension = Path.GetExtension(PickedFile.Name);
+
+            // The API fills in "uploaded by" from the login, so nothing needs to be sent for it.
+            var (document, error) = await DocumentDirectory.UploadAsync(
+                ClientId,
+                SelectedPolicyId,
+                SelectedType,
+                string.Empty,
+                PickedFile.Name,
+                ContentTypes[extension],
+                bytes,
+                visibleToClient: true);
+
+            if (document is null)
+            {
+                ErrorMessage = error ?? "The document couldn't be uploaded. Please try again.";
+                return;
+            }
+
+            SuccessMessage = $"'{document.FileName}' was sent to your advisor.";
+            PickedFile = null;
+            _inputKey = Guid.NewGuid(); // clears the file box
+
+            await OnUploaded.InvokeAsync(document);
+        }
+        catch (IOException)
+        {
+            ErrorMessage = "The file couldn't be read. Please choose it again.";
+        }
+        finally
+        {
+            IsUploading = false;
+        }
+    }
+
+    private static string FormatType(DocumentType type) => type switch
+    {
+        DocumentType.CertifiedIdCopy => "Certified ID copy",
+        DocumentType.ProofOfAddress => "Proof of address",
+        DocumentType.BankStatement => "Bank statement",
+        DocumentType.Payslip => "Payslip",
+        DocumentType.TaxCertificate => "Tax certificate",
+        _ => "Other"
+    };
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

@@ -135,7 +135,7 @@
     --font-family: Inter, "Segoe UI", Arial, sans-serif;
 
     /* Text sizes (smallest to biggest) */
-    --text-xs: 10px;     /* tiny labels, badges */
+    --text-xs: 11px;     /* tiny labels, badges (was 10px; raised for readability) */
     --text-sm: 12px;     /* small text, hints, table details */
     --text-base: 14px;   /* normal text */
     --text-md: 16px;     /* card titles, important text */
@@ -378,6 +378,18 @@ textarea:focus-visible {
         box-shadow: var(--shadow-sm);
     }
 
+/* Dangerous action that isn't the final step, e.g. the "Delete" that opens a confirmation */
+.nx-btn-danger-outline {
+    border-color: var(--color-red-240);
+    background: var(--color-white);
+    color: var(--color-danger);
+}
+
+    .nx-btn-danger-outline:hover:not(:disabled) {
+        border-color: var(--color-danger);
+        background: var(--color-danger-bg);
+    }
+
 /* Smaller button */
 .nx-btn-sm {
     min-height: 30px;
@@ -543,6 +555,30 @@ textarea:focus-visible {
     margin-top: var(--space-1);
     color: var(--color-danger);
     font-size: var(--text-xs);
+}
+
+/* ===============================
+   ALERTS (short confirmations and warnings)
+   Use: <p class="nx-alert nx-alert-success" role="status">
+   =============================== */
+
+.nx-alert {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border-left: 3px solid currentColor;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+}
+
+.nx-alert-success {
+    background: var(--color-green-40);
+    color: var(--color-success-text);
+}
+
+.nx-alert-danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
 }
 
 /* ================================ EndOfFile ============================== */
