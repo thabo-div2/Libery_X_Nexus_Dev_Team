@@ -66,6 +66,7 @@ namespace frontend.Services
         private readonly CurrentUserService _currentUser;
         private readonly ProtectedLocalStorage _localStorage;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthService"/> class.
         /// </summary>
@@ -79,6 +80,8 @@ namespace frontend.Services
             _currentUser = currentUser;
             _localStorage = localStorage;
         }
+
+        private const string NewClientDraftStorageKey = "nexus-new-client-draft";
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
