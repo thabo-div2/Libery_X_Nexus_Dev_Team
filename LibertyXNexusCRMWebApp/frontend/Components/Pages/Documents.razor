@@ -105,6 +105,17 @@
                                         </span>
                                     }
 
+                                    @if (CurrentUser.IsAdvisor)
+                                    {
+                                        <button type="button"
+                                            class="visibility-toggle-button"
+                                            title="@(document.VisibleToClient ? "Hide from client" : "Share with client")"
+                                            aria-label="@(document.VisibleToClient ? "Hide from client" : "Share with client")"
+                                                @onclick="() => ToggleVisibilityAsync(document.Id)">
+                                            @(document.VisibleToClient ? "Hide" : "Share")
+                                            </button>
+                                    }
+
                                     <button type="button"
                                             class="download-button"
                                             title="Download"
@@ -143,43 +154,6 @@
 
         <aside class="side-column">
 
-            <section class="side-card">
-
-                <div class="side-card-header">
-                    <h2>Templates</h2>
-                </div>
-
-
-                <div class="template-list">
-
-                    @if (Templates.Count > 0)
-                    {
-                        @foreach (var template in Templates)
-                        {
-                            <div class="template-row">
-
-                                <span>@template.Name</span>
-
-                                <button type="button"
-                                        class="template-use-button">
-                                    Use
-                                </button>
-
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="small-empty-state">
-                            No templates available
-                        </div>
-                    }
-
-                </div>
-
-            </section>
-
-
             <section class="side-card signature-card">
 
                 <div class="side-card-header">
@@ -210,14 +184,6 @@
 
                                 </div>
 
-
-                                <button type="button"
-                                        class="remind-button">
-
-                                    Remind
-
-                                </button>
-
                             </div>
                         }
                     }
@@ -242,8 +208,6 @@
 @code {
 
     private List<DocumentItem> DocumentItems { get; set; } = new();
-
-    private List<DocumentTemplate> Templates { get; set; } = new();
 
     private List<SignatureItem> AwaitingSignatures { get; set; } = new();
 
@@ -313,29 +277,10 @@
                     Name = document.FileName,
                     Type = document.DocumentType,
                     DateText = FormatDate(document.UpdateAt),
-                    Status = GetDocumentStatus(document)
+                    Status = GetDocumentStatus(document),
+                    VisibleToClient = document.VisibleToClient
                 })
                 .ToList();
-
-            // Available document templates produced by the document factory.
-            Templates = new List<DocumentTemplate>
-        {
-            new()
-            {
-                Name = "Service Package Summary",
-                Type = DocumentType.ServicePackageSummary
-            },
-            new()
-            {
-                Name = "Policy Statement",
-                Type = DocumentType.PolicyStatement
-            },
-            new()
-            {
-                Name = "Amendment Form",
-                Type = DocumentType.AmendmentForm
-            }
-        };
 
             AwaitingSignatures = documents
                 .Where(d => d.SignatureStatus == "Awaiting")
@@ -404,6 +349,26 @@
         }
     }
 
+    private async Task ToggleVisibilityAsync(int documentId)
+    {
+        var document = DocumentItems.FirstOrDefault(d => d.Id == documentId);
+
+        if (document is null)
+        {
+            return;
+        }
+
+        var result = await Document.SetVisibilityAsync(documentId,!document.VisibleToClient);
+
+        if (!string.IsNullOrWhiteSpace(result.Error))
+        {
+            ErrorMessage = result.Error;
+            return;
+        }
+
+        await LoadDocumentsAsync();
+    }
+
 
     public class DocumentItem
     {
@@ -416,16 +381,9 @@
         public string DateText { get; set; } = string.Empty;
 
         public string Status { get; set; } = string.Empty;
+
+        public bool VisibleToClient { get; set; }
     }
-
-
-    public class DocumentTemplate
-    {
-        public string Name { get; set; } = string.Empty;
-
-        public DocumentType Type { get; set; }
-    }
-
 
     public class SignatureItem
     {
