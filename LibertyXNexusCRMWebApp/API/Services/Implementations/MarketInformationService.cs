@@ -92,6 +92,42 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task<MarketInformationResult> GetMarketInformationAsync(CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(_options.ApiKey))
+            {
+                throw new InvalidOperationException(
+                    "Alpha Vantage API key is not configured. Set AlphaVantage:ApiKey in user secrets or deployment settings.");
+            }
+            if (_cache.TryGetValue(CacheKey, out CachedMarketData? cached) && cached is not null)
+            {
+                var age = DateTime.UtcNow - cached.RetrievedAtUtc;
+                if (age > FreshnessWindow)
+                {
+                    _logger.LogDebug(
+                        "Serving stale market information ({AgeSeconds}s old) and refreshing in the background.",
+                        (int)age.TotalSeconds);
+                    TriggerBackgroundRefresh(cached);
+                }
+                else
+                {
+                    _logger.LogDebug("Serving fresh market information from cache (fetched {FetchedAt}).", cached.RetrievedAtUtc);
+                }
+                return BuildResult(string.Empty, cached);
+            }
+            // Nothing cached at all yet - this is the one and only path that
+            // actually blocks the caller on Alpha Vantage.
+            var freshData = await FetchFromAlphaVantageAsync(cancellationToken);
+            _cache.Set(CacheKey, freshData);
+            return BuildResult(string.Empty, freshData);
+        }
+
+        /// <summary>
         /// Fire-and-forget refresh, guarded so only one runs at a time. Uses
         /// CancellationToken.None deliberately - this keeps running even
         /// after the triggering HTTP request completes and its own

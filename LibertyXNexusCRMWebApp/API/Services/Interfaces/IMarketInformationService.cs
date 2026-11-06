@@ -3,6 +3,7 @@
     public interface IMarketInformationService
     {
         Task<MarketInformationResult> GetAsync(string query, CancellationToken cancellationToken = default);
+        Task<MarketInformationResult> GetMarketInformationAsync(CancellationToken cancellationToken = default);
     }
 
     public sealed class MarketInformationResult
