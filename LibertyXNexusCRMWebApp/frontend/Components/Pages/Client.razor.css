@@ -624,6 +624,51 @@
     min-height: 90px;
 }
 
+/* Document upload container */
+.upload-wrapper {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+}
+
+    /* File input */
+    .upload-wrapper input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        background: #f8faf9;
+        border: 1px dashed #1e7f47;
+        border-radius: 10px;
+        color: #475569;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        /* Choose File button */
+        .upload-wrapper input[type="file"]::file-selector-button {
+            background: #1e7f47;
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            margin-right: 14px;
+            border-radius: 7px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+            /* Hover effect */
+            .upload-wrapper input[type="file"]::file-selector-button:hover {
+                background: #166338;
+            }
+
+        /* Focus effect */
+        .upload-wrapper input[type="file"]:focus {
+            outline: 2px solid rgba(30, 127, 71, 0.2);
+            outline-offset: 2px;
+        }
+
 
 /* ===================================
    SMALL DESKTOP / TABLET

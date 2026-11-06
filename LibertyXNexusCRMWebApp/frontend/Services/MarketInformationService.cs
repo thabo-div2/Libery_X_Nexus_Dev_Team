@@ -8,7 +8,10 @@ public sealed record MarketInformationResult(
     DateTime RetrievedAtUtc,
     string DataFreshness,
     string? UsdZarRate,
-    List<MarketNewsItem> News);
+    List<MarketNewsItem> News)
+{
+    public List<MarketNewsItem> Updates { get; init; } = new();
+}
 
 public sealed record MarketNewsItem(
     string Title,
@@ -56,6 +59,32 @@ public class MarketInformationService
                     : message.Trim('"'));
             }
 
+            var result = await response.Content.ReadFromJsonAsync<MarketInformationResult>();
+            return (result, null);
+        }
+        catch (HttpRequestException)
+        {
+            return (null, "Can't reach the market information service. Make sure the API project is running.");
+        }
+        catch (Exception ex)
+        {
+            return (null, $"Something went wrong while retrieving market information: {ex.Message}");
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    public async Task<(MarketInformationResult? Result, string? Error)> GetMarketInformationAsync()
+    {
+        try
+        {
+            var response = await _http.GetAsync("MarketInformation/market-information");
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                return (null, string.IsNullOrWhiteSpace(message)
+                    ? $"The market information service returned status {(int)response.StatusCode}."
+                    : message.Trim('"'));
+            }
             var result = await response.Content.ReadFromJsonAsync<MarketInformationResult>();
             return (result, null);
         }

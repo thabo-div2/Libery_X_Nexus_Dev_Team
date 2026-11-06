@@ -52,6 +52,25 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("market-information")]
+        public async Task<IActionResult> GetMarketInformation(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var result = await _marketInformationService.GetMarketInformationAsync(cancellationToken);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = ex.Message });
+            }
+        }
     }
 }
 
