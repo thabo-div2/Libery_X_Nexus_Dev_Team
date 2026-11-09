@@ -5,6 +5,7 @@
 @inject CurrentUserService CurrentUser
 @inject ClientService ClientDirectory
 @inject PolicyService PolicyDirectory
+@inject MarketInformationService MarketInformation
 @inject DocumentService DocumentDirectory
 @inject CaseService CaseDirectory
 @using Shared.Models.Enums
@@ -551,6 +552,49 @@
             }
         }
 
+        // ---------------------------------------------------------
+        // Load market and Nexus updates
+        // ---------------------------------------------------------
+        var (updates, updateError) =
+            await MarketInformation.GetMarketInformationAsync();
+
+        if (updateError is null && updates is not null)
+        {
+            var news = (updates.News ?? new List<MarketNewsItem>())
+                .Select(item => new
+                {
+                    item.Title,
+                    item.PublishedAt
+                });
+
+            var nexusUpdates = (updates.Updates ?? new List<MarketNewsItem>())
+                .Select(item => new
+                {
+                    item.Title,
+                    item.PublishedAt
+                });
+
+            Updates = news
+                .Concat(nexusUpdates)
+                .OrderByDescending(item =>
+                    DateTime.TryParse(item.PublishedAt, out var date)
+                        ? date
+                        : DateTime.MinValue)
+                .Take(5)
+                .Select(item => new ClientUpdate
+                {
+                    Title = item.Title,
+                    DateText = DateTime.TryParse(item.PublishedAt, out var date)
+                        ? date.ToString("dd MMM yyyy")
+                        : item.PublishedAt
+                })
+                .ToList();
+        }
+        else
+        {
+            Updates = new List<ClientUpdate>();
+        }
+
     }
 
     // Show a freshly uploaded document in the list straight away.
@@ -670,6 +714,19 @@
         public string Title { get; set; } = string.Empty;
 
         public string DateText { get; set; } = string.Empty;
+    }
+
+    public class MarketInformationUpdate
+    {
+        public string Title { get; set; } = string.Empty;
+        public DateTime PublishedAt { get; set; }
+    }
+
+    public class MarketInformationResponse
+    {
+        public List<MarketInformationUpdate> News { get; set; } = new();
+
+        public List<MarketInformationUpdate> Updates { get; set; } = new();
     }
 }
 
