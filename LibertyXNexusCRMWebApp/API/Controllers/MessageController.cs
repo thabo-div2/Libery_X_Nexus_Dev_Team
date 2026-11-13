@@ -152,6 +152,26 @@ namespace API.Controllers
                 return Conflict(new { message = ex.Message });
             }
         }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Gets how many messages the signed-in user hasn't read yet, for the badge on the Messages menu item.
+        /// </summary>
+        [HttpGet("unread-count")]
+        public async Task<ActionResult> GetUnreadCount()
+        {
+            if (User.IsInRole(AppRoles.Advisor))
+            {
+                return Ok(new { count = await _messageService.GetUnreadCountAsync(forAdvisor: true, CurrentAdvisorId) });
+            }
+
+            if (User.IsInRole(AppRoles.Client))
+            {
+                return Ok(new { count = await _messageService.GetUnreadCountAsync(forAdvisor: false, CurrentClientId) });
+            }
+
+            return Forbid();
+        }
     }
 }
 

@@ -1,0 +1,117 @@
+@using frontend.Services
+@using Shared.Models
+@using Shared.Models.Enums
+@inject PolicyService PolicyApi
+
+<div class="policy-status-panel">
+    @if (Loading)
+    {
+        <span class="status-hint" role="status">Loading policy status…</span>
+    }
+    else if (Policy is not null)
+    {
+        <div class="policy-status-heading"><strong>Policy status</strong><span class="policy-status-badge status-@Policy.Status.ToLowerInvariant()">@Policy.Status</span></div>
+        <p class="status-hint">@StatusExplanation</p>
+        @if (Allowed.Count > 0)
+        {
+            <div class="status-controls">
+                <select class="nx-input" aria-label="New policy status" @bind="NewStatus" disabled="@(Saving || Confirming)">
+                    <option value="">Choose a status</option>
+                    @foreach (var status in Allowed) { <option value="@status">@status</option> }
+                </select>
+                <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@(Saving || Confirming || NewStatus is null)" @onclick="AskToChange">Update status</button>
+            </div>
+        }
+        @if (Confirming)
+        {
+            <div class="status-confirm" role="group" aria-label="Confirm policy status change">
+                <p>Change <strong>@Policy.PolicyName</strong> from @Policy.Status to <strong>@NewStatus</strong>?</p>
+                @if (NewStatus is PolicyStatus.Cancelled or PolicyStatus.Matured)
+                {
+                    <p class="status-hint">This is a final status and cannot be reversed here.</p>
+                }
+                <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@Saving" @onclick="CancelChange">Keep current status</button>
+                <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@Saving" @onclick="SaveAsync">@(Saving ? "Saving…" : "Confirm change")</button>
+            </div>
+        }
+    }
+    @if (Error is not null) { <p class="nx-alert nx-alert-danger" role="alert">@Error</p>
+        @if (Policy is null) { <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@Loading" @onclick="LoadAsync">Retry</button> }
+    }
+    @if (Message is not null) { <p class="nx-alert nx-alert-success" role="status">@Message</p> }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public int PolicyId { get; set; }
+    [Parameter] public DateTime? IssuedAt { get; set; }
+    [Parameter] public EventCallback OnChanged { get; set; }
+    private PolicySummary? Policy;
+    private List<PolicyStatus> Allowed = new();
+    private PolicyStatus? NewStatus;
+    private bool Loading = true, Saving, Confirming;
+    private string? Error, Message;
+    private int LoadedId;
+    private DateTime? LoadedIssuedAt;
+    private PolicyStatus? ConfirmedStatus;
+
+    private string StatusExplanation => Policy?.Status switch
+    {
+        "Pending" when IssuedAt is null => "The application is pending. Completing Policy issued activates it automatically.",
+        "Pending" => "This application was already issued. Choose Active to correct the policy status.",
+        "Active" => "Record a lapse, cancellation or maturity after confirming it with the provider.",
+        "Lapsed" => "Choose Active after the provider confirms reinstatement.",
+        "Cancelled" or "Matured" => "This policy is closed. Its application history is retained.",
+        _ => "Policy status is separate from application progress."
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (LoadedId == PolicyId && LoadedIssuedAt == IssuedAt) return;
+        LoadedId = PolicyId;
+        LoadedIssuedAt = IssuedAt;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        Loading = true;
+        Error = null;
+        var id = PolicyId;
+        var (policy, error) = await PolicyApi.GetByIdAsync(id);
+        if (id != PolicyId) return;
+        Policy = policy;
+        Error = error;
+        if (policy is not null && Enum.TryParse<PolicyStatus>(policy.Status, out var current))
+        {
+            Allowed = PolicyLifecycle.AllowedTransitions(new Policy {
+                Status = current, EndDate = policy.EndDate, IsCatalogueItem = policy.IsCatalogueItem,
+                Case = new Case { PolicyIssuedAt = IssuedAt }
+            }, DateTime.UtcNow.Date).ToList();
+        }
+        else Allowed.Clear();
+        NewStatus = null;
+        Confirming = false;
+        Loading = false;
+    }
+
+    private void AskToChange() { ConfirmedStatus = NewStatus; Confirming = NewStatus.HasValue; Error = null; Message = null; }
+    private void CancelChange() { Confirming = false; ConfirmedStatus = null; }
+
+    private async Task SaveAsync()
+    {
+        if (Saving || !Confirming || ConfirmedStatus is not PolicyStatus status || NewStatus != status) { Confirming = false; return; }
+        Saving = true;
+        Error = null;
+        try
+        {
+            var id = PolicyId;
+            var (updated, error) = await PolicyApi.UpdateStatusAsync(id, status);
+            if (id != PolicyId) return;
+            if (updated is null) { Error = error ?? "The status couldn't be updated."; return; }
+            await LoadAsync();
+            Message = $"Policy status updated to {updated.Status}.";
+            await OnChanged.InvokeAsync();
+        }
+        finally { Saving = false; }
+    }
+}

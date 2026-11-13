@@ -72,6 +72,7 @@
 
                                         <span>
                                             <span>@FormatType(document.DocumentType)</span>
+                                            <span> · @(document.PolicyId is int id ? $"{document.PolicyName ?? "Policy"} (#{id})" : "General documents")</span>
 
                                             @if (document.UpdateAt is DateTime updatedAt)
                                             {
@@ -143,6 +144,8 @@
 
                     @if (!IsLoading && CurrentUser.Id is int clientId)
                     {
+                        <RequestedDocuments @ref="RequestedList" ClientId="clientId" />
+
                         <DocumentUploader ClientId="clientId"
                                           Policies="Policies"
                                           OnUploaded="OnDocumentUploaded" />
@@ -169,6 +172,9 @@
     private string? ErrorMessage { get; set; }
 
     private string? DownloadError { get; set; }
+
+    // The checklist of documents the advisor asked for.
+    private RequestedDocuments? RequestedList;
 
     protected override async Task OnInitializedAsync()
     {
@@ -210,9 +216,15 @@
     }
 
     // Show a freshly uploaded document at the top of the list straight away.
-    private void OnDocumentUploaded(DocumentSummary document)
+    private async Task OnDocumentUploaded(DocumentSummary document)
     {
         Documents.Insert(0, document);
+
+        // The upload may have fulfilled something the advisor asked for, so refresh the checklist.
+        if (RequestedList is not null)
+        {
+            await RequestedList.RefreshAsync();
+        }
     }
 
     private async Task DownloadAsync(int documentId)

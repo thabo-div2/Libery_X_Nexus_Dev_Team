@@ -39,13 +39,22 @@ namespace API.Services.Implementations
         {
             var updated = await caseRepository_.MarkStepCompleteAsync(caseId, step);
 
-            if (await caseRepository_.GetClientIdForCaseAsync(caseId) is int clientId)
+            // The step is already saved at this point, so a failed notification
+            // must not turn the whole request into an error.
+            try
             {
-                await notificationService_.NotifyClientAsync(
-                    clientId,
-                    NotificationType.CaseUpdated,
-                    $"Your application has moved forward: {StepName(step)} is done.",
-                    "/client");
+                if (await caseRepository_.GetClientIdForCaseAsync(caseId) is int clientId)
+                {
+                    await notificationService_.NotifyClientAsync(
+                        clientId,
+                        NotificationType.CaseUpdated,
+                        $"Your application has moved forward: {StepName(step)} is done.",
+                        "/client");
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore - the step itself was saved.
             }
 
             return MapToDto(updated);
@@ -75,6 +84,7 @@ namespace API.Services.Implementations
             Status = c.Status.ToString(),
             PolicyId = c.PolicyId,
             PolicyName = c.Policy?.PolicyName,
+            PolicyStatus = c.Policy?.Status.ToString() ?? "Pending",
             Notes = c.Notes,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt,

@@ -582,3 +582,22 @@ textarea:focus-visible {
 }
 
 /* ================================ EndOfFile ============================== */
+
+/* Blazor shows this element when an unhandled error ends the interactive circuit. */
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10000;
+    padding: 1rem;
+    background: #fff3cd;
+    color: #332701;
+    border-top: 1px solid #dfbd64;
+}
+#blazor-error-ui .reload {
+    margin-left: 1rem;
+    font-weight: 600;
+    color: #332701;
+}

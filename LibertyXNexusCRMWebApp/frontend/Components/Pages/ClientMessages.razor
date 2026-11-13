@@ -7,6 +7,7 @@
 @inject ClientService ClientDirectory
 @inject MessageService MessageStore
 @inject MeetingService MeetingStore
+@inject AvailabilityService AvailabilityApi
 @inject MessageNotifier Notifier
 @inject IJSRuntime JS
 
@@ -40,6 +41,11 @@
             }
             else
             {
+                @if (AdvisorId is not null)
+                {
+                    <AdvisorAvailabilityNotice @ref="AvailabilityNotice" OnStatusChanged="OnAvailabilityChanged" />
+                }
+
                 <section class="chat-panel">
 
                     <div class="chat-header">
@@ -54,7 +60,67 @@
                         </button>
                     </div>
 
-                    @if (ShowMeetingForm)
+                    @if (ShowMeetingForm && HoursConfigured)
+                    {
+                        @* The adviser has set working hours, so offer the times that are actually open. *@
+                        <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
+
+                            <label>
+                                Date
+                                <input type="date" min="@MinSlotDate" value="@SlotDate" @onchange="OnSlotDateChangedAsync" disabled="@IsSendingMeeting" />
+                            </label>
+
+                            @if (IsLoadingSlots)
+                            {
+                                <p class="slot-hint">Checking your adviser's diary…</p>
+                            }
+                            else if (!string.IsNullOrEmpty(SlotMessage))
+                            {
+                                <p class="slot-hint">@SlotMessage</p>
+                            }
+                            else if (Slots.Count > 0)
+                            {
+                                <p class="slot-hint">Choose a time (South African time, 60 minutes).</p>
+
+                                <div class="slot-grid" role="group" aria-label="Available times">
+                                    @foreach (var slot in Slots)
+                                    {
+                                        var isPicked = SelectedSlot == slot.StartUtc;
+
+                                        <button type="button"
+                                                class="slot-button @(isPicked ? "is-selected" : "")"
+                                                aria-pressed="@(isPicked ? "true" : "false")"
+                                                disabled="@IsSendingMeeting"
+                                                @key="slot.StartUtc"
+                                                @onclick="() => PickSlot(slot.StartUtc)">
+                                            @slot.Label
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="slot-hint">Pick a date to see the times your adviser is free.</p>
+                            }
+
+                            <label>
+                                Notes (optional)
+                                <input type="text" maxlength="500" @bind="SlotNotes" placeholder="What would you like to discuss?" disabled="@IsSendingMeeting" />
+                            </label>
+
+                            <div class="meeting-form-actions">
+                                <button type="button" class="meeting-cancel-button" @onclick="ToggleMeetingForm">Cancel</button>
+                                <button type="button" class="meeting-send-button" disabled="@(IsSendingMeeting || SelectedSlot is null)" @onclick="SendSlotRequestAsync">@(IsSendingMeeting ? "Sending…" : "Request meeting")</button>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(MeetingError))
+                            {
+                                <p class="client-messages-error">@MeetingError</p>
+                            }
+
+                        </div>
+                    }
+                    else if (ShowMeetingForm)
                     {
                         <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
                             <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
@@ -126,10 +192,10 @@
                                @bind="Draft"
                                @bind:event="oninput"
                                @onkeydown="HandleComposerKeyDown"
-                               placeholder="Write a message to your adviser…"
-                               disabled="@(AdvisorId is null)" />
+                               placeholder="@(IsAdvisorAway ? "Your adviser is out of office. You can message them once they are back." : "Write a message to your adviser…")"
+                               disabled="@(AdvisorId is null || IsAdvisorAway)" />
 
-                        <button type="button" @onclick="SendMessage" disabled="@(AdvisorId is null)">Send</button>
+                        <button type="button" @onclick="SendMessage" disabled="@(AdvisorId is null || IsAdvisorAway)">Send</button>
                     </div>
                 </section>
             }
@@ -161,6 +227,26 @@
     private string Draft = string.Empty;
     private string? LoadError;
     private string? SendError;
+
+    // The notice at the top of the chat, and whether it says the advisor is out of hours.
+    // While they are, the message box is locked. The API enforces the same rule.
+    private AdvisorAvailabilityNotice? AvailabilityNotice;
+    private bool IsAdvisorAway;
+
+    // Meeting times. Once the adviser has set working hours, the client picks from the open times
+    // on a date instead of typing any date and time.
+    private bool HoursConfigured;
+    private string SlotDate = string.Empty;
+    private List<MeetingSlot> Slots = new();
+    private DateTime? SelectedSlot;
+    private string? SlotMessage;
+    private bool IsLoadingSlots;
+    private string SlotNotes = string.Empty;
+
+    /// <summary>
+    /// Stops the date picker from offering dates that have already passed.
+    /// </summary>
+    private static string MinSlotDate => DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
     private bool IsLoading = true;
 
     private bool ShowMeetingForm;
@@ -282,6 +368,149 @@
         TimelineItems = items.OrderBy(i => i.Timestamp).ToList();
     }
 
+    private void OnAvailabilityChanged(AdvisorAvailability status)
+    {
+        IsAdvisorAway = !status.IsAvailableNow;
+        HoursConfigured = status.IsConfigured;
+
+        if (!IsAdvisorAway)
+        {
+            SendError = null;
+        }
+    }
+
+    /// <summary>
+    /// After the API refuses something, check the advisor's hours again so the notice
+    /// and the message box match what the API just said.
+    /// </summary>
+    private async Task RefreshAvailabilityAsync()
+    {
+        if (AvailabilityNotice is not null)
+        {
+            await AvailabilityNotice.RefreshAsync();
+        }
+    }
+
+    private void PickSlot(DateTime startUtc)
+    {
+        SelectedSlot = startUtc;
+        MeetingError = null;
+    }
+
+    private async Task OnSlotDateChangedAsync(ChangeEventArgs e)
+    {
+        SlotDate = e.Value?.ToString() ?? string.Empty;
+        await LoadSlotsAsync();
+    }
+
+    /// <summary>
+    /// Loads the open times for the chosen date.
+    /// </summary>
+    private async Task LoadSlotsAsync()
+    {
+        Slots = new();
+        SelectedSlot = null;
+        SlotMessage = null;
+        MeetingError = null;
+
+        if (string.IsNullOrWhiteSpace(SlotDate))
+        {
+            return;
+        }
+
+        var date = SlotDate;
+        IsLoadingSlots = true;
+
+        try
+        {
+            var (result, error) = await AvailabilityApi.GetSlotsAsync(date);
+
+            // The client may have picked another date while this one was loading.
+            if (date != SlotDate)
+            {
+                return;
+            }
+
+            if (result is null)
+            {
+                SlotMessage = error ?? "The open times couldn't be loaded. Please try again.";
+                return;
+            }
+
+            if (result.Slots.Count == 0)
+            {
+                SlotMessage = string.IsNullOrWhiteSpace(result.Message)
+                    ? "There are no open times on that day. Please choose another day."
+                    : result.Message;
+                return;
+            }
+
+            Slots = result.Slots;
+        }
+        finally
+        {
+            if (date == SlotDate)
+            {
+                IsLoadingSlots = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Requests a meeting at the time the client picked. If the API refuses (for example someone
+    /// else took the time a moment ago), the reason is shown and the times are loaded again.
+    /// </summary>
+    private async Task SendSlotRequestAsync()
+    {
+        if (IsSendingMeeting || SelectedSlot is not DateTime startUtc)
+        {
+            return;
+        }
+
+        MeetingError = null;
+
+        if (ClientId is null || AdvisorId is null)
+        {
+            MeetingError = "You don't have an adviser assigned yet.";
+            return;
+        }
+
+        if (SlotNotes.Length > 500)
+        {
+            MeetingError = "Keep the note under 500 characters.";
+            return;
+        }
+
+        IsSendingMeeting = true;
+
+        try
+        {
+            var notes = string.IsNullOrWhiteSpace(SlotNotes) ? null : SlotNotes.Trim();
+            var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, startUtc, notes);
+
+            if (error is not null)
+            {
+                await LoadSlotsAsync();
+                MeetingError = error;
+                await RefreshAvailabilityAsync();
+                return;
+            }
+
+            SlotDate = string.Empty;
+            SlotNotes = string.Empty;
+            Slots = new();
+            SelectedSlot = null;
+            SlotMessage = null;
+            ShowMeetingForm = false;
+
+            await RefreshThreadAsync();
+        }
+        finally
+        {
+            IsSendingMeeting = false;
+        }
+    }
+
     private void ToggleMeetingForm()
     {
         ShowMeetingForm = !ShowMeetingForm;
@@ -355,6 +584,7 @@
         if (error is not null)
         {
             MeetingError = error;
+            await RefreshAvailabilityAsync();
             return;
         }
 
@@ -392,6 +622,7 @@
         if (error is not null)
         {
             SendError = error;
+            await RefreshAvailabilityAsync();
             return;
         }
 

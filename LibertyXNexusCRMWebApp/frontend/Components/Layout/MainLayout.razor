@@ -3,6 +3,7 @@
 @inject NavigationManager Navigation
 @using frontend.Services
 @inject CurrentUserService CurrentUser
+@inject ILogger<MainLayout> Logger
 
 @* First thing a keyboard user reaches: jumps past the sidebar links straight to the page content.
    Hidden until it gets keyboard focus. *@
@@ -17,6 +18,10 @@
     </aside>
 
     <main id="main-content" class="nexus-main" tabindex="-1">
+        @if (_accessError)
+        {
+            <p role="alert">Your session couldn't be loaded. <a href="/" data-enhance-nav="false">Reload and sign in again</a>.</p>
+        }
         @if (_accessChecked && _accessGranted)
         {
             @Body
@@ -41,7 +46,7 @@
 
     private static readonly string[] AdvisorPaths =
     {
-        "advisor", "clients", "new-client", "documents", "chatbot", "calendar", "messages", "faqs"
+        "advisor", "clients", "new-client", "documents", "chatbot", "calendar", "working-hours", "meeting-prep", "activity", "messages", "faqs"
     };
 
     //routes that never require a signed in user.
@@ -61,14 +66,24 @@
 
     private bool _accessChecked;
     private bool _accessGranted;
+    private bool _accessError;
+    private bool _disposed;
 
     private async void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
     {
-        await InvokeAsync(async () =>
+        try
         {
-            await CheckAccessAsync();
-            StateHasChanged();
-        });
+            await InvokeAsync(async () =>
+            {
+                if (_disposed) return;
+                await CheckAccessSafelyAsync();
+                if (!_disposed) StateHasChanged();
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Navigation access check could not complete.");
+        }
     }
 
     protected override void OnInitialized()
@@ -80,8 +95,23 @@
     {
         if (firstRender)
         {
-            await CheckAccessAsync();
+            await CheckAccessSafelyAsync();
             StateHasChanged();
+        }
+    }
+
+    private async Task CheckAccessSafelyAsync()
+    {
+        try
+        {
+            _accessError = false;
+            await CheckAccessAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Could not restore session for navigation.");
+            _accessError = true;
+            _accessGranted = false;
         }
     }
 
@@ -139,6 +169,7 @@
     // otherwise the old layout keeps running checks in the background.
     public void Dispose()
     {
+        _disposed = true;
         Navigation.LocationChanged -= OnLocationChanged;
     }
 }

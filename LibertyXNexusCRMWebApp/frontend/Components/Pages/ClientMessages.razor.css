@@ -381,4 +381,50 @@
     }
 }
 
+/* Meeting time picker */
+.slot-hint {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.slot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.slot-button {
+    min-width: 64px;
+    height: 32px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-white);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+}
+
+    .slot-button:hover:not(:disabled) {
+        border-color: var(--color-primary);
+    }
+
+    .slot-button:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+
+    .slot-button.is-selected {
+        border-color: var(--color-primary);
+        background: var(--color-primary);
+        color: var(--color-white);
+    }
+
+    .slot-button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
 /* ================================ EndOfFile ============================== */

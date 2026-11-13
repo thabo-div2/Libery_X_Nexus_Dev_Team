@@ -1,0 +1,513 @@
+﻿@page "/working-hours"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject AvailabilityService AvailabilityApi
+@inject CurrentUserService CurrentUser
+
+<PageTitle>Working hours | Nexus</PageTitle>
+
+@* The date and time boxes use value + @onchange instead of @bind: Blazor's @bind on a date or time
+   input expects a DateTime or TimeOnly, and these are kept as text ("HH:mm", "yyyy-MM-dd") for the API. *@
+
+@* The advisor sets when they work: a default week, plus custom hours for specific dates.
+   Clients can only message during these hours and can only book meetings inside them. *@
+
+<div class="hours-page">
+
+    <header class="hours-header">
+
+        <div class="hours-heading">
+            <h1>Working hours</h1>
+            <p>Clients can only message you and book meetings inside these hours. Times are South African time.</p>
+        </div>
+
+        <div class="header-actions">
+            <NotificationBell />
+        </div>
+
+    </header>
+
+    <main class="hours-content">
+
+        @if (IsLoading)
+        {
+            <div class="hours-empty-state">
+                <strong>Loading...</strong>
+                <span>Please wait while your working hours are retrieved.</span>
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(LoadError))
+        {
+            <div class="hours-empty-state">
+                <strong>Unable to load your working hours</strong>
+                <span>@LoadError</span>
+                <button type="button" class="nx-btn nx-btn-secondary" @onclick="LoadAsync">Try again</button>
+            </div>
+        }
+        else
+        {
+            @if (!IsConfigured)
+            {
+                <p class="nx-alert hours-banner" role="status">
+                    You haven't saved your working hours yet, so clients can message you and book meetings at any time.
+                    Check the week below and save it to switch this on.
+                </p>
+            }
+
+            <div class="hours-grid">
+
+                @* ---------- Default week ---------- *@
+                <section class="hours-card">
+
+                    <div class="hours-card-header">
+                        <h2>Default week</h2>
+                    </div>
+
+                    <div class="hours-card-body">
+
+                        <p class="hours-intro">Tick the days you work and set the hours for each. Unticked days are days off.</p>
+
+                        <div class="week-list">
+                            @foreach (var day in Days)
+                            {
+                                var dayId = $"day-{day.Day}";
+
+                                <div class="week-row @(day.IsWorkingDay ? "" : "is-off")" @key="day.Day">
+
+                                    <label class="week-day" for="@dayId">
+                                        <input type="checkbox" id="@dayId" @bind="day.IsWorkingDay" disabled="@IsSavingWeek" />
+                                        <span>@day.Day</span>
+                                    </label>
+
+                                    @if (day.IsWorkingDay)
+                                    {
+                                        <div class="week-times">
+                                            <input type="time"
+                                                   class="nx-input"
+                                                   aria-label="@($"{day.Day} start time")"
+                                                   value="@day.StartTime"
+                                                   @onchange="e => day.StartTime = e.Value?.ToString()"
+                                                   disabled="@IsSavingWeek" />
+                                            <span class="week-to">to</span>
+                                            <input type="time"
+                                                   class="nx-input"
+                                                   aria-label="@($"{day.Day} end time")"
+                                                   value="@day.EndTime"
+                                                   @onchange="e => day.EndTime = e.Value?.ToString()"
+                                                   disabled="@IsSavingWeek" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="week-off-label">Day off</span>
+                                    }
+
+                                </div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(WeekError))
+                        {
+                            <p class="nx-alert nx-alert-danger" role="alert">@WeekError</p>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(WeekMessage))
+                        {
+                            <p class="nx-alert nx-alert-success" role="status">@WeekMessage</p>
+                        }
+
+                        <button type="button"
+                                class="nx-btn nx-btn-primary hours-save-button"
+                                disabled="@IsSavingWeek"
+                                @onclick="SaveWeekAsync">
+                            @(IsSavingWeek ? "Saving…" : "Save default week")
+                        </button>
+
+                    </div>
+
+                </section>
+
+                @* ---------- Custom dates ---------- *@
+                <section class="hours-card">
+
+                    <div class="hours-card-header">
+                        <h2>Custom dates</h2>
+                    </div>
+
+                    <div class="hours-card-body">
+
+                        <p class="hours-intro">
+                            Set different hours, or a day off, for one specific date. It replaces your default hours for that date only.
+                        </p>
+
+                        <div class="override-form">
+
+                            <div class="override-field">
+                                <label class="nx-label" for="override-date">Date</label>
+                                <input type="date"
+                                       id="override-date"
+                                       class="nx-input"
+                                       min="@MinOverrideDate"
+                                       value="@OverrideDate"
+                                       @onchange="e => OverrideDate = e.Value?.ToString() ?? string.Empty"
+                                       disabled="@IsSavingOverride" />
+                            </div>
+
+                            <div class="override-field">
+                                <label class="nx-label" for="override-mode">On this date I am</label>
+                                <select id="override-mode" class="nx-input" @bind="OverrideMode" disabled="@IsSavingOverride">
+                                    <option value="off">Off all day</option>
+                                    <option value="custom">Working custom hours</option>
+                                </select>
+                            </div>
+
+                            @if (OverrideMode == "custom")
+                            {
+                                <div class="override-field">
+                                    <span class="nx-label">Hours</span>
+                                    <div class="week-times">
+                                        <input type="time" class="nx-input" aria-label="Custom start time" value="@OverrideStart" @onchange="e => OverrideStart = e.Value?.ToString() ?? string.Empty" disabled="@IsSavingOverride" />
+                                        <span class="week-to">to</span>
+                                        <input type="time" class="nx-input" aria-label="Custom end time" value="@OverrideEnd" @onchange="e => OverrideEnd = e.Value?.ToString() ?? string.Empty" disabled="@IsSavingOverride" />
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="override-field">
+                                <label class="nx-label" for="override-note">Reason <span class="hours-optional">(optional, clients see it)</span></label>
+                                <input type="text"
+                                       id="override-note"
+                                       class="nx-input"
+                                       maxlength="200"
+                                       placeholder="e.g. Public holiday"
+                                       @bind="OverrideNote"
+                                       disabled="@IsSavingOverride" />
+                            </div>
+
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(OverrideError))
+                        {
+                            <p class="nx-alert nx-alert-danger" role="alert">@OverrideError</p>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(OverrideMessage))
+                        {
+                            <p class="nx-alert nx-alert-success" role="status">@OverrideMessage</p>
+                        }
+
+                        <button type="button"
+                                class="nx-btn nx-btn-primary hours-save-button"
+                                disabled="@IsSavingOverride"
+                                @onclick="SaveOverrideAsync">
+                            @(IsSavingOverride ? "Saving…" : "Save custom date")
+                        </button>
+
+                        <h3 class="override-list-title">Upcoming custom dates</h3>
+
+                        @if (Overrides.Count == 0)
+                        {
+                            <div class="hours-small-empty">No custom dates. Your default week applies every day.</div>
+                        }
+                        else
+                        {
+                            <ul class="override-list">
+                                @foreach (var item in Overrides)
+                                {
+                                    <li class="override-row" @key="item.Date">
+
+                                        <div class="override-info">
+                                            <strong>@FormatDate(item.Date)</strong>
+                                            <span>
+                                                @(item.IsWorkingDay ? $"{item.StartTime} to {item.EndTime}" : "Off all day")
+                                                @if (!string.IsNullOrWhiteSpace(item.Note))
+                                                {
+                                                    <span> · @item.Note</span>
+                                                }
+                                            </span>
+                                        </div>
+
+                                        <button type="button"
+                                                class="nx-btn nx-btn-danger-outline nx-btn-sm"
+                                                disabled="@(RemovingDate is not null)"
+                                                @onclick="() => RemoveOverrideAsync(item.Date)">
+                                            @(RemovingDate == item.Date ? "Removing…" : "Remove")
+                                        </button>
+
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                    </div>
+
+                </section>
+
+            </div>
+        }
+
+    </main>
+
+</div>
+
+@code {
+    private bool IsLoading { get; set; } = true;
+
+    private string? LoadError { get; set; }
+
+    private bool IsConfigured { get; set; }
+
+    private List<DayHours> Days { get; set; } = new();
+
+    private List<HoursOverride> Overrides { get; set; } = new();
+
+    // Default week
+    private bool IsSavingWeek { get; set; }
+
+    private string? WeekError { get; set; }
+
+    private string? WeekMessage { get; set; }
+
+    // Custom date form
+    private string OverrideDate { get; set; } = string.Empty;
+
+    private string OverrideMode { get; set; } = "off";
+
+    private string OverrideStart { get; set; } = "09:00";
+
+    private string OverrideEnd { get; set; } = "13:00";
+
+    private string OverrideNote { get; set; } = string.Empty;
+
+    private bool IsSavingOverride { get; set; }
+
+    private string? OverrideError { get; set; }
+
+    private string? OverrideMessage { get; set; }
+
+    // The date being removed, so its button can show it and the others are locked meanwhile.
+    private string? RemovingDate { get; set; }
+
+    /// <summary>
+    /// Stops the date picker from offering dates that have already passed.
+    /// </summary>
+    private static string MinOverrideDate => DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        IsLoading = true;
+        LoadError = null;
+
+        try
+        {
+            await CurrentUser.EnsureRestoredAsync();
+
+            if (CurrentUser.Id is null || !CurrentUser.IsAdvisor)
+            {
+                LoadError = "You need to be signed in as an advisor to set working hours.";
+                return;
+            }
+
+            var (schedule, error) = await AvailabilityApi.GetScheduleAsync();
+
+            if (schedule is null)
+            {
+                LoadError = error ?? "Your working hours couldn't be loaded.";
+                return;
+            }
+
+            Apply(schedule);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void Apply(AdvisorSchedule schedule)
+    {
+        IsConfigured = schedule.IsConfigured;
+        Days = schedule.Days;
+        Overrides = schedule.Overrides;
+    }
+
+    /// <summary>
+    /// Checks the week before sending it, so the advisor gets the problem straight away.
+    /// The API checks it again, so a bad week can never be saved.
+    /// </summary>
+    private async Task SaveWeekAsync()
+    {
+        if (IsSavingWeek)
+        {
+            return;
+        }
+
+        WeekError = null;
+        WeekMessage = null;
+
+        if (!Days.Any(d => d.IsWorkingDay))
+        {
+            WeekError = "Choose at least one working day.";
+            return;
+        }
+
+        foreach (var day in Days.Where(d => d.IsWorkingDay))
+        {
+            var problem = CheckTimes(day.StartTime, day.EndTime, day.Day.ToString());
+
+            if (problem is not null)
+            {
+                WeekError = problem;
+                return;
+            }
+        }
+
+        IsSavingWeek = true;
+
+        try
+        {
+            var (schedule, error) = await AvailabilityApi.SaveWeeklyHoursAsync(Days);
+
+            if (schedule is null)
+            {
+                WeekError = error ?? "Your working hours couldn't be saved. Please try again.";
+                return;
+            }
+
+            Apply(schedule);
+            WeekMessage = "Your default week was saved.";
+        }
+        finally
+        {
+            IsSavingWeek = false;
+        }
+    }
+
+    private async Task SaveOverrideAsync()
+    {
+        if (IsSavingOverride)
+        {
+            return;
+        }
+
+        OverrideError = null;
+        OverrideMessage = null;
+
+        if (!DateOnly.TryParseExact(OverrideDate, "yyyy-MM-dd", out var date))
+        {
+            OverrideError = "Choose a date.";
+            return;
+        }
+
+        if (date < DateOnly.FromDateTime(DateTime.Now))
+        {
+            OverrideError = "Choose today or a future date.";
+            return;
+        }
+
+        var isWorkingDay = OverrideMode == "custom";
+
+        if (isWorkingDay)
+        {
+            var problem = CheckTimes(OverrideStart, OverrideEnd, "that date");
+
+            if (problem is not null)
+            {
+                OverrideError = problem;
+                return;
+            }
+        }
+
+        IsSavingOverride = true;
+
+        try
+        {
+            var (schedule, error) = await AvailabilityApi.SaveOverrideAsync(new HoursOverride
+            {
+                Date = OverrideDate,
+                IsWorkingDay = isWorkingDay,
+                StartTime = isWorkingDay ? OverrideStart : null,
+                EndTime = isWorkingDay ? OverrideEnd : null,
+                Note = string.IsNullOrWhiteSpace(OverrideNote) ? null : OverrideNote.Trim()
+            });
+
+            if (schedule is null)
+            {
+                OverrideError = error ?? "The custom date couldn't be saved. Please try again.";
+                return;
+            }
+
+            Apply(schedule);
+            OverrideMessage = $"Custom hours for {FormatDate(OverrideDate)} were saved.";
+
+            // Clear the form for the next one.
+            OverrideDate = string.Empty;
+            OverrideNote = string.Empty;
+        }
+        finally
+        {
+            IsSavingOverride = false;
+        }
+    }
+
+    private async Task RemoveOverrideAsync(string date)
+    {
+        if (RemovingDate is not null)
+        {
+            return;
+        }
+
+        OverrideError = null;
+        OverrideMessage = null;
+        RemovingDate = date;
+
+        try
+        {
+            var error = await AvailabilityApi.DeleteOverrideAsync(date);
+
+            if (error is not null)
+            {
+                OverrideError = error;
+                return;
+            }
+
+            Overrides = Overrides.Where(o => o.Date != date).ToList();
+            OverrideMessage = $"Custom hours for {FormatDate(date)} were removed. Your default hours apply again.";
+        }
+        finally
+        {
+            RemovingDate = null;
+        }
+    }
+
+    /// <summary>
+    /// Returns what is wrong with a start and end time, or null when they are fine.
+    /// </summary>
+    private static string? CheckTimes(string? start, string? end, string dayName)
+    {
+        if (!TimeOnly.TryParse(start, System.Globalization.CultureInfo.InvariantCulture, out var startTime)
+            || !TimeOnly.TryParse(end, System.Globalization.CultureInfo.InvariantCulture, out var endTime))
+        {
+            return $"Enter a start and end time for {dayName}.";
+        }
+
+        return startTime >= endTime
+            ? $"The end time for {dayName} must be after the start time."
+            : null;
+    }
+
+    private static string FormatDate(string date)
+    {
+        return DateOnly.TryParseExact(date, "yyyy-MM-dd", out var parsed)
+            ? parsed.ToString("dddd d MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture)
+            : date;
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

@@ -120,3 +120,23 @@
 }
 
 /* ================================ EndOfFile ============================== */
+
+/* Printing (e.g. the meeting prep sheet): only the page content, without the sidebar. */
+@media print {
+
+    .nexus-sidebar,
+    .skip-link {
+        display: none !important;
+    }
+
+    .nexus-app {
+        display: block !important;
+    }
+
+    .nexus-main {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+}

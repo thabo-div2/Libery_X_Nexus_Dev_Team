@@ -1,0 +1,313 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+/* ===============================
+   PAGE
+   =============================== */
+
+.hours-page {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--color-page-bg);
+    color: var(--color-text);
+    font-family: var(--font-family);
+}
+
+.hours-header {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.hours-heading h1 {
+    margin: 0 0 var(--space-1);
+    color: var(--color-text);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.2px;
+}
+
+.hours-heading p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.hours-content {
+    padding: var(--space-5) var(--space-6) var(--space-12);
+}
+
+.hours-banner {
+    margin: 0 0 var(--space-4);
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.hours-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+}
+
+
+/* ===============================
+   CARDS
+   =============================== */
+
+.hours-card {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    box-shadow: var(--shadow-md);
+}
+
+.hours-card-header {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+    .hours-card-header h2 {
+        margin: 0;
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+.hours-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+}
+
+    .hours-card-body .nx-alert {
+        margin: 0;
+    }
+
+.hours-intro {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.hours-optional {
+    color: var(--color-text-muted);
+    font-weight: normal;
+}
+
+.hours-save-button {
+    align-self: flex-start;
+}
+
+
+/* ===============================
+   DEFAULT WEEK
+   =============================== */
+
+.week-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.week-row {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-white);
+}
+
+    .week-row.is-off {
+        background: var(--color-page-bg);
+    }
+
+.week-day {
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+}
+
+    .week-day input {
+        width: 15px;
+        height: 15px;
+        margin: 0;
+        cursor: pointer;
+    }
+
+.week-times {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+    .week-times .nx-input {
+        width: 120px;
+    }
+
+.week-to {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.week-off-label {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+
+/* ===============================
+   CUSTOM DATES
+   =============================== */
+
+.override-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.override-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.override-list-title {
+    margin: var(--space-3) 0 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-light);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+}
+
+.override-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.override-row {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.override-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+    .override-info strong {
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+    .override-info > span {
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+    }
+
+
+/* ===============================
+   EMPTY STATES
+   =============================== */
+
+.hours-empty-state {
+    min-height: 275px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    text-align: center;
+}
+
+    .hours-empty-state strong {
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+    .hours-empty-state span {
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+    }
+
+.hours-small-empty {
+    padding: var(--space-3) 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+
+/* ===============================
+   SMALLER SCREENS
+   =============================== */
+
+@media (max-width: 1100px) {
+
+    .hours-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .hours-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .hours-content {
+        padding: var(--space-4);
+    }
+
+    .week-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .week-times .nx-input {
+        width: 110px;
+    }
+}
+
+/* ================================ EndOfFile ============================== */

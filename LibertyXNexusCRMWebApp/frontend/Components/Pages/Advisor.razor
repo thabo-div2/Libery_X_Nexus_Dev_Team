@@ -189,7 +189,7 @@
                         <span class="stat-label">VALUE IN PIPELINE</span>
 
                         <strong class="stat-value">
-                            @($"R {Dashboard?.PipelineValue:N0}" ?? "-")
+                            @(Dashboard is null ? "—" : $"R {Dashboard.PipelineValue:N2}")
                         </strong>
 
                         <span class="stat-change @GetChangeClass(Dashboard?.PipelineValueChange)">
@@ -217,98 +217,41 @@
 
                             <h2>Case pipeline</h2>
 
-                            <div class="pipeline-filters">
-
-                                <button type="button"
-                                        class="filter-pill @(SelectedInstitution == "All" ? "active" : "")"
-                                        @onclick='() => SetInstitutionFilter("All")'> All
-                                </button>
-
-                                <button type="button"
-                                        class="filter-pill @(SelectedInstitution == "Liberty" ? "active" : "")"
-                                        @onclick='() => SetInstitutionFilter("Liberty")'> Liberty
-                                </button>
-
-                                <button type="button"
-                                        class="filter-pill @(SelectedInstitution == "Standard Bank" ? "active" : "")"
-                                        @onclick='() => SetInstitutionFilter("Standard Bank")'> Standard Bank
-                                </button>
-
+                            <div class="pipeline-filters" aria-label="Filter cases by institution">
+                                @foreach (var institution in PipelineInstitutions)
+                                {
+                                    <button type="button" class="filter-pill @(SelectedInstitution == institution ? "active" : "")"
+                                            aria-pressed="@(SelectedInstitution == institution)"
+                                            @onclick="() => SetInstitutionFilter(institution)">@institution</button>
+                                }
                             </div>
 
                         </div>
 
 
                         <div class="table-container">
-
                             <table class="pipeline-table">
-
-                                <thead>
-                                    <tr>
-                                        <th>CLIENT</th>
-                                        <th>PRODUCT</th>
-                                        <th>INSTITUTION</th>
-                                        <th>STAGE</th>
-                                        <th class="updated-heading">UPDATED</th>
-                                    </tr>
-                                </thead>
-
+                                <caption class="visually-hidden">Client cases and their current application status</caption>
+                                <thead><tr><th scope="col">Client / product</th><th scope="col">Institution</th><th scope="col">Stage</th><th scope="col" class="updated-heading">Updated</th></tr></thead>
                                 <tbody>
-
-                                    @if (Dashboard?.Cases is not null && Dashboard.Cases.Any(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution))
+                                    @if (isLoading || !string.IsNullOrWhiteSpace(LoadError) || !FilteredCases.Any())
                                     {
-                                        @foreach (var caseItem in Dashboard.Cases.Where(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution))
-                                        {
-                                            <tr>
-                                                <td class="client-name">
-                                                    @caseItem.ClientName
-                                                </td>
-
-                                                <td>
-                                                    @caseItem.Product
-                                                </td>
-
-                                                <td>
-                                                    @caseItem.Institution
-                                                </td>
-
-                                                <td>
-                                                    <span class="status-badge @GetStatusClass(caseItem.Status)">
-                                                        <span class="status-dot"></span>
-                                                        @caseItem.Status
-                                                    </span>
-                                                </td>
-
-                                                <td class="updated-cell">
-                                                    @caseItem.UpdatedAt
-                                                </td>
-                                            </tr>
-                                        }
+                                        <tr><td colspan="4" class="pipeline-empty" role="status">@(isLoading ? "Loading cases…" : LoadError ?? "No cases for this institution yet.")</td></tr>
                                     }
                                     else
                                     {
-                                        <tr class="empty-table-row">
-                                            <td colspan="5">
-
-                                                <div class="table-empty-state">
-                                                    <div class="empty-icon">⌕</div>
-
-                                                    <strong>No cases to display</strong>
-
-                                                    <span>
-                                                        Client cases will appear here once they
-                                                        are loaded.
-                                                    </span>
-                                                </div>
-
-                                            </td>
-                                        </tr>
+                                        @foreach (var caseItem in FilteredCases)
+                                        {
+                                            <tr>
+                                                <td><div class="pipeline-client"><span class="pipeline-avatar" aria-hidden="true">@GetInitials(caseItem.ClientName)</span><div><strong>@caseItem.ClientName</strong><span class="pipeline-product">@caseItem.Product</span></div></div></td>
+                                                <td><span class="pipeline-provider">@caseItem.Institution</span></td>
+                                                <td><span class="status-badge @GetStatusClass(caseItem.Status)"><span class="status-dot" aria-hidden="true"></span>@FormatStatus(caseItem.Status)</span></td>
+                                                <td class="updated-cell">@caseItem.UpdatedAt.ToLocalTime().ToString("dd MMM yyyy")</td>
+                                            </tr>
+                                        }
                                     }
-
                                 </tbody>
-
                             </table>
-
                         </div>
 
                     </article>
@@ -566,23 +509,35 @@
     }
 
 
-    private static string GetStatusClass(string? status)
+
+
+    private IEnumerable<CasePipelineItemDto> FilteredCases =>
+        (Dashboard?.Cases ?? new()).Where(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution);
+
+    private IEnumerable<string> PipelineInstitutions => new[] { "All" }.Concat(
+        (Dashboard?.Cases ?? new()).Select(c => c.Institution).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x));
+
+    private static string FormatStatus(string status) => status switch
     {
-        if (string.IsNullOrWhiteSpace(status))
-            return "status-neutral";
+        "InProgress" => "In progress",
+        "AwaitingApproval" => "Awaiting approval",
+        "OnHold" => "On hold",
+        "Completed" => "Completed",
+        _ => status
+    };
 
-        return status.ToLowerInvariant() switch
-        {
-            "submitted" => "status-green",
-            "issued" => "status-green",
-            "awaiting fica" => "status-yellow",
-            "awaiting signature" => "status-yellow",
-            "info incomplete" => "status-red",
-            "consultation booked" => "status-blue",
-            _ => "status-neutral"
-        };
-    }
+    private static string GetInitials(string name) => string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpperInvariant(p[0])));
 
+    private static string GetStatusClass(string? status) => status switch
+    {
+        "InProgress" => "status-blue",
+        "AwaitingApproval" => "status-yellow",
+        "OnHold" => "status-red",
+        "Completed" => "status-green",
+        "Cancelled" or "Lapsed" => "status-red",
+        "Matured" => "status-neutral",
+        _ => "status-neutral"
+    };
 
     private static string GetDeadlineClass(string? urgency)
     {

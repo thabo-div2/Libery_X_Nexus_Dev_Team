@@ -882,3 +882,26 @@
 }
 
 /* ================================ EndOfFile ============================== */
+/* A quieter notification feed, with clear categories and unread state. */
+.notifications-panel .panel-heading { justify-content: space-between; padding: 14px 16px; }
+.notification-total { display: inline-flex; align-items: center; justify-content: center; min-width: 25px; height: 25px; padding: 0 7px; border-radius: 8px; background: var(--color-blue-60); color: var(--color-primary); font-size: 11px; font-weight: 700; }
+.notification-list { gap: 0; padding: 0 14px; }
+.system-notification { flex-shrink: 0; gap: 11px; padding: 16px 2px; border: 0; border-bottom: 1px solid var(--color-border-light); border-radius: 0; box-shadow: none; }
+.system-notification:last-child { border-bottom: 0; }
+.system-notification:hover { box-shadow: none; }
+.notification-type-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--color-blue-60); color: var(--color-primary); }
+.notification-type-icon svg { width: 18px; height: 18px; }
+.notification-warning { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.notification-success { background: var(--color-green-40); color: var(--color-green-690); }
+.notification-calendar { background: var(--color-page-bg); color: var(--color-slate-600); }
+.notification-details { flex: 1; gap: 6px; overflow-wrap: anywhere; }
+.notification-meta { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.notification-details .notification-category { color: var(--color-text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+.notification-details .notification-new { background: var(--color-blue-60); color: var(--color-primary); padding: 2px 6px; border-radius: 5px; font-size: 10px; font-weight: 700; }
+.notification-details strong { font-size: 12px; line-height: 1.55; font-weight: 400; color: var(--color-text); }
+.is-unread .notification-details strong { font-weight: 600; }
+.notification-details > span { font-size: 10px; }
+.notifications-empty { min-height: 160px; width: 100%; grid-column: 1 / -1; }
+@media (min-width: 551px) and (max-width: 1200px) {
+    .notification-list { column-gap: 24px; align-content: start; }
+}

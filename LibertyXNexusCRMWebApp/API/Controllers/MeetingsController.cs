@@ -173,7 +173,7 @@ namespace API.Controllers
 
             try
             {
-                var created = await meetingService_.BookAsync(request);
+                var created = await meetingService_.BookAsync(request, byAdvisor: IsAdvisor);
                 return CreatedAtAction(nameof(GetById), new { id = created.MeetingId }, created);
             }
             catch (ArgumentException ex)

@@ -191,17 +191,16 @@ namespace API.Services.Implementations
                 throw new KeyNotFoundException($"Client {request.ClientId} was not found.");
             }
 
-            var policyExists = await _policyRepository.ExistsAsync(request.PolicyId);
-            if (!policyExists)
-            {
-                throw new KeyNotFoundException($"Policy {request.PolicyId} was not found.");
-            }
+            if (!Enum.IsDefined(request.DocumentType))
+                throw new ArgumentException("Choose a valid document type.");
 
-            //ensuring that the policy is one that the clients actually holds, not someone elses
-            var policyBelongsToClient = await _policyRepository.BelongsToClientAsync(request.PolicyId, request.ClientId);
-            if (!policyBelongsToClient)
+            if (request.PolicyId is int policyId)
             {
-                throw new InvalidOperationException($"Policy {request.PolicyId} does not belong to client {request.ClientId}.");
+                if (policyId <= 0) throw new ArgumentException("Choose a policy or General documents.");
+                if (!await _policyRepository.ExistsAsync(policyId))
+                    throw new KeyNotFoundException($"Policy {policyId} was not found.");
+                if (!await _policyRepository.BelongsToClientAsync(policyId, request.ClientId))
+                    throw new InvalidOperationException($"Policy {policyId} does not belong to client {request.ClientId}.");
             }
 
             await using var stream = request.File.OpenReadStream();
@@ -217,7 +216,7 @@ namespace API.Services.Implementations
                 FileSizeBytes = request.File.Length,
                 DocumentType = request.DocumentType,
                 VisibleToClient = request.VisibleToClient,
-                UploadedBy = request.UploadedBy,
+                UploadedBy = request.UploadedBy ?? string.Empty,
                 UpdateAt = DateTime.UtcNow
             };
 
@@ -259,6 +258,25 @@ namespace API.Services.Implementations
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Sets whether a document is waiting for a signature, has been signed off, or doesn't need one.
+        /// </summary>
+        /// <param name="documentId"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public async Task<DocumentDto> SetSignatureStatusAsync(int documentId, SignatureStatus status)
+        {
+            var document = await _documentRepository.GetByIdAsync(documentId) ?? throw new KeyNotFoundException($"Document {documentId} was not found.");
+
+            document.SignatureStatus = status;
+            document.UpdateAt = DateTime.UtcNow;
+
+            await _documentRepository.UpdateAsync(document);
+            return MapToDto(document);
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Deletes a specific document, removing it from both the repository and blob storage. Returns true if the deletion was successful, or false if the document was not found.
         /// </summary>
         /// <param name="documentId"></param>
@@ -268,16 +286,9 @@ namespace API.Services.Implementations
             var document = await _documentRepository.GetByIdAsync(documentId);
             if (document is null) return false;
 
+            // Retain the reference if storage is unavailable so deletion can be retried.
+            await _blobStorageService.DeleteAsync(document.BlobReference);
             await _documentRepository.DeleteAsync(documentId);
-
-            try
-            {
-                await _blobStorageService.DeleteAsync(document.BlobReference);
-            }
-            catch
-            {
-                // The record is gone
-            }
             return true;
         }
 
@@ -291,7 +302,10 @@ namespace API.Services.Implementations
         {
             DocumentId = document.DocumentId,
             ClientId = document.ClientId,
+            // Client and Policy are only loaded by some queries, so these stay null everywhere else.
+            ClientName = document.Client is null ? null : $"{document.Client.FirstName} {document.Client.LastName}".Trim(),
             PolicyId = document.PolicyId,
+            PolicyName = document.PolicyId is null ? "General documents" : document.Policy?.PolicyName,
             FileName = document.FileName,
             ContentType = document.ContentType,
             FileSizeBytes = document.FileSizeBytes,

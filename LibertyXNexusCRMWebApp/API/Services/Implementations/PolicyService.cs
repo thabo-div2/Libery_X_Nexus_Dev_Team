@@ -151,16 +151,15 @@ namespace API.Services.Implementations
                 CreatedAt = DateTime.UtcNow
             };
 
-            var created = await policyRepository_.AddAsync(policy);
-
-            await caseRepository_.AddAsync(new Case
+            // Persist the application and policy as one graph so neither can be left orphaned.
+            policy.Case = new Case
             {
-                PolicyId = created.PolicyId,
                 Status = CaseStatus.InProgress,
                 TargetSubmissionDate = request.TargetSubmissionDate,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
-            });
+            };
+            var created = await policyRepository_.AddAsync(policy);
 
             return MapToDto(created);
         }
@@ -210,19 +209,11 @@ namespace API.Services.Implementations
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<PolicyDto> UpdateStatusAsync(int policyId, UpdatePolicyStatusRequest request)
         {
-            var policy = await policyRepository_.GetByIdAsync(policyId)
-                ?? throw new KeyNotFoundException($"Policy {policyId} was not found.");
-
-            if (policy.Status is PolicyStatus.Cancelled or PolicyStatus.Matured)
-            {
-                throw new InvalidOperationException($"A policy with status '{policy.Status}' cannot be changed further.");
-            }
-
-            policy.Status = request.NewStatus;
-            policy.UpdatedAt = DateTime.UtcNow;
-
-            await policyRepository_.UpdateAsync(policy);
-            return MapToDto(policy);
+            ArgumentNullException.ThrowIfNull(request);
+            if (request.NewStatus is not PolicyStatus status || !Enum.IsDefined(status))
+                throw new ArgumentException("Choose a valid policy status.");
+            var updated = await policyRepository_.UpdateStatusAsync(policyId, status);
+            return MapToDto(updated);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

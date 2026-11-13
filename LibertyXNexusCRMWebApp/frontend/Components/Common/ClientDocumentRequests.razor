@@ -1,0 +1,250 @@
+﻿@using frontend.Services
+@using Shared.Models.Enums
+@inject DocumentRequestService RequestApi
+@inject PolicyService PolicyApi
+
+@* Advisor view: the documents this client has been asked for, with a form to ask for another.
+   Used in the client panel on the Clients page. *@
+
+<div class="doc-requests">
+
+    <span class="doc-requests-title">Document requests</span>
+
+    @if (IsLoading)
+    {
+        <span class="doc-requests-empty">Loading…</span>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(Error))
+        {
+            <p class="nx-alert nx-alert-danger" role="alert">@Error</p>
+        }
+
+        @if (Requests.Count == 0)
+        {
+            <span class="doc-requests-empty">Nothing has been requested from this client.</span>
+        }
+        else
+        {
+            @foreach (var group in Requests.GroupBy(r => r.PolicyId).OrderBy(g => g.Key.HasValue).ThenBy(g => g.Key))
+            {
+                <section class="request-policy-group">
+                <h4 class="request-policy-heading">@ScopeLabel(group.First())</h4>
+            <ul class="doc-requests-list">
+                @foreach (var item in group)
+                {
+                    <li class="doc-requests-row @(item.IsFulfilled ? "is-done" : "")" @key="item.DocumentRequestId">
+
+                        <div class="doc-requests-info">
+                            <strong>@DocumentTypeNames.Format(item.DocumentType)</strong>
+                            <span>
+                                @DescribeDate(item)
+                                @if (!string.IsNullOrWhiteSpace(item.Note))
+                                {
+                                    <span> · @item.Note</span>
+                                }
+                            </span>
+                        </div>
+
+                        @if (item.IsFulfilled)
+                        {
+                            <span class="doc-requests-badge">Received</span>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="nx-btn nx-btn-secondary nx-btn-sm"
+                                    disabled="@(RemovingId is not null)"
+                                    @onclick="() => CancelAsync(item.DocumentRequestId)">
+                                @(RemovingId == item.DocumentRequestId ? "Removing…" : "Remove")
+                            </button>
+                        }
+
+                    </li>
+                }
+            </ul>
+                </section>
+            }
+        }
+
+        <div class="doc-requests-form">
+            <label class="nx-label">Request for
+                <select class="nx-input" @bind="NewPolicyId" disabled="@IsSaving">
+                    <option value="">General documents (no policy)</option>
+                    @foreach (var policy in Policies)
+                    {
+                        <option value="@policy.PolicyId">@policy.PolicyName (#@policy.PolicyId)</option>
+                    }
+                </select>
+            </label>
+
+            <select class="nx-input" aria-label="Document to request" @bind="NewType" disabled="@IsSaving">
+                @foreach (var type in RequestableTypes)
+                {
+                    <option value="@type">@DocumentTypeNames.Format(type.ToString())</option>
+                }
+            </select>
+
+            <input type="text"
+                   class="nx-input"
+                   aria-label="Note for the client"
+                   maxlength="300"
+                   placeholder="Note for the client (optional)"
+                   @bind="NewNote"
+                   disabled="@IsSaving" />
+
+            <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@IsSaving" @onclick="CreateAsync">
+                @(IsSaving ? "Requesting…" : "Request document")
+            </button>
+
+        </div>
+    }
+
+</div>
+
+@code {
+    /// <summary>The client whose requests are shown.</summary>
+    [Parameter, EditorRequired] public int ClientId { get; set; }
+
+    // The documents an advisor would realistically ask a client for.
+    private static readonly DocumentType[] RequestableTypes =
+    {
+        DocumentType.CertifiedIdCopy,
+        DocumentType.ProofOfAddress,
+        DocumentType.BankStatement,
+        DocumentType.Payslip,
+        DocumentType.TaxCertificate,
+        DocumentType.Other
+    };
+
+    private int? NewPolicyId;
+    private List<PolicySummary> Policies = new();
+    private static string ScopeLabel(DocumentRequestSummary request) => request.PolicyId is int id
+        ? $"{request.PolicyName ?? "Policy"} (#{id})" : "General documents";
+
+    private List<DocumentRequestSummary> Requests = new();
+    private bool IsLoading = true;
+    private bool IsSaving;
+    private int? RemovingId;
+    private string? Error;
+    private DocumentType NewType = DocumentType.CertifiedIdCopy;
+    private string NewNote = string.Empty;
+
+    // The client the list was last loaded for, so it reloads when the advisor picks another client.
+    private int _loadedClientId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ClientId == _loadedClientId)
+        {
+            return;
+        }
+
+        _loadedClientId = ClientId;
+        NewNote = string.Empty;
+        NewPolicyId = null;
+        await LoadAsync();
+    }
+
+    private static string DescribeDate(DocumentRequestSummary item)
+    {
+        var when = (item.FulfilledAt ?? item.CreatedAt).ToLocalTime().ToString("d MMM yyyy");
+        return item.IsFulfilled ? $"Received {when}" : $"Requested {when}";
+    }
+
+    private async Task LoadAsync()
+    {
+        var clientId = ClientId;
+
+        IsLoading = true;
+        Error = null;
+
+        var (requests, error) = await RequestApi.GetForClientAsync(clientId);
+        var (policies, policyError) = await PolicyApi.GetForClientAsync(clientId);
+
+        // The advisor may have picked another client while this was loading.
+        if (clientId != ClientId)
+        {
+            return;
+        }
+
+        Requests = requests ?? new List<DocumentRequestSummary>();
+        Policies = policies ?? new();
+        Error = error ?? policyError;
+        IsLoading = false;
+    }
+
+    private async Task CreateAsync()
+    {
+        if (IsSaving)
+        {
+            return;
+        }
+
+        Error = null;
+
+        if (Requests.Any(r => !r.IsFulfilled && r.DocumentType == NewType.ToString() && r.PolicyId == NewPolicyId))
+        {
+            Error = "You have already requested that document for the selected policy or general documents.";
+            return;
+        }
+
+        var clientId = ClientId;
+        IsSaving = true;
+
+        try
+        {
+            var note = string.IsNullOrWhiteSpace(NewNote) ? null : NewNote.Trim();
+            var (created, error) = await RequestApi.CreateAsync(clientId, NewType, note, NewPolicyId);
+
+            if (clientId != ClientId)
+            {
+                return;
+            }
+
+            if (created is null)
+            {
+                Error = error ?? "The request couldn't be saved. Please try again.";
+                return;
+            }
+
+            Requests.Insert(0, created);
+            NewNote = string.Empty;
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private async Task CancelAsync(int documentRequestId)
+    {
+        if (RemovingId is not null)
+        {
+            return;
+        }
+
+        Error = null;
+        RemovingId = documentRequestId;
+
+        try
+        {
+            var error = await RequestApi.CancelAsync(documentRequestId);
+
+            if (error is not null)
+            {
+                Error = error;
+                return;
+            }
+
+            Requests.RemoveAll(r => r.DocumentRequestId == documentRequestId);
+        }
+        finally
+        {
+            RemovingId = null;
+        }
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

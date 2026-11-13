@@ -1,0 +1,108 @@
+﻿@using frontend.Services
+@implements IDisposable
+@inject MessageService MessageStore
+@inject MessageNotifier Notifier
+@inject CurrentUserService CurrentUser
+@inject NavigationManager Navigation
+
+@* The unread count shown next to "Messages" in the sidebar, for both advisors and clients.
+   Shows nothing when everything has been read. *@
+
+@if (Count > 0)
+{
+    <span class="nav-unread-badge" aria-label="@AriaText">@(Count > 99 ? "99+" : Count.ToString())</span>
+}
+
+@code {
+    private static readonly TimeSpan RefreshEvery = TimeSpan.FromSeconds(45);
+
+    // Give the page a moment to open the conversation (which marks it read) before counting again.
+    private static readonly TimeSpan SettleDelay = TimeSpan.FromSeconds(2);
+
+    private readonly CancellationTokenSource _stop = new();
+
+    private int Count;
+
+    private string AriaText => Count == 1 ? "1 unread message" : $"{Count} unread messages";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Notifier.MessageSent += OnMessageSent;
+        Navigation.LocationChanged += OnLocationChanged;
+
+        await RefreshAsync();
+        _ = KeepRefreshingAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        try
+        {
+            await CurrentUser.EnsureRestoredAsync();
+            Count = CurrentUser.Id is null ? 0 : await MessageStore.GetUnreadCountAsync();
+        }
+        catch (Exception)
+        {
+            // Keep the last count; a failed check shouldn't break the menu.
+        }
+    }
+
+    private void OnMessageSent(int clientId)
+    {
+        _ = RefreshSoonAsync();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        _ = RefreshSoonAsync();
+    }
+
+    private async Task RefreshSoonAsync()
+    {
+        try
+        {
+            await Task.Delay(SettleDelay, _stop.Token);
+
+            await InvokeAsync(async () =>
+            {
+                await RefreshAsync();
+                StateHasChanged();
+            });
+        }
+        catch (Exception)
+        {
+            // The menu was closed or the connection dropped.
+        }
+    }
+
+    private async Task KeepRefreshingAsync()
+    {
+        try
+        {
+            using var timer = new PeriodicTimer(RefreshEvery);
+
+            while (await timer.WaitForNextTickAsync(_stop.Token))
+            {
+                await InvokeAsync(async () =>
+                {
+                    await RefreshAsync();
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception)
+        {
+            // The menu was closed or the connection dropped.
+        }
+    }
+
+    public void Dispose()
+    {
+        Notifier.MessageSent -= OnMessageSent;
+        Navigation.LocationChanged -= OnLocationChanged;
+        _stop.Cancel();
+        _stop.Dispose();
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

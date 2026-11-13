@@ -52,7 +52,7 @@ namespace frontend.Services
                 var feed = await response.Content.ReadFromJsonAsync<NotificationFeed>();
                 return feed ?? new NotificationFeed(0, new List<NotificationItem>());
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
             {
                 return new NotificationFeed(0, new List<NotificationItem>());
             }
@@ -79,7 +79,7 @@ namespace frontend.Services
 
                 return await response.Content.ReadFromJsonAsync<int>();
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
             {
                 return 0;
             }
@@ -102,7 +102,7 @@ namespace frontend.Services
                 var response = await _http.PutAsync($"notifications/{notificationId}/read", new StringContent(string.Empty));
                 return response.IsSuccessStatusCode;
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException)
             {
                 return false;
             }
@@ -118,7 +118,7 @@ namespace frontend.Services
                 var response = await _http.PutAsync($"notifications/{Owner(isClient)}/{userId}/read-all", new StringContent(string.Empty));
                 return response.IsSuccessStatusCode;
             }
-            catch (HttpRequestException)
+            catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException)
             {
                 return false;
             }

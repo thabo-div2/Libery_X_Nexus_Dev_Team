@@ -1,0 +1,223 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+.prep-page {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--color-page-bg);
+    color: var(--color-text);
+    font-family: var(--font-family);
+}
+
+.prep-header {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.prep-heading h1 {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+}
+
+.prep-heading p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+}
+
+.prep-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.prep-content {
+    padding: var(--space-5) var(--space-6) var(--space-12);
+}
+
+.prep-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+}
+
+.prep-card {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    box-shadow: var(--shadow-md);
+}
+
+.prep-card-wide {
+    grid-column: 1 / -1;
+}
+
+.prep-card h2 {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+}
+
+.prep-card h3 {
+    margin: var(--space-3) 0 var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+    .prep-card h2 + h3 {
+        margin-top: 0;
+    }
+
+.prep-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+}
+
+    .prep-facts dt {
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+    }
+
+    .prep-facts dd {
+        margin: 0;
+        font-size: var(--text-sm);
+        overflow-wrap: anywhere;
+    }
+
+.prep-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+    .prep-table th,
+    .prep-table td {
+        padding: var(--space-2);
+        border-bottom: 1px solid var(--color-border-light);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .prep-table th {
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+        font-weight: var(--weight-semibold);
+    }
+
+.prep-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+    .prep-list li {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .prep-list strong {
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+    .prep-list span {
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+        overflow-wrap: anywhere;
+    }
+
+.prep-none {
+    margin: 0 0 var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.prep-section-error {
+    margin: 0 0 var(--space-2);
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+}
+
+.prep-empty {
+    min-height: 275px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    text-align: center;
+}
+
+    .prep-empty strong {
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+    .prep-empty span {
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+    }
+
+@media (max-width: 900px) {
+
+    .prep-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prep-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .prep-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+/* Printing: just the sheet, no buttons or shadows. */
+@media print {
+
+    .prep-page {
+        min-height: 0;
+        background: #fff;
+    }
+
+    .prep-actions {
+        display: none;
+    }
+
+    .prep-header {
+        padding: 0 0 12px;
+    }
+
+    .prep-content {
+        padding: 12px 0 0;
+    }
+
+    .prep-card {
+        box-shadow: none;
+        break-inside: avoid;
+    }
+}
+
+/* ================================ EndOfFile ============================== */

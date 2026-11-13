@@ -26,6 +26,23 @@
         }
 
         /// <summary>
+        /// Converts a UTC time to South African time. Used to check times against the advisor's working hours.
+        /// </summary>
+        public static DateTime ToSouthAfrica(DateTime utc)
+        {
+            var asUtc = utc.Kind == DateTimeKind.Local ? utc.ToUniversalTime() : DateTime.SpecifyKind(utc, DateTimeKind.Utc);
+            return TimeZoneInfo.ConvertTimeFromUtc(asUtc, SouthAfrica);
+        }
+
+        /// <summary>
+        /// Converts a South African date and time to UTC. Used to turn a meeting slot into the time that is saved.
+        /// </summary>
+        public static DateTime FromSouthAfrica(DateTime local)
+        {
+            return TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(local, DateTimeKind.Unspecified), SouthAfrica);
+        }
+
+        /// <summary>
         /// Formats a UTC date as South African time, e.g. "Mon 3 Nov, 14:00".
         /// </summary>
         public static string Format(DateTime utc, string format = "ddd d MMM, HH:mm")

@@ -1,5 +1,6 @@
 using API.DTOs.Cases;
 using API.Identity;
+using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,13 @@ namespace API.Controllers
     {
         private readonly ICaseService _caseService;
         private readonly IClientService _clientService;
+        private readonly IAuditLogRepository _auditLogRepository;
 
-        public CasesController(ICaseService caseService,IClientService clientService)
+        public CasesController(ICaseService caseService, IClientService clientService, IAuditLogRepository auditLogRepository)
         {
             _caseService = caseService;
             _clientService = clientService;
+            _auditLogRepository = auditLogRepository;
         }
 
         private bool IsAdvisor =>
@@ -100,7 +103,29 @@ namespace API.Controllers
 
             try
             {
-                return Ok(await _caseService.MarkStepCompleteAsync(id, step));
+                var updated = await _caseService.MarkStepCompleteAsync(id, step);
+
+                // Record it in the activity log. Logging must never break the request.
+                try
+                {
+                    await _auditLogRepository.LogAsync(
+                        userId: CurrentAdvisorId,
+                        userRole: UserRole.FinancialAdviser,
+                        actionType: AuditActionType.Update,
+                        entityAffected: "Case",
+                        entityId: id,
+                        details: $"Marked step {step} complete for client {clientId.Value}." + (step == CaseStep.PolicyIssued ? " Policy activated." : ""));
+                }
+                catch (Exception)
+                {
+                    // Ignore - the step itself was saved.
+                }
+
+                return Ok(updated);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (KeyNotFoundException ex)
             {

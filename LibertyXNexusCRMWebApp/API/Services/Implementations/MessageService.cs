@@ -14,6 +14,7 @@ namespace API.Services.Implementations
     {
         private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly INotificationService _notificationService;
+        private readonly IAvailabilityService _availabilityService;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -21,10 +22,11 @@ namespace API.Services.Implementations
         /// </summary>
         /// <param name="contextFactory"></param>
         /// <param name="notificationService"></param>
-        public MessageService(IDbContextFactory<ApplicationDbContext> contextFactory, INotificationService notificationService)
+        public MessageService(IDbContextFactory<ApplicationDbContext> contextFactory, INotificationService notificationService, IAvailabilityService availabilityService)
         {
             _contextFactory = contextFactory;
             _notificationService = notificationService;
+            _availabilityService = availabilityService;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -37,7 +39,7 @@ namespace API.Services.Implementations
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
 
-            return await db.Messages
+            var messages = await db.Messages
                 .AsNoTracking()
                 .Where(m => m.ClientId == clientId)
                 .OrderBy(m => m.SentAt)
@@ -49,6 +51,25 @@ namespace API.Services.Implementations
                     m.Text,
                     m.SentAt))
                 .ToListAsync();
+
+            // Opening the conversation counts as reading it, so the unread badge clears.
+            var unread = await db.Messages
+                .Where(m => m.ClientId == clientId && m.FromAdvisor == true && m.ReadAt == null)
+                .ToListAsync();
+
+            if (unread.Count > 0)
+            {
+                var now = DateTime.UtcNow;
+
+                foreach (var message in unread)
+                {
+                    message.ReadAt = now;
+                }
+
+                await db.SaveChangesAsync();
+            }
+
+            return messages;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -62,7 +83,7 @@ namespace API.Services.Implementations
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
 
-            return await db.Messages
+            var messages = await db.Messages
                 .AsNoTracking()
                 .Where(m => m.ClientId == clientId && m.AdvisorId == advisorId)
                 .OrderBy(m => m.SentAt)
@@ -74,6 +95,25 @@ namespace API.Services.Implementations
                     m.Text,
                     m.SentAt))
                 .ToListAsync();
+
+            // Opening the conversation counts as reading it, so the unread badge clears.
+            var unread = await db.Messages
+                .Where(m => m.ClientId == clientId && m.AdvisorId == advisorId && m.FromAdvisor == false && m.ReadAt == null)
+                .ToListAsync();
+
+            if (unread.Count > 0)
+            {
+                var now = DateTime.UtcNow;
+
+                foreach (var message in unread)
+                {
+                    message.ReadAt = now;
+                }
+
+                await db.SaveChangesAsync();
+            }
+
+            return messages;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -86,26 +126,49 @@ namespace API.Services.Implementations
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
 
+            var clients = await db.Clients
+                .AsNoTracking()
+                .Where(c => c.AdvisorId == advisorId)
+                .Select(c => new { c.ClientId, c.FirstName, c.LastName })
+                .ToListAsync();
+
+            var clientIds = clients.Select(c => c.ClientId).ToList();
             var messages = await db.Messages
                 .AsNoTracking()
-                .Where(m => m.AdvisorId == advisorId)
-                .Include(m => m.Client)
+                .Where(m => m.AdvisorId == advisorId && clientIds.Contains(m.ClientId))
                 .OrderByDescending(m => m.SentAt)
                 .ToListAsync();
 
-            return messages
-                .GroupBy(m => m.ClientId)
-                .Select(g =>
+            var byClient = messages.ToLookup(m => m.ClientId);
+            return clients
+                .Select(client =>
                 {
-                    var latest = g.First();
+                    var conversation = byClient[client.ClientId];
+                    var latest = conversation.FirstOrDefault();
                     return new ConversationSummaryDto(
-                        latest.ClientId,
-                        latest.Client.FullName,
-                        latest.Text,
-                        latest.SentAt);
+                        client.ClientId,
+                        $"{client.FirstName} {client.LastName}".Trim(),
+                        latest?.Text,
+                        latest?.SentAt,
+                        conversation.Count(m => !m.FromAdvisor && m.ReadAt == null));
                 })
                 .OrderByDescending(c => c.LastMessageAt)
+                .ThenBy(c => c.ClientName)
                 .ToList();
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Counts the messages waiting to be read: for an advisor, the ones their clients sent;
+        /// for a client, the ones their advisor sent.
+        /// </summary>
+        public async Task<int> GetUnreadCountAsync(bool forAdvisor, int id)
+        {
+            await using var db = await _contextFactory.CreateDbContextAsync();
+
+            return forAdvisor
+                ? await db.Messages.CountAsync(m => m.AdvisorId == id && !m.FromAdvisor && m.ReadAt == null)
+                : await db.Messages.CountAsync(m => m.ClientId == id && m.FromAdvisor && m.ReadAt == null);
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -146,6 +209,12 @@ namespace API.Services.Implementations
 
             if (!advisorExists)
                 throw new KeyNotFoundException($"Advisor {request.AdvisorId} was not found.");
+
+            // Clients can only message during the advisor's working hours. The advisor can always reply.
+            if (!fromAdvisor)
+            {
+                await _availabilityService.EnsureCanMessageAsync(request.AdvisorId);
+            }
 
             var message = new Message
             {

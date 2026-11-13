@@ -1,0 +1,113 @@
+﻿@using frontend.Services
+@inject DocumentRequestService RequestApi
+
+@* Client view: the checklist of documents their advisor has asked for.
+   Shows nothing when nothing is outstanding and nothing was ever requested. *@
+
+@if (Error is not null)
+{
+    <p class="nx-alert nx-alert-danger" role="alert">@Error</p>
+    <button type="button" @onclick="RefreshAsync">Retry loading document requests</button>
+}
+else if (Requests.Count == 0)
+{
+    <p class="doc-requests-empty">No documents have been requested.</p>
+}
+
+@if (Requests.Count > 0)
+{
+    <div class="doc-requests">
+
+        <span class="doc-requests-title">@Heading</span>
+
+        @foreach (var group in Requests.GroupBy(r => r.PolicyId).OrderBy(g => g.Key.HasValue).ThenBy(g => g.Key))
+        {
+            <section class="request-policy-group">
+            <h4 class="request-policy-heading">@(group.Key is int id ? $"{group.First().PolicyName ?? "Policy"} (#{id})" : "General documents")</h4>
+        <ul class="doc-requests-list">
+            @foreach (var item in group)
+            {
+                <li class="doc-requests-row @(item.IsFulfilled ? "is-done" : "")" @key="item.DocumentRequestId">
+
+                    <div class="doc-requests-info">
+                        <strong>@DocumentTypeNames.Format(item.DocumentType)</strong>
+                        @if (!string.IsNullOrWhiteSpace(item.Note))
+                        {
+                            <span>@item.Note</span>
+                        }
+                    </div>
+
+                    <span class="doc-requests-badge @(item.IsFulfilled ? "" : "is-waiting")">@(item.IsFulfilled ? "Received" : "Still needed")</span>
+
+                </li>
+            }
+        </ul>
+            </section>
+        }
+
+        @if (OutstandingCount > 0)
+        {
+            <span class="doc-requests-empty">Upload each one below and choose the matching document type and policy (or General documents). It is ticked off as soon as it arrives.</span>
+        }
+
+    </div>
+}
+
+@code {
+    /// <summary>The signed-in client's id.</summary>
+    [Parameter, EditorRequired] public int ClientId { get; set; }
+
+    private List<DocumentRequestSummary> Requests = new();
+    private string? Error;
+    private int? LoadedClientId;
+
+    private int OutstandingCount => Requests.Count(r => !r.IsFulfilled);
+
+    private string Heading
+    {
+        get
+        {
+            if (OutstandingCount == 0)
+            {
+                return "Everything your advisor asked for has been received";
+            }
+
+            var noun = OutstandingCount == 1 ? "document" : "documents";
+            return $"Your advisor is waiting for {OutstandingCount} {noun}";
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (LoadedClientId != ClientId)
+        {
+            LoadedClientId = ClientId;
+            Requests.Clear();
+            await RefreshAsync();
+        }
+    }
+
+    /// <summary>
+    /// Loads the checklist again. The page calls this after an upload, so a request that was
+    /// just fulfilled is ticked off straight away.
+    /// </summary>
+    public async Task RefreshAsync()
+    {
+        var clientId = ClientId;
+        var (requests, error) = await RequestApi.GetForClientAsync(clientId);
+        if (clientId != ClientId) return;
+        Error = error;
+
+        // Keep showing the last list if this load failed.
+        if (requests is null)
+        {
+            StateHasChanged();
+            return;
+        }
+
+        Requests = requests;
+        StateHasChanged();
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

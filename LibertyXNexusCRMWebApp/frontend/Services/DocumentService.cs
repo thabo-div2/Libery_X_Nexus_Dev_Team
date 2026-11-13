@@ -17,10 +17,13 @@ namespace frontend.Services
     /// <param name="VisibleToClient">Whether the client can view/download the document.</param>
     /// <param name="UploadedBy">Username who uploaded the document.</param>
     /// <param name="UpdatedAt">Last update timestamp, if any.</param>
+    /// <param name="ClientName">The client's full name (only sent with the advisor's document list).</param>
+    /// <param name="PolicyName">The policy's name (only sent with the advisor's document list).</param>
     public record DocumentSummary(
-    int DocumentId, int ClientId, int PolicyId, string FileName, string ContentType,
+    int DocumentId, int ClientId, int? PolicyId, string FileName, string ContentType,
     long FileSizeBytes, string DocumentType, bool VisibleToClient, string? UploadedBy,
-    string? SignatureStatus, DateTime? UpdateAt);
+    string? SignatureStatus, DateTime? UpdateAt,
+    string? ClientName = null, string? PolicyName = null);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>
@@ -245,7 +248,7 @@ namespace frontend.Services
         /// <param name="contentType">MIME type of the file.</param>
         /// <param name="fileBytes">Raw file bytes.</param>
         /// <param name="visibleToClient">Whether the client can see the uploaded document.</param>
-        public async Task<(DocumentSummary? Document, string? Error)> UploadAsync(int clientId, int policyId, DocumentType documentType, string uploadedby, string fileName, string contentType, byte[] fileBytes, bool visibleToClient = false)
+        public async Task<(DocumentSummary? Document, string? Error)> UploadAsync(int clientId, int? policyId, DocumentType documentType, string uploadedby, string fileName, string contentType, byte[] fileBytes, bool visibleToClient = false)
         {
             try
             {
@@ -253,10 +256,15 @@ namespace frontend.Services
                 using var content = new MultipartFormDataContent();
 
                 content.Add(new StringContent(clientId.ToString()), "ClientId");
-                content.Add(new StringContent(policyId.ToString()), "PolicyId");
+                if (policyId.HasValue) content.Add(new StringContent(policyId.Value.ToString()), "PolicyId");
                 content.Add(new StringContent(documentType.ToString()), "DocumentType");
                 content.Add(new StringContent(visibleToClient.ToString()), "VisibleToClient");
-                content.Add(new StringContent(uploadedby), "UploadedBy");
+
+                // The API fills this in from the login, so only send it when there is something to send.
+                if (!string.IsNullOrWhiteSpace(uploadedby))
+                {
+                    content.Add(new StringContent(uploadedby), "UploadedBy");
+                }
 
                 var fileContent = new ByteArrayContent(fileBytes);
                 // Ensure a default content type if none provided
@@ -321,6 +329,44 @@ namespace frontend.Services
                         string.IsNullOrWhiteSpace(result.Url)
                     ? (null, "The API did not return a download url.")
                     : (result.Url, null);
+            }
+            catch (HttpRequestException)
+            {
+                return (null, "Can't reach the server.");
+            }
+            catch (Exception ex)
+            {
+                return (null, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Sets a document's signature status: "Awaiting", "Signed" or "NotRequired". Advisor only.
+        /// </summary>
+        /// <param name="documentId">Document id.</param>
+        /// <param name="signatureStatus">The new status.</param>
+        /// <returns>Tuple of the updated document (or null) and error message (or null).</returns>
+        public async Task<(DocumentSummary? Document, string? Error)> SetSignatureStatusAsync(int documentId, string signatureStatus)
+        {
+            try
+            {
+                var response = await _http.PutAsJsonAsync($"documents/{documentId}/signature/{signatureStatus}", new { });
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return (null, "That document could not be found.");
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (null, await ReadErrorAsync(response));
+                }
+
+                var document = await response.Content.ReadFromJsonAsync<DocumentSummary>();
+
+                return document is null
+                    ? (null, "The API returned an empty document.")
+                    : (document, null);
             }
             catch (HttpRequestException)
             {

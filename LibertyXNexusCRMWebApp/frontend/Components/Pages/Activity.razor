@@ -1,0 +1,235 @@
+﻿@page "/activity"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject ActivityService ActivityApi
+@inject CurrentUserService CurrentUser
+
+<PageTitle>Activity | Nexus</PageTitle>
+
+@* A record of what the advisor changed and when: clients, policies, application steps and documents. *@
+
+<div class="activity-page">
+
+    <header class="activity-header">
+
+        <div class="activity-heading">
+            <h1>Activity</h1>
+            <p>A record of what you changed and when. Times are shown in your local time.</p>
+        </div>
+
+        <div class="header-actions">
+
+            <div class="search-box" role="search">
+                <input aria-label="Search activity"
+                       type="search"
+                       placeholder="Search activity"
+                       @bind="SearchText"
+                       @bind:event="oninput" />
+            </div>
+
+            <NotificationBell />
+
+        </div>
+
+    </header>
+
+    <main class="activity-content">
+
+        @if (IsLoading)
+        {
+            <div class="activity-empty">
+                <strong>Loading...</strong>
+                <span>Please wait while your activity is retrieved.</span>
+            </div>
+        }
+        else if (!string.IsNullOrWhiteSpace(LoadError))
+        {
+            <div class="activity-empty">
+                <strong>Unable to load your activity</strong>
+                <span>@LoadError</span>
+                <button type="button" class="nx-btn nx-btn-secondary" @onclick="LoadAsync">Try again</button>
+            </div>
+        }
+        else if (Items.Count == 0)
+        {
+            <div class="activity-empty">
+                <strong>No activity yet</strong>
+                <span>Changes you make to clients, policies and documents will appear here.</span>
+            </div>
+        }
+        else
+        {
+            var visible = VisibleItems;
+
+            <section class="activity-card">
+                <div class="activity-toolbar">
+                    <div><h2>Recent activity <span class="activity-count">@visible.Count</span></h2><p>Latest 200 records · newest first</p></div>
+                    <div class="activity-controls">
+                        <select class="activity-filter" aria-label="Filter by action" @bind="ActionFilter">
+                            <option value="">All actions</option>
+                            @foreach (var action in Items.Select(i => i.Action).Distinct().OrderBy(a => a))
+                            {
+                                <option value="@action">@ActionLabel(action)</option>
+                            }
+                        </select>
+                        <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" @onclick="LoadAsync">Refresh</button>
+                    </div>
+                </div>
+
+                @if (visible.Count == 0)
+                {
+                    <div class="activity-empty">
+                        <strong>No matching activity</strong>
+                        <span>Try another search or action filter.</span>
+                        <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" @onclick="ClearFilters">Clear filters</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="activity-table-wrap">
+                    <table class="activity-table">
+                        <caption class="visually-hidden">Recent changes and document activity, grouped by date</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Time</th>
+                                <th scope="col">Activity</th>
+                                <th scope="col">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var day in visible.GroupBy(i => i.Timestamp.ToLocalTime().Date))
+                            {
+                                <tr class="activity-date-group"><th colspan="3" scope="rowgroup">@DateLabel(day.Key)<span>@day.Count() @(day.Count() == 1 ? "event" : "events")</span></th></tr>
+                                @foreach (var item in day)
+                                {
+                                    <tr>
+                                        <td class="activity-when"><time datetime="@item.Timestamp.ToString("O")">@item.Timestamp.ToLocalTime().ToString("HH:mm")</time></td>
+                                        <td><div class="activity-action"><span class="activity-mark @ActionClass(item.Action)" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="@ActionPath(item.Action)" /></svg></span><div><strong>@Describe(item)</strong><span class="activity-record">@(string.IsNullOrWhiteSpace(item.Entity) ? "Account" : item.Entity)@(item.EntityId is int id ? $" #{id}" : "")</span></div></div></td>
+                                        <td class="activity-details">@(string.IsNullOrWhiteSpace(item.Details) ? "—" : item.Details)</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    </div>
+                }
+
+            </section>
+        }
+
+    </main>
+
+</div>
+
+@code {
+    private List<ActivityItem> Items = new();
+    private bool IsLoading = true;
+    private string? LoadError;
+    private string SearchText = string.Empty;
+    private string ActionFilter = string.Empty;
+
+    private List<ActivityItem> VisibleItems
+    {
+        get
+        {
+            var term = SearchText.Trim();
+
+            return Items
+                .Where(i => string.IsNullOrEmpty(ActionFilter) || i.Action == ActionFilter)
+                .Where(i => term.Length == 0 || Describe(i).Contains(term, StringComparison.OrdinalIgnoreCase)
+                    || (i.Details ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase)
+                    || i.Entity.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(i => i.Timestamp)
+                .ToList();
+        }
+    }
+
+    private void ClearFilters() { SearchText = string.Empty; ActionFilter = string.Empty; }
+
+    private static string DateLabel(DateTime date) => date == DateTime.Today ? "Today" :
+        date == DateTime.Today.AddDays(-1) ? "Yesterday" : date.ToString("dddd, dd MMM yyyy");
+
+    private static string ActionLabel(string action) => action switch
+    {
+        "DocumentUpload" => "Document uploads", "DocumentDownload" => "Document downloads",
+        "PermissionChange" => "Sharing changes", "Login" => "Sign-ins", "Logout" => "Sign-outs",
+        _ => action
+    };
+
+    private static string ActionClass(string action) => action switch
+    {
+        "Create" => "action-create", "Delete" => "action-delete",
+        "DocumentUpload" or "DocumentDownload" => "action-document",
+        _ => "action-update"
+    };
+
+    private static string ActionPath(string action) => action switch
+    {
+        "Create" => "M12 5v14 M5 12h14",
+        "Delete" => "M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13 M10 10v7 M14 10v7",
+        "DocumentUpload" => "M12 16V4 M7 9l5-5 5 5 M4 16v4h16v-4",
+        "DocumentDownload" => "M12 4v12 M7 11l5 5 5-5 M4 16v4h16v-4",
+        "Login" or "Logout" => "M14 4h6v16h-6 M3 12h12 M10 7l5 5-5 5",
+        _ => "M4 20l4-1L20 7l-3-3L5 16z M14 7l3 3"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        IsLoading = true;
+        LoadError = null;
+
+        try
+        {
+            await CurrentUser.EnsureRestoredAsync();
+
+            if (CurrentUser.Id is null || !CurrentUser.IsAdvisor)
+            {
+                LoadError = "You need to be signed in as an advisor to see the activity log.";
+                return;
+            }
+
+            var (items, error) = await ActivityApi.GetRecentAsync();
+
+            if (items is null)
+            {
+                LoadError = error ?? "Your activity couldn't be loaded.";
+                return;
+            }
+
+            Items = items;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// "Create" on a "Client" becomes "Created client".
+    /// </summary>
+    private static string Describe(ActivityItem item)
+    {
+        var entity = string.IsNullOrWhiteSpace(item.Entity) ? "record" : item.Entity.ToLowerInvariant();
+
+        return item.Action switch
+        {
+            "Create" => $"Created {entity}",
+            "Update" => $"Updated {entity}",
+            "Delete" => $"Deleted {entity}",
+            "Login" => "Signed in",
+            "Logout" => "Signed out",
+            "DocumentUpload" => "Uploaded document",
+            "DocumentDownload" => "Downloaded document",
+            "PermissionChange" => "Changed document sharing",
+            _ => $"{item.Action} {entity}"
+        };
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

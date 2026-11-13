@@ -10,7 +10,7 @@ namespace frontend.Services
     /// <summary>
     /// A conversation in the advisor's list.
     /// </summary>
-    public record ConversationSummary(int ClientId, string ClientName, string? LastMessage, DateTime? LastMessageAt);
+    public record ConversationSummary(int ClientId, string ClientName, string? LastMessage, DateTime? LastMessageAt, int UnreadCount = 0);
 
     /// <summary>
     /// Sends and gets chat messages.
@@ -91,7 +91,7 @@ namespace frontend.Services
                 var response = await _http.PostAsJsonAsync("Message", new { ClientId = clientId, AdvisorId = advisorId, Text = text });
                 if (!response.IsSuccessStatusCode)
                 {
-                    return $"The server reported an error (status {(int)response.StatusCode}).";
+                    return await ReadSendErrorAsync(response);
                 }
 
                 _notifier.NotifyMessageSent(clientId);
@@ -105,6 +105,56 @@ namespace frontend.Services
             {
                 return $"Something went wrong: {ex.Message}";
             }
+        }
+
+        /// <summary>
+        /// Gets how many messages the signed-in user hasn't read yet. Returns 0 if it can't be loaded,
+        /// because a missing badge is better than an error in the menu.
+        /// </summary>
+        public async Task<int> GetUnreadCountAsync()
+        {
+            try
+            {
+                var result = await _http.GetFromJsonAsync<UnreadCountResponse>("Message/unread-count");
+                return result?.Count ?? 0;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        private record UnreadCountResponse(int Count);
+
+        /// <summary>
+        /// Pulls the API's own message out of a failed send, e.g. "Your advisor is out of office right now...",
+        /// so the client is told why the message didn't go.
+        /// </summary>
+        private static async Task<string> ReadSendErrorAsync(HttpResponseMessage response)
+        {
+            try
+            {
+                var body = await response.Content.ReadAsStringAsync();
+
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    using var json = System.Text.Json.JsonDocument.Parse(body);
+
+                    if (json.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object
+                        && json.RootElement.TryGetProperty("message", out var message)
+                        && message.ValueKind == System.Text.Json.JsonValueKind.String
+                        && !string.IsNullOrWhiteSpace(message.GetString()))
+                    {
+                        return message.GetString()!;
+                    }
+                }
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                // Not JSON, so fall through to the plain message below.
+            }
+
+            return $"The server reported an error (status {(int)response.StatusCode}).";
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.RateLimiting;
 using API.DTOs.Documents;
 using API.Identity;
+using API.Repositories.Interfaces;
 using API.Services.Implementations;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,8 @@ namespace API.Controllers
         private readonly IClientService _clientService;
         private readonly IPolicyService _policyService;
         private readonly INotificationService _notificationService;
+        private readonly IDocumentRequestService _documentRequestService;
+        private readonly IAuditLogRepository _auditLogRepository;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -32,12 +35,14 @@ namespace API.Controllers
         /// <param name="clientService"></param>
         /// <param name="policyService"></param>
         /// <param name="notificationService"></param>
-        public DocumentsController(IDocumentService documentService, IClientService clientService, IPolicyService policyService, INotificationService notificationService)
+        public DocumentsController(IDocumentService documentService, IClientService clientService, IPolicyService policyService, INotificationService notificationService, IDocumentRequestService documentRequestService, IAuditLogRepository auditLogRepository)
         {
             documentService_ = documentService;
             _clientService = clientService;
             _policyService = policyService;
             _notificationService = notificationService;
+            _documentRequestService = documentRequestService;
+            _auditLogRepository = auditLogRepository;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -90,6 +95,29 @@ namespace API.Controllers
                 NotificationType.DocumentUploaded,
                 $"Your advisor shared a document with you: {fileName}.",
                 "/client-documents");
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Records what was done to a document in the activity log.
+        /// Logging must never break the request, so any failure here is ignored.
+        /// </summary>
+        private async Task LogAsync(AuditActionType action, int documentId, string details)
+        {
+            try
+            {
+                await _auditLogRepository.LogAsync(
+                    userId: IsAdvisor ? CurrentAdvisorId : CurrentClientId,
+                    userRole: IsAdvisor ? UserRole.FinancialAdviser : UserRole.RegisteredClient,
+                    actionType: action,
+                    entityAffected: "Document",
+                    entityId: documentId,
+                    details: details);
+            }
+            catch (Exception)
+            {
+                // Ignore - the action itself worked.
+            }
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -220,7 +248,7 @@ namespace API.Controllers
         /// Uploads a new document for a specific client.
         /// Advisors can upload for any of their own clients and choose whether the client can see it.
         /// Clients can only upload for themselves; their uploads are always visible to them, and if they
-        /// don't pick a policy the document is filed under their first policy. The advisor gets a notification.
+        /// choose General documents, it is saved without a policy. The advisor gets a notification.
         /// The uploaded file must be sent as multipart/form-data, and the request size limit is set to 30 MB.
         /// </summary>
         /// <param name="request"></param>
@@ -254,18 +282,6 @@ namespace API.Controllers
                     return Forbid();
                 }
 
-                // Every document has to belong to a policy, so fall back to the client's first one.
-                if (request.PolicyId <= 0)
-                {
-                    var policies = await _policyService.GetForClientAsync(request.ClientId);
-                    var firstPolicy = policies.FirstOrDefault();
-                    if (firstPolicy is null)
-                    {
-                        return BadRequest(new { message = "You need a policy on your profile before you can upload documents. Please contact your advisor." });
-                    }
-                    request.PolicyId = firstPolicy.PolicyId;
-                }
-
                 // Clients should always be able to see what they uploaded themselves.
                 request.VisibleToClient = true;
 
@@ -293,6 +309,8 @@ namespace API.Controllers
                 return Conflict(new { message = ex.Message });
             }
 
+            // The repository saves the document and completes its matching request in one transaction.
+
             // Tell the other side about the new document. The file is already saved,
             // so a failed notification shouldn't turn the upload into an error.
             try
@@ -315,6 +333,8 @@ namespace API.Controllers
             {
                 // Ignore - the upload itself worked.
             }
+
+            await LogAsync(AuditActionType.DocumentUpload, created.DocumentId, $"Uploaded {created.FileName} for client {request.ClientId}.");
 
             return CreatedAtAction(nameof(GetById), new { id = created.DocumentId }, created);
         }
@@ -345,6 +365,8 @@ namespace API.Controllers
             try
             {
                 var uri = await documentService_.GetDownloadUriAsync(id);
+                await LogAsync(AuditActionType.DocumentDownload, id, $"Downloaded {document.FileName} (client {document.ClientId}).");
+
                 return Ok(new { url = uri.ToString() });
             }
             catch (KeyNotFoundException ex)
@@ -393,6 +415,71 @@ namespace API.Controllers
                 }
             }
 
+            await LogAsync(
+                AuditActionType.PermissionChange,
+                id,
+                request.VisibleToClient
+                    ? $"Shared {document.FileName} with client {document.ClientId}."
+                    : $"Hid {document.FileName} from client {document.ClientId}.");
+
+            return Ok(updated);
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Sets a document's signature status. The advisor asks for a signature (Awaiting), signs it off
+        /// once the signed copy is back (Signed), or clears the request (NotRequired).
+        /// The client is told when a signature is asked for on a document they can see.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        [HttpPut("{id:int}/signature/{status}")]
+        [Authorize(Roles = AppRoles.Advisor)]
+        public async Task<ActionResult<DocumentDto>> SetSignatureStatus(int id, SignatureStatus status)
+        {
+            if (!Enum.IsDefined(status))
+            {
+                return BadRequest(new { message = "That signature status is not recognised." });
+            }
+
+            var document = await documentService_.GetByIdAsync(id);
+            if (document is null || !await CanAccessClientAsync(document.ClientId))
+            {
+                return NotFound(new { message = $"Document {id} was not found." });
+            }
+
+            DocumentDto updated;
+            try
+            {
+                updated = await documentService_.SetSignatureStatusAsync(id, status);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
+            // Only tell the client when a signature is newly asked for, and only if they can open the document.
+            if (status == SignatureStatus.Awaiting
+                && document.SignatureStatus != nameof(SignatureStatus.Awaiting)
+                && document.VisibleToClient)
+            {
+                try
+                {
+                    await _notificationService.NotifyClientAsync(
+                        document.ClientId,
+                        NotificationType.PendingAction,
+                        $"Your advisor needs your signature on {document.FileName}.",
+                        "/client-documents");
+                }
+                catch (Exception)
+                {
+                    // Ignore - the status change itself worked.
+                }
+            }
+
+            await LogAsync(AuditActionType.Update, id, $"Set the signature status of {document.FileName} to {status}.");
+
             return Ok(updated);
         }
 
@@ -415,6 +502,12 @@ namespace API.Controllers
             }
 
             var deleted = await documentService_.DeleteAsync(id);
+
+            if (deleted)
+            {
+                await LogAsync(AuditActionType.Delete, id, $"Deleted {document.FileName} (client {document.ClientId}).");
+            }
+
             return deleted ? NoContent() : NotFound(new { message = $"Document {id} was not found" });
         }
     }

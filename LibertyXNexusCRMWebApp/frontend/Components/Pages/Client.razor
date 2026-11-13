@@ -98,6 +98,20 @@
 
                         <div class="progress-body">
 
+                            @* A client with more than one policy picks which application to look at. *@
+                            @if (ClientCases.Count > 1)
+                            {
+                                <div class="progress-policy-picker">
+                                    <label class="nx-label" for="progress-policy">Policy</label>
+                                    <select id="progress-policy" class="nx-input" value="@SelectedCaseId" @onchange="OnProgressPolicyChanged">
+                                        @foreach (var policyCase in ClientCases)
+                                        {
+                                            <option value="@policyCase.CaseId">@(string.IsNullOrWhiteSpace(policyCase.PolicyName) ? $"Policy {policyCase.PolicyId}" : policyCase.PolicyName)</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+
                             @if (ApplicationSteps.Count > 0)
                             {
                                 <div class="progress-list">
@@ -170,38 +184,10 @@
 
                         <div class="documents-body">
 
-                            @if (Documents.Count > 0)
+                            @if (CurrentUser.Id is int requestClientId)
                             {
-                                <div class="document-list">
-
-                                    @foreach (var document in Documents)
-                                    {
-                                        <div class="document-row">
-
-                                            <span class="document-name">
-                                                @document.Name
-                                            </span>
-
-                                            <span class="document-status @GetDocumentStatusClass(document.Status)">
-                                                <span class="status-dot"></span>
-
-                                                @document.Status
-                                            </span>
-
-                                        </div>
-                                    }
-
-                                </div>
+                                <RequestedDocuments @ref="RequestedList" ClientId="requestClientId" />
                             }
-                            else
-                            {
-                                <div class="empty-state document-empty">
-
-                                    <span>No document information available</span>
-
-                                </div>
-                            }
-
 
                             <!-- Upload document -->
                             @if (CurrentUser.Id is int uploadClientId)
@@ -427,6 +413,11 @@
 
     private List<ApplicationStep> ApplicationSteps { get; set; } = new();
 
+    // Every case the client has: one per policy. SelectedCaseId is the one whose steps are showing.
+    private List<CaseSummary> ClientCases { get; set; } = new();
+
+    private int SelectedCaseId { get; set; }
+
     private List<ClientDocument> Documents { get; set; } = new();
 
     private List<ClientPolicy> Policies { get; set; } = new();
@@ -514,7 +505,7 @@
 
         if (documentError is null)
         {
-            Documents = documents
+            Documents = (documents ?? new())
                 .Select(document => new ClientDocument
                 {
                     Name = document.FileName,
@@ -538,10 +529,14 @@
 
         if (caseError is null)
         {
-            var currentCase = cases.FirstOrDefault();
+            // Oldest policy first, and keep showing the same one if the page reloads its data.
+            ClientCases = cases.OrderBy(c => c.CreatedAt).ThenBy(c => c.CaseId).ToList();
+
+            var currentCase = ClientCases.FirstOrDefault(c => c.CaseId == SelectedCaseId) ?? ClientCases.FirstOrDefault();
 
             if (currentCase is not null)
             {
+                SelectedCaseId = currentCase.CaseId;
                 ApplicationSteps = BuildApplicationSteps(currentCase);
                 CurrentApplicationStatus = FormatCaseStatus(currentCase.Status);
 
@@ -598,13 +593,42 @@
     }
 
     // Show a freshly uploaded document in the list straight away.
-    private void OnDocumentUploaded(DocumentSummary document)
+    private RequestedDocuments? RequestedList;
+
+    private async Task OnDocumentUploaded(DocumentSummary document)
     {
         Documents.Insert(0, new ClientDocument
         {
             Name = document.FileName,
             Status = "Received"
         });
+        if (RequestedList is not null)
+        {
+            await RequestedList.RefreshAsync();
+        }
+    }
+
+    /// <summary>
+    /// Shows the progress of the policy the client picked.
+    /// </summary>
+    private void OnProgressPolicyChanged(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e.Value?.ToString(), out var caseId))
+        {
+            return;
+        }
+
+        var picked = ClientCases.FirstOrDefault(c => c.CaseId == caseId);
+
+        if (picked is null)
+        {
+            return;
+        }
+
+        SelectedCaseId = picked.CaseId;
+        ApplicationSteps = BuildApplicationSteps(picked);
+        CurrentApplicationStatus = FormatCaseStatus(picked.Status);
+        CurrentCaseNumber = picked.CaseId.ToString();
     }
 
     private static List<ApplicationStep> BuildApplicationSteps(CaseSummary currentCase)

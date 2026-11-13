@@ -107,10 +107,17 @@
                         </button>
                     }
                 }
+                else if (!string.IsNullOrEmpty(LoadError))
+                {
+                    <div class="conversation-empty" role="alert">
+                        <span>Conversations couldn't be loaded. Please try again.</span>
+                        <button type="button" @onclick="LoadConversations">Retry</button>
+                    </div>
+                }
                 else
                 {
                     <div class="conversation-empty">
-                        <span>No conversations yet</span>
+                        <span>No clients assigned yet. Add a client to start a conversation.</span>
                     </div>
                 }
 
@@ -287,6 +294,7 @@
 
             <div class="panel-heading">
                 <h2>Notifications</h2>
+                <span class="notification-total">@NotificationItems.Count</span>
             </div>
 
             <div class="notification-list">
@@ -295,13 +303,14 @@
                 {
                     @foreach (var notification in NotificationItems)
                     {
-                        <div class="system-notification">
+                        <div class="system-notification @(notification.IsUnread ? "is-unread" : "")">
 
                             <div class="notification-type-icon @GetNotificationIconClass(notification.Type)">
-                                @GetNotificationIcon(notification.Type)
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="@GetNotificationIconPath(notification.Type)" /></svg>
                             </div>
 
                             <div class="notification-details">
+                                <div class="notification-meta"><span class="notification-category">@GetNotificationCategory(notification.Type)</span>@if (notification.IsUnread) { <span class="notification-new">New</span> }</div>
 
                                 <strong>
                                     @notification.Title
@@ -428,11 +437,13 @@
         }
 
         var feed = await Notifications.GetFeedForAdvisorAsync(advisorId);
+        SystemAlertCount = feed.Items.Count(i => !i.IsRead && !i.IsReminder && i.Type != "MessageReceived");
 
         NotificationItems = feed.Items.Select(i => new NotificationItem
             {
                 Title = i.Message,
                 TimeText = i.IsReminder? "Reminder": i.CreatedAt.ToLocalTime().ToString("d MMM, HH:mm"),
+                IsUnread = !i.IsRead && !i.IsReminder,
                 Type = i.Type
             }).ToList();       
     }
@@ -469,12 +480,15 @@
             Preview = c.LastMessage ?? "No messages yet",
             TimeText = c.LastMessageAt.HasValue ? c.LastMessageAt.Value.ToLocalTime().ToString("d MMM, HH:mm") : string.Empty,
             CaseStatus = string.Empty,
-            UnreadCount = 0
+            UnreadCount = c.UnreadCount
         }).ToList();
+        UnreadMessageCount = ConversationThreads.Sum(c => c.UnreadCount);
     }
 
     private async Task SelectConversationAsync(int conversationId)
     {
+        var opened = ConversationThreads.FirstOrDefault(thread => thread.Id == conversationId);
+
         var isDifferentConversation = SelectedConversationId != conversationId;
         SelectedConversationId = conversationId;
 
@@ -497,6 +511,11 @@
         SelectedCaseStatus = selectedConversation.CaseStatus;
 
         var (messages, messageError) = await MessageStore.GetConversationAsync(conversationId);
+        if (messageError is null && opened is not null)
+        {
+            opened.UnreadCount = 0;
+            UnreadMessageCount = ConversationThreads.Sum(c => c.UnreadCount);
+        }
 
         ChatMessages = messages.Select(m => new ChatMessageItem
         {
@@ -690,31 +709,35 @@
     }
 
 
-    private static string GetNotificationIcon(string? type)
+    private static string GetNotificationCategory(string? type) => type switch
     {
-        return type?.ToLowerInvariant() switch
-        {
-            "warning" => "△",
-            "document" => "▤",
-            "calendar" => "□",
-            "success" => "✓",
-            _ => "•"
-        };
-    }
+        "DocumentUploaded" => "Document",
+        "MeetingBooked" or "MeetingConfirmed" or "MeetingCancelled" or "MeetingRescheduled" => "Meeting",
+        "MessageReceived" or "QueryReceived" or "QueryResponded" => "Message",
+        "CaseUpdated" => "Case update",
+        "ClientRegistered" => "New client",
+        "PendingAction" => "Action needed",
+        _ => "Update"
+    };
 
-
-    private static string GetNotificationIconClass(string? type)
+    private static string GetNotificationIconClass(string? type) => GetNotificationCategory(type) switch
     {
-        return type?.ToLowerInvariant() switch
-        {
-            "warning" => "notification-warning",
-            "document" => "notification-document",
-            "calendar" => "notification-calendar",
-            "success" => "notification-success",
-            _ => "notification-neutral"
-        };
-    }
+        "Document" => "notification-document",
+        "Meeting" => "notification-calendar",
+        "Action needed" => "notification-warning",
+        "New client" => "notification-success",
+        _ => "notification-neutral"
+    };
 
+    private static string GetNotificationIconPath(string? type) => GetNotificationCategory(type) switch
+    {
+        "Document" => "M14 2H6v20h12V6z M14 2v5h5 M8 12h8 M8 16h6",
+        "Meeting" => "M4 5h16v16H4z M8 3v4 M16 3v4 M4 10h16 M8 14h2 M14 14h2",
+        "Message" => "M4 4h16v12H9l-5 4z M8 8h8 M8 12h5",
+        "Action needed" => "M12 3 2 21h20z M12 9v5 M12 17h.01",
+        "New client" => "M15 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M19 8v6 M16 11h6",
+        _ => "M5 12l4 4L19 6"
+    };
 
     public class ConversationThread
     {
@@ -755,6 +778,7 @@
 
     public class NotificationItem
     {
+        public bool IsUnread { get; set; }
         public string Title { get; set; } = string.Empty;
 
         public string TimeText { get; set; } = string.Empty;

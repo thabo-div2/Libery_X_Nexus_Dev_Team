@@ -14,6 +14,7 @@ namespace API.Services.Implementations
         private readonly IMeetingRepository meetingRepository_;
         private readonly IClientRepository clientRepository_;
         private readonly INotificationService notificationService_;
+        private readonly IAvailabilityService availabilityService_;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -22,11 +23,12 @@ namespace API.Services.Implementations
         /// <param name="meetingRepository"></param>
         /// <param name="clientRepository"></param>
         /// <param name="notificationService"></param>
-        public MeetingService(IMeetingRepository meetingRepository, IClientRepository clientRepository, INotificationService notificationService)
+        public MeetingService(IMeetingRepository meetingRepository, IClientRepository clientRepository, INotificationService notificationService, IAvailabilityService availabilityService)
         {
             meetingRepository_ = meetingRepository;
             clientRepository_ = clientRepository;
             notificationService_ = notificationService;
+            availabilityService_ = availabilityService;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -104,7 +106,15 @@ namespace API.Services.Implementations
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<MeetingDto> BookAsync(BookMeetingRequest request) 
+        public Task<MeetingDto> BookAsync(BookMeetingRequest request)
+            => BookAsync(request, byAdvisor: false);
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Books a meeting. A client can only book inside the advisor's working hours;
+        /// the advisor can book whenever they like, since it is their own time.
+        /// </summary>
+        public async Task<MeetingDto> BookAsync(BookMeetingRequest request, bool byAdvisor)
         {
             ValidateFutureDate(request.MeetingDate);
 
@@ -113,6 +123,11 @@ namespace API.Services.Implementations
              if (client is null) {
                  throw new KeyNotFoundException($"Client {request.ClientId} was not found");
              }
+
+            if (!byAdvisor && client.AdvisorId is int hoursAdvisorId)
+            {
+                await availabilityService_.EnsureMeetingWithinHoursAsync(hoursAdvisorId, request.MeetingDate, request.DurationMinutes);
+            }
 
             if (client.AdvisorId is int bookingAdvisorId)
             {
@@ -185,6 +200,12 @@ namespace API.Services.Implementations
 
             // Need the client up front now, so we know which advisor's calendar to check.
             var client = await clientRepository_.GetByIdAsync(meeting.ClientId);
+
+            // A client can only move a meeting to a time inside the advisor's working hours.
+            if (!byAdvisor && client?.AdvisorId is int rescheduleHoursAdvisorId)
+            {
+                await availabilityService_.EnsureMeetingWithinHoursAsync(rescheduleHoursAdvisorId, request.NewMeetingDate, newDuration);
+            }
 
             if (client?.AdvisorId is int reschedulingAdvisorId)
             {

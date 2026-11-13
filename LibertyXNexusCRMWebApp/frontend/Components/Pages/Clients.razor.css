@@ -471,6 +471,86 @@
     gap: var(--space-2);
 }
 
+/* Policies: one row per policy, the picked one shows its steps below */
+.policy-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.policy-row {
+    width: 100%;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-white);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--text-xs);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+    .policy-row:hover:not(:disabled) {
+        border-color: var(--color-primary);
+    }
+
+    .policy-row:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+
+    .policy-row.is-selected {
+        border-color: var(--color-primary);
+        background: var(--color-blue-60);
+    }
+
+    .policy-row:disabled {
+        cursor: not-allowed;
+    }
+
+.policy-row-name {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.policy-row-progress {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+}
+
+.policy-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.policy-form,
+.policy-remove-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-page-bg);
+    font-size: var(--text-xs);
+}
+
+.case-progress .nx-alert {
+    margin: 0;
+}
+
 .case-step-list {
     list-style: none;
     margin: var(--space-1) 0 0;
@@ -525,6 +605,24 @@
 
 .case-step-check:hover .case-step-box {
     border-color: var(--color-blue-790);
+}
+
+/* A step that can't be ticked yet because an earlier one isn't done. */
+.case-step-row.is-locked:hover {
+    background: transparent;
+}
+
+.case-step-row.is-locked .case-step-check {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+    .case-step-row.is-locked .case-step-check:hover .case-step-box {
+        border-color: var(--color-slate-180);
+    }
+
+.case-step-row.is-complete .case-step-check {
+    cursor: default;
 }
 
 .case-step-input:checked + .case-step-box {

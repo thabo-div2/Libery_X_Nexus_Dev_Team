@@ -754,4 +754,12 @@
     font-weight: var(--weight-medium);
 }
 
+/* Policy picker above the application progress steps */
+.progress-policy-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-bottom: var(--space-4);
+}
+
 /* ================================ EndOfFile ============================== */

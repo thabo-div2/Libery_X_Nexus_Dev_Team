@@ -5,6 +5,7 @@
 @using frontend.Services
 @inject DocumentService Document
 @inject ClientService ClientApi
+@inject PolicyService PolicyApi
 @inject CurrentUserService CurrentUser
 @inject NavigationManager Navigation
 
@@ -21,14 +22,18 @@
 
         <div class="header-actions">
 
-            @* Hidden: this search box was not connected to anything, so typing in it did nothing.
-               Bring it back once it filters this page (the Clients and FAQ pages have working examples). *@
-            @* <div class="search-box" role="search">
-                <span class="search-icon" aria-hidden="true">⌕</span>
+            @if (IsAdvisorView)
+            {
+                <div class="search-box" role="search">
+                    <span class="search-icon" aria-hidden="true">⌕</span>
 
-                <input aria-label="Search clients, cases, documents" type="text"
-                       placeholder="Search clients, cases, documents" />
-            </div> *@
+                    <input aria-label="Search documents by client or file name"
+                           type="search"
+                           placeholder="Search by client or file name"
+                           @bind="SearchText"
+                           @bind:event="oninput" />
+                </div>
+            }
 
             <NotificationBell />
 
@@ -45,7 +50,16 @@
 
                 <div class="card-header">
 
-                    <h2>All documents</h2>
+                    <h2>@(IsAdvisorView ? "Documents by client" : "All documents")</h2>
+
+                    @if (IsAdvisorView && DocumentItems.Count > 0 && !IsSearching)
+                    {
+                        <button type="button"
+                                class="visibility-toggle-button"
+                                @onclick="ToggleAllGroups">
+                            @(AnyGroupExpanded ? "Collapse all" : "Expand all")
+                        </button>
+                    }
 
                 </div>
 
@@ -66,69 +80,163 @@
                     }
                     else if (DocumentItems.Count > 0)
                     {
-                        @foreach (var document in DocumentItems)
+                        var clientGroups = VisibleGroups;
+
+                        if (clientGroups.Count == 0)
                         {
-                            <div class="document-row">
-
-                                <div class="document-main">
-
-                                    <span class="document-icon">▤</span>
-
-                                    <div class="document-info">
-
-                                        <strong>@document.Name</strong>
-
-                                        <span>
-                                            @if (!string.IsNullOrWhiteSpace(document.Type))
-                                            {
-                                                <span>@document.Type</span>
-                                            }
-
-                                            @if (!string.IsNullOrWhiteSpace(document.DateText))
-                                            {
-                                                <span> · @document.DateText</span>
-                                            }
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="document-actions">
-
-                                    @if (!string.IsNullOrWhiteSpace(document.Status))
-                                    {
-                                        <span class="document-status @GetStatusClass(document.Status)">
-                                            <span class="status-dot"></span>
-                                            @document.Status
-                                        </span>
-                                    }
-
-                                    @if (CurrentUser.IsAdvisor)
-                                    {
-                                        <button type="button"
-                                            class="visibility-toggle-button"
-                                            title="@(document.VisibleToClient ? "Hide from client" : "Share with client")"
-                                            aria-label="@(document.VisibleToClient ? "Hide from client" : "Share with client")"
-                                                @onclick="() => ToggleVisibilityAsync(document.Id)">
-                                            @(document.VisibleToClient ? "Hide" : "Share")
-                                            </button>
-                                    }
-
-                                    <button type="button"
-                                            class="download-button"
-                                            title="Download"
-                                            aria-label="Download document"
-                                            @onclick="() => DownloadDocumentAsync(document.Id)">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                    </button>
-
-                                </div>
-
+                            <div class="empty-state">
+                                <strong>No matching documents</strong>
+                                <span>Nothing matches "@SearchText". Try a client name or a file name.</span>
                             </div>
                         }
-                        
+                        else
+                        {
+                            foreach (var clientGroup in clientGroups)
+                            {
+                                var expanded = IsExpanded(clientGroup.ClientId);
+
+                                <section class="client-group" @key="clientGroup.ClientId">
+
+                                    @* Clients only ever see their own documents, so only the advisor gets a heading per client. *@
+                                    @if (IsAdvisorView)
+                                    {
+                                        <button type="button"
+                                                class="client-group-header"
+                                                aria-expanded="@(expanded ? "true" : "false")"
+                                                @onclick="() => ToggleGroup(clientGroup.ClientId)">
+                                            <span class="client-group-chevron @(expanded ? "is-open" : "")" aria-hidden="true">›</span>
+                                            <span class="client-group-name">@clientGroup.ClientName</span>
+                                            <span class="client-group-count">@FormatCount(clientGroup.Documents.Count)</span>
+                                        </button>
+                                    }
+
+                                    @if (expanded)
+                                    {
+                                        <div class="client-group-body">
+                                            @foreach (var document in clientGroup.Documents)
+                                            {
+                                                <div class="document-row">
+
+                                                    <div class="document-main">
+
+                                                        <span class="document-icon">▤</span>
+
+                                                        <div class="document-info">
+
+                                                            <strong>@document.Name</strong>
+
+                                                            <span>
+                                                                @if (!string.IsNullOrWhiteSpace(document.Type))
+                                                                {
+                                                                    <span>@document.Type</span>
+                                                                }
+
+                                                                @if (!string.IsNullOrWhiteSpace(document.PolicyName))
+                                                                {
+                                                                    <span> · @document.PolicyName</span>
+                                                                }
+
+                                                                @if (!string.IsNullOrWhiteSpace(document.DateText))
+                                                                {
+                                                                    <span> · @document.DateText</span>
+                                                                }
+                                                            </span>
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                    <div class="document-actions">
+
+                                                        @if (!string.IsNullOrWhiteSpace(document.Status))
+                                                        {
+                                                            <span class="document-status @GetStatusClass(document.Status)">
+                                                                <span class="status-dot"></span>
+                                                                @document.Status
+                                                            </span>
+                                                        }
+
+                                                        @if (IsAdvisorView && document.SignatureStatus == "Awaiting")
+                                                        {
+                                                            <button type="button"
+                                                                    class="visibility-toggle-button"
+                                                                    title="Mark this document as signed"
+                                                                    disabled="@IsSavingSignature"
+                                                                    @onclick="@(() => SetSignatureAsync(document.Id, "Signed"))">
+                                                                Sign off
+                                                            </button>
+                                                        }
+                                                        else if (IsAdvisorView && document.SignatureStatus != "Signed")
+                                                        {
+                                                            <button type="button"
+                                                                    class="visibility-toggle-button"
+                                                                    title="Mark this document as waiting for a signature"
+                                                                    disabled="@IsSavingSignature"
+                                                                    @onclick="@(() => SetSignatureAsync(document.Id, "Awaiting"))">
+                                                                Needs signature
+                                                            </button>
+                                                        }
+
+                                                        @if (CurrentUser.IsAdvisor)
+                                                        {
+                                                            <button type="button"
+                                                                class="visibility-toggle-button"
+                                                                title="@(document.VisibleToClient ? "Hide from client" : "Share with client")"
+                                                                aria-label="@(document.VisibleToClient ? "Hide from client" : "Share with client")"
+                                                                    @onclick="() => ToggleVisibilityAsync(document.Id)">
+                                                                @(document.VisibleToClient ? "Hide" : "Share")
+                                                                </button>
+                                                        }
+
+                                                        <button type="button"
+                                                                class="download-button"
+                                                                title="Download"
+                                                                aria-label="Download document"
+                                                                @onclick="() => DownloadDocumentAsync(document.Id)">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                        </button>
+
+                                                        @if (IsAdvisorView)
+                                                        {
+                                                            @if (ConfirmDeleteId == document.Id)
+                                                            {
+                                                                <button type="button"
+                                                                        class="visibility-toggle-button delete-confirm-button"
+                                                                        disabled="@(DeletingId is not null)"
+                                                                        @onclick="() => DeleteDocumentAsync(document.Id)">
+                                                                    @(DeletingId == document.Id ? "Deleting…" : "Confirm delete")
+                                                                </button>
+
+                                                                <button type="button"
+                                                                        class="visibility-toggle-button"
+                                                                        disabled="@(DeletingId is not null)"
+                                                                        @onclick="CancelDelete">
+                                                                    Keep
+                                                                </button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <button type="button"
+                                                                        class="visibility-toggle-button"
+                                                                        title="Delete this document permanently"
+                                                                        disabled="@(DeletingId is not null)"
+                                                                        @onclick="() => AskToDelete(document.Id)">
+                                                                    Delete
+                                                                </button>
+                                                            }
+                                                        }
+
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+
+                                </section>
+                            }
+                        }
                     }
                     else
                     {
@@ -153,6 +261,58 @@
 
 
         <aside class="side-column">
+
+            @if (IsAdvisorView)
+            {
+                <section class="side-card upload-card">
+
+                    <div class="side-card-header">
+                        <h2>Upload a document</h2>
+                    </div>
+
+                    <div class="upload-card-body">
+
+                        @if (!string.IsNullOrWhiteSpace(UploadError))
+                        {
+                            <p class="nx-alert nx-alert-danger" role="alert">@UploadError</p>
+                        }
+
+                        @if (UploadClients.Count == 0)
+                        {
+                            <div class="small-empty-state">
+                                Add a client before uploading documents.
+                            </div>
+                        }
+                        else
+                        {
+                            <label class="nx-label" for="upload-client">Client</label>
+
+                            <select id="upload-client"
+                                    class="nx-input"
+                                    value="@UploadClientId"
+                                    @onchange="OnUploadClientChangedAsync">
+                                <option value="0">Choose a client</option>
+                                @foreach (var client in UploadClients)
+                                {
+                                    <option value="@client.ClientId">@GetClientName(client)</option>
+                                }
+                            </select>
+
+                            @if (UploadClientId > 0 && !IsLoadingUploadPolicies)
+                            {
+                                @* The key gives each client a fresh uploader, so a picked file never carries over. *@
+                                <DocumentUploader @key="UploadClientId"
+                                                  ClientId="UploadClientId"
+                                                  Policies="UploadPolicies"
+                                                  ForAdvisor="true"
+                                                  OnUploaded="OnDocumentUploadedAsync" />
+                            }
+                        }
+
+                    </div>
+
+                </section>
+            }
 
             <section class="side-card signature-card">
 
@@ -181,6 +341,26 @@
                                             <span> — @item.DocumentName</span>
                                         }
                                     </span>
+
+                                </div>
+
+                                <div class="signature-actions">
+
+                                    <button type="button"
+                                            class="signature-button signature-button-primary"
+                                            title="Mark this document as signed"
+                                            disabled="@IsSavingSignature"
+                                            @onclick="@(() => SetSignatureAsync(item.DocumentId, "Signed"))">
+                                        Sign off
+                                    </button>
+
+                                    <button type="button"
+                                            class="signature-button"
+                                            title="This document doesn't need a signature"
+                                            disabled="@IsSavingSignature"
+                                            @onclick="@(() => SetSignatureAsync(item.DocumentId, "NotRequired"))">
+                                        Not needed
+                                    </button>
 
                                 </div>
 
@@ -215,6 +395,68 @@
 
     private string? ErrorMessage { get; set; }
 
+    /// <summary>
+    /// True when the advisor is looking at the page, which turns on grouping by client and the search box.
+    /// </summary>
+    private bool IsAdvisorView { get; set; }
+
+    private string SearchText { get; set; } = string.Empty;
+
+    private bool IsSearching => !string.IsNullOrWhiteSpace(SearchText);
+
+    // Clients the advisor has collapsed. Kept by client id so it survives the list reloading.
+    private readonly HashSet<int> CollapsedClients = new();
+
+    // Upload panel (advisor only).
+    private List<ClientProfile> UploadClients { get; set; } = new();
+
+    private List<PolicySummary> UploadPolicies { get; set; } = new();
+
+    private int UploadClientId { get; set; }
+
+    private bool IsLoadingUploadPolicies { get; set; }
+
+    private string? UploadError { get; set; }
+
+    // The document the advisor has been asked to confirm deleting, and the one being deleted.
+    private int? ConfirmDeleteId { get; set; }
+
+    private int? DeletingId { get; set; }
+
+    // True while a signature change is saving, so a second click can't send it twice.
+    private bool IsSavingSignature { get; set; }
+
+    /// <summary>
+    /// The documents that match the search, grouped by client and sorted by client name.
+    /// </summary>
+    private List<ClientDocumentGroup> VisibleGroups
+    {
+        get
+        {
+            var term = (SearchText ?? string.Empty).Trim();
+
+            IEnumerable<DocumentItem> items = DocumentItems;
+
+            if (term.Length > 0)
+            {
+                items = items.Where(d => MatchesSearch(d, term));
+            }
+
+            return items
+                .GroupBy(d => d.ClientId)
+                .Select(g => new ClientDocumentGroup
+                {
+                    ClientId = g.Key,
+                    ClientName = g.First().ClientName,
+                    Documents = g.ToList()
+                })
+                .OrderBy(g => g.ClientName, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+    }
+
+    private bool AnyGroupExpanded => DocumentItems.Any(d => !CollapsedClients.Contains(d.ClientId));
+
 
     /// <summary>
     /// Later, load documents, templates and documents awaiting
@@ -223,13 +465,17 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadDocumentsAsync();
+
+        if (IsAdvisorView)
+        {
+            await LoadUploadClientsAsync();
+        }
     }
 
     private async Task LoadDocumentsAsync()
     {
         IsLoading = true;
         ErrorMessage = null;
-        var clientNames = new Dictionary<int, string>();
 
         try
         {
@@ -245,14 +491,12 @@
 
             if (CurrentUser.IsAdvisor)
             {
+                IsAdvisorView = true;
                 result = await Document.GetForAdvisorAsync(CurrentUser.Id.Value);
-                var clientResult = await ClientApi.SearchAsync(null, null);
-                clientNames = clientResult.Clients.ToDictionary(
-                    c => c.ClientId,
-                    c => string.IsNullOrWhiteSpace(c.FullName) ? $"{c.FirstName} {c.LastName}".Trim() : c.FullName);
             }
             else if (CurrentUser.IsClient)
             {
+                IsAdvisorView = false;
                 result = await Document.GetForClientAsync(CurrentUser.Id.Value);
             }
             else
@@ -269,15 +513,19 @@
 
             var documents = result.Documents ?? new List<DocumentSummary>();
 
-            // All documents
+            // All documents. The API sends the client and policy names with the advisor's list.
             DocumentItems = documents
                 .Select(document => new DocumentItem
                 {
                     Id = document.DocumentId,
+                    ClientId = document.ClientId,
+                    ClientName = string.IsNullOrWhiteSpace(document.ClientName) ? $"Client {document.ClientId}" : document.ClientName,
+                    PolicyName = document.PolicyName ?? string.Empty,
                     Name = document.FileName,
                     Type = document.DocumentType,
                     DateText = FormatDate(document.UpdateAt),
                     Status = GetDocumentStatus(document),
+                    SignatureStatus = document.SignatureStatus ?? string.Empty,
                     VisibleToClient = document.VisibleToClient
                 })
                 .ToList();
@@ -286,14 +534,11 @@
                 .Where(d => d.SignatureStatus == "Awaiting")
                 .Select(d => new SignatureItem
                 {
-                    ClientName = clientNames.TryGetValue(d.ClientId, out var name) ? name : $"Client {d.ClientId}",
+                    DocumentId = d.DocumentId,
+                    ClientName = string.IsNullOrWhiteSpace(d.ClientName) ? $"Client {d.ClientId}" : d.ClientName,
                     DocumentName = d.FileName
                 })
                 .ToList();
-
-            Console.WriteLine($"[Documents] total={documents.Count} " +
-                $"seeded={documents.Count(d => d.UploadedBy == "seed-data")} " +
-                $"statuses=[{string.Join(", ", documents.Select(d => d.SignatureStatus ?? "null").Distinct())}]");
         }
         catch (Exception ex)
         {
@@ -303,6 +548,118 @@
         {
             IsLoading = false;
         }
+    }
+
+    /// <summary>
+    /// A document matches when the search text appears in its file name, client, type or policy.
+    /// </summary>
+    private static bool MatchesSearch(DocumentItem document, string term)
+    {
+        return document.Name.Contains(term, StringComparison.OrdinalIgnoreCase)
+            || document.ClientName.Contains(term, StringComparison.OrdinalIgnoreCase)
+            || document.Type.Contains(term, StringComparison.OrdinalIgnoreCase)
+            || document.PolicyName.Contains(term, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// A client's documents show unless the advisor collapsed them. Searching opens every
+    /// group so a match is never hidden.
+    /// </summary>
+    private bool IsExpanded(int clientId)
+    {
+        return !IsAdvisorView || IsSearching || !CollapsedClients.Contains(clientId);
+    }
+
+    private void ToggleGroup(int clientId)
+    {
+        if (!CollapsedClients.Remove(clientId))
+        {
+            CollapsedClients.Add(clientId);
+        }
+    }
+
+    private void ToggleAllGroups()
+    {
+        if (AnyGroupExpanded)
+        {
+            foreach (var clientId in DocumentItems.Select(d => d.ClientId).Distinct())
+            {
+                CollapsedClients.Add(clientId);
+            }
+        }
+        else
+        {
+            CollapsedClients.Clear();
+        }
+    }
+
+    /// <summary>
+    /// Loads the advisor's clients for the upload panel's client list.
+    /// </summary>
+    private async Task LoadUploadClientsAsync()
+    {
+        var (clients, error) = await ClientApi.SearchAsync(null, null);
+
+        UploadError = error;
+        UploadClients = clients
+            .OrderBy(client => GetClientName(client), StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Every document is filed under one of the client's policies, so load them when a client is picked.
+    /// </summary>
+    private async Task OnUploadClientChangedAsync(ChangeEventArgs e)
+    {
+        UploadError = null;
+        UploadPolicies = new List<PolicySummary>();
+        UploadClientId = int.TryParse(e.Value?.ToString(), out var clientId) ? clientId : 0;
+
+        if (UploadClientId <= 0)
+        {
+            return;
+        }
+
+        IsLoadingUploadPolicies = true;
+
+        try
+        {
+            var (policies, error) = await PolicyApi.GetForClientAsync(UploadClientId);
+
+            // The advisor may have picked a different client while this one was loading.
+            if (UploadClientId != clientId)
+            {
+                return;
+            }
+
+            UploadError = error;
+            UploadPolicies = policies;
+        }
+        finally
+        {
+            IsLoadingUploadPolicies = false;
+        }
+    }
+
+    /// <summary>
+    /// Shows the new document in the list straight away, with its client's group open.
+    /// </summary>
+    private async Task OnDocumentUploadedAsync(DocumentSummary document)
+    {
+        CollapsedClients.Remove(document.ClientId);
+        await LoadDocumentsAsync();
+    }
+
+    private static string GetClientName(ClientProfile client)
+    {
+        return string.IsNullOrWhiteSpace(client.FullName)
+            ? $"{client.FirstName} {client.LastName}".Trim()
+            : client.FullName;
+    }
+
+    private static string FormatCount(int count)
+    {
+        return count == 1 ? "1 document" : $"{count} documents";
     }
 
     private static string FormatDate(DateTime? date)
@@ -370,9 +727,99 @@
     }
 
 
+    public class ClientDocumentGroup
+    {
+        public int ClientId { get; set; }
+
+        public string ClientName { get; set; } = string.Empty;
+
+        public List<DocumentItem> Documents { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Changes a document's signature status: "Awaiting" asks for a signature, "Signed" signs it off
+    /// and "NotRequired" clears the request. Then reloads so the list and the side panel agree.
+    /// </summary>
+    private async Task SetSignatureAsync(int documentId, string signatureStatus)
+    {
+        if (IsSavingSignature)
+        {
+            return;
+        }
+
+        IsSavingSignature = true;
+
+        try
+        {
+            var result = await Document.SetSignatureStatusAsync(documentId, signatureStatus);
+
+            if (!string.IsNullOrWhiteSpace(result.Error))
+            {
+                ErrorMessage = result.Error;
+                return;
+            }
+
+            await LoadDocumentsAsync();
+        }
+        finally
+        {
+            IsSavingSignature = false;
+        }
+    }
+
+
+    private void AskToDelete(int documentId)
+    {
+        ConfirmDeleteId = documentId;
+        ErrorMessage = null;
+    }
+
+    private void CancelDelete()
+    {
+        ConfirmDeleteId = null;
+    }
+
+    /// <summary>
+    /// Deletes the document and its stored file. It only runs after the advisor confirms, because it can't be undone.
+    /// </summary>
+    private async Task DeleteDocumentAsync(int documentId)
+    {
+        if (DeletingId is not null)
+        {
+            return;
+        }
+
+        DeletingId = documentId;
+
+        try
+        {
+            var error = await Document.DeleteAsync(documentId);
+
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                ErrorMessage = error;
+                return;
+            }
+
+            ConfirmDeleteId = null;
+            await LoadDocumentsAsync();
+        }
+        finally
+        {
+            DeletingId = null;
+        }
+    }
+
+
     public class DocumentItem
     {
         public int Id { get; set; }
+
+        public int ClientId { get; set; }
+
+        public string ClientName { get; set; } = string.Empty;
+
+        public string PolicyName { get; set; } = string.Empty;
 
         public string Name { get; set; } = string.Empty;
 
@@ -382,11 +829,16 @@
 
         public string Status { get; set; } = string.Empty;
 
+        /// <summary>The raw status from the API: "Awaiting", "Signed" or "NotRequired".</summary>
+        public string SignatureStatus { get; set; } = string.Empty;
+
         public bool VisibleToClient { get; set; }
     }
 
     public class SignatureItem
     {
+        public int DocumentId { get; set; }
+
         public string ClientName { get; set; } = string.Empty;
 
         public string DocumentName { get; set; } = string.Empty;

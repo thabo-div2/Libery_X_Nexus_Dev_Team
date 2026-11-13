@@ -10,7 +10,10 @@ public partial class Program
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
-            .AddInteractiveServerComponents();
+            .AddInteractiveServerComponents(options =>
+            {
+                options.DetailedErrors = builder.Environment.IsDevelopment();
+            });
 
         // Add services for protected session storage and token management
         builder.Services.AddScoped<ProtectedSessionStorage>();
@@ -57,6 +60,10 @@ public partial class Program
         builder.Services.AddScoped<FaqService>();
         builder.Services.AddScoped<MarketInformationService>();
         builder.Services.AddScoped<MathService>();
+        builder.Services.AddScoped<AvailabilityService>();
+        builder.Services.AddScoped<DocumentRequestService>();
+        builder.Services.AddScoped<ClientNoteService>();
+        builder.Services.AddScoped<ActivityService>();
 
         builder.Services.AddSingleton<MessageNotifier>();
 

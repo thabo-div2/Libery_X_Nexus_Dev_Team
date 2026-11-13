@@ -4,6 +4,7 @@
 @using frontend.Services
 @inject FaqService FaqStore
 @inject MeetingService MeetingStore
+@inject MessageService MessageStore
 @inject ClientService ClientDirectory
 @inject CurrentUserService CurrentUser
 
@@ -126,19 +127,29 @@
 
                             <span class="handoff-icon">♧</span>
 
-                            <strong>HANDED TO YOUR ADVISER</strong>
+                            <strong>@(HandoffSent ? "HANDED TO YOUR ADVISER" : "NOT SENT TO YOUR ADVISER YET")</strong>
 
                         </div>
 
-                        <p>
-                            This question requires personalised financial advice.
-                            Your adviser can help you with the next step.
-                        </p>
+                        @if (HandoffSent)
+                        {
+                            <p>
+                                This question needs personalised financial advice, so it was sent to your adviser.
+                                Their reply will appear in your messages.
+                            </p>
+                        }
+                        else
+                        {
+                            <p>
+                                This question needs personalised financial advice, but it couldn't be sent to your adviser.
+                                @HandoffNote
+                            </p>
+                        }
 
                         @* Meetings are requested on the Messages page (the advisor calendar is advisor-only). *@
                         <a href="/client-messages"
                            class="book-call-button">
-                            Book a call
+                            Open messages
                             <span>→</span>
                         </a>
 
@@ -315,6 +326,11 @@
 
     private bool IsHandedToAdviser { get; set; }
 
+    // Whether the question the assistant couldn't answer reached the adviser, and why not if it didn't.
+    private bool HandoffSent { get; set; }
+
+    private string? HandoffNote { get; set; }
+
     private List<AssistantConversationItem> ConversationItems { get; set; } = new();
 
     private int? ClientId;
@@ -407,7 +423,43 @@
         }
 
         await TypeAssistantReply(replyText);
+
+        if (handoff)
+        {
+            await PassQuestionToAdviserAsync(text);
+        }
+
         IsHandedToAdviser = handoff;
+    }
+
+    /// <summary>
+    /// Sends the question the assistant couldn't answer to the adviser as a message, so "handed to
+    /// your adviser" is actually true. If it can't be sent (for example the adviser is out of hours),
+    /// the client is told why instead.
+    /// </summary>
+    private async Task PassQuestionToAdviserAsync(string question)
+    {
+        HandoffSent = false;
+        HandoffNote = null;
+
+        if (ClientId is null || AdvisorId is null)
+        {
+            HandoffNote = "You don't have an adviser assigned yet.";
+            return;
+        }
+
+        var body = $"Question from the Nexus assistant: {question}";
+
+        // Messages are limited to 4000 characters.
+        if (body.Length > 4000)
+        {
+            body = body[..4000];
+        }
+
+        var error = await MessageStore.SendAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, body);
+
+        HandoffSent = error is null;
+        HandoffNote = error;
     }
 
     private async Task TypeAssistantReply(string text)

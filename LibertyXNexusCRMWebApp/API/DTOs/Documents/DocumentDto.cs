@@ -4,7 +4,17 @@
     {
         public int DocumentId { get; set; }
         public int ClientId { get; set; }
-        public int PolicyId { get; set; }
+
+        /// <summary>
+        /// The client's full name. Only filled in where the client was loaded with the document (the advisor's list).
+        /// </summary>
+        public string? ClientName { get; set; }
+        public int? PolicyId { get; set; }
+
+        /// <summary>
+        /// The policy's name. Only filled in where the policy was loaded with the document (the advisor's list).
+        /// </summary>
+        public string? PolicyName { get; set; }
         public string FileName { get; set; } = string.Empty;
         public string ContentType { get; set; } = string.Empty;
         public long FileSizeBytes { get; set; }

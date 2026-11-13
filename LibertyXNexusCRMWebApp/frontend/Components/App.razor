@@ -22,6 +22,10 @@
 <body>
     <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
     <ReconnectModal />
+    <div id="blazor-error-ui" role="alert">
+        The app encountered an error and stopped responding. Reload to reconnect.
+        <a href="" class="reload">Reload app</a>
+    </div>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
     <script src="@Assets["js/scroll.js"]"></script>
 </body>

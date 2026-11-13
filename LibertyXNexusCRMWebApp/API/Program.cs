@@ -171,6 +171,14 @@ namespace API
             builder.Services.AddScoped<IFaqService, FaqService>();
             builder.Services.AddScoped<IMathService, MathService>();
 
+            // Advisor working hours. The clock is injected so the "is the advisor in right now" check can be tested.
+            builder.Services.AddSingleton(TimeProvider.System);
+            builder.Services.AddScoped<IAdvisorHoursRepository, AdvisorHoursRepository>();
+            builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
+            builder.Services.AddScoped<IDocumentRequestService, DocumentRequestService>();
+            builder.Services.AddScoped<IClientCleanupService, ClientCleanupService>();
+            builder.Services.AddScoped<IClientNoteService, ClientNoteService>();
+
             builder.Services.AddMemoryCache();
 
             builder.Services.AddHealthChecks()

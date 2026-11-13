@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.JSInterop;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace frontend.Services
 {
@@ -12,6 +15,7 @@ namespace frontend.Services
         private readonly ProtectedLocalStorage _localStorage;
         private readonly TokenStorageService _tokens;
         private bool _restoreAttempted;
+        private readonly SemaphoreSlim _restoreLock = new(1, 1);
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -137,6 +141,20 @@ namespace frontend.Services
         /// <returns></returns>
         public async Task EnsureRestoredAsync()
         {
+            // Navigation and sidebar counters can restore the same session simultaneously.
+            await _restoreLock.WaitAsync();
+            try
+            {
+                await RestoreCoreAsync();
+            }
+            finally
+            {
+                _restoreLock.Release();
+            }
+        }
+
+        private async Task RestoreCoreAsync()
+        {
             if (Id is not null)
             {
                 // Already signed in: make sure the login hasn't run out. If it has, sign out
@@ -184,9 +202,16 @@ namespace frontend.Services
                 // Mark restoration complete only after storage was accessible.
                 _restoreAttempted = true;
             }
-            catch(InvalidOperationException)
+            catch (Exception ex) when (ex is CryptographicException or JsonException)
             {
-                // Browser storage isn't available; the user will just need to log in again.
+                // A stale/corrupt saved session must not terminate the interactive circuit.
+                await _tokens.ClearTokenAsync();
+                await SignOutAsync();
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or JSException or OperationCanceledException)
+            {
+                // A reconnect or initial render may temporarily make browser storage unavailable.
+                _restoreAttempted = false;
             }
         }
 
