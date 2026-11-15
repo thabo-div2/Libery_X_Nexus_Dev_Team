@@ -67,6 +67,8 @@
     protected override async Task OnParametersSetAsync()
     {
         if (LoadedId == PolicyId && LoadedIssuedAt == IssuedAt) return;
+        Message = null;
+        Policy = null;
         LoadedId = PolicyId;
         LoadedIssuedAt = IssuedAt;
         await LoadAsync();

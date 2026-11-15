@@ -1,4 +1,6 @@
-﻿@using frontend.Services
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@using frontend.Services
 @using Shared.Models.Enums
 @inject DocumentRequestService RequestApi
 @inject PolicyService PolicyApi
@@ -8,7 +10,9 @@
 
 <div class="doc-requests">
 
-    <span class="doc-requests-title">Document requests</span>
+    <div class="request-heading"><span class="doc-requests-title">Document requests</span>
+        <button type="button" @ref="RequestButton" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@(IsLoading || IsSaving)" @onclick="OpenRequestAsync">Request document</button>
+    </div>
 
     @if (IsLoading)
     {
@@ -34,13 +38,13 @@
             <ul class="doc-requests-list">
                 @foreach (var item in group)
                 {
-                    <li class="doc-requests-row @(item.IsFulfilled ? "is-done" : "")" @key="item.DocumentRequestId">
+                    <li class="doc-requests-row @(item.IsFulfilled && item.ReviewStatus == "Accepted" ? "is-done" : "")" @key="item.DocumentRequestId">
 
                         <div class="doc-requests-info">
                             <strong>@DocumentTypeNames.Format(item.DocumentType)</strong>
                             <span>
                                 @DescribeDate(item)
-                                @if (!string.IsNullOrWhiteSpace(item.Note))
+                                @if (!item.IsFulfilled && !string.IsNullOrWhiteSpace(item.Note))
                                 {
                                     <span> · @item.Note</span>
                                 }
@@ -49,7 +53,7 @@
 
                         @if (item.IsFulfilled)
                         {
-                            <span class="doc-requests-badge">Received</span>
+                            <span class="doc-requests-badge">@(item.ReviewStatus == "Accepted" ? "Accepted" : "Received · awaiting review")</span>
                         }
                         else
                         {
@@ -59,8 +63,10 @@
                                     @onclick="() => CancelAsync(item.DocumentRequestId)">
                                 @(RemovingId == item.DocumentRequestId ? "Removing…" : "Remove")
                             </button>
+                            @if (item.ReviewStatus == "NeedsReplacement") { <span class="wf-error">Needs replacement: @item.ReviewNote</span> }
                         }
 
+                        @if (item.FulfilledDocumentId is int documentId) { <DocumentReviewPanel @key="documentId" DocumentId="documentId" OnReviewed="LoadAsync" /> }
                     </li>
                 }
             </ul>
@@ -68,7 +74,15 @@
             }
         }
 
+    }
+</div>
+
+<dialog @ref="RequestDialog" class="request-modal" aria-labelledby="@DialogTitleId" @oncancel="CloseRequestAsync" @oncancel:preventDefault="true">
+    <div class="request-modal-heading"><div><h2 id="@DialogTitleId">Request a document</h2><p>Choose a policy or general documents, then tell the client what you need.</p></div>
+        <button type="button" class="request-close" aria-label="Close document request" disabled="@IsSaving" @onclick="CloseRequestAsync">&#215;</button>
+    </div>
         <div class="doc-requests-form">
+            @if (FormError is not null) { <p class="nx-alert nx-alert-danger" role="alert">@FormError</p> }
             <label class="nx-label">Request for
                 <select class="nx-input" @bind="NewPolicyId" disabled="@IsSaving">
                     <option value="">General documents (no policy)</option>
@@ -79,12 +93,12 @@
                 </select>
             </label>
 
-            <select class="nx-input" aria-label="Document to request" @bind="NewType" disabled="@IsSaving">
+            <label class="nx-label">Document type<select class="nx-input" aria-label="Document to request" @bind="NewType" disabled="@IsSaving">
                 @foreach (var type in RequestableTypes)
                 {
                     <option value="@type">@DocumentTypeNames.Format(type.ToString())</option>
                 }
-            </select>
+            </select></label>
 
             <input type="text"
                    class="nx-input"
@@ -94,21 +108,21 @@
                    @bind="NewNote"
                    disabled="@IsSaving" />
 
-            <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@IsSaving" @onclick="CreateAsync">
+            <div class="request-modal-actions"><button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@IsSaving" @onclick="CloseRequestAsync">Cancel</button>
+            <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@(IsSaving || IsLoading)" @onclick="CreateAsync">
                 @(IsSaving ? "Requesting…" : "Request document")
-            </button>
+            </button></div>
 
         </div>
-    }
-
-</div>
+</dialog>
+<RealtimeRefresh OnChanged="LoadAsync" />
 
 @code {
     /// <summary>The client whose requests are shown.</summary>
     [Parameter, EditorRequired] public int ClientId { get; set; }
 
     // The documents an advisor would realistically ask a client for.
-    private static readonly DocumentType[] RequestableTypes =
+    internal static readonly DocumentType[] RequestableTypes =
     {
         DocumentType.CertifiedIdCopy,
         DocumentType.ProofOfAddress,
@@ -118,6 +132,29 @@
         DocumentType.Other
     };
 
+    private ElementReference RequestDialog, RequestButton;
+    private IJSObjectReference? DialogModule;
+    private readonly string DialogTitleId = "request-title-" + Guid.NewGuid().ToString("N");
+    private string? FormError;
+    private async Task OpenRequestAsync()
+    {
+        FormError = null;
+        NewNote = string.Empty;
+        NewPolicyId = null;
+        NewType = DocumentType.CertifiedIdCopy;
+        DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/document-request-dialog.js");
+        await DialogModule.InvokeVoidAsync("open", RequestDialog);
+    }
+    private async Task CloseRequestAsync()
+    {
+        if (IsSaving) return;
+        if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", RequestDialog);
+        await RequestButton.FocusAsync();
+    }
+    public async ValueTask DisposeAsync()
+    {
+        if (DialogModule is not null) try { await DialogModule.DisposeAsync(); } catch (Microsoft.JSInterop.JSDisconnectedException) { } catch (TaskCanceledException) { }
+    }
     private int? NewPolicyId;
     private List<PolicySummary> Policies = new();
     private static string ScopeLabel(DocumentRequestSummary request) => request.PolicyId is int id
@@ -182,11 +219,11 @@
             return;
         }
 
-        Error = null;
+        FormError = null;
 
         if (Requests.Any(r => !r.IsFulfilled && r.DocumentType == NewType.ToString() && r.PolicyId == NewPolicyId))
         {
-            Error = "You have already requested that document for the selected policy or general documents.";
+            FormError = "You have already requested that document for the selected policy or general documents.";
             return;
         }
 
@@ -205,11 +242,14 @@
 
             if (created is null)
             {
-                Error = error ?? "The request couldn't be saved. Please try again.";
+                FormError = error ?? "The request couldn't be saved. Please try again.";
                 return;
             }
 
+            Requests.RemoveAll(r => r.DocumentRequestId == created.DocumentRequestId);
             Requests.Insert(0, created);
+            if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", RequestDialog);
+            await RequestButton.FocusAsync();
             NewNote = string.Empty;
         }
         finally

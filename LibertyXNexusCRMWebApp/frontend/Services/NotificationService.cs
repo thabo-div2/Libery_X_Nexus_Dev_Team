@@ -17,7 +17,7 @@ namespace frontend.Services
     /// <summary>
     /// The notifications and unread count.
     /// </summary>
-    public record NotificationFeed(int UnreadCount, List<NotificationItem> Items);
+    public record NotificationFeed(int UnreadCount, List<NotificationItem> Items, string? Error = null);
 
     /// <summary>
     /// Gets and updates notifications.
@@ -46,15 +46,15 @@ namespace frontend.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new NotificationFeed(0, new List<NotificationItem>());
+                    return new NotificationFeed(0, new List<NotificationItem>(), "Notifications could not be loaded. Please try again.");
                 }
 
                 var feed = await response.Content.ReadFromJsonAsync<NotificationFeed>();
-                return feed ?? new NotificationFeed(0, new List<NotificationItem>());
+                return feed ?? new NotificationFeed(0, new List<NotificationItem>(), "Notifications could not be loaded. Please try again.");
             }
             catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
             {
-                return new NotificationFeed(0, new List<NotificationItem>());
+                return new NotificationFeed(0, new List<NotificationItem>(), "Notifications could not be loaded. Please try again.");
             }
         }
 
@@ -66,7 +66,7 @@ namespace frontend.Services
         /// <summary>
         /// Gets the signed-in user's unread count.
         /// </summary>
-        public async Task<int> GetUnreadCountAsync(int userId, bool isClient)
+        public async Task<int> GetUnreadCountAsync(int userId, bool isClient, int previousCount = 0)
         {
             try
             {
@@ -74,14 +74,14 @@ namespace frontend.Services
                 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return 0;
+                    return previousCount;
                 }
 
                 return await response.Content.ReadFromJsonAsync<int>();
             }
             catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
             {
-                return 0;
+                return previousCount;
             }
         }
 

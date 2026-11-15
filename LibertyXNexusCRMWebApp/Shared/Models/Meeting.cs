@@ -37,6 +37,9 @@ namespace Shared.Models
         [MaxLength(2000)]
         public string? Notes { get; set; }
 
+        [MaxLength(2000)] public string? SharedSummary { get; set; }
+        public DateTime? SummaryUpdatedAt { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }
     }

@@ -21,22 +21,24 @@
    ================================ */
 
 .advisor-header {
-    min-height: 84px;
+    min-height: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     gap: var(--space-8);
-    padding: var(--space-5) var(--space-6);
-    background: var(--color-white);
-    border-bottom: 1px solid var(--color-border-light);
+    padding: var(--space-8) var(--space-8) var(--space-2);
+    background: transparent;
+    flex-wrap: wrap;
 }
 
 .header-greeting h1 {
     margin: 0 0 var(--space-1);
     color: var(--color-text);
-    font-size: var(--text-lg);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.25px;
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
 }
 
 .header-greeting p {
@@ -67,9 +69,9 @@
     .search-box input {
         width: 100%;
         height: 100%;
-        padding: 0 var(--space-4) 0 var(--space-8);
+        padding: 0 var(--space-4) 0 var(--space-10);
         border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-full);
         outline: none;
         background: var(--color-white);
         color: var(--color-slate-770);
@@ -89,20 +91,20 @@
 
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 16px;
     z-index: 2;
     color: var(--color-text-muted);
     font-size: var(--text-lg);
 }
 
 .notification-button {
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-full);
     background: var(--color-white);
     color: var(--color-blue-790);
     cursor: pointer;
@@ -114,13 +116,13 @@
     }
 
 .new-client-button {
-    height: 38px;
+    height: 42px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
     padding: 0 var(--space-5);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-full);
     background: var(--color-primary);
     color: var(--color-white);
     text-decoration: none;
@@ -177,7 +179,7 @@
    ================================ */
 
 .advisor-content {
-    padding: var(--space-5) var(--space-6) var(--space-10);
+    padding: var(--space-4) var(--space-8) var(--space-12);
 }
 
 
@@ -870,4 +872,933 @@
 @media (max-width: 650px) {
     .pipeline-card > .card-header { align-items: flex-start; flex-direction: column; }
     .pipeline-filters { display: flex; }
+}
+
+
+/* ================================
+   NEXUS 2.0 DASHBOARD REFRESH
+   Pipeline value leads as a navy hero card; serif figures; roomier table.
+   ================================ */
+
+.advisor-header,
+.advisor-content {
+    max-width: none;
+    margin: 0;
+}
+
+.stats-grid {
+    grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+}
+
+.stat-card {
+    min-height: 168px;
+    justify-content: space-between;
+    padding: var(--space-6);
+    border-color: var(--color-border-light);
+    border-radius: var(--radius-lg);
+}
+
+.stat-label {
+    color: var(--color-text-muted);
+    letter-spacing: 0.14em;
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: var(--text-stat);
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.02em;
+}
+
+/* The last card in the markup is "Value in pipeline"; order moves it to the front */
+.stat-card:last-child {
+    order: -1;
+    border-color: transparent;
+    background: var(--color-sidebar);
+    background-image: radial-gradient(360px 220px at 100% 0%, rgba(240, 138, 75, 0.32), transparent 70%);
+    color: var(--color-white);
+    box-shadow: 0 24px 40px -24px rgba(12, 35, 64, 0.6);
+}
+
+    .stat-card:last-child .stat-label,
+    .stat-card:last-child .stat-change {
+        color: rgba(255, 255, 255, 0.78);
+    }
+
+    .stat-card:last-child .stat-value {
+        color: var(--color-white);
+        font-size: calc(var(--text-stat) * 1.25);
+    }
+
+    .stat-card:last-child .stat-change.positive {
+        color: #9be0b4;
+    }
+
+    .stat-card:last-child .stat-change.negative {
+        color: #ffb4a8;
+    }
+
+.dashboard-grid {
+    gap: var(--space-4);
+}
+
+.right-column {
+    gap: var(--space-4);
+}
+
+.dashboard-card {
+    border-color: var(--color-border-light);
+    border-radius: var(--radius-lg);
+}
+
+.card-header {
+    min-height: 72px;
+    padding: var(--space-5) var(--space-6);
+    border-bottom: none;
+}
+
+    .card-header h2 {
+        font-family: var(--font-display);
+        font-size: 26px;
+        font-weight: var(--weight-regular);
+        letter-spacing: -0.01em;
+    }
+
+.filter-pill {
+    min-height: 36px;
+    padding: 0 var(--space-4);
+    border: none;
+    background: var(--color-page-bg);
+    color: var(--color-text-muted);
+    font-weight: var(--weight-semibold);
+}
+
+    .filter-pill.active {
+        background: var(--color-primary);
+        color: var(--color-white);
+        box-shadow: 0 6px 14px -6px rgba(12, 35, 64, 0.5);
+    }
+
+    .filter-pill:hover:not(.active) {
+        background: var(--color-border);
+    }
+
+.pipeline-table th {
+    height: 44px;
+    padding: 0 var(--space-5);
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-page-bg);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.pipeline-table td {
+    height: 64px;
+    padding: 0 var(--space-5);
+    border-bottom: 1px solid var(--color-border-light);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+}
+
+.pipeline-table tbody tr {
+    transition: background-color var(--transition-fast);
+}
+
+    .pipeline-table tbody tr:hover {
+        background: var(--color-shadow-04);
+    }
+
+.pipeline-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: var(--color-blue-60);
+    color: var(--color-blue-790);
+}
+
+.pipeline-product {
+    color: var(--color-text-muted);
+}
+
+.status-badge {
+    padding: 6px var(--space-3) 6px var(--space-2);
+    gap: var(--space-2);
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+}
+
+.assistant-card {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-sidebar);
+    background-image: radial-gradient(260px 160px at 0% 100%, rgba(240, 138, 75, 0.28), transparent 70%);
+    box-shadow: 0 20px 36px -20px rgba(12, 35, 64, 0.7);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+    .assistant-card:hover {
+        background: var(--color-sidebar);
+        background-image: radial-gradient(260px 160px at 0% 100%, rgba(240, 138, 75, 0.4), transparent 70%);
+        box-shadow: 0 24px 40px -18px rgba(12, 35, 64, 0.8);
+    }
+
+    .assistant-card:active {
+        transform: scale(0.99);
+    }
+
+@media (max-width: 1100px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ================================
+   NEXUS 2.0 DASHBOARD DETAILS
+   Icon tiles, trend pills, sliding institution switch, assistant card.
+   ================================ */
+
+.stat-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.stat-top .stat-label {
+    margin: 0;
+}
+
+.stat-icon {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--color-blue-60);
+    color: var(--color-primary);
+}
+
+.stat-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.stat-card:nth-child(2) .stat-icon {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.stat-card:nth-child(3) .stat-icon {
+    background: var(--color-green-40);
+    color: var(--color-green-690);
+}
+
+.stat-card:last-child .stat-icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    color: var(--color-accent);
+}
+
+.stat-card:last-child .stat-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Trend text becomes a small pill. */
+.stat-change {
+    align-self: flex-start;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-page-bg);
+}
+
+.stat-change.positive {
+    background: var(--color-green-40);
+}
+
+.stat-change.negative {
+    background: var(--color-danger-bg);
+}
+
+.stat-card:last-child .stat-change {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* ---- institution switch: a track with a thumb that slides between options ---- */
+.pipeline-filters {
+    position: relative;
+    isolation: isolate;
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 0;
+    padding: 4px;
+    border-radius: var(--radius-full);
+    background: var(--color-page-bg);
+}
+
+.seg-thumb {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    z-index: 0;
+    width: calc((100% - 8px) / var(--n, 1));
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    box-shadow: 0 8px 16px -8px rgba(12, 35, 64, 0.55);
+    transform: translateX(calc(var(--i, 0) * 100%));
+    transition: transform 360ms cubic-bezier(0.32, 0.72, 0, 1);
+    pointer-events: none;
+}
+
+.filter-pill {
+    position: relative;
+    z-index: 1;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-2) 0 var(--space-4);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    transition: color 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.filter-pill.active {
+    background: transparent;
+    box-shadow: none;
+    color: var(--color-white);
+}
+
+.filter-pill:hover:not(.active) {
+    background: transparent;
+    color: var(--color-text);
+}
+
+.filter-count {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background: var(--color-white);
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums;
+    transition: background 260ms cubic-bezier(0.32, 0.72, 0, 1), color 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.filter-pill.active .filter-count {
+    background: rgba(255, 255, 255, 0.18);
+    color: var(--color-white);
+}
+
+/* ---- assistant card ---- */
+.assistant-card {
+    min-height: 0;
+    padding: var(--space-5) var(--space-4) var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+}
+
+.assistant-text {
+    gap: var(--space-2);
+}
+
+.assistant-text strong {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: var(--weight-regular);
+    line-height: 1.1;
+}
+
+.assistant-text .assistant-sub {
+    color: rgba(255, 255, 255, 0.76);
+    font-size: var(--text-sm);
+    white-space: normal;
+}
+
+.assistant-text .assistant-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-accent);
+    font-size: 11px;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.assistant-eyebrow svg {
+    width: 16px;
+    height: 16px;
+}
+
+.assistant-arrow {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    transition: transform 360ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.assistant-arrow svg {
+    width: 20px;
+    height: 20px;
+}
+
+.assistant-card:hover .assistant-arrow {
+    transform: translate(2px, -2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .seg-thumb,
+    .filter-pill,
+    .filter-count,
+    .assistant-arrow {
+        transition: none;
+    }
+}
+
+/* ================================
+   NEXUS 2.0 MOCKUP PARITY
+   Tray outlines, orange name, new-client plus, chips, footer, institution chart, friendly empty states.
+   ================================ */
+
+/* ---- soft grey tray around cards (double-bezel look, no extra markup) ---- */
+.stats-grid,
+.dashboard-grid,
+.right-column {
+    gap: var(--space-5);
+}
+
+.stat-card:not(:last-child),
+.dashboard-card,
+.right-column ::deep .wf-card {
+    border: 0;
+    box-shadow:
+        0 0 0 6px rgba(12, 35, 64, 0.04),
+        0 0 0 7px rgba(12, 35, 64, 0.06),
+        0 18px 36px -20px rgba(12, 35, 64, 0.24);
+}
+
+.right-column ::deep .wf-card {
+    margin-bottom: 0;
+    border-radius: var(--radius-lg);
+}
+
+/* ---- header ---- */
+.header-eyebrow {
+    display: block;
+    margin-bottom: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.greeting-name {
+    color: var(--color-accent-deep);
+    font-style: italic;
+}
+
+.search-box {
+    height: 48px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.09);
+}
+
+.new-client-button.secondary {
+    height: 48px;
+    padding: 0 var(--space-5);
+    border: 0;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.09);
+    color: var(--color-text);
+}
+
+    .new-client-button.secondary:hover {
+        background: var(--color-white);
+    }
+
+.new-client-primary {
+    height: 48px;
+    gap: var(--space-4);
+    padding: 0 6px 0 var(--space-5);
+    border: 0;
+    box-shadow: 0 12px 24px -12px rgba(12, 35, 64, 0.6);
+}
+
+.new-client-plus {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    transition: transform 360ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+    .new-client-plus svg {
+        width: 18px;
+        height: 18px;
+    }
+
+.new-client-primary:hover .new-client-plus {
+    transform: rotate(90deg);
+}
+
+/* ---- card headings ---- */
+.card-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.card-sub {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-regular);
+}
+
+.card-count {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+.right-column .card-header h2 {
+    font-size: 24px;
+}
+
+/* ---- pipeline rows: institution tile ---- */
+.pipeline-provider {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+}
+
+.inst-chip {
+    min-width: 26px;
+    height: 26px;
+    padding: 0 5px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.02em;
+}
+
+.inst-chip.inst-c0 { background: var(--color-blue-60); color: var(--color-primary); }
+.inst-chip.inst-c1 { background: rgba(240, 138, 75, 0.18); color: var(--color-accent-deep); }
+.inst-chip.inst-c2 { background: var(--color-green-40); color: var(--color-green-690); }
+.inst-chip.inst-c3 { background: var(--color-warning-bg); color: var(--color-warning-text); }
+
+/* ---- pipeline footer ---- */
+.pipeline-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-6) var(--space-4);
+}
+
+.pipeline-footer-count {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+}
+
+.pipeline-footer-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+}
+
+    .pipeline-footer-link svg {
+        width: 16px;
+        height: 16px;
+        transition: transform 360ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .pipeline-footer-link:hover svg {
+        transform: translateX(3px);
+    }
+
+    .pipeline-footer-link:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 3px;
+        border-radius: var(--radius-sm);
+    }
+
+/* ---- friendly empty notes ---- */
+.deadline-list {
+    padding: var(--space-2) var(--space-4) var(--space-4);
+}
+
+.empty-note {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: 18px;
+    background: var(--color-page-bg);
+}
+
+.empty-note-icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-blue-60);
+    color: var(--color-primary);
+}
+
+    .empty-note-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+.empty-note-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+}
+
+    .empty-note-text strong {
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+    .empty-note-text span {
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+    }
+
+/* ---- cases by institution: stacked bar + legend ---- */
+.institution-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-6) var(--space-6);
+}
+
+.institution-bar {
+    display: flex;
+    gap: 3px;
+    height: 14px;
+}
+
+.institution-segment {
+    min-width: 6px;
+    border-radius: 4px;
+}
+
+    .institution-segment:first-child { border-radius: 999px 4px 4px 999px; }
+    .institution-segment:last-child { border-radius: 4px 999px 999px 4px; }
+    .institution-segment:only-child { border-radius: 999px; }
+
+.institution-legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+    .institution-legend li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+    }
+
+.legend-name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+}
+
+.legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 4px;
+}
+
+.legend-count {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+}
+
+.inst-c0 { background: var(--color-primary); }
+.inst-c1 { background: var(--color-accent); }
+.inst-c2 { background: var(--color-green-690); }
+.inst-c3 { background: var(--color-warning-text); }
+
+.inst-chip.inst-c0 { background: var(--color-blue-60); }
+.inst-chip.inst-c1 { background: rgba(240, 138, 75, 0.18); }
+.inst-chip.inst-c2 { background: var(--color-green-40); }
+.inst-chip.inst-c3 { background: var(--color-warning-bg); }
+
+@media (prefers-reduced-motion: reduce) {
+    .new-client-plus,
+    .pipeline-footer-link svg {
+        transition: none;
+    }
+}
+
+/* Search: one frosted pill (the input itself), no inner box or square focus outline. */
+.search-box {
+    height: 48px;
+    background: transparent;
+    box-shadow: none;
+}
+
+    .search-box input,
+    .search-box input:focus,
+    .search-box input:focus-visible {
+        outline: none;
+    }
+
+    .search-box input {
+        padding: 0 var(--space-5) 0 calc(var(--space-5) + 28px);
+        border: 0;
+        background: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.09);
+        transition: background var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+        .search-box input:hover {
+            background: var(--color-white);
+        }
+
+        .search-box input:focus,
+        .search-box input:focus-visible {
+            background: var(--color-white);
+            border: 0;
+            box-shadow: 0 0 0 2px var(--color-primary);
+        }
+
+
+/* ================================ NEXUS 2.0 SEARCH ============================== */
+
+.search-box {
+    position: relative;
+    width: 320px;
+    height: 48px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    box-shadow: none;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-primary) 7%, var(--color-white));
+    color: var(--color-primary);
+    font-size: 0;
+    line-height: 0;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: background-color 260ms cubic-bezier(0.32, 0.72, 0, 1), color 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.search-icon svg {
+    display: block;
+}
+
+.search-box input {
+    width: 100%;
+    height: 100%;
+    padding: 0 var(--space-5) 0 56px;
+    border: 0;
+    border-radius: var(--radius-full);
+    outline: none;
+    background: var(--color-white);
+    box-shadow:
+        0 0 0 1px rgba(12, 35, 64, 0.1),
+        0 10px 22px -16px rgba(12, 35, 64, 0.3);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 13.5px;
+    text-overflow: ellipsis;
+    transition: box-shadow 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.search-box input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+}
+
+.search-box input:hover {
+    background: var(--color-white);
+    box-shadow:
+        0 0 0 1px rgba(12, 35, 64, 0.22),
+        0 12px 24px -16px rgba(12, 35, 64, 0.36);
+}
+
+.search-box input:focus,
+.search-box input:focus-visible {
+    border: 0;
+    outline: none;
+    background: var(--color-white);
+    box-shadow:
+        0 0 0 2px var(--color-primary),
+        0 14px 28px -16px rgba(12, 35, 64, 0.42);
+}
+
+.search-box:focus-within .search-icon {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+@media (max-width: 900px) {
+    .search-box {
+        width: auto;
+        flex: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .search-box {
+        width: 100%;
+        flex-basis: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .search-icon,
+    .search-box input {
+        transition: none;
+    }
+}
+
+/* ================================ NEXUS 2.0 PIPELINE SLIDE ============================== */
+
+/* The thumb glides to the chosen institution with a slight spring; rows slide in after it. */
+.seg-thumb {
+    will-change: transform;
+    transition: transform 460ms cubic-bezier(0.34, 1.32, 0.64, 1);
+}
+
+@keyframes pipeline-row-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pipeline-table tbody tr {
+    animation: pipeline-row-in 420ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.pipeline-table tbody tr:nth-child(2) { animation-delay: 40ms; }
+.pipeline-table tbody tr:nth-child(3) { animation-delay: 80ms; }
+.pipeline-table tbody tr:nth-child(4) { animation-delay: 120ms; }
+.pipeline-table tbody tr:nth-child(5) { animation-delay: 160ms; }
+.pipeline-table tbody tr:nth-child(n+6) { animation-delay: 200ms; }
+
+/* Reduced motion: no row animation, but keep a short slide so the switch still reads as one control. */
+@media (prefers-reduced-motion: reduce) {
+    .seg-thumb {
+        transition: transform 180ms ease-out;
+    }
+
+    .pipeline-table tbody tr {
+        animation: none;
+    }
+}
+
+/* ================================ NEXUS 2.0 PIPELINE DRAG ============================== */
+
+.pipeline-filters {
+    touch-action: pan-y;
+    user-select: none;
+}
+
+.filter-pill.active {
+    cursor: grab;
+}
+
+.pipeline-filters.is-dragging,
+.pipeline-filters.is-dragging .filter-pill {
+    cursor: grabbing;
+}
+
+/* While dragging, the thumb follows the pointer 1:1; text colour follows whichever option it is over. */
+.pipeline-filters.is-dragging .seg-thumb {
+    transition: none;
+}
+
+.pipeline-filters.is-dragging .filter-pill.active:not(.drag-target) {
+    color: var(--color-text-muted);
+}
+
+.pipeline-filters.is-dragging .filter-pill.active:not(.drag-target) .filter-count {
+    background: var(--color-white);
+    color: var(--color-text-muted);
+}
+
+.pipeline-filters.is-dragging .filter-pill.drag-target {
+    color: var(--color-white);
+}
+
+.pipeline-filters.is-dragging .filter-pill.drag-target .filter-count {
+    background: rgba(255, 255, 255, 0.18);
+    color: var(--color-white);
 }

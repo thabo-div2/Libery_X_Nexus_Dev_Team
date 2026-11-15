@@ -165,8 +165,7 @@ namespace API.Services.Implementations
                 return false;
             }
 
-            entity.FulfilledAt = DateTime.UtcNow;
-            entity.FulfilledDocumentId = documentId;
+            WorkflowRules.RecordUpload(document, entity, DateTime.UtcNow);
             await db.SaveChangesAsync();
             return true;
         }
@@ -198,7 +197,10 @@ namespace API.Services.Implementations
             Note = r.Note,
             CreatedAt = r.CreatedAt,
             FulfilledAt = r.FulfilledAt,
-            IsFulfilled = r.FulfilledAt.HasValue
+            IsFulfilled = r.FulfilledAt.HasValue,
+            FulfilledDocumentId = r.FulfilledDocumentId,
+            ReviewStatus = r.ReviewStatus.ToString(),
+            ReviewNote = r.ReviewNote
         };
     }
 }

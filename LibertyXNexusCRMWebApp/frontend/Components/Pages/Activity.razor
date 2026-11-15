@@ -1,9 +1,11 @@
-﻿@page "/activity"
+@page "/activity"
 @layout MainLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
 @inject ActivityService ActivityApi
 @inject CurrentUserService CurrentUser
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <PageTitle>Activity | Nexus</PageTitle>
 
@@ -21,6 +23,7 @@
         <div class="header-actions">
 
             <div class="search-box" role="search">
+                <span class="search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
                 <input aria-label="Search activity"
                        type="search"
                        placeholder="Search activity"
@@ -38,14 +41,19 @@
 
         @if (IsLoading)
         {
-            <div class="activity-empty">
-                <strong>Loading...</strong>
-                <span>Please wait while your activity is retrieved.</span>
-            </div>
+            <section class="activity-card" aria-busy="true">
+                <div class="activity-skeleton" role="status" aria-label="Loading activity">
+                    @for (var row = 0; row < 6; row++)
+                    {
+                        <div class="skeleton-row"><span class="skeleton-dot"></span><span class="skeleton-line"></span><span class="skeleton-line short"></span></div>
+                    }
+                </div>
+            </section>
         }
         else if (!string.IsNullOrWhiteSpace(LoadError))
         {
             <div class="activity-empty">
+                <span class="empty-icon is-error"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg></span>
                 <strong>Unable to load your activity</strong>
                 <span>@LoadError</span>
                 <button type="button" class="nx-btn nx-btn-secondary" @onclick="LoadAsync">Try again</button>
@@ -54,6 +62,7 @@
         else if (Items.Count == 0)
         {
             <div class="activity-empty">
+                <span class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span>
                 <strong>No activity yet</strong>
                 <span>Changes you make to clients, policies and documents will appear here.</span>
             </div>
@@ -66,20 +75,31 @@
                 <div class="activity-toolbar">
                     <div><h2>Recent activity <span class="activity-count">@visible.Count</span></h2><p>Latest 200 records · newest first</p></div>
                     <div class="activity-controls">
-                        <select class="activity-filter" aria-label="Filter by action" @bind="ActionFilter">
-                            <option value="">All actions</option>
-                            @foreach (var action in Items.Select(i => i.Action).Distinct().OrderBy(a => a))
+                        @{
+                            var categoryIndex = Math.Max(0, Array.FindIndex(Categories, cat => cat.Key == ActionFilter));
+                        }
+                        <div class="activity-filters" @ref="FilterRef" role="group" aria-label="Filter activity by type"
+                             style="--n:@Categories.Length;--i:@categoryIndex">
+                            <span class="seg-thumb" aria-hidden="true"></span>
+                            @foreach (var category in Categories)
                             {
-                                <option value="@action">@ActionLabel(action)</option>
+                                <button type="button"
+                                        class="filter-pill @(ActionFilter == category.Key ? "active" : "")"
+                                        aria-pressed="@(ActionFilter == category.Key)"
+                                        @onclick="() => SetCategory(category.Key)">
+                                    <span class="filter-label">@category.Label</span>
+                                    <span class="filter-count">@CategoryCount(category.Key)</span>
+                                </button>
                             }
-                        </select>
-                        <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" @onclick="LoadAsync">Refresh</button>
+                        </div>
+                        <button type="button" class="activity-refresh" @onclick="LoadAsync"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg> Refresh</button>
                     </div>
                 </div>
 
                 @if (visible.Count == 0)
                 {
                     <div class="activity-empty">
+                        <span class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
                         <strong>No matching activity</strong>
                         <span>Try another search or action filter.</span>
                         <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" @onclick="ClearFilters">Clear filters</button>
@@ -122,6 +142,8 @@
 
 </div>
 
+<RealtimeRefresh OnChanged="LoadAsync" />
+
 @code {
     private List<ActivityItem> Items = new();
     private bool IsLoading = true;
@@ -136,7 +158,7 @@
             var term = SearchText.Trim();
 
             return Items
-                .Where(i => string.IsNullOrEmpty(ActionFilter) || i.Action == ActionFilter)
+                .Where(i => string.IsNullOrEmpty(ActionFilter) || CategoryOf(i.Action) == ActionFilter)
                 .Where(i => term.Length == 0 || Describe(i).Contains(term, StringComparison.OrdinalIgnoreCase)
                     || (i.Details ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase)
                     || i.Entity.Contains(term, StringComparison.OrdinalIgnoreCase))
@@ -146,6 +168,45 @@
     }
 
     private void ClearFilters() { SearchText = string.Empty; ActionFilter = string.Empty; }
+
+    // Filter tabs: actions are grouped so the control stays short. The key is stored in ActionFilter ("" = all).
+    private static readonly (string Key, string Label)[] Categories =
+    {
+        ("", "All"), ("changes", "Changes"), ("documents", "Documents"), ("sessions", "Sign-ins")
+    };
+
+    private static string CategoryOf(string action) => action switch
+    {
+        "DocumentUpload" or "DocumentDownload" or "PermissionChange" => "documents",
+        "Login" or "Logout" => "sessions",
+        _ => "changes"
+    };
+
+    private int CategoryCount(string key) => Items.Count(i => key.Length == 0 || CategoryOf(i.Action) == key);
+
+    private void SetCategory(string key) => ActionFilter = key;
+
+    // Lets the filter be dragged as well as clicked (see Common/SegmentedDragBinding.cs).
+    private ElementReference FilterRef;
+    private SegmentedDragBinding? FilterDrag;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        FilterDrag ??= new SegmentedDragBinding(JS, PickCategoryAsync);
+        await FilterDrag.BindAsync(FilterRef);
+    }
+
+    private async Task PickCategoryAsync(int index)
+    {
+        if (index < 0 || index >= Categories.Length) return;
+        SetCategory(Categories[index].Key);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (FilterDrag is not null) await FilterDrag.DisposeAsync();
+    }
 
     private static string DateLabel(DateTime date) => date == DateTime.Today ? "Today" :
         date == DateTime.Today.AddDays(-1) ? "Yesterday" : date.ToString("dddd, dd MMM yyyy");

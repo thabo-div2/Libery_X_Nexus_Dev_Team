@@ -1,0 +1,76 @@
+/* Hidden on tablets and desktops, where the sidebar is used. */
+.client-tabbar {
+    display: none;
+}
+
+@media (max-width: 650px) {
+
+    .client-tabbar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--color-border);
+        background: var(--color-white);
+        box-shadow: 0 -8px 24px -18px var(--color-shadow-14);
+    }
+
+    .client-tabbar ::deep .tab-item {
+        min-height: 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        border-radius: var(--radius-sm);
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+        font-weight: var(--weight-semibold);
+        text-decoration: none;
+        transition: color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .client-tabbar ::deep .tab-item.active {
+        color: var(--color-primary);
+        background: var(--color-blue-60);
+    }
+
+    .client-tabbar ::deep .tab-item:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: -2px;
+    }
+
+    .client-tabbar ::deep svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.75;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .client-tabbar ::deep .tab-icon {
+        position: relative;
+        display: inline-flex;
+    }
+
+    /* The unread count sits on the corner of the Messages icon. */
+    .client-tabbar ::deep .tab-icon .nav-unread-badge {
+        position: absolute;
+        top: -6px;
+        right: -12px;
+        margin: 0;
+        box-shadow: 0 0 0 2px var(--color-white);
+    }
+}
+
+@media print {
+    .client-tabbar {
+        display: none !important;
+    }
+}

@@ -70,8 +70,12 @@ namespace API.Controllers
         /// <param name="clientId"></param>
         /// <returns></returns>
         [HttpGet("client/{clientId:int}")]
-        public async Task<ActionResult<IEnumerable<MessageDto>>> GetConversation(int clientId)
+        public async Task<ActionResult<IEnumerable<MessageDto>>> GetConversation(int clientId, [FromQuery] int? take = null)
         {
+            // With take, only the newest messages come back and X-Has-More says whether older ones exist.
+            // One extra message is fetched to find that out, then dropped.
+            int? size = take is int t ? Math.Clamp(t, 1, 999) : null;
+            int? latest = size + 1;
             if (!await CanAccessClientAsync(clientId))
             {
                 return NotFound(new
@@ -82,19 +86,33 @@ namespace API.Controllers
 
             if (User.IsInRole(AppRoles.Client))
             {
-                return Ok(
-                    await _messageService.GetConversationForClientAsync(clientId));
+                return Ok(TrimToSize(
+                    await _messageService.GetConversationForClientAsync(clientId, latest), size));
             }
 
             if (User.IsInRole(AppRoles.Advisor))
             {
-                return Ok(
+                return Ok(TrimToSize(
                     await _messageService.GetConversationForAdvisorAsync(
                         CurrentAdvisorId,
-                        clientId));
+                        clientId,
+                        latest), size));
             }
 
             return Forbid();
+        }
+
+        /// <summary>
+        /// Drops the extra oldest message fetched to detect older history, and reports it in X-Has-More.
+        /// </summary>
+        private IEnumerable<MessageDto> TrimToSize(IEnumerable<MessageDto> messages, int? size)
+        {
+            var list = messages.ToList();
+            if (size is not int count) return list;
+
+            var hasMore = list.Count > count;
+            Response.Headers["X-Has-More"] = hasMore ? "true" : "false";
+            return hasMore ? list.Skip(list.Count - count).ToList() : list;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

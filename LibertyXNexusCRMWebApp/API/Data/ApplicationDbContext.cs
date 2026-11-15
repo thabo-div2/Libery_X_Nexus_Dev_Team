@@ -24,6 +24,7 @@ namespace API.Data
         public DbSet<AdvisorWorkingHours> AdvisorWorkingHours => Set<AdvisorWorkingHours>();
         public DbSet<AdvisorHoursOverride> AdvisorHoursOverrides => Set<AdvisorHoursOverride>();
         public DbSet<DocumentRequest> DocumentRequests => Set<DocumentRequest>();
+        public DbSet<AdvisorTask> AdvisorTasks => Set<AdvisorTask>();
         public DbSet<ClientNote> ClientNotes => Set<ClientNote>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -129,6 +130,16 @@ namespace API.Data
 
                 entity.Property(d => d.DocumentType)
                     .HasConversion<int>();
+            });
+
+            modelBuilder.Entity<AdvisorTask>(entity =>
+            {
+                entity.HasOne(t => t.Advisor).WithMany().HasForeignKey(t => t.AdvisorId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(t => t.Client).WithMany().HasForeignKey(t => t.ClientId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Policy).WithMany().HasForeignKey(t => t.PolicyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasIndex(t => new { t.AdvisorId, t.DueDate });
+                // One automatic task per event per advisor.
+                entity.HasIndex(t => new { t.AdvisorId, t.SourceKey }).IsUnique().HasFilter("[SourceKey] IS NOT NULL");
             });
 
             modelBuilder.Entity<DocumentRequest>().HasOne(r => r.Policy).WithMany()

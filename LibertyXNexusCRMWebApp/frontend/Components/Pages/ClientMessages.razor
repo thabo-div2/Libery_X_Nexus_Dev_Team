@@ -55,7 +55,7 @@
                         </div>
 
                         <button type="button" class="meeting-toggle-button" @ref="MeetingToggleButton" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
-                            <span aria-hidden="true">♙</span>
+                            <span class="meeting-toggle-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
                             Book meeting
                         </button>
                     </div>
@@ -152,6 +152,10 @@
                     }
 
                     <div class="chat-body" @ref="ChatBodyRef">
+                        @if (HasEarlierMessages)
+                        {
+                            <button type="button" class="chat-earlier" @onclick="ShowEarlierMessages">Show earlier messages</button>
+                        }
                         @if (TimelineItems.Count == 0)
                         {
                             <p class="client-messages-empty">No messages yet. Say hello to @AdvisorName.</p>
@@ -172,6 +176,7 @@
                                         }
 
                                         <span class="meeting-status-label">@GetMeetingStatusText(item.Meeting.Status)</span>
+                                        <MeetingSummaryPanel Meeting="item.Meeting" />
                                     </div>
                                 }
                                 else if (item.Message is not null)
@@ -195,7 +200,7 @@
                                placeholder="@(IsAdvisorAway ? "Your adviser is out of office. You can message them once they are back." : "Write a message to your adviser…")"
                                disabled="@(AdvisorId is null || IsAdvisorAway)" />
 
-                        <button type="button" @onclick="SendMessage" disabled="@(AdvisorId is null || IsAdvisorAway)">Send</button>
+                        <button type="button" aria-label="Send message" @onclick="SendMessage" disabled="@(AdvisorId is null || IsAdvisorAway)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
                     </div>
                 </section>
             }
@@ -213,6 +218,8 @@
         </div>
     </ErrorContent>
 </ErrorBoundary>
+
+<RealtimeRefresh OnChanged="RefreshThreadAsync" />
 
 @code {
     private int? ClientId;
@@ -263,19 +270,21 @@
     private string? MeetingError;
 
     private ElementReference ChatBodyRef;
-    private int LastScrollCount;
+    private long LastScrollTicks;
 
     /// <summary>
     /// Scrolls the chat to the bottom when it opens or a new message comes in.
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (TimelineItems.Count == 0 || TimelineItems.Count == LastScrollCount)
+        // Keyed on the newest item, so showing earlier messages doesn't jump to the bottom.
+        var newest = TimelineItems.LastOrDefault()?.Timestamp.Ticks ?? 0;
+        if (TimelineItems.Count == 0 || newest == LastScrollTicks)
         {
             return;
         }
 
-        LastScrollCount = TimelineItems.Count;
+        LastScrollTicks = newest;
 
         try
         {
@@ -319,8 +328,17 @@
 
         IsLoading = false;
 
+        // "Book a meeting" on the client home links here with ?book=1, so open the form straight away.
+        if (OpenBookingForm == 1 && AdvisorId is not null)
+        {
+            ShowMeetingForm = true;
+        }
+
         Notifier.MessageSent += OnMessageSent;
     }
+
+    [SupplyParameterFromQuery(Name = "book")]
+    public int? OpenBookingForm { get; set; }
 
     private void OnMessageSent(int clientId)
     {
@@ -348,8 +366,9 @@
             return;
         }
 
-        var (messages, messageError) = await MessageStore.GetConversationAsync(ClientId.Value);
+        var (messages, hasEarlier, messageError) = await MessageStore.GetRecentConversationAsync(ClientId.Value, MessageWindow);
         Thread = messages;
+        HasEarlierMessages = hasEarlier;
 
         var (meetings, meetingError) = await MeetingStore.GetForClientAsync(ClientId.Value);
         Meetings = meetings;
@@ -358,12 +377,25 @@
         BuildTimeline();
     }
 
+    // Long threads open on their newest messages; "Show earlier messages" widens the window.
+    private const int MessagePageSize = 100;
+    private int MessageWindow = MessagePageSize;
+    private bool HasEarlierMessages;
+
+    private async Task ShowEarlierMessages()
+    {
+        MessageWindow += MessagePageSize;
+        await RefreshThreadAsync();
+    }
+
     private void BuildTimeline()
     {
         var items = new List<TimelineItem>();
 
+        // While older messages are hidden, hide meeting cards from that older stretch too.
+        var from = HasEarlierMessages && Thread.Count > 0 ? Thread.Min(m => m.SentAt) : DateTime.MinValue;
         items.AddRange(Thread.Select(m => new TimelineItem { Timestamp = m.SentAt, Message = m }));
-        items.AddRange(Meetings.Select(m => new TimelineItem { Timestamp = m.CreatedAt, Meeting = m }));
+        items.AddRange(Meetings.Where(m => m.CreatedAt >= from).Select(m => new TimelineItem { Timestamp = m.CreatedAt, Meeting = m }));
 
         TimelineItems = items.OrderBy(i => i.Timestamp).ToList();
     }
@@ -654,7 +686,8 @@
         return status?.ToLowerInvariant() switch
         {
             "confirmed" => "Meeting confirmed",
-            "cancelled" => "Meeting request denied",
+            "cancelled" => "Meeting cancelled",
+            "completed" => "Meeting completed",
             _ => "Waiting for your adviser to confirm"
         };
     }

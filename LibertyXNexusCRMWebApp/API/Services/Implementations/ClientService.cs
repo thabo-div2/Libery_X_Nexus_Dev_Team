@@ -41,6 +41,15 @@ namespace API.Services.Implementations
         }
 
         /// <summary>
+        /// Searches for clients one page at a time and reports how many match in total.
+        /// </summary>
+        public async Task<(List<ClientListItemDto> Items, int Total)> SearchPageAsync(string? searchTerm, ClientStatus? status, int? advisorId, int skip, int take)
+        {
+            var (clients, total) = await clientRepository_.SearchPageAsync(searchTerm, status, advisorId, skip, take);
+            return (clients.Select(MapToListItemDto).ToList(), total);
+        }
+
+        /// <summary>
         /// Adds a new client.
         /// </summary>
         public async Task<ClientDetailDto> CreateAsync(CreateClientRequest request)

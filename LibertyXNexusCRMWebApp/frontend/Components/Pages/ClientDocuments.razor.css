@@ -21,22 +21,24 @@
    =============================== */
 
 .cdocs-header {
-    min-height: 78px;
+    min-height: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     gap: var(--space-8);
-    padding: var(--space-4) var(--space-6);
-    background: var(--color-white);
-    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-8) var(--space-8) var(--space-2);
+    background: transparent;
+    flex-wrap: wrap;
 }
 
 .cdocs-heading h1 {
     margin: 0 0 var(--space-1);
     color: var(--color-text);
-    font-size: var(--text-lg);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.2px;
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
 }
 
 .cdocs-heading p {
@@ -66,7 +68,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
     gap: var(--space-5);
-    padding: var(--space-5) var(--space-6) var(--space-12);
+    padding: var(--space-4) var(--space-8) var(--space-12);
 }
 
 .main-column,
@@ -418,3 +420,142 @@
 }
 
 /* ================================ EndOfFile ============================== */
+
+.document-row {padding:12px;}.document-main {flex:1;}.document-info {flex:1;}.document-needs-replacement {border-color:#e5b48e;background:#fffcf9;align-items:flex-start;}.document-info>.replacement-badge {align-self:flex-start;width:auto;background:#fce2cc;color:#823c10;font-weight:700;padding:5px 9px;}.replacement-action {align-self:flex-start;margin:3px 0 8px;}
+
+.document-version-group {border:1px solid var(--color-border);border-radius:12px;overflow:hidden;margin-bottom:12px;}.document-version-group:last-child {margin-bottom:0;}.document-history {border-top:1px solid var(--color-border-light);}.document-history>summary {padding:10px 16px;color:var(--color-text-muted);font-size:11px;cursor:pointer;background:var(--color-page-bg);}.document-history>summary span {display:inline-block;margin-left:5px;font-size:10px;padding:1px 6px;border-radius:10px;background:var(--color-white);}.document-history>summary:focus-visible {outline:2px solid var(--color-primary);outline-offset:-3px;}
+
+
+/* ================================ NEXUS 2.0 CLIENT DOCUMENTS ============================== */
+
+.cdocs-content {
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+}
+
+.side-column {
+    gap: var(--space-6);
+}
+
+.cdocs-card,
+.side-card {
+    border: 0;
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 0 0 6px rgba(12, 35, 64, 0.04),
+        0 0 0 7px rgba(12, 35, 64, 0.06),
+        0 18px 36px -20px rgba(12, 35, 64, 0.24);
+}
+
+.card-header,
+.side-card-header {
+    min-height: 76px;
+    padding: 0 var(--space-6);
+    border-bottom: 1px solid rgba(12, 35, 64, 0.06);
+}
+
+.card-header h2,
+.side-card-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.01em;
+}
+
+.card-count {
+    min-width: 28px;
+    height: 24px;
+    padding: 0 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background: var(--color-page-bg);
+    color: var(--color-text-muted);
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+}
+
+.cdocs-list {
+    padding: var(--space-5) var(--space-6) var(--space-6);
+}
+
+.document-version-group {
+    margin-bottom: var(--space-4);
+    border: 0;
+    border-radius: 22px;
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.1);
+}
+
+.document-history {
+    border-top: 1px solid rgba(12, 35, 64, 0.06);
+}
+
+.document-history > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px var(--space-6);
+    background: var(--color-page-bg);
+    color: var(--color-primary);
+    font-size: 12.5px;
+    font-weight: var(--weight-semibold);
+}
+
+.document-history > summary span {
+    margin-left: 0;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.empty-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: var(--space-2);
+    border-radius: 18px;
+    background: var(--color-page-bg);
+    color: var(--color-primary);
+}
+
+.empty-state strong {
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: var(--weight-regular);
+}
+
+.side-card-body {
+    padding: var(--space-5) var(--space-6) var(--space-6);
+}
+
+.side-card-intro {
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.cdocs-alert {
+    margin-bottom: var(--space-4);
+    border-radius: 18px;
+}
+
+@media (max-width: 800px) {
+    .card-header,
+    .side-card-header {
+        padding-left: var(--space-5);
+        padding-right: var(--space-5);
+    }
+
+    .cdocs-list,
+    .side-card-body {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+}

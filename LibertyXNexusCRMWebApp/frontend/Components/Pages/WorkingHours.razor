@@ -66,7 +66,16 @@
 
                     <div class="hours-card-body">
 
-                        <p class="hours-intro">Tick the days you work and set the hours for each. Unticked days are days off.</p>
+                        <p class="hours-intro">Switch on the days you work and set the hours for each. Days that are switched off are days off.</p>
+
+                        <div class="week-bar" role="img" aria-label="@WeekBarLabel">
+                            @foreach (var day in Days)
+                            {
+                                <span class="week-bar-seg @(day.IsWorkingDay ? "is-on" : "")" aria-hidden="true"><span>@ShortDay(day.Day)</span></span>
+                            }
+                        </div>
+
+                        <p class="week-summary"><strong>@WeeklyHoursText</strong> hours a week across @WorkingDayCount working @(WorkingDayCount == 1 ? "day" : "days")</p>
 
                         <div class="week-list">
                             @foreach (var day in Days)
@@ -217,6 +226,11 @@
                                 {
                                     <li class="override-row" @key="item.Date">
 
+                                        <div class="override-tile" aria-hidden="true">
+                                            <strong>@TileDay(item.Date)</strong>
+                                            <span>@TileMonth(item.Date)</span>
+                                        </div>
+
                                         <div class="override-info">
                                             <strong>@FormatDate(item.Date)</strong>
                                             <span>
@@ -227,6 +241,8 @@
                                                 }
                                             </span>
                                         </div>
+
+                                        <span class="override-pill @(item.IsWorkingDay ? "is-custom" : "is-off")">@(item.IsWorkingDay ? "Custom hours" : "Day off")</span>
 
                                         <button type="button"
                                                 class="nx-btn nx-btn-danger-outline nx-btn-sm"
@@ -500,6 +516,42 @@
         return startTime >= endTime
             ? $"The end time for {dayName} must be after the start time."
             : null;
+    }
+
+    private int WorkingDayCount => Days.Count(d => d.IsWorkingDay);
+
+    private string WeeklyHoursText
+    {
+        get
+        {
+            double total = 0;
+
+            foreach (var day in Days.Where(d => d.IsWorkingDay))
+            {
+                if (TimeSpan.TryParse(day.StartTime, out var start) && TimeSpan.TryParse(day.EndTime, out var end) && end > start)
+                {
+                    total += (end - start).TotalHours;
+                }
+            }
+
+            return total.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture);
+        }
+    }
+
+    private string WeekBarLabel => $"{WorkingDayCount} working days, {WeeklyHoursText} hours a week";
+
+    private static string ShortDay(DayOfWeek day) => day.ToString()[..3];
+
+    private static string TileDay(string date)
+    {
+        return DateOnly.TryParseExact(date, "yyyy-MM-dd", out var parsed) ? parsed.Day.ToString() : "--";
+    }
+
+    private static string TileMonth(string date)
+    {
+        return DateOnly.TryParseExact(date, "yyyy-MM-dd", out var parsed)
+            ? parsed.ToString("MMM", System.Globalization.CultureInfo.InvariantCulture)
+            : string.Empty;
     }
 
     private static string FormatDate(string date)

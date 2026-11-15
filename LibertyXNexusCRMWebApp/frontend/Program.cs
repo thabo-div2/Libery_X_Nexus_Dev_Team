@@ -64,6 +64,9 @@ public partial class Program
         builder.Services.AddScoped<DocumentRequestService>();
         builder.Services.AddScoped<ClientNoteService>();
         builder.Services.AddScoped<ActivityService>();
+        builder.Services.AddScoped<WorkflowService>();
+        builder.Services.AddScoped<InsightsService>();
+        builder.Services.AddScoped<RealtimeService>();
 
         builder.Services.AddSingleton<MessageNotifier>();
 

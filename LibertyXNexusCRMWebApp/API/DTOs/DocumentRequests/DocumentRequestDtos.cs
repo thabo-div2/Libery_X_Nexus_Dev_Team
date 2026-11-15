@@ -23,6 +23,9 @@ namespace API.DTOs.DocumentRequests
 
         public DateTime? FulfilledAt { get; set; }
 
+        public int? FulfilledDocumentId { get; set; }
+        public string ReviewStatus { get; set; } = "Received";
+        public string? ReviewNote { get; set; }
         public bool IsFulfilled { get; set; }
     }
 

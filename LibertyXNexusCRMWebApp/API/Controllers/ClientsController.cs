@@ -60,8 +60,17 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Roles = AppRoles.Advisor)]
-        public async Task<ActionResult<IEnumerable<ClientListItemDto>>> Search([FromQuery] string? searchTerm, [FromQuery] ClientStatus? status)
+        public async Task<ActionResult<IEnumerable<ClientListItemDto>>> Search([FromQuery] string? searchTerm, [FromQuery] ClientStatus? status,
+            [FromQuery] int? skip = null, [FromQuery] int? take = null)
         {
+            // With take, return one page and the full match count in X-Total-Count; without it, the whole list as before.
+            if (take.HasValue)
+            {
+                var (items, total) = await _clientService.SearchPageAsync(searchTerm, status, CurrentAdvisorId, skip ?? 0, take.Value);
+                Response.Headers["X-Total-Count"] = total.ToString();
+                return Ok(items);
+            }
+
             var results = await _clientService.SearchAsync(searchTerm, status, CurrentAdvisorId);
             return Ok(results);
         }

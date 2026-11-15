@@ -40,6 +40,10 @@ namespace Shared.Models
 
         public DocumentType DocumentType { get; set; } = DocumentType.Other;
 
+        public DocumentReviewStatus ReviewStatus { get; set; } = DocumentReviewStatus.Received;
+        [MaxLength(500)] public string? ReviewNote { get; set; }
+        public DateTime? ReviewedAt { get; set; }
+
         public SignatureStatus SignatureStatus { get; set; } = SignatureStatus.NotRequired;
 
         public bool VisibleToClient { get; set; } = false;

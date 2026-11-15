@@ -310,6 +310,8 @@ namespace API.Services.Implementations
             ContentType = document.ContentType,
             FileSizeBytes = document.FileSizeBytes,
             DocumentType = document.DocumentType.ToString(),
+            ReviewStatus = document.ReviewStatus.ToString(),
+            ReviewNote = document.ReviewNote,
             VisibleToClient = document.VisibleToClient,
             SignatureStatus = document.SignatureStatus.ToString(),
             UploadedBy = document.UploadedBy,

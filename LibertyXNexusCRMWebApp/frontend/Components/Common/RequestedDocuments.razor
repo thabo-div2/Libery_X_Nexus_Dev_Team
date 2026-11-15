@@ -1,10 +1,14 @@
-﻿@using frontend.Services
+@using frontend.Services
 @inject DocumentRequestService RequestApi
 
 @* Client view: the checklist of documents their advisor has asked for.
    Shows nothing when nothing is outstanding and nothing was ever requested. *@
 
-@if (Error is not null)
+@if (Loading)
+{
+    <p class="doc-requests-empty" role="status">Loading document requests...</p>
+}
+else if (Error is not null)
 {
     <p class="nx-alert nx-alert-danger" role="alert">@Error</p>
     <button type="button" @onclick="RefreshAsync">Retry loading document requests</button>
@@ -27,17 +31,19 @@ else if (Requests.Count == 0)
         <ul class="doc-requests-list">
             @foreach (var item in group)
             {
-                <li class="doc-requests-row @(item.IsFulfilled ? "is-done" : "")" @key="item.DocumentRequestId">
+                <li class="doc-requests-row @(item.IsFulfilled && item.ReviewStatus == "Accepted" ? "is-done" : "")" @key="item.DocumentRequestId">
 
                     <div class="doc-requests-info">
                         <strong>@DocumentTypeNames.Format(item.DocumentType)</strong>
-                        @if (!string.IsNullOrWhiteSpace(item.Note))
+                        @if (!item.IsFulfilled && (ShowFeedback || item.ReviewStatus != "NeedsReplacement") && !string.IsNullOrWhiteSpace(item.Note))
                         {
                             <span>@item.Note</span>
                         }
                     </div>
 
-                    <span class="doc-requests-badge @(item.IsFulfilled ? "" : "is-waiting")">@(item.IsFulfilled ? "Received" : "Still needed")</span>
+                    <span class="doc-requests-badge @(item.IsFulfilled ? "" : "is-waiting")">@(item.ReviewStatus == "Accepted" && item.IsFulfilled ? "Accepted" : item.IsFulfilled ? "Received · awaiting review" : item.ReviewStatus == "NeedsReplacement" ? "Needs replacement" : "Still needed")</span>
+                    @if (ShowFeedback && !item.IsFulfilled) { <AdvisorFeedback Text="@item.ReviewNote" NeedsReplacement="@(item.ReviewStatus == "NeedsReplacement")" /> }
+                    @if (!item.IsFulfilled && OnUploadRequested.HasDelegate) { <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" @onclick="() => OnUploadRequested.InvokeAsync(item)">@(item.ReviewStatus == "NeedsReplacement" ? "Upload replacement" : "Upload document")</button> }
 
                 </li>
             }
@@ -45,7 +51,7 @@ else if (Requests.Count == 0)
             </section>
         }
 
-        @if (OutstandingCount > 0)
+        @if (ShowFeedback && OutstandingCount > 0)
         {
             <span class="doc-requests-empty">Upload each one below and choose the matching document type and policy (or General documents). It is ticked off as soon as it arrives.</span>
         }
@@ -53,12 +59,19 @@ else if (Requests.Count == 0)
     </div>
 }
 
+<RealtimeRefresh OnChanged="RefreshAsync" />
+
 @code {
     /// <summary>The signed-in client's id.</summary>
     [Parameter, EditorRequired] public int ClientId { get; set; }
 
+    [Parameter] public bool ShowFeedback { get; set; } = true;
+    [Parameter] public EventCallback<DocumentRequestSummary> OnUploadRequested { get; set; }
+    [Parameter] public EventCallback<List<DocumentRequestSummary>> OnLoaded { get; set; }
+
     private List<DocumentRequestSummary> Requests = new();
     private string? Error;
+    private bool Loading = true;
     private int? LoadedClientId;
 
     private int OutstandingCount => Requests.Count(r => !r.IsFulfilled);
@@ -69,7 +82,7 @@ else if (Requests.Count == 0)
         {
             if (OutstandingCount == 0)
             {
-                return "Everything your advisor asked for has been received";
+                return Requests.All(r => r.ReviewStatus == "Accepted") ? "All requested documents accepted" : "Documents received — awaiting adviser review";
             }
 
             var noun = OutstandingCount == 1 ? "document" : "documents";
@@ -94,9 +107,11 @@ else if (Requests.Count == 0)
     public async Task RefreshAsync()
     {
         var clientId = ClientId;
+        Loading = true;
         var (requests, error) = await RequestApi.GetForClientAsync(clientId);
         if (clientId != ClientId) return;
         Error = error;
+        Loading = false;
 
         // Keep showing the last list if this load failed.
         if (requests is null)
@@ -106,6 +121,7 @@ else if (Requests.Count == 0)
         }
 
         Requests = requests;
+        await OnLoaded.InvokeAsync(Requests);
         StateHasChanged();
     }
 }

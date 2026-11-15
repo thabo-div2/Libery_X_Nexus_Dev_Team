@@ -82,3 +82,83 @@
 
 .request-policy-group { padding: 12px; margin-top: 8px; border: 1px solid var(--color-border-light); border-radius: 9px; background: var(--color-page-bg); }
 .request-policy-heading { margin: 0 0 10px; color: var(--color-text); font-size: var(--text-sm); font-weight: 600; overflow-wrap: anywhere; }
+
+.doc-requests-row.is-done {min-height:36px;background:#f4faf6;border-color:#d6e8dc;padding:9px 11px;}.doc-requests-row.is-done .doc-requests-badge {color:#24613c;}.doc-requests-row:not(.is-done) .doc-requests-badge:not(.is-waiting) {color:#3f5e80;}.request-policy-group {padding:10px;background:transparent;}.request-policy-heading {font-size:12px;margin-bottom:9px;}
+
+
+/* ================================ NEXUS 2.0 REQUESTED DOCUMENTS ============================== */
+
+.doc-requests-title {
+    color: var(--color-accent-deep);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+}
+
+.request-policy-group,
+.request-policy-group {
+    margin-top: 10px;
+    padding: 14px;
+    border: 0;
+    border-radius: 20px;
+    background: var(--color-page-bg);
+}
+
+.request-policy-heading {
+    margin-bottom: 10px;
+    color: var(--color-primary);
+    font-size: 13px;
+}
+
+.doc-requests-list {
+    gap: 8px;
+}
+
+.doc-requests-row,
+.doc-requests-row.is-done {
+    min-height: 56px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--color-white);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.08);
+}
+
+.doc-requests-row.is-done {
+    background: var(--color-green-40);
+    box-shadow: none;
+}
+
+.doc-requests-info strong {
+    color: var(--color-primary);
+    font-size: 13px;
+}
+
+.doc-requests-info > span {
+    font-size: 12px;
+}
+
+.doc-requests-badge,
+.doc-requests-row.is-done .doc-requests-badge,
+.doc-requests-row:not(.is-done) .doc-requests-badge:not(.is-waiting) {
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-white));
+    color: var(--color-primary);
+    font-size: 11.5px;
+    white-space: nowrap;
+}
+
+.doc-requests-row.is-done .doc-requests-badge {
+    background: var(--color-white);
+    color: var(--color-green-690);
+}
+
+.doc-requests-badge.is-waiting,
+.doc-requests-row:not(.is-done) .doc-requests-badge.is-waiting {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.doc-requests-row .nx-btn {
+    border-radius: var(--radius-full);
+}

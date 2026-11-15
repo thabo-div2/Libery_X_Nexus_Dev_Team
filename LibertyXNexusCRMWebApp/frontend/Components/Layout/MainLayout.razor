@@ -11,11 +11,16 @@
    class="skip-link"
    onclick="event.preventDefault(); document.getElementById('main-content')?.focus();">Skip to main content</a>
 
-<div class="nexus-app">
+<div class="nexus-app @(IsClientRoute ? "is-client" : "")">
 
     <aside class="nexus-sidebar" aria-label="Main navigation">
         <NavMenu IsClientView="@IsClientRoute" />
     </aside>
+
+    @if (IsClientRoute)
+    {
+        <ClientTabBar />
+    }
 
     <main id="main-content" class="nexus-main" tabindex="-1">
         @if (_accessError)

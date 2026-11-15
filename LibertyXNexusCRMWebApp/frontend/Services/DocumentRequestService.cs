@@ -8,7 +8,7 @@ namespace frontend.Services
     /// </summary>
     public record DocumentRequestSummary(
         int DocumentRequestId, int ClientId, string DocumentType, string? Note,
-        DateTime CreatedAt, DateTime? FulfilledAt, bool IsFulfilled, int? PolicyId = null, string? PolicyName = null);
+        DateTime CreatedAt, DateTime? FulfilledAt, bool IsFulfilled, int? PolicyId = null, string? PolicyName = null, int? FulfilledDocumentId = null, string ReviewStatus = "Received", string? ReviewNote = null);
 
     /// <summary>
     /// Calls the API for document requests.

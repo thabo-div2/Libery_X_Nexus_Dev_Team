@@ -32,6 +32,9 @@ namespace Shared.Models
         [MaxLength(300)]
         public string? Note { get; set; }
 
+        public DocumentReviewStatus ReviewStatus { get; set; } = DocumentReviewStatus.Received;
+        [MaxLength(500)] public string? ReviewNote { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         /// <summary>Null while the request is still outstanding.</summary>

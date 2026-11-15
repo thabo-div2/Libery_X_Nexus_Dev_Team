@@ -1,0 +1,106 @@
+@using frontend.Services
+@using Shared.DTOs.Insights
+@using Shared.DTOs.Workflow
+@inject InsightsService Api
+@inject WorkflowService Workflow
+
+@* Policies ending soon, with a one-click follow-up task for each. *@
+<section class="wf-card renewals-card" id="renewals">
+    <div class="wf-heading">
+        <div>
+            <h2>Upcoming renewals</h2>
+            <p>@(Items is null ? "Loading…" : $"{Items.Count} {(Items.Count == 1 ? "policy ends" : "policies end")} in the next {Days} days")</p>
+        </div>
+        <div class="renewal-range" role="group" aria-label="Show renewals within">
+            @foreach (var range in Ranges)
+            {
+                <button type="button" class="renewal-range-btn @(Days == range ? "active" : "")" aria-pressed="@(Days == range)"
+                        @onclick="() => SetDays(range)">@range d</button>
+            }
+        </div>
+    </div>
+
+    @if (Error is not null) { <p class="wf-error" role="alert">@Error</p> }
+    @if (Message is not null) { <p class="wf-success" role="status">@Message</p> }
+
+    @if (Items is null)
+    {
+        <p class="wf-muted renewals-pad" role="status">Loading renewals…</p>
+    }
+    else if (Items.Count == 0)
+    {
+        <p class="wf-empty">No policies end in the next @Days days.</p>
+    }
+    else
+    {
+        <ul class="wf-list">
+            @foreach (var item in Items.Take(Expanded ? Items.Count : 6))
+            {
+                <li @key="item.PolicyId" class="wf-row">
+                    <span class="renewal-days @(item.DaysLeft <= 14 ? "renewal-soon" : "")" title="Days left">@item.DaysLeft<small>d</small></span>
+                    <div class="wf-grow">
+                        <strong>@item.PolicyName</strong>
+                        <span class="wf-muted"><a class="wf-link" href="@ClientLink(item)">@item.ClientName</a> · @item.Provider · ends @item.EndDate.ToLocalTime().ToString("d MMM yyyy")</span>
+                    </div>
+                    @if (item.HasOpenTask)
+                    {
+                        <span class="wf-badge">Task open</span>
+                    }
+                    else
+                    {
+                        <button type="button" class="wf-link" disabled="@Busy" @onclick="() => AddTask(item)">Add follow-up</button>
+                    }
+                </li>
+            }
+        </ul>
+        @if (Items.Count > 6)
+        {
+            <div class="wf-load-more"><button type="button" class="wf-link" @onclick="() => Expanded = !Expanded">@(Expanded ? "Show fewer" : $"Show all {Items.Count}")</button></div>
+        }
+    }
+</section>
+<RealtimeRefresh OnChanged="Load" />
+
+@code {
+    static readonly int[] Ranges = { 30, 60, 90 };
+    int Days = 30;
+    List<RenewalDto>? Items;
+    string? Error, Message;
+    bool Busy, Expanded;
+
+    static string ClientLink(RenewalDto item) => $"/clients?search={Uri.EscapeDataString(item.ClientName)}";
+
+    protected override Task OnInitializedAsync() => Load();
+
+    async Task SetDays(int days) { Days = days; Expanded = false; Message = null; await Load(); }
+
+    async Task Load()
+    {
+        var days = Days;
+        var (value, error) = await Api.GetRenewalsAsync(days);
+        if (days != Days) return;
+        Items = value ?? Items ?? new();
+        Error = value is null ? error : null;
+    }
+
+    async Task AddTask(RenewalDto item)
+    {
+        if (Busy) return;
+        Busy = true; Message = null; Error = null;
+        try
+        {
+            var due = DateTime.Today;
+            var (_, error) = await Workflow.SaveTaskAsync(null, new TaskInput
+            {
+                Title = $"Review renewal: {item.PolicyName} for {item.ClientName}",
+                Note = $"Ends {item.EndDate.ToLocalTime():d MMM yyyy}. Contact the client about renewing or replacing it.",
+                DueDate = due,
+                ClientId = item.ClientId,
+                PolicyId = item.PolicyId
+            });
+            if (error is null) { Message = $"Follow-up task added for {item.ClientName}."; await Load(); }
+            else Error = error;
+        }
+        finally { Busy = false; }
+    }
+}

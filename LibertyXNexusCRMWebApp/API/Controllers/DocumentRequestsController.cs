@@ -98,6 +98,50 @@ namespace API.Controllers
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Asks several clients for the same general document at once (e.g. an annual tax certificate).
+        /// Each client is handled on its own: one that already has an outstanding request, or isn't
+        /// the advisor's client, is skipped with a reason, and the rest still go out.
+        /// </summary>
+        [HttpPost("bulk")]
+        [Authorize(Roles = AppRoles.Advisor)]
+        public async Task<ActionResult<Shared.DTOs.Insights.BulkDocumentRequestResult>> CreateBulk([FromBody] Shared.DTOs.Insights.BulkDocumentRequestInput input)
+        {
+            var mine = (await _clientService.SearchAsync(null, null, CurrentAdvisorId)).ToDictionary(c => c.ClientId);
+            var skipped = new List<Shared.DTOs.Insights.BulkDocumentRequestSkip>();
+            var created = 0;
+
+            foreach (var clientId in input.ClientIds.Distinct())
+            {
+                if (!mine.TryGetValue(clientId, out var client))
+                {
+                    skipped.Add(new(clientId, $"Client {clientId}", "Not one of your clients."));
+                    continue;
+                }
+
+                try
+                {
+                    await _documentRequestService.CreateAsync(clientId, new CreateDocumentRequestRequest
+                    {
+                        DocumentType = input.DocumentType,
+                        Note = input.Note
+                    });
+                    created++;
+                }
+                catch (InvalidOperationException)
+                {
+                    skipped.Add(new(clientId, client.FullName, "Already has an outstanding request for this document."));
+                }
+                catch (Exception ex) when (ex is ArgumentException or KeyNotFoundException)
+                {
+                    skipped.Add(new(clientId, client.FullName, ex.Message));
+                }
+            }
+
+            return Ok(new Shared.DTOs.Insights.BulkDocumentRequestResult(created, skipped));
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Removes a request the advisor made.
         /// </summary>
         [HttpDelete("{id:int}")]

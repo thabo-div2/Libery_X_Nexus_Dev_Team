@@ -1,0 +1,40 @@
+@using frontend.Services
+<article class="doc-entry @(IsHistory ? "is-history" : "") @(RequiresReplacement && !IsHistory ? "needs-action" : "")">
+    <div class="entry-heading">
+        <span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z M14 3v5h5 M9 12h6 M9 16h6" /></svg></span>
+        <div class="entry-title">
+            <span class="entry-version">@(IsHistory ? "Previous upload" : "Current document")</span>
+            <strong>@Document.FileName</strong>
+        </div>
+        <span class="entry-status @StatusClass">@if (!IsHistory && Document.ReviewStatus == "Accepted") { <span aria-hidden="true">&#10003;</span> }@StatusText</span>
+        <button type="button" class="entry-download" aria-label="@($"Download {Document.FileName}")" title="Download" @onclick="()=>OnDownload.InvokeAsync(Document.DocumentId)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15v5h14v-5 M12 3v12 M7 10l5 5 5-5" /></svg></button>
+    </div>
+    <div class="entry-details">
+        <div><span class="entry-field-label">Document type</span><span class="entry-type">@DocumentTypeNames.Format(Document.DocumentType)</span></div>
+        <div><span class="entry-field-label">Policy</span><span class="entry-policy">@(Document.PolicyId is int id ? $"{Document.PolicyName ?? "Policy"} (#{id})" : "General documents")</span></div>
+    </div>
+    @if(RequiresReplacement && !IsHistory)
+    {
+        <AdvisorFeedback Text="@Document.ReviewNote" NeedsReplacement="true" />
+        <button type="button" class="nx-btn nx-btn-primary nx-btn-sm replace-button" @onclick="()=>OnReplace.InvokeAsync(Document)">Upload replacement</button>
+    }
+    else if(!string.IsNullOrWhiteSpace(Document.ReviewNote))
+    {
+        <div class="entry-note @(Document.ReviewStatus == "NeedsReplacement" ? "note-rejected" : "")"><span>@(IsHistory || Document.ReviewStatus == "NeedsReplacement" ? "Previous adviser feedback" : "Adviser feedback")</span><p>@Document.ReviewNote</p></div>
+    }
+    <div class="entry-meta">
+        @if(Document.UpdateAt is DateTime when) { <span><b>Updated</b> @when.ToLocalTime().ToString("dd MMM yyyy")</span> }
+        @if(!string.IsNullOrWhiteSpace(Document.UploadedBy)) { <span><b>Uploaded by</b> @Document.UploadedBy</span> }
+    </div>
+</article>
+@code {
+    [Parameter,EditorRequired] public DocumentSummary Document {get;set;}=default!;
+    [Parameter] public bool IsHistory {get;set;}
+    [Parameter] public bool RequiresReplacement {get;set;}
+    [Parameter] public EventCallback<int> OnDownload {get;set;}
+    [Parameter] public EventCallback<DocumentSummary> OnReplace {get;set;}
+    private string StatusText => IsHistory && Document.ReviewStatus == "NeedsReplacement" ? "Not accepted" : Document.ReviewStatus switch {
+        "Accepted"=>"Accepted", "NeedsReplacement"=>RequiresReplacement ? "Replacement required" : "Replacement submitted", _=>"Awaiting review" };
+    private string StatusClass => IsHistory ? "status-history" : Document.ReviewStatus switch {
+        "Accepted"=>"status-accepted", "NeedsReplacement" when RequiresReplacement=>"status-required", _=>"status-pending" };
+}

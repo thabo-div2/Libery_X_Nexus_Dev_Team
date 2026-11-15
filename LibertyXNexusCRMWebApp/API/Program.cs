@@ -1,3 +1,4 @@
+using API.Realtime;
 using API.Data;
 using API.HealthChecks;
 using API.Identity;
@@ -41,7 +42,9 @@ namespace API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddSignalR();
+            builder.Services.AddScoped<PublishUpdatesFilter>();
+            builder.Services.AddControllers(options => options.Filters.AddService<PublishUpdatesFilter>());
 
             builder.Services.AddProblemDetails();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -178,6 +181,8 @@ namespace API
             builder.Services.AddScoped<IDocumentRequestService, DocumentRequestService>();
             builder.Services.AddScoped<IClientCleanupService, ClientCleanupService>();
             builder.Services.AddScoped<IClientNoteService, ClientNoteService>();
+            builder.Services.AddScoped<ITaskAutomationService, TaskAutomationService>();
+            builder.Services.AddHostedService<RenewalTaskBackgroundService>();
 
             builder.Services.AddMemoryCache();
 
@@ -253,6 +258,7 @@ namespace API
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapHub<UpdatesHub>("/hubs/updates", options => options.CloseOnAuthenticationExpiration = true);
             app.MapHealthChecks("/health", new HealthCheckOptions
             {
                 ResponseWriter = async (context, report) =>

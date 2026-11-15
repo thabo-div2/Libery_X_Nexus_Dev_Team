@@ -1,0 +1,126 @@
+@using frontend.Services
+@using Shared.DTOs.Workflow
+@using Shared.Models.Enums
+@implements IAsyncDisposable
+@inject WorkflowService Api
+@inject DocumentService Documents
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+<div class="wf-review">
+    <button type="button" class="review-trigger" disabled="@Busy" @onclick="OpenAsync"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>Review document</button>
+    @if (Message is not null) { <span class="wf-success" role="status">@Message</span> }
+
+    <dialog @ref="Dialog" class="review-dialog" aria-labelledby="@TitleId" @oncancel="CloseAsync" @oncancel:preventDefault="true" @onclick:stopPropagation="true">
+        <header class="review-head">
+            <div>
+                <span class="review-eyebrow">Client upload</span>
+                <h2 id="@TitleId">Review document</h2>
+            </div>
+            <button type="button" class="review-close" aria-label="Close review" disabled="@Busy" @onclick="CloseAsync"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+        </header>
+
+        <div class="review-body">
+            @if (Review is null && Error is null)
+            {
+                <div class="review-loading" role="status" aria-label="Loading document">
+                    <span class="review-skel review-skel-file"></span>
+                    <span class="review-skel review-skel-choices"></span>
+                    <span class="review-skel review-skel-note"></span>
+                </div>
+            }
+
+            @if (Review is not null)
+            {
+                <div class="review-file">
+                    <span class="review-file-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span>
+                    <div class="review-file-meta">
+                        <strong title="@Review.FileName">@Review.FileName</strong>
+                        <span class="review-badge review-@Review.Status.ToLowerInvariant()">@Label(Review.Status)</span>
+                    </div>
+                    <button type="button" class="review-open" @onclick="Download">Open document<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button>
+                </div>
+
+                <fieldset class="review-decision" disabled="@Busy">
+                    <legend>Your decision</legend>
+                    <div class="review-choices">
+                        <button type="button" class="@Choice(DocumentReviewStatus.Accepted)" aria-pressed="@(Decision == DocumentReviewStatus.Accepted ? "true" : "false")" @onclick="@(() => Decision = DocumentReviewStatus.Accepted)">
+                            <span class="review-choice-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+                            <span class="review-choice-text"><strong>Accept</strong><span>Looks good and is usable</span></span>
+                        </button>
+                        <button type="button" class="@Choice(DocumentReviewStatus.NeedsReplacement)" aria-pressed="@(Decision == DocumentReviewStatus.NeedsReplacement ? "true" : "false")" @onclick="@(() => Decision = DocumentReviewStatus.NeedsReplacement)">
+                            <span class="review-choice-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span>
+                            <span class="review-choice-text"><strong>Needs replacement</strong><span>Ask the client to upload again</span></span>
+                        </button>
+                    </div>
+                </fieldset>
+
+                <label class="review-note">
+                    <span class="review-note-label">Feedback for the client<em class="@(NeedsReason ? "is-required" : "")">@(NeedsReason ? "Required" : "Optional")</em></span>
+                    <textarea maxlength="500" rows="4" placeholder="@(NeedsReason ? "Tell the client what to fix, for example: the page is cut off or the photo is unreadable." : "Add a short note to go with your decision.")" @bind="Note" @bind:event="oninput" disabled="@Busy"></textarea>
+                    <span class="review-note-foot"><span>Acceptance is separate from FICA verification.</span><span class="review-count">@(Note?.Length ?? 0)/500</span></span>
+                </label>
+            }
+
+            @if (Error is not null)
+            {
+                <div class="review-error" role="alert"><p>@Error</p><button type="button" class="review-retry" @onclick="Load">Reload review</button></div>
+            }
+        </div>
+
+        <footer class="review-foot">
+            <button type="button" class="review-cancel" disabled="@Busy" @onclick="CloseAsync">Cancel</button>
+            <button type="button" class="review-save" disabled="@(Busy || Review is null || (NeedsReason && string.IsNullOrWhiteSpace(Note)))" @onclick="Save">@(Busy ? "Saving..." : "Save review")</button>
+        </footer>
+    </dialog>
+</div>
+@code {
+    [Parameter,EditorRequired] public int DocumentId {get;set;}
+    [Parameter] public EventCallback OnReviewed {get;set;}
+    bool Busy;
+    DocumentReviewDto? Review;
+    DocumentReviewStatus Decision = DocumentReviewStatus.Accepted;
+    string? Note, Error, Message;
+    ElementReference Dialog;
+    IJSObjectReference? DialogModule;
+    readonly string TitleId = "review-title-" + Guid.NewGuid().ToString("N");
+    bool NeedsReason => Decision == DocumentReviewStatus.NeedsReplacement;
+    string Choice(DocumentReviewStatus status) => "review-choice" + (Decision == status ? " is-selected" : "") + (status == DocumentReviewStatus.NeedsReplacement ? " is-replace" : "");
+    static string Label(string status) => status == "NeedsReplacement" ? "Needs replacement" : status;
+    async Task OpenAsync()
+    {
+        Message = null;
+        DialogModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/document-request-dialog.js");
+        await DialogModule.InvokeVoidAsync("open", Dialog);
+        await Load();
+    }
+    async Task CloseAsync()
+    {
+        if (Busy) return;
+        if (DialogModule is not null) await DialogModule.InvokeVoidAsync("close", Dialog);
+    }
+    async Task Load() { Review = null; Error = null; var (value,error)=await Api.GetReviewAsync(DocumentId); Review=value; Error=error; Note=value?.Note; Decision=value?.Status=="NeedsReplacement" ? DocumentReviewStatus.NeedsReplacement : DocumentReviewStatus.Accepted; }
+    async Task Download() { var (url,error)=await Documents.GetDownloadUrlAsync(DocumentId); Error=error; if(url is not null) Navigation.NavigateTo(url,true); }
+    async Task Save()
+    {
+        if (Busy || Review is null) return;
+        Busy = true;
+        try
+        {
+            var (value, error) = await Api.ReviewAsync(DocumentId, new() { Status = Decision, Note = Note, ExpectedUpdatedAt = Review.UpdatedAt });
+            Error = error;
+            if (value is not null)
+            {
+                Review = value;
+                Message = "Review saved: " + Label(value.Status) + ".";
+                Busy = false;
+                await CloseAsync();
+                await OnReviewed.InvokeAsync();
+            }
+        }
+        finally { Busy = false; }
+    }
+    public async ValueTask DisposeAsync()
+    {
+        if (DialogModule is not null) try { await DialogModule.DisposeAsync(); } catch (Microsoft.JSInterop.JSDisconnectedException) { } catch (TaskCanceledException) { }
+    }
+}

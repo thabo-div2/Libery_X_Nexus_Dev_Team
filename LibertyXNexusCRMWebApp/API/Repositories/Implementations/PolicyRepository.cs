@@ -57,6 +57,7 @@ namespace API.Repositories.Implementations
                 throw new InvalidOperationException("This policy still has documents. Delete its documents first.");
             // Remove policy-specific checklist items with the policy, never convert them to general requests.
             db.DocumentRequests.RemoveRange(await db.DocumentRequests.Where(r => r.PolicyId == id).ToListAsync());
+            db.AdvisorTasks.RemoveRange(await db.AdvisorTasks.Where(t => t.PolicyId == id).ToListAsync());
             db.Policies.Remove(policy);
             await db.SaveChangesAsync();
         }

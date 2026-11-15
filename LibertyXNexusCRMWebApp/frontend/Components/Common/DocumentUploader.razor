@@ -7,25 +7,32 @@
    The advisor uses it on the Documents page (ForAdvisor) to file a document for one of their clients. *@
 
 <div class="doc-upload">
+    @if (Prepared)
+    {
+        <div class="prepared-upload" role="status"><strong>@PreparedDescription</strong>
+            <p>The policy and document type are selected for you. Choose the file below.</p>
+            <button type="button" class="wf-link" disabled="@IsUploading" @onclick="ClearPrepared">Upload a different document</button>
+        </div>
+    }
 
         <div class="doc-upload-fields">
 
 
                 <div class="doc-upload-field">
                     <label class="nx-label" for="@($"{_idPrefix}-policy")">Upload for</label>
-                    <select id="@($"{_idPrefix}-policy")" class="nx-input" @bind="SelectedPolicyId" disabled="@IsUploading">
+                    <select id="@($"{_idPrefix}-policy")" class="nx-input" @bind="SelectedPolicyId" disabled="@(IsUploading || Prepared)">
                         <option value="">General documents (no policy)</option>
                         @foreach (var policy in Policies)
                         {
                             <option value="@policy.PolicyId">@policy.PolicyName (#@policy.PolicyId)</option>
                         }
                     </select>
-                    <span class="doc-upload-hint">To complete a request, choose the same policy and document type shown in the checklist. General uploads only complete general requests.</span>
+                    @if (!Prepared) { <span class="doc-upload-hint">Choose the policy and document type that match your request.</span> }
                 </div>
 
             <div class="doc-upload-field">
                 <label class="nx-label" for="@($"{_idPrefix}-type")">What is it?</label>
-                <select id="@($"{_idPrefix}-type")" class="nx-input" @bind="SelectedType" disabled="@IsUploading">
+                <select id="@($"{_idPrefix}-type")" class="nx-input" @bind="SelectedType" disabled="@(IsUploading || Prepared)">
                     @foreach (var type in AvailableTypes)
                     {
                         <option value="@type">@FormatType(type)</option>
@@ -35,7 +42,7 @@
 
             <div class="doc-upload-field">
                 <label class="nx-label" for="@($"{_idPrefix}-file")">File</label>
-                <InputFile @key="_inputKey"
+                <InputFile @ref="FileInput" @key="_inputKey"
                            id="@($"{_idPrefix}-file")"
                            class="doc-upload-file"
                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
@@ -60,7 +67,7 @@
 
         <button type="button"
                 class="nx-btn nx-btn-primary doc-upload-button"
-                disabled="@(PickedFile is null || IsUploading)"
+                disabled="@(PickedFile is null || IsUploading || InvalidScope)"
                 @onclick="UploadAsync">
             @(IsUploading ? "Uploading…" : "Upload a document")
         </button>
@@ -103,6 +110,9 @@
         DocumentType.BankStatement,
         DocumentType.Payslip,
         DocumentType.TaxCertificate,
+        DocumentType.AmendmentForm,
+        DocumentType.PolicyStatement,
+        DocumentType.ServicePackageSummary,
         DocumentType.Other
     };
 
@@ -136,6 +146,34 @@
     private readonly string _idPrefix = $"upload-{Guid.NewGuid():N}";
     private Guid _inputKey = Guid.NewGuid();
 
+    private InputFile? FileInput;
+    private bool Prepared, FocusUpload;
+    private string? PreparedDescription;
+    private bool InvalidScope => SelectedPolicyId.HasValue && !Policies.Any(p => p.PolicyId == SelectedPolicyId);
+
+    public async Task PrepareAsync(int? policyId, string documentType, string? feedback, bool replacement)
+    {
+        if (IsUploading) return;
+        if (!Enum.TryParse<DocumentType>(documentType, out var type) || !Enum.IsDefined(type))
+        { ErrorMessage = "The requested document type is not available. Please refresh the page."; await InvokeAsync(StateHasChanged); return; }
+        if (policyId.HasValue && !Policies.Any(p => p.PolicyId == policyId))
+        { ErrorMessage = "This policy is no longer available. Please refresh or contact your adviser."; await InvokeAsync(StateHasChanged); return; }
+        SelectedPolicyId = policyId;
+        SelectedType = type;
+        Prepared = true;
+        var scope = policyId is int id ? $"{Policies.First(p => p.PolicyId == id).PolicyName} (#{id})" : "General documents";
+        PreparedDescription = $"{(replacement ? "Replacing" : "Uploading")}: {DocumentTypeNames.Format(documentType)} — {scope}";
+        ErrorMessage = null; SuccessMessage = null; PickedFile = null; _inputKey = Guid.NewGuid(); FocusUpload = true;
+        await InvokeAsync(StateHasChanged);
+    }
+    private void ClearPrepared() { Prepared = false; PreparedDescription = null; PickedFile = null; _inputKey = Guid.NewGuid(); }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!FocusUpload) return; FocusUpload = false;
+        try { if (FileInput?.Element is ElementReference element) await element.FocusAsync(); }
+        catch (Exception) { /* Focus may be lost when navigation closes the uploader. */ }
+    }
+
     private int? SelectedPolicyId;
     private DocumentType SelectedType = DocumentType.CertifiedIdCopy;
     private IBrowserFile? PickedFile;
@@ -155,8 +193,7 @@
     protected override void OnParametersSet()
     {
         // Never silently switch a document to a different policy.
-        if (SelectedPolicyId.HasValue && !Policies.Any(p => p.PolicyId == SelectedPolicyId))
-            SelectedPolicyId = null;
+        if (InvalidScope) ErrorMessage = "The selected policy is no longer available. Choose another document or refresh the page.";
     }
 
     private void OnFileSelected(InputFileChangeEventArgs e)
@@ -192,7 +229,7 @@
     private async Task UploadAsync()
     {
         // Stops a double click from sending the same file twice.
-        if (PickedFile is null || IsUploading)
+        if (PickedFile is null || IsUploading || InvalidScope)
         {
             return;
         }
@@ -236,6 +273,8 @@
                 : ShareWithClient
                     ? $"'{document.FileName}' was uploaded and shared with the client."
                     : $"'{document.FileName}' was uploaded. Only you can see it.";
+            Prepared = false;
+            PreparedDescription = null;
             PickedFile = null;
             _inputKey = Guid.NewGuid(); // clears the file box
 

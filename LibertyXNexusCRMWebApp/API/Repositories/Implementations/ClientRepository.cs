@@ -57,6 +57,21 @@ namespace API.Repositories.Implementations
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
 
+            return await SearchQuery(context, searchTerm, status, advisorId).ToListAsync();
+        }
+
+        public async Task<(List<Client> Items, int Total)> SearchPageAsync(string? searchTerm, ClientStatus? status, int? advisorId, int skip, int take)
+        {
+            using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            var query = SearchQuery(context, searchTerm, status, advisorId);
+            var total = await query.CountAsync();
+            var items = await query.Skip(Math.Max(0, skip)).Take(Math.Clamp(take, 1, 200)).ToListAsync();
+            return (items, total);
+        }
+
+        private static IQueryable<Client> SearchQuery(ApplicationDbContext context, string? searchTerm, ClientStatus? status, int? advisorId)
+        {
             var query = context.Clients.AsNoTracking().AsQueryable();
 
             // Advisor should on be allowed to see their own clients, so filter by advisorId if provided
@@ -83,7 +98,7 @@ namespace API.Repositories.Implementations
                 EF.Functions.Like(c.FirstName + " " + c.LastName, $"%{term}%"));
             }
 
-            return await query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).ToListAsync();
+            return query.OrderBy(c => c.LastName).ThenBy(c => c.FirstName).ThenBy(c => c.ClientId);
         }
 
         public async Task<IEnumerable<Client>> GetDueForReviewAsync(DateTime reviewCutoff)

@@ -1,0 +1,11 @@
+@if (!string.IsNullOrWhiteSpace(Text) || NeedsReplacement)
+{
+    <div class="feedback-callout @(NeedsReplacement ? "feedback-replacement" : "")" role="@(NeedsReplacement ? "alert" : "note")">
+        <svg class="feedback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20z M12 9v5 M12 17h.01" /></svg>
+        <div class="feedback-copy"><h4>@(NeedsReplacement ? "Action required: upload a replacement" : "Adviser feedback")</h4>
+        @if (!string.IsNullOrWhiteSpace(Text)) { <p><b>Your adviser's feedback:</b> @Text</p> }
+        @if (NeedsReplacement) { <p class="feedback-instruction">This document could not be accepted. Upload a corrected copy for the same policy and document type.</p> }
+        </div>
+    </div>
+}
+@code { [Parameter] public string? Text { get; set; } [Parameter] public bool NeedsReplacement { get; set; } }

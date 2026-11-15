@@ -21,16 +21,24 @@
    SIDEBAR AREA
    =============================== */
 
+/* The sidebar floats as a rounded panel inset from the window edge. */
 .nexus-sidebar {
-    width: 220px;
-    min-width: 220px;
-    height: 100vh;
-    flex: 0 0 220px;
-    position: sticky;
-    top: 0;
+    width: 248px;
+    min-width: 248px;
+    height: calc(100vh - 2 * var(--space-4));
+    height: calc(100dvh - 2 * var(--space-4));
+    flex: 0 0 248px;
+    position: fixed;
+    top: var(--space-4);
+    bottom: var(--space-4);
+    left: var(--space-4);
     z-index: 100;
+    margin: 0;
     overflow: hidden;
+    border-radius: var(--radius-xl);
     background: var(--color-sidebar);
+    background-image: radial-gradient(420px 260px at 0% 0%, rgba(240, 138, 75, 0.16), transparent 70%);
+    box-shadow: 0 24px 48px -24px rgba(12, 35, 64, 0.55);
 }
 
 
@@ -40,10 +48,10 @@
 
 .nexus-main {
     flex: 1;
-    width: calc(100% - 220px);
+    width: calc(100% - 248px - var(--space-4));
+    margin-left: calc(248px + var(--space-4));
     min-width: 0;
     min-height: 100vh;
-    margin: 0;
     padding: 0;
     overflow-x: hidden;
     background: var(--color-page-bg);
@@ -57,13 +65,14 @@
 @media (max-width: 900px) {
 
     .nexus-sidebar {
-        width: 190px;
-        min-width: 190px;
-        flex-basis: 190px;
+        width: 208px;
+        min-width: 208px;
+        flex-basis: 208px;
     }
 
     .nexus-main {
-        width: calc(100% - 190px);
+        width: calc(100% - 208px - var(--space-4));
+        margin-left: calc(208px + var(--space-4));
     }
 }
 
@@ -75,13 +84,16 @@
 @media (max-width: 650px) {
 
     .nexus-sidebar {
-        width: 64px;
-        min-width: 64px;
-        flex-basis: 64px;
+        width: 68px;
+        min-width: 68px;
+        flex-basis: 68px;
+        left: var(--space-2);
+        border-radius: var(--radius-lg);
     }
 
     .nexus-main {
-        width: calc(100% - 64px);
+        width: calc(100% - 68px - var(--space-2));
+        margin-left: calc(68px + var(--space-2));
     }
 }
 
@@ -138,5 +150,20 @@
         margin: 0 !important;
         padding: 0 !important;
         overflow: visible !important;
+    }
+}
+
+/* Clients on phones get the bottom tab bar (ClientTabBar) instead of the narrow sidebar,
+   so the page uses the full width and leaves room at the bottom for the bar. */
+@media (max-width: 650px) {
+
+    .nexus-app.is-client .nexus-sidebar {
+        display: none;
+    }
+
+    .nexus-app.is-client .nexus-main {
+        width: 100%;
+        margin-left: 0;
+        padding-bottom: calc(68px + env(safe-area-inset-bottom));
     }
 }

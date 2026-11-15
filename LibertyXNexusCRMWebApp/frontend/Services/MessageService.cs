@@ -56,6 +56,34 @@ namespace frontend.Services
         }
 
         /// <summary>
+        /// Gets only the newest messages of a client's thread, and whether older ones exist.
+        /// </summary>
+        public async Task<(List<ChatMessage> Messages, bool HasEarlier, string? Error)> GetRecentConversationAsync(int clientId, int take)
+        {
+            try
+            {
+                var response = await _http.GetAsync($"Message/client/{clientId}?take={take}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (new List<ChatMessage>(), false, $"The server reported an error (status {(int)response.StatusCode}).");
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<List<ChatMessage>>() ?? new List<ChatMessage>();
+                var hasEarlier = response.Headers.TryGetValues("X-Has-More", out var values)
+                    && string.Equals(values.FirstOrDefault(), "true", StringComparison.OrdinalIgnoreCase);
+                return (result, hasEarlier, null);
+            }
+            catch (HttpRequestException)
+            {
+                return (new List<ChatMessage>(), false, "Can't reach the API. Make sure the API project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (new List<ChatMessage>(), false, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Gets all of an advisor's chats.
         /// </summary>
         public async Task<(List<ConversationSummary> Conversations, string? Error)> GetConversationsForAdvisorAsync(int advisorId)

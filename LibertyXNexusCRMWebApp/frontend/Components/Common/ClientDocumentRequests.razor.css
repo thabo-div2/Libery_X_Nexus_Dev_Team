@@ -85,3 +85,26 @@
 
 .request-policy-group { padding: 12px; margin-top: 8px; border: 1px solid var(--color-border-light); border-radius: 9px; background: var(--color-page-bg); }
 .request-policy-heading { margin: 0 0 10px; color: var(--color-text); font-size: var(--text-sm); font-weight: 600; overflow-wrap: anywhere; }
+.request-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.request-modal { width:min(520px, calc(100vw - 32px)); max-height:calc(100dvh - 48px); overflow-y:auto; box-sizing:border-box; margin:auto; padding:24px; border:1px solid var(--color-border); border-radius:18px; background:var(--color-white); color:var(--color-text); box-shadow:0 24px 80px #071b3333; }
+.request-modal::backdrop { background:#0d223d66; }
+.request-modal-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.request-modal-heading h2 { margin:0; font-size:19px; }
+.request-modal-heading p { margin:8px 0 16px; font-size:12px; line-height:1.6; color:var(--color-text-muted); }
+.request-close { background:transparent; border:0; font-size:24px; color:var(--color-text-muted); cursor:pointer; }
+.request-modal .doc-requests-form { margin:0; gap:16px; }
+.request-modal label { display:flex; flex-direction:column; gap:7px; }
+.request-modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+.request-close:focus-visible { outline:2px solid var(--color-primary); outline-offset:3px; }
+@keyframes request-reveal {
+    from { opacity: 0; transform: translateY(6px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes request-backdrop-reveal {
+    from { background: #0d223d00; }
+    to { background: #0d223d66; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .request-modal[open] { animation: request-reveal 200ms cubic-bezier(.2,.7,.2,1); }
+    .request-modal[open]::backdrop { animation: request-backdrop-reveal 180ms ease; }
+}

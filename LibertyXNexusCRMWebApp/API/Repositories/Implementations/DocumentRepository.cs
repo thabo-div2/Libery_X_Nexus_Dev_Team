@@ -28,8 +28,7 @@ namespace API.Repositories.Implementations
                     .OrderBy(r => r.CreatedAt).FirstOrDefaultAsync();
                 if (request is not null)
                 {
-                    request.FulfilledAt = DateTime.UtcNow;
-                    request.FulfilledDocumentId = entity.DocumentId;
+                    WorkflowRules.RecordUpload(entity, request, DateTime.UtcNow);
                     await context.SaveChangesAsync();
                 }
                 await transaction.CommitAsync();
@@ -46,6 +45,8 @@ namespace API.Repositories.Implementations
                 .Where(r => r.ClientId == document.ClientId && r.FulfilledDocumentId == id).ToListAsync();
             foreach (var request in requests)
             {
+                request.ReviewStatus = DocumentReviewStatus.Received;
+                request.ReviewNote = null;
                 request.FulfilledAt = null;
                 request.FulfilledDocumentId = null;
             }

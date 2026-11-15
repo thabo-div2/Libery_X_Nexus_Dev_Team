@@ -110,6 +110,36 @@
         }
 
         /// <summary>
+        /// Sends a request for one page of a list and reads the X-Total-Count header the API sends with it.
+        /// </summary>
+        public static async Task<(List<T> Items, int Total, string? Error)> SendPageAsync<T>(Func<Task<HttpResponseMessage>> send)
+        {
+            try
+            {
+                var response = await send();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (new List<T>(), 0, await ReadAsync(response));
+                }
+
+                var items = await System.Net.Http.Json.HttpContentJsonExtensions.ReadFromJsonAsync<List<T>>(response.Content) ?? new List<T>();
+                var total = response.Headers.TryGetValues("X-Total-Count", out var values) && int.TryParse(values.FirstOrDefault(), out var parsed)
+                    ? parsed
+                    : items.Count;
+                return (items, total, null);
+            }
+            catch (HttpRequestException)
+            {
+                return (new List<T>(), 0, CantReachServer);
+            }
+            catch (Exception)
+            {
+                return (new List<T>(), 0, Unexpected);
+            }
+        }
+
+        /// <summary>
         /// Sends a request that has no reply body. Returns an error message, or null if it worked.
         /// </summary>
         public static async Task<string?> SendAsync(Func<Task<HttpResponseMessage>> send)

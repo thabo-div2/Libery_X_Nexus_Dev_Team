@@ -187,7 +187,7 @@
                 <section class="prep-card">
                     <h2>Documents</h2>
 
-                    <h3>Still needed from the client</h3>
+                    <h3>Document requests & reviews</h3>
 
                     @if (RequestError is not null)
                     {
@@ -204,6 +204,7 @@
                             {
                                 <li @key="request.DocumentRequestId">
                                     <strong>@DocumentTypeNames.Format(request.DocumentType)</strong>
+                                    <span>@(request.ReviewStatus == "NeedsReplacement" ? "Needs replacement: " + request.ReviewNote : request.IsFulfilled ? "Received · awaiting adviser review" : "Still needed")</span>
                                     <span>@(request.PolicyId is int id ? $"{request.PolicyName ?? "Policy"} (#{id})" : "General documents")</span>
                                     <span>@Join("Requested " + request.CreatedAt.ToLocalTime().ToString("d MMM yyyy"), request.Note)</span>
                                 </li>
@@ -416,7 +417,7 @@
             DocumentError = documentError;
 
             var (requests, requestError) = requestsTask.Result;
-            OutstandingRequests = (requests ?? new List<DocumentRequestSummary>()).Where(r => !r.IsFulfilled).ToList();
+            OutstandingRequests = (requests ?? new List<DocumentRequestSummary>()).Where(r => !r.IsFulfilled || r.ReviewStatus != "Accepted").ToList();
             RequestError = requestError;
 
             var (messages, messageError) = messagesTask.Result;

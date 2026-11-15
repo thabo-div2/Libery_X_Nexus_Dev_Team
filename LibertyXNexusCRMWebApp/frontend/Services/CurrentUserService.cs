@@ -14,6 +14,7 @@ namespace frontend.Services
         private readonly ProtectedSessionStorage _storage;
         private readonly ProtectedLocalStorage _localStorage;
         private readonly TokenStorageService _tokens;
+        private readonly RealtimeService _realtime;
         private bool _restoreAttempted;
         private readonly SemaphoreSlim _restoreLock = new(1, 1);
 
@@ -22,11 +23,12 @@ namespace frontend.Services
         /// Initializes a new instance of the <see cref="CurrentUserService"/> class with the specified <see cref="ProtectedSessionStorage"/> for managing user session data.
         /// </summary>
         /// <param name="storage"></param>
-        public CurrentUserService(ProtectedSessionStorage storage, ProtectedLocalStorage localStorage, TokenStorageService tokens)
+        public CurrentUserService(ProtectedSessionStorage storage, ProtectedLocalStorage localStorage, TokenStorageService tokens, RealtimeService realtime)
         {
             _storage = storage;
             _localStorage = localStorage;
             _tokens = tokens;
+            _realtime = realtime;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -116,6 +118,7 @@ namespace frontend.Services
         /// <returns></returns>
         public async Task SignOutAsync()
         {
+            await _realtime.StopAsync();
             Id = null;
             Role = null;
             FirstName = null;

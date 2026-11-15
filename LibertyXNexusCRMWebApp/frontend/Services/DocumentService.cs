@@ -23,7 +23,7 @@ namespace frontend.Services
     int DocumentId, int ClientId, int? PolicyId, string FileName, string ContentType,
     long FileSizeBytes, string DocumentType, bool VisibleToClient, string? UploadedBy,
     string? SignatureStatus, DateTime? UpdateAt,
-    string? ClientName = null, string? PolicyName = null);
+    string? ClientName = null, string? PolicyName = null, string ReviewStatus = "Received", string? ReviewNote = null);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>

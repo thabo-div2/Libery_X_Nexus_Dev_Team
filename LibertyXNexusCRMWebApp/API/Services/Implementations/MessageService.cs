@@ -31,18 +31,34 @@ namespace API.Services.Implementations
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Orders a thread oldest first. With latest, keeps only that many of the newest messages
+        /// (still oldest first), so a long thread opens without sending all of it.
+        /// </summary>
+        private static IQueryable<Message> Thread(IQueryable<Message> query, int? latest)
+        {
+            if (latest is int count)
+            {
+                var newest = query.OrderByDescending(m => m.SentAt).ThenByDescending(m => m.MessageId)
+                    .Take(Math.Clamp(count, 1, 1000)).Select(m => m.MessageId);
+                query = query.Where(m => newest.Contains(m.MessageId));
+            }
+
+            return query.OrderBy(m => m.SentAt).ThenBy(m => m.MessageId);
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Retrieves the conversation messages for a specific client.
         /// </summary>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<MessageDto>> GetConversationForClientAsync(int clientId)
+        public async Task<IEnumerable<MessageDto>> GetConversationForClientAsync(int clientId, int? latest = null)
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
 
-            var messages = await db.Messages
+            var messages = await Thread(db.Messages
                 .AsNoTracking()
-                .Where(m => m.ClientId == clientId)
-                .OrderBy(m => m.SentAt)
+                .Where(m => m.ClientId == clientId), latest)
                 .Select(m => new MessageDto(
                     m.MessageId,
                     m.ClientId,
@@ -79,14 +95,13 @@ namespace API.Services.Implementations
         /// <param name="advisorId"></param>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<MessageDto>> GetConversationForAdvisorAsync(int advisorId, int clientId)
+        public async Task<IEnumerable<MessageDto>> GetConversationForAdvisorAsync(int advisorId, int clientId, int? latest = null)
         {
             await using var db = await _contextFactory.CreateDbContextAsync();
 
-            var messages = await db.Messages
+            var messages = await Thread(db.Messages
                 .AsNoTracking()
-                .Where(m => m.ClientId == clientId && m.AdvisorId == advisorId)
-                .OrderBy(m => m.SentAt)
+                .Where(m => m.ClientId == clientId && m.AdvisorId == advisorId), latest)
                 .Select(m => new MessageDto(
                     m.MessageId,
                     m.ClientId,

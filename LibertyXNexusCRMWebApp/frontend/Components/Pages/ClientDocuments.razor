@@ -1,4 +1,4 @@
-﻿@page "/client-documents"
+@page "/client-documents"
 @layout MainLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
@@ -32,7 +32,7 @@
             <article class="cdocs-card">
 
                 <div class="card-header">
-                    <h2>Your documents</h2>
+                    <h2>Your documents<span class="card-count">@Documents.Count</span></h2>
                 </div>
 
                 <div class="cdocs-list">
@@ -58,58 +58,30 @@
                     }
                     else if (Documents.Count > 0)
                     {
-                        @foreach (var document in Documents)
+                        @foreach (var group in DocumentGroups)
                         {
-                            <div class="document-row">
-
-                                <div class="document-main">
-
-                                    <span class="document-icon" aria-hidden="true">▤</span>
-
-                                    <div class="document-info">
-
-                                        <strong>@document.FileName</strong>
-
-                                        <span>
-                                            <span>@FormatType(document.DocumentType)</span>
-                                            <span> · @(document.PolicyId is int id ? $"{document.PolicyName ?? "Policy"} (#{id})" : "General documents")</span>
-
-                                            @if (document.UpdateAt is DateTime updatedAt)
-                                            {
-                                                <span> · @updatedAt.ToLocalTime().ToString("dd MMM yyyy")</span>
-                                            }
-
-                                            @if (!string.IsNullOrWhiteSpace(document.UploadedBy))
-                                            {
-                                                <span> · From @document.UploadedBy</span>
-                                            }
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="document-actions">
-
-                                    <button type="button"
-                                            class="download-button"
-                                            title="Download"
-                                            aria-label="@($"Download {document.FileName}")"
-                                            @onclick="() => DownloadAsync(document.DocumentId)">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                    </button>
-
-                                </div>
-
-                            </div>
+                            var versions = group.OrderByDescending(d => d.DocumentId).ToList();
+                            var latest = versions[0];
+                            <section class="document-version-group" @key="group.Key">
+                                <ClientDocumentEntry Document="latest" RequiresReplacement="@ReplacementPending(latest)" OnDownload="DownloadAsync" OnReplace="BeginReplacement" />
+                                @if (versions.Count > 1)
+                                {
+                                    <details class="document-history">
+                                        <summary>Previous uploads <span>@(versions.Count - 1)</span></summary>
+                                        @foreach (var previous in versions.Skip(1))
+                                        {
+                                            <ClientDocumentEntry @key="previous.DocumentId" Document="previous" IsHistory="true" OnDownload="DownloadAsync" />
+                                        }
+                                    </details>
+                                }
+                            </section>
                         }
                     }
                     else
                     {
                         <div class="empty-state">
 
-                            <div class="empty-icon" aria-hidden="true">▤</div>
+                            <div class="empty-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
 
                             <strong>No documents yet</strong>
 
@@ -144,9 +116,9 @@
 
                     @if (!IsLoading && CurrentUser.Id is int clientId)
                     {
-                        <RequestedDocuments @ref="RequestedList" ClientId="clientId" />
+                        <RequestedDocuments ShowFeedback="false" @ref="RequestedList" ClientId="clientId" OnUploadRequested="BeginRequestUpload" OnLoaded="RequestsLoaded" />
 
-                        <DocumentUploader ClientId="clientId"
+                        <DocumentUploader @ref="Uploader" ClientId="clientId"
                                           Policies="Policies"
                                           OnUploaded="OnDocumentUploaded" />
                     }
@@ -161,9 +133,13 @@
 
 </div>
 
+<RealtimeRefresh OnChanged="RefreshRealtimeAsync" />
+
 @code {
 
     private List<DocumentSummary> Documents { get; set; } = new();
+    private IEnumerable<IGrouping<(int? PolicyId, string DocumentType), DocumentSummary>> DocumentGroups => Documents
+        .GroupBy(d => (d.PolicyId, d.DocumentType)).OrderByDescending(g => g.Max(d => d.DocumentId));
 
     private List<PolicySummary> Policies { get; set; } = new();
 
@@ -175,6 +151,20 @@
 
     // The checklist of documents the advisor asked for.
     private RequestedDocuments? RequestedList;
+    private DocumentUploader? Uploader;
+    private List<DocumentRequestSummary>? ClientRequests;
+    private void RequestsLoaded(List<DocumentRequestSummary> requests) => ClientRequests = requests;
+    private bool ReplacementPending(DocumentSummary document)
+    {
+        if (document.ReviewStatus != "NeedsReplacement") return false;
+        if (ClientRequests is null) return true;
+        var scoped = ClientRequests.Where(r => r.PolicyId == document.PolicyId && r.DocumentType == document.DocumentType).ToList();
+        if (scoped.Count > 0) return scoped.Any(r => !r.IsFulfilled);
+        return !Documents.Any(d => d.DocumentId > document.DocumentId && d.PolicyId == document.PolicyId
+            && d.DocumentType == document.DocumentType && d.ReviewStatus != "NeedsReplacement");
+    }
+    private async Task BeginReplacement(DocumentSummary document) { if (Uploader is not null) await Uploader.PrepareAsync(document.PolicyId, document.DocumentType, document.ReviewNote, true); }
+    private async Task BeginRequestUpload(DocumentRequestSummary request) { if (Uploader is not null) await Uploader.PrepareAsync(request.PolicyId, request.DocumentType, request.ReviewNote, request.ReviewStatus == "NeedsReplacement"); }
 
     protected override async Task OnInitializedAsync()
     {
@@ -218,6 +208,7 @@
     // Show a freshly uploaded document at the top of the list straight away.
     private async Task OnDocumentUploaded(DocumentSummary document)
     {
+        Documents.RemoveAll(d => d.DocumentId == document.DocumentId);
         Documents.Insert(0, document);
 
         // The upload may have fulfilled something the advisor asked for, so refresh the checklist.
@@ -225,6 +216,13 @@
         {
             await RequestedList.RefreshAsync();
         }
+    }
+
+    private async Task RefreshRealtimeAsync()
+    {
+        ErrorMessage = null;
+        await OnInitializedAsync();
+        if (RequestedList is not null) await RequestedList.RefreshAsync();
     }
 
     private async Task DownloadAsync(int documentId)

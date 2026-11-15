@@ -1,0 +1,42 @@
+@using System.ComponentModel.DataAnnotations
+@using frontend.Services
+@inject PolicyService Api
+<details class="wf-card wf-policy-editor">
+    <summary>Edit policy details</summary>
+    @if(Error is not null) { <p class="wf-error" role="alert">@Error</p> }
+    @if(Message is not null) { <p class="wf-success" role="status">@Message</p> }
+    @if(Form is not null) {
+        <EditForm Model="Form" OnValidSubmit="Save" class="wf-form"><DataAnnotationsValidator /><ValidationSummary /><fieldset disabled="@Busy" class="wf-fieldset">
+            <p class="wf-muted">Update this client's policy record. Changes do not alter cover held with the provider.</p>
+            <label>Policy name<InputText class="nx-input" maxlength="200" @bind-Value="Form.Name" /></label>
+            <label>Provider<InputText class="nx-input" maxlength="150" @bind-Value="Form.Provider" /></label>
+            <label>Description<InputTextArea class="nx-input" rows="2" maxlength="2000" @bind-Value="Form.Description" /></label>
+            <div class="wf-form-grid">
+                <label>Premium (R)<InputNumber class="nx-input" @bind-Value="Form.Premium" /></label>
+                <label>Cover amount (R)<InputNumber class="nx-input" @bind-Value="Form.Cover" /></label>
+                <label>Start date<InputDate class="nx-input" @bind-Value="Form.Start" /></label>
+                <label>End / renewal date<InputDate class="nx-input" @bind-Value="Form.End" /></label>
+            </div>
+            <button class="nx-btn nx-btn-primary nx-btn-sm" disabled="@Busy">@(Busy ? "Saving…" : "Save policy details")</button>
+        </fieldset></EditForm>
+    }
+</details>
+@code {
+    [Parameter,EditorRequired] public int PolicyId {get;set;}
+    [Parameter] public EventCallback OnSaved {get;set;}
+    int LoadedId;
+    FormModel? Form;
+    bool Busy;
+    string? Error,Message;
+    protected override async Task OnParametersSetAsync() { if(LoadedId==PolicyId)return; LoadedId=PolicyId; Form=null; Error=null; Message=null; var id=PolicyId; var(policy,error)=await Api.GetByIdAsync(id); if(id!=PolicyId)return; Error=error; if(policy is not null) Form=new() {Name=policy.PolicyName,Provider=policy.Provider,Description=policy.Description,Premium=policy.PremiumAmount,Cover=policy.CoverAmount,Start=policy.StartDate,End=policy.EndDate}; }
+    async Task Save() { if(Busy || Form is null)return; Error=null; Message=null; if(Form.Start.HasValue&&Form.End.HasValue&&Form.End<Form.Start){Error="The end date cannot be before the start date.";return;} Busy=true; try {var id=PolicyId;var(value,error)=await Api.UpdateAsync(id,new(Form.Name.Trim(),Form.Provider.Trim(),Form.Description,Form.Premium,Form.Cover,Form.Start,Form.End));if(id!=PolicyId)return;Error=error;if(value is not null){Message="Policy details saved.";await OnSaved.InvokeAsync();}}finally{Busy=false;} }
+    public class FormModel {
+        [Required,MaxLength(200)]public string Name {get;set;}="";
+        [Required,MaxLength(150)]public string Provider {get;set;}="";
+        [MaxLength(2000)]public string? Description {get;set;}
+        [Range(0,double.MaxValue)]public double? Premium {get;set;}
+        [Range(0,double.MaxValue)]public double? Cover {get;set;}
+        public DateTime? Start {get;set;}
+        public DateTime? End {get;set;}
+    }
+}

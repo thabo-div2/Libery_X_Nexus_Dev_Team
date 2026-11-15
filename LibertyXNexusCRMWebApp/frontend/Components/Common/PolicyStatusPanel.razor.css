@@ -1,5 +1,5 @@
-.policy-status-panel { display: flex; flex-direction: column; gap: 10px; padding: 14px; margin: 12px 0; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-page-bg); }
-.policy-status-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--text-sm); }
+.policy-status-panel { display: flex; flex-direction: column; gap: 10px; padding: var(--space-5); margin: 12px 0; border: 1px solid var(--color-border-light); border-radius: var(--radius-lg); background: var(--color-white); }
+.policy-status-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--text-md); }
 .policy-status-badge { padding: 4px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; background: var(--color-blue-60); color: var(--color-primary); }
 .status-active { background: var(--color-green-40); color: var(--color-green-690); }
 .status-cancelled, .status-lapsed { background: var(--color-danger-bg); color: var(--color-danger); }
@@ -10,3 +10,7 @@
 .status-confirm { border-top: 1px solid var(--color-border); padding-top: 10px; font-size: var(--text-xs); }
 .status-confirm p { margin: 0 0 10px; }
 .status-confirm button { margin: 0 5px 5px 0; }
+.status-controls select { min-height: 44px; border-radius: var(--radius-full); border-color: transparent; background-color: var(--color-page-bg); }
+.status-controls .nx-btn { min-height: 44px; border: 0; background: var(--color-accent); color: var(--color-on-accent); font-weight: 700; }
+.status-controls .nx-btn:hover:not(:disabled) { background: var(--color-accent-deep); }
+.status-controls .nx-btn:disabled { background: var(--color-page-bg); color: var(--color-text-muted); }

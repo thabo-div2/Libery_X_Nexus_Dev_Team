@@ -366,6 +366,8 @@ namespace API.Services.Implementations
                 Location = meeting.Location,
                 Status = meeting.Status.ToString(),
                 Notes = meeting.Notes,
+                SharedSummary = meeting.SharedSummary,
+                SummaryUpdatedAt = meeting.SummaryUpdatedAt,
                 CreatedAt = meeting.CreatedAt,
                 UpdatedAt = meeting.UpdatedAt
             };

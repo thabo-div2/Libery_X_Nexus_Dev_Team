@@ -19,6 +19,8 @@
         public string ContentType { get; set; } = string.Empty;
         public long FileSizeBytes { get; set; }
         public string DocumentType { get; set; } = string.Empty;
+        public string ReviewStatus { get; set; } = "Received";
+        public string? ReviewNote { get; set; }
         public string SignatureStatus { get; set; } = string.Empty;
         public bool VisibleToClient { get; set; }
         public string? UploadedBy { get; set; }

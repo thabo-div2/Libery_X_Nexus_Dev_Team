@@ -21,22 +21,24 @@
    ===================================== */
 
 .calendar-header {
-    min-height: 78px;
+    min-height: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     gap: var(--space-8);
-    padding: var(--space-4) var(--space-6);
-    background: var(--color-white);
-    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-8) var(--space-8) var(--space-2);
+    background: transparent;
+    flex-wrap: wrap;
 }
 
 .calendar-heading h1 {
     margin: 0 0 var(--space-1);
     color: var(--color-text);
-    font-size: var(--text-lg);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.2px;
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
 }
 
 .calendar-heading p {
@@ -69,7 +71,7 @@
         height: 100%;
         padding: 0 var(--space-3) 0 var(--space-8);
         border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-full);
         outline: none;
         background: var(--color-white);
         color: var(--color-slate-770);
@@ -95,13 +97,13 @@
 }
 
 .notification-button {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-full);
     background: var(--color-white);
     color: var(--color-blue-790);
     cursor: pointer;
@@ -121,7 +123,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.95fr);
     gap: var(--space-5);
-    padding: var(--space-5) var(--space-6) var(--space-12);
+    padding: var(--space-4) var(--space-8) var(--space-12);
 }
 
 .calendar-main-column,
@@ -821,3 +823,616 @@
     }
 
 /* ================================ EndOfFile ============================== */
+
+/* =====================================
+   NEXUS 2.0 CALENDAR
+   Floating cards, one 24px inset, soft meeting rows.
+   ===================================== */
+
+.calendar-card,
+.side-card {
+    border: 0;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.calendar-card-header {
+    min-height: 0;
+    padding: var(--space-5) var(--space-6) var(--space-4);
+    border-bottom: 0;
+}
+
+    .calendar-card-header h2 {
+        font-family: var(--font-display);
+        font-size: var(--text-xl);
+        font-weight: var(--weight-regular);
+        letter-spacing: -0.01em;
+    }
+
+.month-button {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    opacity: 1;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.week-header {
+    height: 40px;
+    border-top: 1px solid var(--color-border-light);
+    border-bottom: 1px solid var(--color-border-light);
+    background: var(--color-page-bg);
+}
+
+    .week-header div {
+        border-right: 0;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+.calendar-grid {
+    grid-template-rows: repeat(6, 104px);
+}
+
+.calendar-day {
+    padding: var(--space-2) var(--space-2) var(--space-1);
+}
+
+.day-number {
+    height: 26px;
+    font-size: var(--text-xs);
+}
+
+    .day-number span {
+        width: 24px;
+        height: 24px;
+    }
+
+.calendar-day.today .day-number span {
+    background: var(--color-primary);
+}
+
+.calendar-event {
+    padding: 3px var(--space-2);
+    border-radius: 8px;
+}
+
+.side-card-header {
+    min-height: 0;
+    padding: var(--space-5) var(--space-6) var(--space-2);
+    border-bottom: 0;
+}
+
+    .side-card-header h2 {
+        font-family: var(--font-display);
+        font-size: var(--text-xl);
+        font-weight: var(--weight-regular);
+        letter-spacing: -0.01em;
+    }
+
+.today-body {
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4) var(--space-5);
+}
+
+.meeting-card {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    background: var(--color-page-bg);
+}
+
+    .meeting-card:hover,
+    .meeting-card.is-selected {
+        border-color: var(--color-primary);
+        background: var(--color-white);
+        box-shadow: none;
+    }
+
+.meeting-title {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+}
+
+.empty-meetings {
+    min-height: 140px;
+    padding: 0 var(--space-4);
+}
+
+/* Shared workflow cards in the side column are spaced by the column gap. */
+.calendar-side-column .wf-card {
+    margin-bottom: 0;
+}
+
+@media (max-width: 800px) {
+    .calendar-card-header,
+    .side-card-header {
+        padding-left: var(--space-5);
+        padding-right: var(--space-5);
+    }
+}
+
+/* Search: one frosted pill (the input itself), no inner box or square focus outline. */
+.search-box {
+    height: 48px;
+    background: transparent;
+    box-shadow: none;
+}
+
+    .search-box input,
+    .search-box input:focus,
+    .search-box input:focus-visible {
+        outline: none;
+    }
+
+    .search-box input {
+        padding: 0 var(--space-5) 0 calc(var(--space-5) + 28px);
+        border: 0;
+        background: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.09);
+        transition: background var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+        .search-box input:hover {
+            background: var(--color-white);
+        }
+
+        .search-box input:focus,
+        .search-box input:focus-visible {
+            background: var(--color-white);
+            border: 0;
+            box-shadow: 0 0 0 2px var(--color-primary);
+        }
+
+
+/* ================================ NEXUS 2.0 CALENDAR PRO ============================== */
+
+.calendar-content {
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+}
+
+.calendar-side-column {
+    gap: var(--space-6);
+}
+
+.calendar-card,
+.side-card {
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 0 0 6px rgba(12, 35, 64, 0.04),
+        0 0 0 7px rgba(12, 35, 64, 0.06),
+        0 18px 36px -20px rgba(12, 35, 64, 0.24);
+}
+
+/* ---- month header ---- */
+.calendar-card-header {
+    gap: 10px;
+    padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.calendar-card-header h2 {
+    min-width: 168px;
+    color: var(--color-primary);
+    font-size: 30px;
+    text-align: center;
+}
+
+.month-button {
+    width: 40px;
+    height: 40px;
+    opacity: 1;
+    background: var(--color-page-bg);
+    color: var(--color-primary);
+}
+
+.month-button:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.month-button:focus-visible,
+.today-pill:focus-visible,
+.calendar-event:focus-visible,
+.meeting-card:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.today-pill {
+    height: 40px;
+    margin-left: auto;
+    padding: 0 var(--space-5);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.16);
+    color: var(--color-primary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.today-pill:hover:not(:disabled) {
+    background: var(--color-white);
+    box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.today-pill:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.today-pill:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.calendar-key {
+    gap: var(--space-5);
+    padding: 0 var(--space-6) var(--space-4);
+    font-size: 12px;
+}
+
+.calendar-key-item {
+    gap: 8px;
+}
+
+.calendar-key-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+}
+
+/* ---- grid ---- */
+.week-header {
+    height: 38px;
+    background: var(--color-page-bg);
+    border-top: 0;
+    border-bottom: 0;
+}
+
+.week-header div {
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.14em;
+}
+
+.calendar-grid {
+    grid-template-rows: repeat(6, 108px);
+}
+
+.calendar-day,
+.calendar-day.other-month {
+    padding: 10px 10px 6px;
+    border-color: rgba(12, 35, 64, 0.06);
+    background: var(--color-white);
+    transition: background-color var(--transition-fast);
+}
+
+.calendar-day:hover {
+    background: color-mix(in srgb, var(--color-page-bg) 40%, var(--color-white));
+}
+
+.calendar-day.other-month {
+    background: color-mix(in srgb, var(--color-page-bg) 35%, var(--color-white));
+}
+
+.calendar-day.today {
+    background: color-mix(in srgb, var(--color-accent) 9%, var(--color-white));
+}
+
+.day-number {
+    height: 28px;
+    color: var(--color-text);
+    font-size: 12.5px;
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+}
+
+.day-number span {
+    width: 26px;
+    height: 26px;
+}
+
+.calendar-day.today .day-number span {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.calendar-event {
+    padding: 4px 9px;
+    border-radius: 10px;
+    font-size: 11.5px;
+    font-weight: var(--weight-medium);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.calendar-event:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px -8px rgba(12, 35, 64, 0.5);
+}
+
+.calendar-event.is-selected {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+}
+
+.calendar-event-time {
+    margin-right: 6px;
+    font-variant-numeric: tabular-nums;
+}
+
+.event-green {
+    background: color-mix(in srgb, var(--color-primary) 10%, var(--color-white));
+    color: var(--color-primary);
+}
+
+.event-yellow {
+    background: color-mix(in srgb, var(--color-accent) 24%, var(--color-white));
+    color: var(--color-accent-deep);
+}
+
+/* ---- side: today ---- */
+.side-card-header {
+    padding: var(--space-6) var(--space-6) var(--space-2);
+}
+
+.side-card-header h2 {
+    color: var(--color-primary);
+    font-size: 26px;
+}
+
+.today-body {
+    gap: 10px;
+    padding: var(--space-2) var(--space-4) var(--space-5);
+}
+
+.meeting-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 18px;
+    border: 0;
+    border-radius: 20px;
+    background: var(--color-page-bg);
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.meeting-card:hover {
+    background: var(--color-white);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.14), 0 14px 24px -18px rgba(12, 35, 64, 0.45);
+    transform: translateY(-1px);
+}
+
+.meeting-card.is-selected {
+    background: var(--color-white);
+    box-shadow: 0 0 0 2px var(--color-primary);
+    transform: none;
+}
+
+.meeting-top {
+    margin-bottom: 0;
+}
+
+.meeting-time {
+    gap: 8px;
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+}
+
+.clock-icon {
+    display: inline-flex;
+    color: var(--color-accent-deep);
+}
+
+.meeting-title {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: 15px;
+}
+
+.meeting-method {
+    gap: 8px;
+    font-size: 12.5px;
+}
+
+.method-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-white);
+    color: var(--color-primary);
+    font-size: 12px;
+}
+
+.meeting-status {
+    gap: 7px;
+    padding: 5px 11px;
+    font-size: 11.5px;
+}
+
+.meeting-status .status-dot {
+    width: 6px;
+    height: 6px;
+}
+
+.empty-calendar-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: var(--color-page-bg);
+    color: var(--color-primary);
+}
+
+.empty-meetings strong {
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: var(--weight-regular);
+}
+
+/* ---- side: meeting details ---- */
+.meeting-details-card {
+    border-top: 4px solid var(--color-accent);
+}
+
+.meeting-details-header {
+    padding-bottom: var(--space-1);
+}
+
+.meeting-details-close {
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-page-bg);
+    color: var(--color-primary);
+}
+
+.meeting-details-close:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.meeting-details-body {
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-6) var(--space-6);
+}
+
+.meeting-details-who {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.meeting-details-who strong {
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.01em;
+}
+
+.meeting-details-list {
+    gap: 10px;
+}
+
+.meeting-details-list > div {
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--color-page-bg);
+}
+
+.meeting-details-list dt {
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+}
+
+.meeting-details-list dd {
+    margin-top: 3px;
+    overflow-wrap: anywhere;
+    color: var(--color-primary);
+    font-size: 14px;
+    font-weight: var(--weight-semibold);
+}
+
+.meeting-details-notes dd {
+    font-weight: var(--weight-regular);
+    line-height: 1.5;
+}
+
+.meeting-details-actions {
+    border-top-color: rgba(12, 35, 64, 0.08);
+}
+
+.meeting-cancel-confirm {
+    border: 0;
+    border-radius: 18px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+@media (max-width: 800px) {
+    .calendar-card-header,
+    .calendar-key {
+        padding-left: var(--space-5);
+        padding-right: var(--space-5);
+    }
+
+    .calendar-card-header h2 {
+        min-width: 0;
+        font-size: 24px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .calendar-event,
+    .meeting-card,
+    .today-pill,
+    .calendar-day {
+        transition: none;
+    }
+
+    .calendar-event:hover,
+    .meeting-card:hover {
+        transform: none;
+    }
+}
+
+
+/* ================================ NEXUS 2.0 UPCOMING MEETINGS ============================== */
+
+.calendar-side-column .wf-card {
+    padding-bottom: var(--space-3);
+    border-radius: var(--radius-xl);
+    box-shadow:
+        0 0 0 6px rgba(12, 35, 64, 0.04),
+        0 0 0 7px rgba(12, 35, 64, 0.06),
+        0 18px 36px -20px rgba(12, 35, 64, 0.24);
+}
+
+.calendar-side-column .wf-heading h2 {
+    font-size: 26px;
+}
+
+.wf-meeting-link {
+    gap: 3px;
+    padding: 12px var(--space-4);
+    border-radius: 18px;
+    cursor: pointer;
+}
+
+.wf-meeting-link strong {
+    color: var(--color-primary);
+}
+
+.wf-meeting-link:hover {
+    background: var(--color-page-bg);
+}
+
+.wf-meeting-link:active {
+    transform: scale(0.99);
+}
+
+.wf-meeting-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+}
+
+.wf-empty {
+    padding-top: var(--space-1);
+    font-size: var(--text-sm);
+}

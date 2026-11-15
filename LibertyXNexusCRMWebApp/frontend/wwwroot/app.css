@@ -17,32 +17,33 @@
        ========================================================= */
 
     /* Brand (Liberty navy + orange) */
-    --color-primary: #073253;        /* main brand navy: headings, primary buttons */
-    --color-sidebar: #062946;        /* side panel and dark brand panels */
-    --color-accent: #ff8b1f;         /* brand orange: highlights, badges, logo mark */
+    --color-primary: #0c2340;        /* main brand navy: headings, primary buttons */
+    --color-sidebar: #0c2340;        /* side panel and dark brand panels */
+    --color-accent: #f08a4b;         /* brand orange: highlights, badges, logo mark */
+    --color-accent-deep: #b8451a;    /* orange for text and badges on light backgrounds (4.5:1 on white) */
     --color-on-accent: var(--color-sidebar); /* text on orange/gold backgrounds (white fails contrast) */
 
     /* Surfaces */
     --color-white: #ffffff;
     --color-surface: var(--color-white); /* cards and panels */
-    --color-page-bg: #f6f8fb;        /* page background behind cards */
+    --color-page-bg: #efede8;        /* warm stone page background behind cards */
 
     /* Text */
-    --color-text: #172e43;           /* body text (about 13:1 on white) */
-    --color-text-muted: #5a6b7b;     /* secondary text, hints, timestamps (5.2:1 on page bg) */
-    --color-text-placeholder: #64717d; /* input placeholders (5.0:1 on white) */
+    --color-text: #0e1b2c;           /* body text (about 17:1 on white) */
+    --color-text-muted: #55616e;     /* secondary text, hints, timestamps (5.3:1 on page bg) */
+    --color-text-placeholder: #5f6b77; /* input placeholders (5.4:1 on white) */
 
     /* Borders */
-    --color-border: #dbe2e8;
-    --color-border-light: #e3e8ec;
+    --color-border: rgba(12, 35, 64, 0.1);
+    --color-border-light: rgba(12, 35, 64, 0.07);
 
     /* Status */
     --color-success: #2d8b59;        /* success fills and icons */
     --color-success-text: var(--color-green-690); /* green for text; --color-success is too light for small text */
     --color-danger: #c0392b;         /* errors, destructive actions, notification badge */
-    --color-danger-bg: #fdecea;
-    --color-warning-bg: #fff3da;
-    --color-warning-text: #8a6712;   /* 4.7:1 on --color-warning-bg */
+    --color-danger-bg: #fbe9e7;
+    --color-warning-bg: #fbf0d5;
+    --color-warning-text: #7a5200;   /* 6.2:1 on --color-warning-bg */
 
     /* Keyboard focus (accessibility) */
     --color-focus: var(--color-blue-710);        /* focus ring on light backgrounds */
@@ -54,7 +55,7 @@
        ========================================================= */
 
     /* Blues (higher number = darker) */
-    --color-blue-60: #eaf2f7;
+    --color-blue-60: #e6eef9;
     --color-blue-380: #6b9ed2;
     --color-blue-440: #258cfb;
     --color-blue-570: #3b6ea2;
@@ -64,8 +65,8 @@
     --color-blue-710: #0e4a85;
     --color-blue-740: #19496b;
     --color-blue-770: #08416b;
-    --color-blue-790: #123b5b;
-    --color-blue-850: #10253e;
+    --color-blue-790: #12304f;
+    --color-blue-850: #0e1b2c;
 
     /* Slate blue-greys (higher number = darker) */
     --color-slate-100: #dce7ef;
@@ -105,7 +106,7 @@
     --color-yellow-770: #6b5109;
 
     /* Greens */
-    --color-green-40: #eefaf1;
+    --color-green-40: #e3f1e8;
     --color-green-330: #8fc7a4;
     --color-green-570: #35a766;
     --color-green-580: #26b050;
@@ -117,11 +118,11 @@
           (number = opacity, e.g. 04 = 4%)
        ========================================================= */
     --color-black-40: rgba(0, 0, 0, 0.4);
-    --color-shadow-04: rgba(22, 48, 72, 0.04);
+    --color-shadow-04: rgba(12, 35, 64, 0.05);
     --color-shadow-05: rgba(17, 61, 94, 0.05);
     --color-shadow-06: rgba(16, 58, 91, 0.06);
     --color-shadow-12: rgba(5, 35, 60, 0.12);
-    --color-shadow-14: rgba(18, 40, 62, 0.14);
+    --color-shadow-14: rgba(12, 35, 64, 0.18);
     --color-shadow-22: rgba(17, 78, 122, 0.22);
     --color-white-06: rgba(255, 255, 255, 0.06);
     --color-white-08: rgba(255, 255, 255, 0.08);
@@ -132,7 +133,8 @@
        ========================================================= */
 
     /* Font */
-    --font-family: Inter, "Segoe UI", Arial, sans-serif;
+    --font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    --font-display: "Instrument Serif", Georgia, "Times New Roman", serif; /* page titles and big numbers */
 
     /* Text sizes (smallest to biggest) */
     --text-xs: 11px;     /* tiny labels, badges (was 10px; raised for readability) */
@@ -143,6 +145,8 @@
     --text-xl: 24px;     /* page titles */
     --text-2xl: 32px;    /* big numbers on the dashboard */
     --text-3xl: 40px;    /* login / register heading */
+    --text-display: clamp(34px, 3.4vw, 48px); /* page titles (serif) */
+    --text-stat: 44px;   /* big dashboard numbers (serif) */
 
     /* Text weights */
     --weight-regular: 400;
@@ -162,19 +166,21 @@
     --space-12: 48px;
 
     /* Rounded corners */
-    --radius-sm: 6px;    /* buttons, inputs, small boxes */
-    --radius-md: 8px;    /* cards */
-    --radius-lg: 12px;   /* big panels, pop-ups */
+    --radius-sm: 10px;   /* inputs, small boxes */
+    --radius-md: 16px;   /* cards */
+    --radius-lg: 24px;   /* big panels, pop-ups */
+    --radius-xl: 28px;   /* floating sidebar */
     --radius-full: 999px; /* pills, round avatars */
 
     /* Shadows */
     --shadow-sm: 0 1px 2px var(--color-shadow-04);    /* slight lift */
-    --shadow-md: 0 2px 6px var(--color-shadow-04);    /* cards */
-    --shadow-lg: 0 12px 30px var(--color-shadow-14);  /* dropdowns, pop-ups */
+    --shadow-md: 0 10px 30px -16px var(--color-shadow-14);  /* cards: soft navy-tinted ambient shadow */
+    --shadow-lg: 0 24px 48px -20px var(--color-shadow-14);  /* dropdowns, pop-ups */
     --shadow-focus: 0 0 0 2px var(--color-focus); /* visible ring around a focused input (was a 5% glow keyboard users could not see) */
 
     /* Hover / animation speed */
-    --transition-fast: 0.15s ease;
+    --ease-out: cubic-bezier(0.32, 0.72, 0, 1);  /* heavy, spring-like ease for all motion */
+    --transition-fast: 0.24s var(--ease-out);
 }
 
 html, body {
@@ -309,14 +315,14 @@ textarea:focus-visible {
    =============================== */
 
 .nx-btn {
-    min-height: 36px;
+    min-height: 40px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
-    padding: 0 var(--space-4);
+    padding: 0 var(--space-5);
     border: 1px solid transparent;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-full);
     font-family: var(--font-family);
     font-size: var(--text-sm);
     font-weight: var(--weight-semibold);
@@ -399,9 +405,9 @@ textarea:focus-visible {
 
 /* Square icon button, e.g. download or the bell */
 .nx-btn-icon {
-    width: 34px;
-    min-height: 34px;
-    height: 34px;
+    width: 40px;
+    min-height: 40px;
+    height: 40px;
     padding: 0;
     border-color: var(--color-border);
     background: var(--color-white);
@@ -507,7 +513,7 @@ textarea:focus-visible {
 
 .nx-input {
     width: 100%;
-    min-height: 40px;
+    min-height: 44px;
     padding: 0 var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -581,6 +587,63 @@ textarea:focus-visible {
     color: var(--color-danger);
 }
 
+/* ===============================
+   NEXUS 2.0 DESIGN LAYER
+   Page-level polish shared by every screen: warm stone ground, serif display type,
+   one entrance motion, tabular figures. Colours and sizes still come from the tokens above.
+   =============================== */
+
+body {
+    background: var(--color-page-bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+/* Numbers line up in tables, stats and timestamps */
+table,
+.stat-value,
+.stat-change {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Status pill gets a leading dot so state is never shown by colour alone */
+.nx-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-radius: var(--radius-full);
+    background: currentColor;
+}
+
+/* Every page eases in once: opacity and a small lift, nothing that moves layout */
+@keyframes nx-rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}
+
+.nexus-main > div,
+.nexus-main > section {
+    animation: nx-rise 200ms var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nexus-main > div,
+    .nexus-main > section {
+        animation: none;
+    }
+
+    * {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 /* ================================ EndOfFile ============================== */
 
 /* Blazor shows this element when an unhandled error ends the interactive circuit. */
@@ -600,4 +663,59 @@ textarea:focus-visible {
     margin-left: 1rem;
     font-weight: 600;
     color: #332701;
+}
+/* Clients is a desktop workspace: only its two panels scroll. */
+@media (min-width: 851px) {
+    html:has(.clients-page),
+    body:has(.clients-page) {
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    .nexus-app:has(.clients-page),
+    .nexus-main:has(.clients-page) {
+        height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+    }
+}
+/* Short, restrained interaction feedback. No movement for disabled controls. */
+:root {
+    --motion-fast: 150ms;
+    --motion-panel: 200ms;
+    --motion-ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+button,
+.nx-btn,
+a.nx-btn {
+    transition: background-color var(--motion-fast) ease,
+                border-color var(--motion-fast) ease,
+                color var(--motion-fast) ease,
+                box-shadow var(--motion-fast) ease,
+                translate var(--motion-fast) var(--motion-ease);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .nx-btn:hover:not(:disabled),
+    .notification-button:hover:not(:disabled),
+    .visibility-toggle-button:hover:not(:disabled),
+    .download-button:hover:not(:disabled) {
+        translate: 0 -1px;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    button:active:not(:disabled),
+    a.nx-btn:active {
+        translate: 0 1px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition-duration: 0s !important;
+        scroll-behavior: auto !important;
+    }
 }
