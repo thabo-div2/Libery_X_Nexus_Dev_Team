@@ -45,8 +45,7 @@
                     @if (IsLoading)
                     {
                         <div class="empty-state" role="status">
-                            <strong>Loading...</strong>
-                            <span>Please wait while your documents are retrieved.</span>
+                            <div class="nx-skeleton-stack page-skeleton" role="status"><span class="visually-hidden">Loading your documents</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
                         </div>
                     }
                     else if (!string.IsNullOrWhiteSpace(ErrorMessage))
@@ -81,7 +80,7 @@
                     {
                         <div class="empty-state">
 
-                            <div class="empty-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
+                            <div class="empty-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
 
                             <strong>No documents yet</strong>
 

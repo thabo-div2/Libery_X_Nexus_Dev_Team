@@ -11,6 +11,9 @@ public class InsightsService(HttpClient http, IJSRuntime js)
     public Task<(PracticeInsightsDto? Value, string? Error)> GetDashboardAsync() =>
         ApiErrors.SendAsync<PracticeInsightsDto>(() => http.GetAsync("insights/dashboard"));
 
+    public Task<(AttentionListDto? Value, string? Error)> GetAttentionAsync(int take = 8) =>
+        ApiErrors.SendAsync<AttentionListDto>(() => http.GetAsync($"insights/attention?take={take}"));
+
     public Task<(List<RenewalDto>? Value, string? Error)> GetRenewalsAsync(int days) =>
         ApiErrors.SendAsync<List<RenewalDto>>(() => http.GetAsync($"insights/renewals?days={days}"));
 

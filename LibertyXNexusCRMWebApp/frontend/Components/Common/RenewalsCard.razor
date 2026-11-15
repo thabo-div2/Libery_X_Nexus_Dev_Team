@@ -9,7 +9,7 @@
     <div class="wf-heading">
         <div>
             <h2>Upcoming renewals</h2>
-            <p>@(Items is null ? "Loading…" : $"{Items.Count} {(Items.Count == 1 ? "policy ends" : "policies end")} in the next {Days} days")</p>
+            <p>@(Items is null ? "Policies ending soon" : $"{Items.Count} {(Items.Count == 1 ? "policy ends" : "policies end")} in the next {Days} days")</p>
         </div>
         <div class="renewal-range" role="group" aria-label="Show renewals within">
             @foreach (var range in Ranges)
@@ -25,7 +25,7 @@
 
     @if (Items is null)
     {
-        <p class="wf-muted renewals-pad" role="status">Loading renewals…</p>
+        <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading renewals</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
     }
     else if (Items.Count == 0)
     {

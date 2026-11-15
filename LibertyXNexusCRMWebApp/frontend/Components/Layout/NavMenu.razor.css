@@ -168,7 +168,7 @@
         .nav-links ::deep .nav-icon svg {
             width: 20px;
             height: 20px;
-            stroke-width: 1.5;
+            stroke-width: 1.75;
         }
 
     .nav-links ::deep .nav-item:hover .nav-icon {

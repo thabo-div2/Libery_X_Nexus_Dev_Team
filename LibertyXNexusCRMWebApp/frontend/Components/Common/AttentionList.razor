@@ -1,0 +1,104 @@
+@using frontend.Services
+@using Shared.DTOs.Insights
+@inject InsightsService Api
+
+@* The dashboard's starting point: everything waiting on the advisor, most urgent first.
+   The ranking is done by the API (InsightsController.Attention). *@
+<section class="attention" aria-labelledby="attention-title" aria-busy="@(Data is null && Error is null ? "true" : "false")">
+    <div class="attention-head">
+        <div class="attention-heading">
+            <span class="attention-eyebrow"><span class="attention-signal" aria-hidden="true"></span>Your daily focus</span>
+            <h2 id="attention-title">Needs your attention</h2>
+            <p>The important things, ready for your next move.</p>
+        </div>
+        @if (Data is not null)
+        {
+            <div class="attention-count" aria-label="@($"{Data.Total} items need attention")">
+                <strong>@Data.Total</strong>
+                <span>@(Data.Total == 1 ? "open item" : "open items")</span>
+            </div>
+        }
+    </div>
+    <div class="attention-toolbar">
+        <span>Your next steps, in priority order</span>
+        <a href="/tasks">View tasks <span aria-hidden="true">↗</span></a>
+    </div>
+
+    @if (Error is not null && Data is null)
+    {
+        <div class="attention-empty">
+            <strong>Couldn't load your to-do list</strong>
+            <span>@Error</span>
+            <button type="button" class="attention-retry" @onclick="Load">Try again</button>
+        </div>
+    }
+    else if (Data is null)
+    {
+        <ul class="attention-list" aria-hidden="true">
+            @for (var i = 0; i < 4; i++)
+            {
+                <li class="attention-skeleton">
+                    <span class="nx-skeleton attention-skeleton-icon"></span>
+                    <span class="attention-skeleton-text"><span class="nx-skeleton"></span><span class="nx-skeleton"></span></span>
+                </li>
+            }
+        </ul>
+    }
+    else if (Data.Items.Count == 0)
+    {
+        <div class="attention-empty is-clear">
+            <span class="attention-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg></span>
+            <strong>You're all caught up</strong>
+            <span>No overdue tasks, documents to review, unread messages or renewals without a follow-up.</span>
+            <a class="attention-retry" href="/tasks">Plan your next tasks</a>
+        </div>
+    }
+    else
+    {
+        <ul class="attention-list">
+            @foreach (var item in Data.Items)
+            {
+                <li>
+                    <a class="attention-item urgency-@item.Tone" href="@item.Link">
+                        <span class="attention-icon tone-@item.Tone" aria-hidden="true">@Icon(item.Kind)</span>
+                        <span class="attention-text">
+                            <strong>@item.Title</strong>
+                            <span>@item.Detail</span>
+                        </span>
+                        <span class="attention-badge tone-@item.Tone">@item.Badge</span>
+                        <span class="attention-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></span>
+                    </a>
+                </li>
+            }
+        </ul>
+        @if (Data.Total > Data.Items.Count)
+        {
+            <p class="attention-more">and @(Data.Total - Data.Items.Count) more · <a href="/tasks">see everything</a></p>
+        }
+    }
+</section>
+<RealtimeRefresh OnChanged="Load" />
+
+@code {
+    AttentionListDto? Data;
+    string? Error;
+
+    protected override Task OnInitializedAsync() => Load();
+
+    async Task Load()
+    {
+        var (value, error) = await Api.GetAttentionAsync();
+        Data = value ?? Data;
+        Error = error;
+    }
+
+    static MarkupString Icon(string kind) => new(kind switch
+    {
+        "task" => "<svg viewBox='0 0 24 24'><circle cx='12' cy='12' r='8.5'/><path d='M12 7.5V12l3 2'/></svg>",
+        "meeting" => "<svg viewBox='0 0 24 24'><rect x='3.5' y='5' width='17' height='15.5' rx='3'/><path d='M3.5 10h17M8 3v4M16 3v4'/></svg>",
+        "message" => "<svg viewBox='0 0 24 24'><path d='M4 5h16v11H9l-5 4z'/></svg>",
+        "document" => "<svg viewBox='0 0 24 24'><path d='M6 3h8l5 5v13H6z'/><path d='M14 3v5h5M9.5 14.5l2 2 3.5-4'/></svg>",
+        "case" => "<svg viewBox='0 0 24 24'><path d='m5 12.5 4.5 4.5L19 7.5'/></svg>",
+        _ => "<svg viewBox='0 0 24 24'><path d='M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4'/></svg>"
+    });
+}

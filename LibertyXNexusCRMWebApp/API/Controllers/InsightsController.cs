@@ -92,6 +92,114 @@ public class InsightsController(IDbContextFactory<ApplicationDbContext> factory)
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>
+    /// The dashboard's "Needs your attention" list: everything waiting on the advisor, most urgent first.
+    /// Order: overdue tasks, meeting requests, today's meetings, unread client messages, documents to review,
+    /// tasks due today, tomorrow's meetings, cases ready for FICA, then renewals with no follow-up yet.
+    /// </summary>
+    [HttpGet("attention")]
+    public async Task<ActionResult<AttentionListDto>> Attention([FromQuery] int take = 8)
+    {
+        take = Math.Clamp(take, 1, 50);
+        await using var db = await factory.CreateDbContextAsync();
+        var advisorId = AdvisorId;
+        var now = DateTime.UtcNow;
+        var today = TodaySa();
+        var items = new List<(int Priority, DateTime Order, AttentionItemDto Item)>();
+
+        // Tasks: overdue first (oldest first), then due today.
+        var tasks = await db.AdvisorTasks.AsNoTracking().Include(t => t.Client)
+            .Where(t => t.AdvisorId == advisorId && t.CompletedAt == null && t.DueDate < today.AddDays(1))
+            .ToListAsync();
+        foreach (var t in tasks)
+        {
+            var overdueDays = (today - t.DueDate.Date).Days;
+            var detail = Join("Task", t.Client?.FullName, overdueDays > 0 ? $"due {t.DueDate:d MMM}" : null) ?? "Task";
+            items.Add(overdueDays > 0
+                ? (1, t.DueDate, new AttentionItemDto("task", t.Title, detail, overdueDays == 1 ? "1 day overdue" : $"{overdueDays} days overdue", "red", "/tasks"))
+                : (6, t.DueDate, new AttentionItemDto("task", t.Title, detail, "Due today", "amber", "/tasks")));
+        }
+
+        // Meetings: requests waiting for the advisor, then today's and tomorrow's confirmed meetings.
+        var meetings = await db.Meetings.AsNoTracking().Include(m => m.Client)
+            .Where(m => m.Client.AdvisorId == advisorId && m.MeetingDate >= now && m.MeetingDate < now.AddDays(14)
+                && (m.Status == MeetingStatus.Requested || m.Status == MeetingStatus.Confirmed))
+            .ToListAsync();
+        foreach (var m in meetings)
+        {
+            var day = DisplayTime.ToSouthAfrica(m.MeetingDate).Date;
+            var when = Join(DisplayTime.Format(m.MeetingDate), m.MeetingType) ?? DisplayTime.Format(m.MeetingDate);
+            if (m.Status == MeetingStatus.Requested)
+                items.Add((2, m.MeetingDate, new AttentionItemDto("meeting", $"Respond to {m.Client.FullName}'s meeting request", when, "Request", "amber", "/calendar")));
+            else if (day == today)
+                items.Add((3, m.MeetingDate, new AttentionItemDto("meeting", $"Meeting with {m.Client.FullName}", when, "Today", "blue", $"/meeting-prep?clientId={m.ClientId}")));
+            else if (day == today.AddDays(1))
+                items.Add((7, m.MeetingDate, new AttentionItemDto("meeting", $"Prepare for meeting with {m.Client.FullName}", when, "Tomorrow", "blue", $"/meeting-prep?clientId={m.ClientId}")));
+        }
+
+        // Unread messages, one row per client.
+        var unread = await db.Messages.AsNoTracking()
+            .Where(m => m.AdvisorId == advisorId && !m.FromAdvisor && m.ReadAt == null)
+            .GroupBy(m => new { m.ClientId, m.Client.FirstName, m.Client.LastName })
+            .Select(g => new { g.Key.ClientId, Name = g.Key.FirstName + " " + g.Key.LastName, Count = g.Count(), Latest = g.Max(x => x.SentAt) })
+            .ToListAsync();
+        foreach (var u in unread)
+        {
+            var lastText = await db.Messages.AsNoTracking()
+                .Where(m => m.AdvisorId == advisorId && m.ClientId == u.ClientId && !m.FromAdvisor && m.ReadAt == null)
+                .OrderByDescending(m => m.SentAt).Select(m => m.Text).FirstOrDefaultAsync();
+            items.Add((4, u.Latest, new AttentionItemDto("message", $"Reply to {u.Name}", Shorten(lastText ?? "New message", 90),
+                u.Count == 1 ? "Unread" : $"{u.Count} unread", "blue", "/messages")));
+        }
+
+        // Uploaded documents waiting for review, as one row.
+        var toReview = await db.Documents.AsNoTracking()
+            .Where(d => d.Client.AdvisorId == advisorId && d.ReviewStatus == DocumentReviewStatus.Received)
+            .Select(d => new { d.Client.FirstName, d.Client.LastName, d.UpdateAt })
+            .ToListAsync();
+        if (toReview.Count > 0)
+        {
+            var names = toReview.Select(d => $"{d.FirstName} {d.LastName}").Distinct().ToList();
+            var who = names.Count <= 2 ? string.Join(" and ", names) : $"{names[0]}, {names[1]} and {names.Count - 2} more";
+            items.Add((5, toReview.Min(d => d.UpdateAt) ?? now, new AttentionItemDto("document",
+                toReview.Count == 1 ? "Review 1 uploaded document" : $"Review {toReview.Count} uploaded documents", who, "Review", "amber", "/documents")));
+        }
+
+        // Cases waiting on FICA where every requested document has been accepted: ready to tick off.
+        var ficaReady = await db.Cases.AsNoTracking()
+            .Where(c => c.Policy.Client != null && c.Policy.Client.AdvisorId == advisorId
+                && c.Policy.Status != PolicyStatus.Cancelled && c.Policy.Status != PolicyStatus.Matured
+                && c.AdviserReviewAt != null && c.FicaVerifiedAt == null
+                && db.DocumentRequests.Any(r => r.ClientId == c.Policy.ClientId)
+                && !db.DocumentRequests.Any(r => r.ClientId == c.Policy.ClientId
+                    && (r.FulfilledAt == null || r.ReviewStatus != DocumentReviewStatus.Accepted)))
+            .Select(c => new { c.Policy.PolicyName, c.Policy.Client!.FirstName, c.Policy.Client.LastName, c.UpdatedAt })
+            .ToListAsync();
+        foreach (var c in ficaReady)
+        {
+            var name = $"{c.FirstName} {c.LastName}";
+            items.Add((8, c.UpdatedAt, new AttentionItemDto("case", $"Mark FICA verification done for {name}",
+                $"{c.PolicyName} · all requested documents accepted", "Ready", "green", $"/clients?search={Uri.EscapeDataString(name)}")));
+        }
+
+        // Renewals in the next 30 days that have no open follow-up task.
+        var renewals = await ActivePolicies(db, advisorId).AsNoTracking().Include(p => p.Client)
+            .Where(p => p.EndDate != null && p.EndDate >= now && p.EndDate <= now.AddDays(30)
+                && !db.AdvisorTasks.Any(t => t.AdvisorId == advisorId && t.CompletedAt == null && t.PolicyId == p.PolicyId))
+            .ToListAsync();
+        foreach (var p in renewals)
+        {
+            var days = Math.Max(0, (DisplayTime.ToSouthAfrica(p.EndDate!.Value).Date - today).Days);
+            items.Add((9, p.EndDate.Value, new AttentionItemDto("renewal", $"{p.PolicyName} renews for {p.Client!.FullName}",
+                $"Ends {DisplayTime.ToSouthAfrica(p.EndDate.Value):d MMM} · no follow-up yet", days == 1 ? "1 day" : $"{days} days",
+                days <= 14 ? "red" : "amber", "advisor#renewals")));
+        }
+
+        var ordered = items.OrderBy(i => i.Priority).ThenBy(i => i.Order).Select(i => i.Item).ToList();
+        return Ok(new AttentionListDto(ordered.Count, ordered.Take(take).ToList()));
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    /// <summary>
     /// Policies ending within the next <paramref name="days"/> days (30, 60 or 90), soonest first.
     /// </summary>
     [HttpGet("renewals")]

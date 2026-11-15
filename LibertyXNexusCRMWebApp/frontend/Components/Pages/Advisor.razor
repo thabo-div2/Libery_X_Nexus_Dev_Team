@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject InvitationService Invite
 @inject AdvisorService Advisors
+@inject InsightsService InsightsApi
 @inject IJSRuntime JS
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
@@ -22,12 +23,11 @@
                 <div class="header-greeting">
                     <span class="header-eyebrow">@DateTime.Today.ToString("dddd, d MMMM")</span>
                     <h1>
-                        <text>Good afternoon</text>
+                        <text>@Greeting</text>
                         @if (!string.IsNullOrWhiteSpace(AdvisorFirstName))
                         {
                             <text>, <em class="greeting-name">@AdvisorFirstName</em></text>
                         }
-                        <text>!</text>
                     </h1>
 
                     <p>
@@ -48,7 +48,7 @@
                 <div class="header-actions">
 
                     <div class="search-box" role="search">
-                        <span class="search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+                        <span class="search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
 
                         <input aria-label="Search clients, cases, documents" type="text"
                                @bind="SearchText"
@@ -65,14 +65,14 @@
                             aria-controls="invite-panel"
                             @ref="InviteToggleButton"
                             @onclick="ToggleInvitePanel">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                         Invite client
                     </button>
 
                     <a href="/new-client" class="new-client-button new-client-primary">
                         New client
                         <span class="new-client-plus" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>
                         </span>
                     </a>
 
@@ -103,7 +103,7 @@
                             </div>
 
                             <button type="submit" class="new-client-button" disabled="@IsSendingInvite">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                                 @(IsSendingInvite ? "Sending..." : "Send invitation")
                             </button>
                         </div>
@@ -131,107 +131,13 @@
             <!-- DASHBOARD CONTENT -->
             <main class="advisor-content">
 
-                <!-- STAT CARDS -->
-                <section class="stats-grid">
-
-                    <article class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">ACTIVE CASES</span>
-                            <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="3"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 12.5h17"/></svg></span>
-                        </div>
-
-                        <strong class="stat-value">
-                            @(Dashboard?.ActiveCases ?? 0)
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.ActiveCasesChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.ActiveCasesChange))
-                            {
-                                @Dashboard?.ActiveCasesChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-
-                    <article class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">AWAITING DOCUMENTS</span>
-                            <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h6.5L18 8v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19V5a1.5 1.5 0 0 1 1-1.5z"/><path d="M13.5 3.5V8H18"/></svg></span>
-                        </div>
-
-                        <strong class="stat-value">
-                            @(Dashboard?.AwaitingDocuments ?? 0)
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.AwaitingDocumentsChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.AwaitingDocumentsChange))
-                            {
-                                @Dashboard?.AwaitingDocumentsChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-
-                    <article class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">MEETINGS THIS WEEK</span>
-                            <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span>
-                        </div>
-
-                        <strong class="stat-value">
-                            @(Dashboard?.MeetingsThisWeek ?? 0)
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.MeetingsChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.MeetingsChange))
-                            {
-                                @Dashboard?.MeetingsChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-
-                    <article class="stat-card">
-                        <div class="stat-top">
-                            <span class="stat-label">VALUE IN PIPELINE</span>
-                            <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="6.5" width="17" height="12" rx="3"/><path d="M3.5 10.5h17M16 14.5h1.5"/></svg></span>
-                        </div>
-
-                        <strong class="stat-value">
-                            @(Dashboard is null ? "—" : $"R {Dashboard.PipelineValue:N2}")
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.PipelineValueChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.PipelineValueChange))
-                            {
-                                @Dashboard?.PipelineValueChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-                </section>
-
-                <!-- TODAY'S WORK AND BOOK HEALTH -->
-                <PracticeInsights />
-
-                <!-- LOWER DASHBOARD -->
+                <!-- DASHBOARD: two columns that each stack their own panels -->
                 <section class="dashboard-grid">
+
+                    <!-- LEFT: what needs doing, then the pipeline. Stacked so a short list never leaves a gap. -->
+                    <div class="left-column">
+
+                    <AttentionList />
 
                     <!-- CASE PIPELINE -->
                     <article class="dashboard-card pipeline-card">
@@ -269,9 +175,38 @@
                                 <caption class="visually-hidden">Client cases and their current application status</caption>
                                 <thead><tr><th scope="col">Client / product</th><th scope="col">Institution</th><th scope="col">Stage</th><th scope="col" class="updated-heading">Updated</th></tr></thead>
                                 <tbody @key="SelectedInstitution">
-                                    @if (isLoading || !string.IsNullOrWhiteSpace(LoadError) || !FilteredCases.Any())
+                                    @if (isLoading)
                                     {
-                                        <tr><td colspan="4" class="pipeline-empty" role="status">@(isLoading ? "Loading cases…" : LoadError ?? "No cases for this institution yet.")</td></tr>
+                                        @* Placeholder rows shaped like the table while it loads. *@
+                                        @for (var row = 0; row < 4; row++)
+                                        {
+                                            <tr class="pipeline-skeleton" aria-hidden="true">
+                                                <td><span class="nx-skeleton" style="width:70%"></span></td>
+                                                <td><span class="nx-skeleton" style="width:60%"></span></td>
+                                                <td><span class="nx-skeleton" style="width:50%"></span></td>
+                                                <td><span class="nx-skeleton" style="width:60%"></span></td>
+                                            </tr>
+                                        }
+                                    }
+                                    else if (!string.IsNullOrWhiteSpace(LoadError) || !FilteredCases.Any())
+                                    {
+                                        <tr>
+                                            <td colspan="4" class="pipeline-empty" role="status">
+                                                @if (!string.IsNullOrWhiteSpace(LoadError))
+                                                {
+                                                    @LoadError
+                                                }
+                                                else if ((Dashboard?.Cases?.Count ?? 0) == 0)
+                                                {
+                                                    <span>No cases yet. A case starts when you add a policy to a client.</span>
+                                                    <a href="/new-client" class="pipeline-empty-action">Add a client</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>No cases with @SelectedInstitution yet.</span>
+                                                }
+                                            </td>
+                                        </tr>
                                     }
                                     else
                                     {
@@ -293,69 +228,81 @@
                             <span class="pipeline-footer-count">Showing @FilteredCases.Count() of @(Dashboard?.Cases?.Count ?? 0) cases</span>
                             <a href="/clients" class="pipeline-footer-link">
                                 View all cases
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                             </a>
                         </div>
 
 
                     </article>
+                    </div>
 
 
                     <!-- RIGHT COLUMN -->
                     <aside class="right-column">
-                        <AdvisorTasks Compact="true" />
+                        <section class="month-panel" aria-labelledby="month-title" aria-busy="@(isLoading ? "true" : "false")">
+                            <div class="month-head">
+                                <div>
+                                    <span class="month-eyebrow">@DateTime.Today.ToString("MMMM yyyy")</span>
+                                    <h2 id="month-title">This month</h2>
+                                </div>
+                                <a href="/clients">All clients <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+                            </div>
+
+                            <div class="month-metrics">
+                                <div class="month-metric">
+                                    <span class="month-icon icon-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="3" /><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 12.5h17" /></svg></span>
+                                    <span class="month-label">Active cases</span>
+                                    @if (isLoading) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else { <strong class="month-value">@(Dashboard?.ActiveCases ?? 0)</strong> }
+                                    <span class="month-change @GetChangeClass(Dashboard?.ActiveCasesChange)">@Dashboard?.ActiveCasesChange</span>
+                                </div>
+
+                                <div class="month-metric">
+                                    <span class="month-icon icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8" /><path d="M14 8h6v6" /></svg></span>
+                                    <span class="month-label">Pipeline value</span>
+                                    @if (isLoading) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else { <strong class="month-value">@FormatRand(Dashboard?.PipelineValue)</strong> }
+                                    <span class="month-change @GetChangeClass(Dashboard?.PipelineValueChange)">@Dashboard?.PipelineValueChange</span>
+                                </div>
+
+                                <div class="month-metric">
+                                    <span class="month-icon icon-green" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></span>
+                                    <span class="month-label">Meetings this week</span>
+                                    @if (isLoading) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else { <strong class="month-value">@(Dashboard?.MeetingsThisWeek ?? 0)</strong> }
+                                    <span class="month-change @GetChangeClass(Dashboard?.MeetingsChange)">@Dashboard?.MeetingsChange</span>
+                                </div>
+
+                                <div class="month-metric month-metric-ring">
+                                    <span class="month-label">Fully onboarded</span>
+                                    @if (Insights is null) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else
+                                    {
+                                        <strong class="month-value">@Insights.ClientsOnboarded<span class="month-of"> of @Insights.ClientsTotal</span></strong>
+                                        <span class="month-change">active clients</span>
+                                        @* Progress ring: the circle's length is 100, so the dash length is the percentage. *@
+                                        <span class="month-ring" role="img" aria-label="@OnboardedPercent percent of active clients fully onboarded">
+                                            <svg viewBox="0 0 36 36" aria-hidden="true">
+                                                <circle class="ring-track" cx="18" cy="18" r="15.9155" />
+                                                @if (OnboardedPercent > 0)
+                                                {
+                                                    @* Skipped at 0%: a round line cap would still draw a dot. *@
+                                                    <circle class="ring-fill" cx="18" cy="18" r="15.9155" stroke-dasharray="@OnboardedPercent 100" />
+                                                }
+                                            </svg>
+                                            <b>@OnboardedPercent%</b>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(LoadError))
+                            {
+                                <p class="month-error" role="alert">@LoadError</p>
+                            }
+                        </section>
 
                         <RenewalsCard />
-
-                        <!-- UPCOMING DEADLINES -->
-                        <article class="dashboard-card deadlines-card">
-
-                            <div class="card-header">
-                                <h2>Upcoming deadlines</h2>
-                            </div>
-
-                            <div class="deadline-list">
-
-                                @if (Dashboard?.Deadlines is not null && Dashboard.Deadlines.Any())
-                                {
-                                    @foreach (var deadline in Dashboard.Deadlines)
-                                    {
-                                        <div class="deadline-item">
-
-                                            <div class="deadline-details">
-                                                <span class="deadline-title">
-                                                    @deadline.Title
-                                                </span>
-
-                                                <span class="deadline-client">
-                                                    @deadline.ClientName
-                                                </span>
-                                            </div>
-
-                                            <span class="deadline-date @GetDeadlineClass(deadline.Urgency)">
-                                                @deadline.Date
-                                            </span>
-
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    <div class="empty-note is-info">
-                                        <span class="empty-note-icon" aria-hidden="true">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
-                                        </span>
-                                        <div class="empty-note-text">
-                                            <strong>No upcoming deadlines</strong>
-                                            <span>New dates appear as cases progress.</span>
-                                        </div>
-                                    </div>
-                                }
-
-                            </div>
-
-                        </article>
-
 
                         <!-- CASES BY INSTITUTION -->
                         <article class="dashboard-card institutions-card">
@@ -396,7 +343,7 @@
                                 {
                                     <div class="empty-note is-info">
                                         <span class="empty-note-icon" aria-hidden="true">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="3"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 12.5h17"/></svg>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="3"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 12.5h17"/></svg>
                                         </span>
                                         <div class="empty-note-text">
                                             <strong>No institution data yet</strong>
@@ -415,7 +362,7 @@
 
                             <div class="assistant-text">
                                 <span class="assistant-eyebrow">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3.5c.6 3.8 2.2 5.4 6 6-3.8.6-5.4 2.2-6 6-.6-3.8-2.2-5.4-6-6 3.8-.6 5.4-2.2 6-6z"/></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3.5c.6 3.8 2.2 5.4 6 6-3.8.6-5.4 2.2-6 6-.6-3.8-2.2-5.4-6-6 3.8-.6 5.4-2.2 6-6z"/></svg>
                                     Nexus assistant
                                 </span>
 
@@ -427,7 +374,7 @@
                             </div>
 
                             <span class="assistant-arrow" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
                             </span>
                         </a>
 
@@ -604,11 +551,15 @@
         isLoading = true;
         LoadError = null;
 
-        var (dashboard, error) = await Advisors.GetDashboardAsync();
+        var dashboardTask = Advisors.GetDashboardAsync();
+        var insightsTask = InsightsApi.GetDashboardAsync();
+        await Task.WhenAll(dashboardTask, insightsTask);
 
+        var (dashboard, error) = dashboardTask.Result;
         Dashboard = dashboard;
         AdvisorFirstName = dashboard?.AdvisorFirstName;
         LoadError = error;
+        Insights = insightsTask.Result.Value;
 
         isLoading = false;
     }
@@ -666,18 +617,34 @@
         _ => "status-neutral"
     };
 
-    private static string GetDeadlineClass(string? urgency)
-    {
-        if (string.IsNullOrWhiteSpace(urgency))
-            return "deadline-normal";
+    // "This month" panel: onboarding comes from the insights endpoint, the rest from the dashboard call.
+    private Shared.DTOs.Insights.PracticeInsightsDto? Insights;
 
-        return urgency.ToLowerInvariant() switch
+    private int OnboardedPercent => Insights is null || Insights.ClientsTotal == 0
+        ? 0
+        : (int)Math.Round(100.0 * Insights.ClientsOnboarded / Insights.ClientsTotal);
+
+    /// <summary>
+    /// Rand amounts in short form so they fit the panel: R 1.42m, R 845k, R 12 300.
+    /// </summary>
+    private static string FormatRand(double? value)
+    {
+        if (value is not double amount) return "—";
+        return amount switch
         {
-            "urgent" => "deadline-urgent",
-            "soon" => "deadline-soon",
-            _ => "deadline-normal"
+            >= 1_000_000 => $"R {amount / 1_000_000:0.##}m",
+            >= 100_000 => $"R {amount / 1_000:0}k",
+            _ => "R " + amount.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))
         };
     }
+
+    // Matches the time of day in South Africa, where advisors work.
+    private static string Greeting => DateTime.Now.Hour switch
+    {
+        < 12 => "Good morning",
+        < 17 => "Good afternoon",
+        _ => "Good evening"
+    };
 
 
     public class CasePipelineItem

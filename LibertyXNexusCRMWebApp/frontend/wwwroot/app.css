@@ -334,7 +334,7 @@ textarea:focus-visible {
 }
 
     .nx-btn:active:not(:disabled) {
-        transform: translateY(1px);
+        scale: 0.98;
     }
 
     .nx-btn:disabled,
@@ -708,7 +708,7 @@ a.nx-btn {
 @media (prefers-reduced-motion: no-preference) {
     button:active:not(:disabled),
     a.nx-btn:active {
-        translate: 0 1px;
+        scale: 0.98;
     }
 }
 
@@ -718,4 +718,60 @@ a.nx-btn {
         transition-duration: 0s !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* ===============================
+   STATES AND FEEL (shared)
+   =============================== */
+
+/* Numbers line up in tables, counts and amounts (Plus Jakarta Sans has tabular figures). */
+html, body {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Loading placeholder shaped like the content it stands in for. Use instead of "Loading…" text. */
+.nx-skeleton {
+    display: block;
+    width: 100%;
+    height: 12px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--color-page-bg) 0%, var(--color-slate-100) 50%, var(--color-page-bg) 100%);
+    background-size: 200% 100%;
+    animation: nx-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.nx-skeleton-stack {
+    display: flex;
+    width: 100%;
+    max-width: 520px;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+}
+
+.nx-skeleton-stack .nx-skeleton:nth-child(2) { width: 82%; }
+.nx-skeleton-stack .nx-skeleton:nth-child(3) { width: 64%; }
+
+@keyframes nx-skeleton-shimmer {
+    from { background-position: 100% 0; }
+    to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nx-skeleton { animation: none; }
+}
+
+/* Small text-style action buttons (Edit, Delete, View, Remove, Cancel...) get a tap area of
+   at least 32px so they're easy to hit on a tablet. Links inside sentences are left alone. */
+button.wf-link,
+button.policy-add-link,
+button.todo-link,
+button.review-cancel,
+button.remove-file-button,
+button.meeting-cancel-button,
+a.pipeline-footer-link,
+a.view-all-link {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
 }

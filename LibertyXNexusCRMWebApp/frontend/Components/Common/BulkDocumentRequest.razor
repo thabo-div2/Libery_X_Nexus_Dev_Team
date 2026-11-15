@@ -49,7 +49,7 @@
 
             @if (Directory is null)
             {
-                <p class="bulk-empty" role="status">Loading clients…</p>
+                <div class="nx-skeleton-stack" role="status"><span class="visually-hidden">Loading clients</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
             }
             else if (!Visible.Any())
             {

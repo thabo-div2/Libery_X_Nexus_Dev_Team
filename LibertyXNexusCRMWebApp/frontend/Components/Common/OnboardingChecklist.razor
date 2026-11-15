@@ -36,7 +36,7 @@
                 <div class="wf-grow"><strong>@step.Title</strong><span class="wf-muted">@step.Detail</span></div>
                 @if(step.Link is not null && !step.Complete) { <a class="wf-link" href="@step.Link">View</a> }</li>
             }</ul>
-        } else if(Busy) { <p class="wf-muted" role="status">Loading checklist...</p> }
+        } else if(Busy) { <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading checklist</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div> }
         <button type="button" class="wf-link" @onclick="Load" disabled="@Busy">@(Busy ? "Refreshing..." : "Refresh checklist")</button>
     </div>;
     protected override async Task OnParametersSetAsync() { if(LoadedId!=ClientId) {LoadedId=ClientId; Checklist=null; await Load();} }

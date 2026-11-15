@@ -1,13 +1,13 @@
 @using frontend.Services
 <article class="doc-entry @(IsHistory ? "is-history" : "") @(RequiresReplacement && !IsHistory ? "needs-action" : "")">
     <div class="entry-heading">
-        <span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z M14 3v5h5 M9 12h6 M9 16h6" /></svg></span>
+        <span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z M14 3v5h5 M9 12h6 M9 16h6" /></svg></span>
         <div class="entry-title">
             <span class="entry-version">@(IsHistory ? "Previous upload" : "Current document")</span>
             <strong>@Document.FileName</strong>
         </div>
         <span class="entry-status @StatusClass">@if (!IsHistory && Document.ReviewStatus == "Accepted") { <span aria-hidden="true">&#10003;</span> }@StatusText</span>
-        <button type="button" class="entry-download" aria-label="@($"Download {Document.FileName}")" title="Download" @onclick="()=>OnDownload.InvokeAsync(Document.DocumentId)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15v5h14v-5 M12 3v12 M7 10l5 5 5-5" /></svg></button>
+        <button type="button" class="entry-download" aria-label="@($"Download {Document.FileName}")" title="Download" @onclick="()=>OnDownload.InvokeAsync(Document.DocumentId)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15v5h14v-5 M12 3v12 M7 10l5 5 5-5" /></svg></button>
     </div>
     <div class="entry-details">
         <div><span class="entry-field-label">Document type</span><span class="entry-type">@DocumentTypeNames.Format(Document.DocumentType)</span></div>

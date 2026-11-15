@@ -6,7 +6,7 @@
 
 @if (Loading)
 {
-    <p class="doc-requests-empty" role="status">Loading document requests...</p>
+    <div class="nx-skeleton-stack" role="status"><span class="visually-hidden">Loading document requests</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
 }
 else if (Error is not null)
 {

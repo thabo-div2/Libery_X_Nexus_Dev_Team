@@ -25,7 +25,7 @@ else
     @if (!Compact)
     {
         <div class="wf-toolbar">
-            <div class="wf-search"><span class="wf-search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><input class="nx-input" aria-label="Search tasks" placeholder="@(ClientScoped ? "Search tasks" : "Search tasks or clients")" @bind="Search" @bind:event="oninput" /></div>
+            <div class="wf-search"><span class="wf-search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><input class="nx-input" aria-label="Search tasks" placeholder="@(ClientScoped ? "Search tasks" : "Search tasks or clients")" @bind="Search" @bind:event="oninput" /></div>
             <select class="nx-input" aria-label="Filter tasks" @bind="Filter"><option value="Open">Open</option><option value="Overdue">Overdue</option><option value="Completed">Completed</option><option value="All">All tasks</option></select>
         </div>
     }
@@ -45,13 +45,13 @@ else
             <div class="wf-actions"><button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@Busy" @onclick="() => ShowForm = false">Cancel</button><button class="nx-btn nx-btn-primary nx-btn-sm" disabled="@Busy">@(Busy ? "Saving…" : "Save task")</button></div>
         </fieldset></EditForm>
     }
-    @if (Loading) { <p class="wf-muted" role="status">Loading tasks…</p> }
+    @if (Loading) { <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading tasks</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div> }
     else if (!Visible.Any())
     {
         if (Compact)
         {
             <div class="wf-empty-card">
-                <span class="wf-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                <span class="wf-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
                 <div class="wf-empty-text"><strong>You are up to date</strong><span>No open tasks right now.</span></div>
             </div>
         }

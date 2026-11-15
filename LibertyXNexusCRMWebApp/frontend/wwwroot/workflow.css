@@ -128,24 +128,6 @@
 .wf-load-more { display: flex; justify-content: center; padding: 8px 16px 14px; }
 .wf-auto-tag { display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: var(--color-page-bg); color: var(--color-text-muted); font-size: 10px; font-weight: 600; vertical-align: middle; }
 
-/* ================================
-   PRACTICE INSIGHTS (advisor dashboard)
-   ================================ */
-.insights-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
-.insight-tile { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 14px 16px; border-radius: var(--radius-lg); background: var(--color-white); border: 1px solid var(--color-border-light); color: var(--color-text); text-decoration: none; transition: border-color var(--transition-fast, .15s), box-shadow var(--transition-fast, .15s); }
-.insight-tile:hover { border-color: var(--color-border); box-shadow: var(--shadow-sm); }
-.insight-tile:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-.insight-label { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--color-text-muted); }
-.insight-value { font-family: var(--font-display); font-size: 26px; font-weight: 400; line-height: 1.1; color: var(--color-primary); font-variant-numeric: tabular-nums; }
-.insight-sub { font-size: 11.5px; color: var(--color-text-muted); overflow-wrap: anywhere; }
-.insight-meter { display: block; height: 5px; border-radius: 999px; background: var(--color-page-bg); overflow: hidden; margin: 2px 0; }
-.insight-meter > span { display: block; height: 100%; background: var(--color-success); border-radius: inherit; }
-.insight-alert { border-color: var(--color-danger-bg); }
-.insight-alert .insight-sub { color: var(--color-danger); }
-.insight-warn { border-color: var(--color-warning-bg); }
-.insight-warn .insight-sub { color: var(--color-warning-text); }
-@media (max-width: 1100px) { .insights-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 520px) { .insights-strip { grid-template-columns: 1fr; } }
 
 /* ================================
    RENEWALS CARD
@@ -198,7 +180,7 @@
 .bulk-count.has-selection { background: var(--color-primary); color: var(--color-white); }
 .bulk-clients-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; min-width: 0; }
 .bulk-search { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
-.bulk-search svg { position: absolute; left: 11px; top: 50%; width: 15px; height: 15px; transform: translateY(-50%); fill: none; stroke: var(--color-text-muted); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
+.bulk-search svg { position: absolute; left: 11px; top: 50%; width: 15px; height: 15px; transform: translateY(-50%); fill: none; stroke: var(--color-text-muted); stroke-width: 1.75; stroke-linecap: round; pointer-events: none; }
 .bulk-search input { box-sizing: border-box; width: 100%; min-width: 0; height: 34px; padding: 0 12px 0 32px; border: 1px solid var(--color-border-light); border-radius: 999px; background: var(--color-page-bg); color: var(--color-text); font: inherit; font-size: 12.5px; }
 .bulk-search input:focus { outline: none; border-color: var(--color-primary); background: var(--color-white); box-shadow: var(--shadow-focus, 0 0 0 3px rgba(12,35,64,.12)); }
 .bulk-tool-btn { height: 34px; padding: 0 14px; border: 1px solid var(--color-border-light); border-radius: 999px; background: var(--color-white); color: var(--color-primary); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
@@ -229,3 +211,4 @@
 .bulk-result ul { margin: 6px 0 0; padding-left: 18px; color: var(--color-text-muted); }
 .documents-header-btn { white-space: nowrap; }
 .documents-export-error { margin: 0 0 var(--space-3); }
+.wf-skeleton { padding: 8px 16px 16px; }

@@ -23,7 +23,7 @@
 
     @if (Page is null)
     {
-        <p class="wf-muted timeline-pad" role="status">Loading activity…</p>
+        <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading activity</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
     }
     else if (Page.Items.Count == 0)
     {
