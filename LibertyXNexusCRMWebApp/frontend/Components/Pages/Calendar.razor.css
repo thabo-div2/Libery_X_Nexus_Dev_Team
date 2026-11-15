@@ -1494,3 +1494,96 @@
         transition: none;
     }
 }
+
+/* ================================ WEEK / MONTH SWITCH ============================== */
+
+.calendar-card-header { flex-wrap: wrap; }
+
+.view-switch {
+    display: inline-flex;
+    margin-left: auto;
+    padding: 3px;
+    border-radius: var(--radius-full);
+    background: var(--color-page-bg);
+}
+
+.view-switch button {
+    min-height: 32px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+}
+
+.view-switch button.is-active { background: var(--color-primary); color: var(--color-white); }
+.view-switch button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* ================================ REQUESTS WAITING ============================== */
+
+.requests-card {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(110% 90% at 100% 0%, rgba(240, 138, 75, 0.3), rgba(240, 138, 75, 0) 55%),
+        radial-gradient(90% 80% at 0% 100%, rgba(107, 158, 210, 0.24), rgba(107, 158, 210, 0) 60%),
+        linear-gradient(150deg, #0c2340 0%, #12304f 55%, #19496b 100%);
+    color: var(--color-white);
+    box-shadow: 0 18px 36px -20px rgba(12, 35, 64, 0.5);
+}
+
+.requests-card h2 { margin: 0 0 var(--space-3); font-size: 16px; font-weight: var(--weight-bold); }
+.requests-card ul { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+
+.requests-card li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.request-who {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.request-who strong { font-size: 13.5px; }
+.request-who span { color: #c3cfdc; font-size: 12px; }
+.request-who:hover strong { text-decoration: underline; }
+
+.request-actions { display: flex; gap: 6px; }
+
+.request-accept,
+.request-decline {
+    min-height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--radius-full);
+    font: inherit;
+    font-size: 12px;
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+}
+
+.request-accept { background: var(--color-white); color: var(--color-primary); }
+.request-decline { background: rgba(255, 255, 255, 0.12); color: var(--color-white); }
+.request-accept:disabled,
+.request-decline:disabled { opacity: 0.5; cursor: default; }
+.request-who:focus-visible,
+.request-accept:focus-visible,
+.request-decline:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }

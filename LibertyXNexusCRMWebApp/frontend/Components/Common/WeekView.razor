@@ -1,0 +1,79 @@
+@using frontend.Services
+@using System.Globalization
+@* A Monday-to-Sunday week with meetings placed at their real time and length.
+   Shared by the advisor and client calendars. *@
+
+<div class="week-view" role="grid" aria-label="@($"Week of {WeekStart:d MMMM}")">
+    <div class="wv-head" role="row">
+        <span aria-hidden="true"></span>
+        @foreach (var day in Days)
+        {
+            <span class="wv-day @(day == DateTime.Today ? "is-today" : "")" role="columnheader">
+                <small>@day.ToString("ddd")</small><b>@day.Day</b>
+            </span>
+        }
+    </div>
+
+    <div class="wv-body" style="--wv-hours:@(EndHour - StartHour)">
+        <div class="wv-times" aria-hidden="true">
+            @for (var hour = StartHour; hour < EndHour; hour++)
+            {
+                <span>@hour.ToString("00"):00</span>
+            }
+        </div>
+
+        @foreach (var day in Days)
+        {
+            <div class="wv-col @(day == DateTime.Today ? "is-today" : "")" role="gridcell">
+                @foreach (var meeting in MeetingsOn(day))
+                {
+                    var local = meeting.MeetingDate.ToLocalTime();
+                    var selected = meeting.MeetingId == SelectedMeetingId;
+                    <button type="button"
+                            class="wv-event @StatusClass(meeting.Status) @(selected ? "is-selected" : "")"
+                            style="top:@Percent(local.TimeOfDay.TotalMinutes - StartHour * 60);height:@Percent(Math.Max(meeting.DurationMinutes, 20))"
+                            aria-pressed="@(selected ? "true" : "false")"
+                            aria-label="@($"{local:HH:mm}, {Title(meeting)}, {meeting.Status}. Open meeting details")"
+                            @onclick="() => OnSelect.InvokeAsync(meeting.MeetingId)">
+                        <span class="wv-time">@local.ToString("HH:mm")</span>
+                        <span class="wv-title">@Title(meeting)</span>
+                    </button>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public DateTime WeekStart { get; set; }
+    [Parameter, EditorRequired] public List<MeetingSummary> Meetings { get; set; } = new();
+    [Parameter] public int? SelectedMeetingId { get; set; }
+    [Parameter] public EventCallback<int> OnSelect { get; set; }
+    [Parameter] public Func<MeetingSummary, string> Title { get; set; } = m => m.ClientName;
+
+    private IEnumerable<DateTime> Days => Enumerable.Range(0, 7).Select(i => WeekStart.Date.AddDays(i));
+
+    private IEnumerable<MeetingSummary> WeekMeetings => Meetings.Where(m =>
+    {
+        var local = m.MeetingDate.ToLocalTime();
+        return local >= WeekStart.Date && local < WeekStart.Date.AddDays(7);
+    });
+
+    // A normal working day, stretched when a meeting falls outside it.
+    private int StartHour => Math.Min(7, WeekMeetings.Select(m => m.MeetingDate.ToLocalTime().Hour).DefaultIfEmpty(7).Min());
+    private int EndHour => Math.Max(19, WeekMeetings.Select(m => (int)Math.Ceiling(m.MeetingDate.ToLocalTime().AddMinutes(m.DurationMinutes).TimeOfDay.TotalHours)).DefaultIfEmpty(19).Max());
+
+    private IEnumerable<MeetingSummary> MeetingsOn(DateTime day) =>
+        WeekMeetings.Where(m => m.MeetingDate.ToLocalTime().Date == day).OrderBy(m => m.MeetingDate);
+
+    // Invariant culture so a comma decimal separator never breaks the CSS.
+    private string Percent(double minutes) =>
+        (minutes / ((EndHour - StartHour) * 60.0) * 100).ToString("0.###", CultureInfo.InvariantCulture) + "%";
+
+    private static string StatusClass(string? status) => status?.ToLowerInvariant() switch
+    {
+        "confirmed" => "is-confirmed",
+        "completed" => "is-completed",
+        _ => "is-requested"
+    };
+}

@@ -10,6 +10,8 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject InsightsService Insights
+@inject WorkflowService Workflow
+@using Shared.DTOs.Workflow
 @implements IAsyncDisposable
 
 <PageTitle>Documents | Nexus</PageTitle>
@@ -20,7 +22,14 @@
 
         <div class="documents-heading">
             <h1>Documents</h1>
-            <p>Generated, uploaded and signed paperwork across all cases</p>
+            @if (IsAdvisorView && HasLoadedDocuments)
+            {
+                <p>@FilterCount("review") to review · @FilterCount("awaiting") awaiting signature</p>
+            }
+            else
+            {
+                <p>Generated, uploaded and signed paperwork across all cases</p>
+            }
         </div>
 
         <div class="header-actions">
@@ -36,6 +45,11 @@
                            @bind="SearchText"
                            @bind:event="oninput" />
                 </div>
+
+                <button type="button" class="nx-btn nx-btn-primary nx-btn-sm documents-header-btn"
+                        aria-expanded="@ShowUpload" @onclick="() => ShowUpload = !ShowUpload">
+                    Upload
+                </button>
 
                 <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm documents-header-btn"
                         aria-expanded="@ShowBulkRequest" @onclick="() => ShowBulkRequest = !ShowBulkRequest">
@@ -70,11 +84,49 @@
                 <BulkDocumentRequest OnClose="() => ShowBulkRequest = false" />
             }
 
+            @if (IsAdvisorView && ShowUpload)
+            {
+                <section class="side-card upload-card">
+                    <div class="side-card-header">
+                        <h2>Upload a document</h2>
+                        <button type="button" class="visibility-toggle-button" @onclick="() => ShowUpload = false">Close</button>
+                    </div>
+                    <div class="upload-card-body">
+                        @if (!string.IsNullOrWhiteSpace(UploadError))
+                        {
+                            <p class="nx-alert nx-alert-danger" role="alert">@UploadError</p>
+                        }
+
+                        @if (UploadClients.Count == 0)
+                        {
+                            <div class="small-empty-state">Add a client before uploading documents.</div>
+                        }
+                        else
+                        {
+                            <label class="nx-label" for="upload-client">Client</label>
+                            <select id="upload-client" class="nx-input" value="@UploadClientId" @onchange="OnUploadClientChangedAsync">
+                                <option value="0">Choose a client</option>
+                                @foreach (var client in UploadClients)
+                                {
+                                    <option value="@client.ClientId">@GetClientName(client)</option>
+                                }
+                            </select>
+
+                            @if (UploadClientId > 0 && !IsLoadingUploadPolicies)
+                            {
+                                @* The key gives each client a fresh uploader, so a picked file never carries over. *@
+                                <DocumentUploader @key="UploadClientId" ClientId="UploadClientId" Policies="UploadPolicies" ForAdvisor="true" OnUploaded="OnDocumentUploadedAsync" />
+                            }
+                        }
+                    </div>
+                </section>
+            }
+
             <article class="documents-card">
 
                 <div class="card-header">
 
-                    <h2>@(IsAdvisorView ? "Documents by client" : "All documents")<span class="card-count">@DocumentItems.Count</span></h2>
+                    <h2>@(IsReviewQueue ? "Review queue" : IsAdvisorView ? "Documents by client" : "All documents")<span class="card-count">@(IsReviewQueue ? FilterCount("review") : DocumentItems.Count)</span></h2>
 
                     @* The heading row holds only the title and the expand toggle. The status filter
                        always sits on its own row below, so hiding the toggle never moves it. *@
@@ -126,6 +178,83 @@
                             <strong>Unable to load documents</strong>
                             <span>@ErrorMessage</span>
                         </div>
+                    }
+                    else if (IsReviewQueue)
+                    {
+                        var queue = ReviewQueue;
+                        var current = queue.FirstOrDefault(d => d.Id == SelectedReviewId) ?? queue.FirstOrDefault();
+
+                        @if (current is null)
+                        {
+                            <div class="empty-state">
+                                <div class="empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
+                                <strong>@(IsSearching ? "No matching documents" : "Review queue is clear")</strong>
+                                <span>@(IsSearching ? $"Nothing to review matches \"{SearchText}\"." : "Every client upload has been reviewed.")</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="review-queue">
+                                <ul class="queue-list" aria-label="Documents to review">
+                                    @foreach (var item in queue)
+                                    {
+                                        <li @key="item.Id">
+                                            <button type="button" class="queue-item @(item.Id == current.Id ? "is-selected" : "")"
+                                                    aria-current="@(item.Id == current.Id ? "true" : null)" @onclick="() => SelectReview(item.Id)">
+                                                <span class="document-icon file-@FileKind(item.Name)" aria-hidden="true">@FileExtension(item.Name)</span>
+                                                <span class="queue-text"><strong>@(string.IsNullOrWhiteSpace(item.Type) ? item.Name : item.Type)</strong><small>@item.ClientName · @item.DateText</small></span>
+                                                @if (item.Replaces is not null) { <span class="queue-tag">Re-upload</span> }
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+
+                                <section class="queue-detail" aria-live="polite">
+                                    <div class="queue-detail-head">
+                                        <div>
+                                            <span class="queue-eyebrow">@(string.IsNullOrWhiteSpace(current.Type) ? "Document" : current.Type)@(string.IsNullOrWhiteSpace(current.PolicyName) ? "" : $" · {current.PolicyName}")</span>
+                                            <h3>@current.ClientName</h3>
+                                            <p>@current.Name · uploaded @current.DateText</p>
+                                        </div>
+                                        <span class="queue-position">@(queue.IndexOf(current) + 1) of @queue.Count</span>
+                                    </div>
+
+                                    @if (current.Replaces is not null)
+                                    {
+                                        <p class="queue-replaces">Replaces @current.Replaces.Name@(string.IsNullOrWhiteSpace(current.Replaces.ReviewNote) ? "" : $", which you sent back: \"{current.Replaces.ReviewNote}\"")</p>
+                                    }
+
+                                    <button type="button" class="queue-open" @onclick="() => DownloadDocumentAsync(current.Id)">
+                                        <span class="document-icon file-@FileKind(current.Name)" aria-hidden="true">@FileExtension(current.Name)</span>
+                                        <span><strong>Open document</strong><small>Check it before you decide</small></span>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                                    </button>
+
+                                    <label class="queue-note">
+                                        <span>Note to the client <em>Required to send it back</em></span>
+                                        <textarea maxlength="500" rows="3" placeholder="For example: the page is cut off, please upload a clearer copy."
+                                                  @bind="ReviewNote" @bind:event="oninput" disabled="@IsSavingReview"></textarea>
+                                    </label>
+
+                                    @if (ReviewError is not null)
+                                    {
+                                        <p class="nx-alert nx-alert-danger" role="alert">@ReviewError</p>
+                                    }
+
+                                    <div class="queue-actions">
+                                        <button type="button" class="queue-accept" disabled="@IsSavingReview" @onclick="() => SaveReviewAsync(current, DocumentReviewStatus.Accepted)">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+                                            @(IsSavingReview ? "Saving…" : queue.Count > 1 ? "Accept and next" : "Accept")
+                                        </button>
+                                        <button type="button" class="queue-reject" disabled="@(IsSavingReview || string.IsNullOrWhiteSpace(ReviewNote))"
+                                                title="@(string.IsNullOrWhiteSpace(ReviewNote) ? "Add a note so the client knows what to fix" : null)"
+                                                @onclick="() => SaveReviewAsync(current, DocumentReviewStatus.NeedsReplacement)">
+                                            Needs replacement
+                                        </button>
+                                    </div>
+                                </section>
+                            </div>
+                        }
                     }
                     else if (DocumentItems.Count > 0)
                     {
@@ -239,6 +368,13 @@
                                                                     @onclick="@(() => SetSignatureAsync(document.Id, "Signed"))">
                                                                 Sign off
                                                             </button>
+                                                            <button type="button"
+                                                                    class="visibility-toggle-button"
+                                                                    title="This document does not need a signature"
+                                                                    disabled="@IsSavingSignature"
+                                                                    @onclick="@(() => SetSignatureAsync(document.Id, "NotRequired"))">
+                                                                Not needed
+                                                            </button>
                                                         }
                                                         else if (IsAdvisorView && document.SignatureStatus != "Signed")
                                                         {
@@ -333,127 +469,6 @@
         </section>
 
 
-        <aside class="side-column">
-
-            @if (IsAdvisorView)
-            {
-                <section class="side-card upload-card">
-
-                    <div class="side-card-header">
-                        <h2>Upload a document</h2>
-                    </div>
-
-                    <div class="upload-card-body">
-
-                        @if (!string.IsNullOrWhiteSpace(UploadError))
-                        {
-                            <p class="nx-alert nx-alert-danger" role="alert">@UploadError</p>
-                        }
-
-                        @if (UploadClients.Count == 0)
-                        {
-                            <div class="small-empty-state">
-                                Add a client before uploading documents.
-                            </div>
-                        }
-                        else
-                        {
-                            <label class="nx-label" for="upload-client">Client</label>
-
-                            <select id="upload-client"
-                                    class="nx-input"
-                                    value="@UploadClientId"
-                                    @onchange="OnUploadClientChangedAsync">
-                                <option value="0">Choose a client</option>
-                                @foreach (var client in UploadClients)
-                                {
-                                    <option value="@client.ClientId">@GetClientName(client)</option>
-                                }
-                            </select>
-
-                            @if (UploadClientId > 0 && !IsLoadingUploadPolicies)
-                            {
-                                @* The key gives each client a fresh uploader, so a picked file never carries over. *@
-                                <DocumentUploader @key="UploadClientId"
-                                                  ClientId="UploadClientId"
-                                                  Policies="UploadPolicies"
-                                                  ForAdvisor="true"
-                                                  OnUploaded="OnDocumentUploadedAsync" />
-                            }
-                        }
-
-                    </div>
-
-                </section>
-            }
-
-            <section class="side-card signature-card">
-
-                <div class="side-card-header">
-                    <h2>Awaiting signature</h2>
-                </div>
-
-
-                <div class="signature-list">
-
-                    @if (AwaitingSignatures.Count > 0)
-                    {
-                        @foreach (var item in AwaitingSignatures)
-                        {
-                            <div class="signature-row">
-
-                                <div class="signature-info">
-
-                                    <span class="signature-avatar" aria-hidden="true">@GetInitials(item.ClientName)</span>
-
-                                    <span class="signature-text">
-                                        <strong>@item.ClientName</strong>
-
-                                        @if (!string.IsNullOrWhiteSpace(item.DocumentName))
-                                        {
-                                            <small>@item.DocumentName</small>
-                                        }
-                                    </span>
-
-                                </div>
-
-                                <div class="signature-actions">
-
-                                    <button type="button"
-                                            class="signature-button signature-button-primary"
-                                            title="Mark this document as signed"
-                                            disabled="@IsSavingSignature"
-                                            @onclick="@(() => SetSignatureAsync(item.DocumentId, "Signed"))">
-                                        Sign off
-                                    </button>
-
-                                    <button type="button"
-                                            class="signature-button"
-                                            title="This document doesn't need a signature"
-                                            disabled="@IsSavingSignature"
-                                            @onclick="@(() => SetSignatureAsync(item.DocumentId, "NotRequired"))">
-                                        Not needed
-                                    </button>
-
-                                </div>
-
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="small-empty-state">
-                            <span class="small-empty-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
-                            <strong>You are up to date</strong>
-                            <span>No documents awaiting signature</span>
-                        </div>
-                    }
-
-                </div>
-
-            </section>
-
-        </aside>
 
     </main>
 
@@ -487,8 +502,6 @@
     }
 
     private List<DocumentItem> DocumentItems { get; set; } = new();
-
-    private List<SignatureItem> AwaitingSignatures { get; set; } = new();
 
     private bool IsLoading { get; set; }
     // Background refreshes must preserve the keyed rows and any open review dialog.
@@ -564,15 +577,71 @@
     // Status filter above the list (advisor and client). Keys match MatchesFilter.
     private static readonly (string Key, string Label)[] StatusFilters =
     {
-        ("all", "All"),
-        ("awaiting", "Awaiting signature"),
         ("review", "To review"),
-        ("signed", "Signed")
+        ("awaiting", "Awaiting signature"),
+        ("signed", "Signed"),
+        ("all", "All")
     };
 
-    private string StatusFilter { get; set; } = "all";
+    private string StatusFilter { get; set; } = "review";
 
     private bool IsFiltering => StatusFilter != "all";
+
+    // Review queue (advisor, "To review" tab): one document at a time, oldest first.
+    private bool ShowUpload;
+    private bool IsReviewQueue => IsAdvisorView && StatusFilter == "review" && DocumentItems.Count > 0;
+    private int? SelectedReviewId;
+    private string? ReviewNote;
+    private string? ReviewError;
+    private bool IsSavingReview;
+
+    private List<DocumentItem> ReviewQueue
+    {
+        get
+        {
+            var term = (SearchText ?? string.Empty).Trim();
+            return DocumentItems
+                .Where(d => MatchesFilter(d, "review") && (term.Length == 0 || MatchesSearch(d, term)))
+                .OrderBy(d => d.Id)
+                .ToList();
+        }
+    }
+
+    private void SelectReview(int documentId)
+    {
+        if (IsSavingReview) return;
+        SelectedReviewId = documentId;
+        ReviewNote = null;
+        ReviewError = null;
+    }
+
+    private async Task SaveReviewAsync(DocumentItem document, DocumentReviewStatus status)
+    {
+        if (IsSavingReview) return;
+        IsSavingReview = true;
+        ReviewError = null;
+
+        try
+        {
+            // The API rejects a stale review, so read the current version first.
+            var (review, error) = await Workflow.GetReviewAsync(document.Id);
+            if (review is null) { ReviewError = error ?? "Unable to load this document."; return; }
+
+            var (saved, saveError) = await Workflow.ReviewAsync(document.Id, new() { Status = status, Note = ReviewNote, ExpectedUpdatedAt = review.UpdatedAt });
+            if (saved is null) { ReviewError = saveError ?? "Unable to save the review."; return; }
+
+            var queue = ReviewQueue;
+            var index = queue.FindIndex(d => d.Id == document.Id);
+            SelectedReviewId = queue.Where((d, i) => i > index).Select(d => (int?)d.Id).FirstOrDefault()
+                ?? queue.Where((d, i) => i < index).Select(d => (int?)d.Id).LastOrDefault();
+            ReviewNote = null;
+            await LoadDocumentsAsync();
+        }
+        finally
+        {
+            IsSavingReview = false;
+        }
+    }
 
     // Bulk document requests and CSV export (advisor view only).
     private bool ShowBulkRequest;
@@ -695,6 +764,7 @@
             }
 
             var documents = result.Documents ?? new List<DocumentSummary>();
+            var firstLoad = !HasLoadedDocuments;
 
             // All documents. The API sends the client and policy names with the advisor's list.
             DocumentItems = documents
@@ -731,15 +801,12 @@
                 }
             }
 
-            AwaitingSignatures = documents
-                .Where(d => d.SignatureStatus == "Awaiting")
-                .Select(d => new SignatureItem
-                {
-                    DocumentId = d.DocumentId,
-                    ClientName = string.IsNullOrWhiteSpace(d.ClientName) ? $"Client {d.ClientId}" : d.ClientName,
-                    DocumentName = d.FileName
-                })
-                .ToList();
+            // Open on the queue when there is something to review, otherwise on everything.
+            if (firstLoad && (!IsAdvisorView || !DocumentItems.Any(d => MatchesFilter(d, "review"))))
+            {
+                StatusFilter = "all";
+            }
+
         }
         catch (Exception ex)
         {
@@ -1054,14 +1121,6 @@
         public bool VisibleToClient { get; set; }
     }
 
-    public class SignatureItem
-    {
-        public int DocumentId { get; set; }
-
-        public string ClientName { get; set; } = string.Empty;
-
-        public string DocumentName { get; set; } = string.Empty;
-    }
 }
 
 @* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

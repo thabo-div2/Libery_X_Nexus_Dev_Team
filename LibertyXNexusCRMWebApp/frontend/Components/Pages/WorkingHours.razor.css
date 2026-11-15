@@ -697,3 +697,71 @@
         transition: none;
     }
 }
+
+/* ================================ VISUAL WEEK + CLIENT PREVIEW ============================== */
+
+.hours-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+}
+
+.hours-side {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.hours-intro-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.hours-intro-row .hours-intro { flex: 1 1 260px; margin: 0; }
+
+.day-track {
+    position: relative;
+    flex: 1;
+    min-width: 60px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-page-bg);
+}
+
+.day-track i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--color-primary), #19496b);
+}
+
+.client-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 0 0 1px rgba(12, 35, 64, 0.08);
+}
+
+.client-preview.is-open { background: linear-gradient(160deg, var(--color-green-40), var(--color-white) 75%); }
+.client-preview.is-away { background: linear-gradient(160deg, var(--color-warning-bg), var(--color-white) 75%); }
+
+.client-preview-label { color: var(--color-text-muted); font-size: 11px; font-weight: var(--weight-bold); letter-spacing: 0.06em; text-transform: uppercase; }
+.client-preview strong { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+.client-preview.is-open strong { color: var(--color-green-690); }
+.client-preview.is-away strong { color: var(--color-warning-text); }
+.client-preview-dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.client-preview p { margin: 0; color: var(--color-text); font-size: 13px; }
+.client-preview small { color: var(--color-text-muted); font-size: 11.5px; }
+
+@media (max-width: 1000px) {
+    .hours-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .day-track { width: 100%; flex: none; }
+}

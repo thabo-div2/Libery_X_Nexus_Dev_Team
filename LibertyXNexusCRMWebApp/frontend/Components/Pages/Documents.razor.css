@@ -1463,3 +1463,193 @@
     background: rgba(255, 255, 255, 0.18);
     color: var(--color-white);
 }
+
+/* ================================ REVIEW QUEUE LAYOUT ============================== */
+
+/* Upload and signatures now live in the main column, so the page is one column. */
+.documents-content {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.main-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.upload-card .side-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.upload-card-body {
+    max-width: 640px;
+}
+
+.review-queue {
+    display: grid;
+    grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+}
+
+.queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: 560px;
+    overflow-y: auto;
+}
+
+.queue-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 16px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.queue-item:hover { background: color-mix(in srgb, var(--color-page-bg) 60%, var(--color-white)); }
+.queue-item.is-selected { background: color-mix(in srgb, var(--color-primary) 8%, var(--color-white)); box-shadow: inset 3px 0 0 var(--color-primary); }
+.queue-item:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+.queue-item .document-icon { width: 38px; height: 38px; border-radius: 12px; font-size: 9.5px; }
+
+.queue-text { min-width: 0; display: flex; flex-direction: column; }
+.queue-text strong { overflow: hidden; color: var(--color-primary); font-size: 13.5px; text-overflow: ellipsis; white-space: nowrap; }
+.queue-text small { overflow: hidden; color: var(--color-text-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+
+.queue-tag {
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+    font-size: 11px;
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+}
+
+.queue-detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--color-page-bg) 45%, var(--color-white));
+    box-shadow: inset 0 0 0 1px rgba(12, 35, 64, 0.06);
+}
+
+.queue-detail-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.queue-eyebrow { color: var(--color-accent-deep); font-size: 11px; font-weight: var(--weight-bold); letter-spacing: 0.08em; text-transform: uppercase; }
+.queue-detail-head h3 { margin: 2px 0 0; color: var(--color-primary); font-family: var(--font-display); font-size: 28px; font-weight: var(--weight-regular); line-height: 1.1; }
+.queue-detail-head p { margin: 2px 0 0; color: var(--color-text-muted); font-size: 12.5px; overflow-wrap: anywhere; }
+
+.queue-position {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-white);
+    color: var(--color-primary);
+    font-size: 12px;
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+}
+
+.queue-replaces {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+    font-size: 12.5px;
+    overflow-wrap: anywhere;
+}
+
+.queue-open {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--color-white);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.08), 0 12px 24px -18px rgba(12, 35, 64, 0.3);
+    color: var(--color-primary);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: box-shadow var(--transition-fast);
+}
+
+.queue-open:hover { box-shadow: 0 0 0 2px var(--color-primary), 0 12px 24px -18px rgba(12, 35, 64, 0.3); }
+.queue-open:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.queue-open span:nth-child(2) { display: flex; flex-direction: column; }
+.queue-open small { color: var(--color-text-muted); font-size: 12px; }
+
+.queue-note { display: flex; flex-direction: column; gap: 6px; }
+.queue-note > span { color: var(--color-primary); font-size: 12.5px; font-weight: var(--weight-semibold); }
+.queue-note em { margin-left: 6px; color: var(--color-text-muted); font-style: normal; font-weight: var(--weight-regular); }
+
+.queue-note textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--color-white);
+    box-shadow: inset 0 0 0 1px rgba(12, 35, 64, 0.12);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 13px;
+    resize: vertical;
+}
+
+.queue-note textarea:focus { outline: none; box-shadow: inset 0 0 0 2px var(--color-primary); }
+
+.queue-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.queue-accept,
+.queue-reject {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius-full);
+    font: inherit;
+    font-size: 13px;
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.queue-accept { background: var(--color-green-690); color: var(--color-white); }
+.queue-reject { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.queue-accept:active:not(:disabled),
+.queue-reject:active:not(:disabled) { transform: scale(0.98); }
+.queue-accept:disabled,
+.queue-reject:disabled { opacity: 0.5; cursor: default; }
+.queue-accept:focus-visible,
+.queue-reject:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+
+@media (max-width: 900px) {
+    .review-queue { grid-template-columns: minmax(0, 1fr); }
+    .queue-list { max-height: 280px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .queue-item, .queue-open, .queue-accept, .queue-reject { transition: none; }
+}

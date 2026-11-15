@@ -56,12 +56,12 @@
 
                     <button type="button"
                             class="month-button"
-                            @onclick="PreviousMonth"
-                            aria-label="Previous month">
+                            @onclick="Previous"
+                            aria-label="@(IsWeekView ? "Previous week" : "Previous month")">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
                     </button>
 
-                    <h2>@CurrentMonth.ToString("MMMM yyyy")</h2>
+                    <h2>@(IsWeekView ? WeekLabel : CurrentMonth.ToString("MMMM yyyy"))</h2>
 
                     @if (IsLoadingMonth)
                     {
@@ -70,17 +70,22 @@
 
                     <button type="button"
                             class="month-button"
-                            @onclick="NextMonth"
-                            aria-label="Next month">
+                            @onclick="Next"
+                            aria-label="@(IsWeekView ? "Next week" : "Next month")">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
                     </button>
 
                     <button type="button"
                             class="today-pill"
-                            disabled="@IsViewingToday"
-                            @onclick="GoToToday">
+                            disabled="@IsAtToday"
+                            @onclick="GoToTodayView">
                         Today
                     </button>
+
+                    <div class="view-switch" role="group" aria-label="Calendar view">
+                        <button type="button" class="@(IsWeekView ? "is-active" : "")" aria-pressed="@IsWeekView" @onclick="() => SetViewAsync(true)">Week</button>
+                        <button type="button" class="@(IsWeekView ? "" : "is-active")" aria-pressed="@(!IsWeekView)" @onclick="() => SetViewAsync(false)">Month</button>
+                    </div>
 
                 </div>
 
@@ -96,6 +101,12 @@
                     <span class="calendar-key-item"><span class="calendar-key-swatch event-yellow" aria-hidden="true"></span>Awaiting confirmation</span>
                 </div>
 
+                @if (IsWeekView)
+                {
+                    <WeekView WeekStart="ViewWeekStart" Meetings="LoadedMeetings" SelectedMeetingId="SelectedMeeting?.MeetingId" OnSelect="SelectMeeting" Title="m => m.ClientName" />
+                }
+                else
+                {
                 <!-- DAYS OF WEEK -->
                 <div class="week-header">
 
@@ -148,6 +159,7 @@
 
                 </div>
 
+                }
             </article>
 
         </section>
@@ -159,6 +171,28 @@
             @if (!string.IsNullOrEmpty(PanelMessage))
             {
                 <p class="nx-alert nx-alert-success" role="status">@PanelMessage</p>
+            }
+
+            @if (PendingRequests.Count > 0)
+            {
+                <section class="requests-card" aria-labelledby="requests-title">
+                    <h2 id="requests-title">@PendingRequests.Count meeting @(PendingRequests.Count == 1 ? "request" : "requests") waiting</h2>
+                    <ul>
+                        @foreach (var request in PendingRequests.Take(4))
+                        {
+                            <li @key="request.MeetingId">
+                                <button type="button" class="request-who" @onclick="() => SelectMeeting(request.MeetingId)">
+                                    <strong>@request.ClientName</strong>
+                                    <span>@request.MeetingDate.ToLocalTime().ToString("ddd d MMM, HH:mm")</span>
+                                </button>
+                                <div class="request-actions">
+                                    <button type="button" class="request-accept" disabled="@(RespondingId is not null)" @onclick="() => RespondAsync(request, true)">Accept</button>
+                                    <button type="button" class="request-decline" disabled="@(RespondingId is not null)" @onclick="() => RespondAsync(request, false)">Decline</button>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </section>
             }
 
             <!-- MEETING DETAILS (opens when a meeting is clicked) -->
@@ -415,6 +449,26 @@
 
     private int? MeetingsThisWeek;
 
+    private List<MeetingSummary> PendingRequests = new();
+    private int? RespondingId;
+
+    private async Task RespondAsync(MeetingSummary meeting, bool accept)
+    {
+        if (RespondingId is not null) return;
+        RespondingId = meeting.MeetingId;
+        try
+        {
+            var error = await MeetingStore.RespondAsync(meeting.MeetingId, meeting.ClientId, accept);
+            PanelError = null;
+            PanelMessage = error ?? (accept ? $"Meeting with {meeting.ClientName} confirmed." : $"Request from {meeting.ClientName} declined.");
+            await LoadMeetings();
+        }
+        finally
+        {
+            RespondingId = null;
+        }
+    }
+
     /// <summary>
     /// Every meeting loaded for the visible grid and the current week, any status.
     /// </summary>
@@ -475,6 +529,8 @@
 
         var from = gridStart < weekStart ? gridStart : weekStart;
         var to = gridEnd > weekEnd ? gridEnd : weekEnd;
+        if (ViewWeekStart < from) from = ViewWeekStart;
+        if (ViewWeekStart.AddDays(7) > to) to = ViewWeekStart.AddDays(7);
 
         IsLoadingMonth = true;
         var (meetings, error) = await MeetingStore.GetForRangeAsync(from, to);
@@ -512,6 +568,12 @@
                 Status = MapDisplayStatus(m.Status)
             }).ToList();
 
+        var (upcoming, _) = await MeetingStore.GetForAdvisorAsync(AdvisorId);
+        PendingRequests = upcoming
+            .Where(m => string.Equals(m.Status, "Requested", StringComparison.OrdinalIgnoreCase) && m.MeetingDate > DateTime.UtcNow)
+            .OrderBy(m => m.MeetingDate)
+            .ToList();
+
         MeetingsThisWeek = confirmed.Count(m => m.MeetingDate.ToLocalTime() >= weekStart && m.MeetingDate.ToLocalTime() < weekEnd);
 
     }
@@ -539,6 +601,60 @@
     {
         CurrentMonth = CurrentMonth.AddMonths(1);
         await LoadMeetings();
+    }
+
+    // Week view is the default: it shows real meeting times. Month view is one click away.
+    private bool IsWeekView = true;
+    private DateTime ViewWeekStart = StartOfWeek(DateTime.Today);
+
+    private string WeekLabel
+    {
+        get
+        {
+            var end = ViewWeekStart.AddDays(6);
+            return end.Month == ViewWeekStart.Month
+                ? $"{ViewWeekStart.Day} – {end:d MMMM yyyy}"
+                : $"{ViewWeekStart:d MMM} – {end:d MMM yyyy}";
+        }
+    }
+
+    private bool IsAtToday => IsWeekView ? ViewWeekStart == StartOfWeek(DateTime.Today) : IsViewingToday;
+
+    private async Task ShowWeekAsync(DateTime weekStart)
+    {
+        ViewWeekStart = weekStart;
+        // Keep the month in step so the meetings for the week are loaded and Month view opens there.
+        CurrentMonth = new DateTime(weekStart.AddDays(3).Year, weekStart.AddDays(3).Month, 1);
+        await LoadMeetings();
+    }
+
+    private async Task Previous()
+    {
+        if (IsWeekView) await ShowWeekAsync(ViewWeekStart.AddDays(-7));
+        else await PreviousMonth();
+    }
+
+    private async Task Next()
+    {
+        if (IsWeekView) await ShowWeekAsync(ViewWeekStart.AddDays(7));
+        else await NextMonth();
+    }
+
+    private async Task GoToTodayView()
+    {
+        if (IsWeekView) await ShowWeekAsync(StartOfWeek(DateTime.Today));
+        else await GoToToday();
+    }
+
+    private async Task SetViewAsync(bool week)
+    {
+        if (week == IsWeekView) return;
+        IsWeekView = week;
+        if (week)
+        {
+            var monthHasToday = CurrentMonth.Year == DateTime.Today.Year && CurrentMonth.Month == DateTime.Today.Month;
+            await ShowWeekAsync(StartOfWeek(monthHasToday ? DateTime.Today : CurrentMonth));
+        }
     }
 
     private bool IsViewingToday => CurrentMonth.Year == DateTime.Today.Year && CurrentMonth.Month == DateTime.Today.Month;

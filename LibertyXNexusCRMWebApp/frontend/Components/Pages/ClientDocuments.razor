@@ -3,132 +3,264 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
 @inject DocumentService DocumentDirectory
+@inject DocumentRequestService RequestApi
 @inject PolicyService PolicyDirectory
+@inject ClientService ClientDirectory
 @inject CurrentUserService CurrentUser
 @inject NavigationManager Navigation
 
 <PageTitle>My documents | Nexus</PageTitle>
 
+@* Client documents. Order: overall progress, what the adviser still needs, the uploader (only when
+   opened), then one library of everything sent and shared. *@
 <div class="cdocs-page">
 
     <header class="cdocs-header">
-
         <div class="cdocs-heading">
             <h1>My documents</h1>
-            <p>Documents you've sent your advisor and ones they've shared with you</p>
+            <p>Everything you've sent @AdviserFirstName, and everything @AdviserFirstName has shared with you.</p>
         </div>
-
         <div class="header-actions">
+            <button type="button" class="cd-btn cd-btn-quiet" aria-expanded="@(ShowUploader ? "true" : "false")" @onclick="ToggleUploader">
+                <svg class="cd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4" /></svg>
+                @(ShowUploader ? "Close upload" : "Upload something else")
+            </button>
             <NotificationBell />
         </div>
-
     </header>
 
-
-    <main class="cdocs-content">
-
-        <section class="main-column">
-
-            <article class="cdocs-card">
-
-                <div class="card-header">
-                    <h2>Your documents<span class="card-count">@Documents.Count</span></h2>
-                </div>
-
-                <div class="cdocs-list">
-
-                    @if (!string.IsNullOrWhiteSpace(DownloadError))
-                    {
-                        <p class="nx-alert nx-alert-danger cdocs-alert" role="alert">@DownloadError</p>
-                    }
-
-                    @if (IsLoading)
-                    {
-                        <div class="empty-state" role="status">
-                            <div class="nx-skeleton-stack page-skeleton" role="status"><span class="visually-hidden">Loading your documents</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
-                        </div>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(ErrorMessage))
-                    {
-                        <div class="empty-state" role="alert">
-                            <strong>Unable to load documents</strong>
-                            <span>@ErrorMessage</span>
-                        </div>
-                    }
-                    else if (Documents.Count > 0)
-                    {
-                        @foreach (var group in DocumentGroups)
+    @if (IsLoading)
+    {
+        <div class="cd-panel cd-loading"><div class="nx-skeleton-stack" role="status"><span class="visually-hidden">Loading your documents</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div></div>
+    }
+    else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+    {
+        <p class="cd-error" role="alert">@ErrorMessage</p>
+    }
+    else
+    {
+        <!-- PROGRESS -->
+        <section class="cd-hero" aria-labelledby="progress-title">
+            @if (Requests.Count > 0)
+            {
+                <span class="cd-ring" role="img" aria-label="@AcceptedCount of @Requests.Count requested documents accepted">
+                    <svg viewBox="0 0 36 36" aria-hidden="true">
+                        <circle class="ring-track" cx="18" cy="18" r="15.9155" />
+                        @if (AcceptedPercent > 0)
                         {
-                            var versions = group.OrderByDescending(d => d.DocumentId).ToList();
-                            var latest = versions[0];
-                            <section class="document-version-group" @key="group.Key">
-                                <ClientDocumentEntry Document="latest" RequiresReplacement="@ReplacementPending(latest)" OnDownload="DownloadAsync" OnReplace="BeginReplacement" />
-                                @if (versions.Count > 1)
-                                {
-                                    <details class="document-history">
-                                        <summary>Previous uploads <span>@(versions.Count - 1)</span></summary>
-                                        @foreach (var previous in versions.Skip(1))
-                                        {
-                                            <ClientDocumentEntry @key="previous.DocumentId" Document="previous" IsHistory="true" OnDownload="DownloadAsync" />
-                                        }
-                                    </details>
-                                }
-                            </section>
+                            @* Skipped at 0%: a round line cap would still draw a dot. *@
+                            <circle class="ring-fill" cx="18" cy="18" r="15.9155" stroke-dasharray="@AcceptedPercent 100" />
                         }
-                    }
-                    else
-                    {
-                        <div class="empty-state">
+                    </svg>
+                    <b>@AcceptedCount/@Requests.Count</b>
+                    <small>accepted</small>
+                </span>
+            }
+            else
+            {
+                <span class="cd-ring cd-ring-empty" aria-hidden="true"><svg class="cd-icon" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z" /><path d="M14 3v5h5" /></svg></span>
+            }
 
-                            <div class="empty-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
+            <div class="cd-hero-text">
+                <h2 id="progress-title">@HeroTitle</h2>
+                <p>@HeroDetail</p>
+                @if (Requests.Count > 0)
+                {
+                    <div class="cd-hero-chips">
+                        @if (ReplaceCount > 0) { <span><i class="dot-red"></i>@ReplaceCount to replace</span> }
+                        @if (OutstandingCount > 0) { <span><i class="dot-amber"></i>@OutstandingCount still to upload</span> }
+                        @if (InReviewCount > 0) { <span><i class="dot-blue"></i>@InReviewCount in review</span> }
+                        <span><i class="dot-green"></i>@AcceptedCount accepted</span>
+                    </div>
+                }
+            </div>
 
-                            <strong>No documents yet</strong>
-
-                            <span>
-                                Documents you upload, and ones your advisor shares with you, will appear here.
-                            </span>
-
-                        </div>
-                    }
-
-                </div>
-
-            </article>
-
+            @if (Actions.Count > 0)
+            {
+                <button type="button" class="cd-btn cd-btn-light" @onclick="() => BeginRequestUpload(Actions[0])">
+                    <svg class="cd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4" /></svg>
+                    Upload now
+                </button>
+            }
         </section>
 
-
-        <aside class="side-column">
-
-            <section class="side-card">
-
-                <div class="side-card-header">
-                    <h2>Send a document</h2>
+        <!-- NEEDS YOUR ACTION -->
+        @if (Actions.Count > 0)
+        {
+            <section class="cd-panel" aria-labelledby="actions-title">
+                <div class="cd-panel-head">
+                    <h2 id="actions-title">Needs your action <span class="cd-count">@Actions.Count</span></h2>
+                    <span class="cd-panel-note">Most urgent first</span>
                 </div>
-
-                <div class="side-card-body">
-
-                    <p class="side-card-intro">
-                        Your advisor may ask for things like a certified ID copy, proof of address,
-                        payslips or bank statements. Upload them here and they'll be notified.
-                    </p>
-
-                    @if (!IsLoading && CurrentUser.Id is int clientId)
+                <ul class="cd-actions">
+                    @foreach (var request in Actions)
                     {
-                        <RequestedDocuments ShowFeedback="false" @ref="RequestedList" ClientId="clientId" OnUploadRequested="BeginRequestUpload" OnLoaded="RequestsLoaded" />
-
-                        <DocumentUploader @ref="Uploader" ClientId="clientId"
-                                          Policies="Policies"
-                                          OnUploaded="OnDocumentUploaded" />
+                        var redo = request.ReviewStatus == "NeedsReplacement";
+                        <li class="cd-action @(redo ? "is-redo" : "is-todo")" @key="request.DocumentRequestId">
+                            <span class="cd-action-icon" aria-hidden="true">
+                                @if (redo) { <svg class="cd-icon" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" /></svg> }
+                                else { <svg class="cd-icon" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z" /><path d="M14 3v5h5M12 18v-6M9.5 14.5 12 12l2.5 2.5" /></svg> }
+                            </span>
+                            <div class="cd-action-text">
+                                <strong>@DocumentTypeNames.Format(request.DocumentType) · @(request.PolicyName ?? "General")</strong>
+                                <span>@(redo ? "Not accepted · please upload a new copy" : $"Requested {request.CreatedAt.ToLocalTime():d MMM}")</span>
+                                @{ var note = redo ? request.ReviewNote : request.Note; }
+                                @if (!string.IsNullOrWhiteSpace(note))
+                                {
+                                    <p class="cd-note"><b>@AdviserFirstName:</b> @note</p>
+                                }
+                            </div>
+                            <button type="button" class="cd-btn cd-btn-primary" @onclick="() => BeginRequestUpload(request)">
+                                <svg class="cd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4" /></svg>
+                                @(redo ? "Upload new copy" : "Upload")
+                            </button>
+                        </li>
                     }
+                </ul>
+            </section>
+        }
 
+        <!-- UPLOADER: always rendered so it keeps its state, shown only when opened -->
+        <section class="cd-panel cd-uploader" hidden="@(!ShowUploader)" aria-label="Upload a document">
+            <div class="cd-panel-head">
+                <h2>Upload a document</h2>
+                <button type="button" class="cd-link" @onclick="() => ShowUploader = false">Close</button>
+            </div>
+            <div class="cd-uploader-body">
+                @if (CurrentUser.Id is int clientId)
+                {
+                    <DocumentUploader @ref="Uploader" ClientId="clientId" Policies="Policies" OnUploaded="OnDocumentUploaded" />
+                }
+            </div>
+        </section>
+
+        <div class="cd-grid">
+
+            <!-- LIBRARY -->
+            <section class="cd-panel cd-library" aria-labelledby="library-title">
+                <div class="cd-panel-head">
+                    <h2 id="library-title">Library</h2>
+                    <span class="cd-panel-note">@Documents.Count @(Documents.Count == 1 ? "document" : "documents") · grouped by policy</span>
                 </div>
 
+                <div class="cd-tabs" role="tablist" aria-label="Filter documents">
+                    @foreach (var (key, label) in Filters)
+                    {
+                        var on = Filter == key;
+                        <button type="button" role="tab" class="cd-tab @(on ? "is-active" : "")" aria-selected="@(on ? "true" : "false")" @onclick="() => Filter = key">
+                            @label <span>@FilterCount(key)</span>
+                        </button>
+                    }
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(DownloadError))
+                {
+                    <p class="cd-error cd-error-inline" role="alert">@DownloadError</p>
+                }
+
+                @if (Documents.Count == 0)
+                {
+                    <div class="cd-empty">
+                        <span class="cd-empty-icon" aria-hidden="true"><svg class="cd-icon" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z" /><path d="M14 3v5h5" /></svg></span>
+                        <strong>No documents yet</strong>
+                        <span>Documents you upload, and ones @AdviserFirstName shares with you, will appear here.</span>
+                    </div>
+                }
+                else if (!VisibleGroups.Any())
+                {
+                    <p class="cd-empty-line">Nothing in this view.</p>
+                }
+                else
+                {
+                    @foreach (var section in VisibleGroups.GroupBy(g => SectionName(g.Latest)))
+                    {
+                        <div class="cd-section">
+                            <h3 class="cd-section-title">@section.Key</h3>
+                            @foreach (var entry in section)
+                            {
+                                var doc = entry.Latest;
+                                var key = entry.Key;
+                                var open = OpenHistory.Contains(key);
+                                var (statusText, statusClass) = Status(doc);
+                                <div class="cd-row" @key="key">
+                                    <span class="cd-thumb @(IsShared(doc) ? "is-shared" : "")" aria-hidden="true">
+                                        <svg class="cd-icon" viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z" /><path d="M14 3v5h5" /></svg>
+                                        <small>@Extension(doc)</small>
+                                    </span>
+                                    <div class="cd-row-text">
+                                        <strong>@DocumentTypeNames.Format(doc.DocumentType)</strong>
+                                        <span class="cd-row-meta">@doc.FileName · @Size(doc.FileSizeBytes)@(doc.UpdateAt is DateTime when ? $" · {when.ToLocalTime():d MMM yyyy}" : "")</span>
+                                        @if (!string.IsNullOrWhiteSpace(doc.ReviewNote) && doc.ReviewStatus != "NeedsReplacement")
+                                        {
+                                            <span class="cd-row-note">@AdviserFirstName: @doc.ReviewNote</span>
+                                        }
+                                        @if (entry.Older.Count > 0)
+                                        {
+                                            <button type="button" class="cd-versions" aria-expanded="@(open ? "true" : "false")" @onclick="() => ToggleHistory(key)">
+                                                @(open ? "Hide" : "Show") @entry.Older.Count earlier @(entry.Older.Count == 1 ? "version" : "versions")
+                                            </button>
+                                        }
+                                    </div>
+                                    <span class="cd-status @statusClass">@statusText</span>
+                                    <button type="button" class="cd-icon-btn" aria-label="Download @doc.FileName" @onclick="() => DownloadAsync(doc.DocumentId)">
+                                        <svg class="cd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14" /></svg>
+                                    </button>
+                                </div>
+                                @if (open)
+                                {
+                                    <ul class="cd-history">
+                                        @foreach (var old in entry.Older)
+                                        {
+                                            var (oldText, oldClass) = Status(old, history: true);
+                                            <li @key="old.DocumentId">
+                                                <span class="cd-row-meta">@old.FileName · @Size(old.FileSizeBytes)@(old.UpdateAt is DateTime w ? $" · {w.ToLocalTime():d MMM yyyy}" : "")</span>
+                                                <span class="cd-status @oldClass">@oldText</span>
+                                                <button type="button" class="cd-icon-btn" aria-label="Download @old.FileName" @onclick="() => DownloadAsync(old.DocumentId)">
+                                                    <svg class="cd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14" /></svg>
+                                                </button>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            }
+                        </div>
+                    }
+                }
             </section>
 
-        </aside>
+            <!-- SIDE: checklist and upload tips -->
+            <aside class="cd-side">
+                @if (Requests.Count > 0)
+                {
+                    <section class="cd-panel cd-side-card" aria-labelledby="checklist-title">
+                        <h2 id="checklist-title" class="cd-side-title">Your checklist</h2>
+                        <ul class="cd-checklist">
+                            @foreach (var request in Requests.OrderBy(r => ChecklistOrder(r)).ThenBy(r => r.CreatedAt))
+                            {
+                                var (text, css, mark) = Checklist(request);
+                                <li @key="request.DocumentRequestId">
+                                    <span class="cd-check @css" aria-hidden="true">@mark</span>
+                                    <span class="cd-check-name">@DocumentTypeNames.Format(request.DocumentType)<small>@(request.PolicyName ?? "General")</small></span>
+                                    <span class="cd-status @css">@text</span>
+                                </li>
+                            }
+                        </ul>
+                    </section>
+                }
 
-    </main>
+                <section class="cd-panel cd-side-card" aria-labelledby="tips-title">
+                    <h2 id="tips-title" class="cd-side-title">Good uploads</h2>
+                    <p class="cd-tip"><b>Photos are fine</b> if all four corners are visible and the text is sharp.</p>
+                    <ul class="cd-tips">
+                        <li>PDF, Word, JPG or PNG, up to 25 MB</li>
+                        <li>Statements and bills from the last 3 months</li>
+                        <li>ID copies must be certified</li>
+                    </ul>
+                </section>
+            </aside>
+
+        </div>
+    }
 
 </div>
 
@@ -137,33 +269,185 @@
 @code {
 
     private List<DocumentSummary> Documents { get; set; } = new();
-    private IEnumerable<IGrouping<(int? PolicyId, string DocumentType), DocumentSummary>> DocumentGroups => Documents
-        .GroupBy(d => (d.PolicyId, d.DocumentType)).OrderByDescending(g => g.Max(d => d.DocumentId));
-
     private List<PolicySummary> Policies { get; set; } = new();
+    private List<DocumentRequestSummary> Requests { get; set; } = new();
 
     private bool IsLoading { get; set; } = true;
-
     private string? ErrorMessage { get; set; }
-
     private string? DownloadError { get; set; }
 
-    // The checklist of documents the advisor asked for.
-    private RequestedDocuments? RequestedList;
+    private string? ClientName;
+    private string? AdviserName;
+    private string AdviserFirstName => string.IsNullOrWhiteSpace(AdviserName) ? "your adviser" : AdviserName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+
     private DocumentUploader? Uploader;
-    private List<DocumentRequestSummary>? ClientRequests;
-    private void RequestsLoaded(List<DocumentRequestSummary> requests) => ClientRequests = requests;
+    private bool ShowUploader;
+
+    // ---- Requests: progress and the action list ----
+
+    private int AcceptedCount => Requests.Count(r => r.IsFulfilled && r.ReviewStatus == "Accepted");
+    private int ReplaceCount => Requests.Count(r => r.ReviewStatus == "NeedsReplacement");
+    private int OutstandingCount => Requests.Count(r => !r.IsFulfilled && r.ReviewStatus != "NeedsReplacement");
+    private int InReviewCount => Requests.Count(r => r.IsFulfilled && r.ReviewStatus != "Accepted" && r.ReviewStatus != "NeedsReplacement");
+    private int AcceptedPercent => Requests.Count == 0 ? 0 : (int)Math.Round(100.0 * AcceptedCount / Requests.Count);
+
+    // Documents to replace first (oldest first), then ones still to upload.
+    private List<DocumentRequestSummary> Actions => Requests
+        .Where(r => r.ReviewStatus == "NeedsReplacement" || !r.IsFulfilled)
+        .OrderBy(r => r.ReviewStatus == "NeedsReplacement" ? 0 : 1)
+        .ThenBy(r => r.CreatedAt)
+        .ToList();
+
+    private string HeroTitle
+    {
+        get
+        {
+            if (Requests.Count == 0) return "Nothing requested right now";
+            var left = Actions.Count;
+            if (left == 0 && InReviewCount > 0) return "All sent, waiting for review";
+            if (left == 0) return "Everything's accepted";
+            return left == 1 ? "One document to go" : $"{left} documents to go";
+        }
+    }
+
+    private string HeroDetail
+    {
+        get
+        {
+            if (Requests.Count == 0) return $"When {AdviserFirstName} asks for a document, it will show up here. You can still upload anything useful.";
+            if (Actions.Count == 0 && InReviewCount > 0) return $"{AdviserFirstName} is checking what you sent. You'll get a notification once it's reviewed.";
+            if (Actions.Count == 0) return $"{AdviserFirstName} has accepted every document requested so far. Nothing else is needed.";
+            var names = Actions.Select(r => DocumentTypeNames.Format(r.DocumentType).ToLowerInvariant()).Distinct().ToList();
+            var list = names.Count == 1 ? names[0] : string.Join(", ", names.Take(names.Count - 1)) + " and " + names[^1];
+            return $"{AdviserFirstName} still needs your {list}.";
+        }
+    }
+
+    private static int ChecklistOrder(DocumentRequestSummary r) =>
+        r.ReviewStatus == "NeedsReplacement" ? 0 : !r.IsFulfilled ? 1 : r.ReviewStatus == "Accepted" ? 3 : 2;
+
+    private static (string Text, string Css, string Mark) Checklist(DocumentRequestSummary r) =>
+        r.ReviewStatus == "NeedsReplacement" ? ("Redo", "is-red", "!")
+        : !r.IsFulfilled ? ("To do", "is-muted", "·")
+        : r.ReviewStatus == "Accepted" ? ("Done", "is-green", "✓")
+        : ("In review", "is-amber", "…");
+
+    // ---- Library ----
+
+    private sealed record DocGroup(string Key, DocumentSummary Latest, List<DocumentSummary> Older);
+
+    private static readonly (string Key, string Label)[] Filters =
+    {
+        ("all", "All"), ("review", "In review"), ("accepted", "Accepted"), ("shared", "Shared with you")
+    };
+
+    private string Filter = "all";
+    private readonly HashSet<string> OpenHistory = new();
+
+    // One entry per (policy, type, who uploaded it), newest version first.
+    private List<DocGroup> Groups => Documents
+        .GroupBy(d => $"{d.PolicyId}|{d.DocumentType}|{(IsShared(d) ? "shared" : "mine")}")
+        .Select(g =>
+        {
+            var versions = g.OrderByDescending(d => d.DocumentId).ToList();
+            return new DocGroup(g.Key, versions[0], versions.Skip(1).ToList());
+        })
+        .OrderBy(g => IsShared(g.Latest) ? 1 : 0)
+        .ThenBy(g => g.Latest.PolicyName ?? "")
+        .ThenByDescending(g => g.Latest.DocumentId)
+        .ToList();
+
+    private IEnumerable<DocGroup> VisibleGroups => Groups.Where(g => Matches(g.Latest, Filter));
+
+    private int FilterCount(string key) => Groups.Count(g => Matches(g.Latest, key));
+
+    private bool Matches(DocumentSummary d, string key) => key switch
+    {
+        "review" => !IsShared(d) && d.ReviewStatus == "Received",
+        "accepted" => !IsShared(d) && d.ReviewStatus == "Accepted",
+        "shared" => IsShared(d),
+        _ => true
+    };
+
+    // Shared means someone other than the client uploaded it (the API stores the uploader's name).
+    private bool IsShared(DocumentSummary d) =>
+        !string.IsNullOrWhiteSpace(d.UploadedBy)
+        && d.UploadedBy != "seed-data"
+        && !d.UploadedBy.StartsWith("client-", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(d.UploadedBy.Trim(), ClientName, StringComparison.OrdinalIgnoreCase);
+
+    private string SectionName(DocumentSummary d) =>
+        IsShared(d) ? $"Shared by {AdviserFirstName}" : d.PolicyName ?? "General documents";
+
+    private (string Text, string Css) Status(DocumentSummary d, bool history = false)
+    {
+        if (IsShared(d))
+        {
+            return d.SignatureStatus switch
+            {
+                "Awaiting" => ("Sign", "is-red"),
+                "Signed" => ("Signed", "is-green"),
+                _ => ("Shared", "is-blue")
+            };
+        }
+
+        return d.ReviewStatus switch
+        {
+            "Accepted" => ("Accepted", "is-green"),
+            "NeedsReplacement" => history || !ReplacementPending(d) ? ("Not accepted", "is-muted") : ("Redo", "is-red"),
+            _ => ("In review", "is-amber")
+        };
+    }
+
+    private void ToggleHistory(string key)
+    {
+        if (!OpenHistory.Remove(key)) OpenHistory.Add(key);
+    }
+
+    private static string Extension(DocumentSummary d)
+    {
+        var ext = System.IO.Path.GetExtension(d.FileName).TrimStart('.').ToUpperInvariant();
+        return ext is "JPEG" ? "JPG" : string.IsNullOrEmpty(ext) ? "FILE" : ext[..Math.Min(4, ext.Length)];
+    }
+
+    private static string Size(long bytes) => bytes switch
+    {
+        >= 1024 * 1024 => $"{bytes / 1024d / 1024d:0.#} MB",
+        >= 1024 => $"{bytes / 1024d:0} KB",
+        _ => $"{bytes} B"
+    };
+
     private bool ReplacementPending(DocumentSummary document)
     {
         if (document.ReviewStatus != "NeedsReplacement") return false;
-        if (ClientRequests is null) return true;
-        var scoped = ClientRequests.Where(r => r.PolicyId == document.PolicyId && r.DocumentType == document.DocumentType).ToList();
+        var scoped = Requests.Where(r => r.PolicyId == document.PolicyId && r.DocumentType == document.DocumentType).ToList();
         if (scoped.Count > 0) return scoped.Any(r => !r.IsFulfilled);
         return !Documents.Any(d => d.DocumentId > document.DocumentId && d.PolicyId == document.PolicyId
             && d.DocumentType == document.DocumentType && d.ReviewStatus != "NeedsReplacement");
     }
-    private async Task BeginReplacement(DocumentSummary document) { if (Uploader is not null) await Uploader.PrepareAsync(document.PolicyId, document.DocumentType, document.ReviewNote, true); }
-    private async Task BeginRequestUpload(DocumentRequestSummary request) { if (Uploader is not null) await Uploader.PrepareAsync(request.PolicyId, request.DocumentType, request.ReviewNote, request.ReviewStatus == "NeedsReplacement"); }
+
+    // ---- Uploading ----
+
+    private void ToggleUploader() => ShowUploader = !ShowUploader;
+
+    private async Task BeginRequestUpload(DocumentRequestSummary request)
+    {
+        ShowUploader = true;
+        StateHasChanged();
+        await Task.Yield(); // let the uploader become visible before it takes focus
+        if (Uploader is not null)
+            await Uploader.PrepareAsync(request.PolicyId, request.DocumentType, request.ReviewNote, request.ReviewStatus == "NeedsReplacement");
+    }
+
+    // Show a freshly uploaded document straight away, then reload the requests it may have fulfilled.
+    private async Task OnDocumentUploaded(DocumentSummary document)
+    {
+        Documents.RemoveAll(d => d.DocumentId == document.DocumentId);
+        Documents.Insert(0, document);
+        await LoadRequestsAsync();
+    }
+
+    // ---- Loading ----
 
     protected override async Task OnInitializedAsync()
     {
@@ -177,26 +461,32 @@
                 return;
             }
 
-            // The API only returns the documents this client is allowed to see.
-            var (documents, documentError) = await DocumentDirectory.GetForClientAsync(clientId);
+            var clientTask = ClientDirectory.GetByIdAsync(clientId);
+            var documentsTask = DocumentDirectory.GetForClientAsync(clientId);
+            var policiesTask = PolicyDirectory.GetForClientAsync(clientId);
+            await Task.WhenAll(clientTask, documentsTask, policiesTask, LoadRequestsAsync());
 
+            var (client, _) = clientTask.Result;
+            if (client is not null)
+            {
+                ClientName = $"{client.FirstName} {client.LastName}".Trim();
+                AdviserName = client.AdvisorName;
+            }
+
+            // The API only returns the documents this client is allowed to see.
+            var (documents, documentError) = documentsTask.Result;
             if (documentError is not null || documents is null)
             {
                 ErrorMessage = documentError ?? "Your documents couldn't be loaded.";
             }
             else
             {
-                Documents = documents
-                    .OrderByDescending(d => d.UpdateAt ?? DateTime.MinValue)
-                    .ToList();
+                Documents = documents.OrderByDescending(d => d.UpdateAt ?? DateTime.MinValue).ToList();
             }
 
             // Needed by the uploader so each document can be filed under a policy.
-            var (policies, policyError) = await PolicyDirectory.GetForClientAsync(clientId);
-            if (policyError is null)
-            {
-                Policies = policies;
-            }
+            var (policies, policyError) = policiesTask.Result;
+            if (policyError is null) Policies = policies;
         }
         finally
         {
@@ -204,24 +494,17 @@
         }
     }
 
-    // Show a freshly uploaded document at the top of the list straight away.
-    private async Task OnDocumentUploaded(DocumentSummary document)
+    private async Task LoadRequestsAsync()
     {
-        Documents.RemoveAll(d => d.DocumentId == document.DocumentId);
-        Documents.Insert(0, document);
-
-        // The upload may have fulfilled something the advisor asked for, so refresh the checklist.
-        if (RequestedList is not null)
-        {
-            await RequestedList.RefreshAsync();
-        }
+        if (CurrentUser.Id is not int clientId) return;
+        var (requests, _) = await RequestApi.GetForClientAsync(clientId);
+        if (requests is not null) Requests = requests;
     }
 
     private async Task RefreshRealtimeAsync()
     {
         ErrorMessage = null;
         await OnInitializedAsync();
-        if (RequestedList is not null) await RequestedList.RefreshAsync();
     }
 
     private async Task DownloadAsync(int documentId)
@@ -237,23 +520,6 @@
         }
 
         Navigation.NavigateTo(url, forceLoad: true);
-    }
-
-    // "ProofOfAddress" -> "Proof of address"
-    private static string FormatType(string? type)
-    {
-        if (string.IsNullOrWhiteSpace(type))
-        {
-            return "Document";
-        }
-
-        if (type == "CertifiedIdCopy")
-        {
-            return "Certified ID copy";
-        }
-
-        var spaced = System.Text.RegularExpressions.Regex.Replace(type, "(?<!^)([A-Z])", " $1").ToLowerInvariant();
-        return char.ToUpperInvariant(spaced[0]) + spaced[1..];
     }
 }
 

@@ -46,34 +46,14 @@
 
         <section class="chat-card">
 
+            @if (ConversationItems.Count == 0)
+            {
             <div class="assistant-hero">
                 <span class="assistant-hero-eyebrow">Nexus assistant</span>
                 <h2>Ask about your paperwork, <em>not your portfolio.</em></h2>
                 <p>Instant answers on documents, case status and how things work. Anything that needs advice goes to your adviser.</p>
-            <div class="quick-prompts">
-
-                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is FICA and why do you need it?")'>
-                    What is FICA and why do you need it?
-                </button>
-
-                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I upload a document?")'>
-                    How do I upload a document?
-                </button>
-
-                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I message my adviser?")'>
-                    How do I message my adviser?
-                </button>
-
-                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is happening in the global markets today?")'>
-                    What is happening in the markets today?
-                </button>
-
-                <button type="button" class="prompt-chip prompt-link" @onclick='() => SendQuickPrompt("Book a meeting with a client")'>
-                    Book a meeting with a client
-                </button>
-
             </div>
-            </div>
+            }
 
             <div class="chat-body">
 
@@ -112,6 +92,11 @@
                                     <div class="message-bubble assistant-bubble">
                                         @message.Text
                                     </div>
+
+                                    @if (!string.IsNullOrWhiteSpace(message.Source))
+                                    {
+                                        <span class="answer-source">From FAQ · @message.Source</span>
+                                    }
 
                                     @if (!string.IsNullOrWhiteSpace(message.TimeText))
                                     {
@@ -248,6 +233,30 @@
 
 
 
+            <div class="quick-prompts quick-prompts-bar" aria-label="Suggested questions">
+
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is FICA and why do you need it?")'>
+                    What is FICA and why do you need it?
+                </button>
+
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I upload a document?")'>
+                    How do I upload a document?
+                </button>
+
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("How do I message my adviser?")'>
+                    How do I message my adviser?
+                </button>
+
+                <button type="button" class="prompt-chip" @onclick='() => SendQuickPrompt("What is happening in the global markets today?")'>
+                    What is happening in the markets today?
+                </button>
+
+                <button type="button" class="prompt-chip prompt-link" @onclick='() => SendQuickPrompt("Book a meeting with a client")'>
+                    Book a meeting with a client
+                </button>
+
+            </div>
+
             <div class="message-input-area">
 
                 <input type="text"
@@ -283,75 +292,10 @@
 
         <aside class="assistant-side-column">
 
-            <section class="info-card">
-
-                <div class="info-card-header">
-                    <h2>What the assistant can do</h2>
-                </div>
-
-                <div class="info-card-body">
-
-                    <div class="capability-item">
-                        <span class="capability-dot"></span>
-                        <span>Explain required documents</span>
-                    </div>
-
-                    <div class="capability-item">
-                        <span class="capability-dot"></span>
-                        <span>Report live case status</span>
-                    </div>
-
-                    <div class="capability-item">
-                        <span class="capability-dot"></span>
-                        <span>Walk through uploads and signatures</span>
-                    </div>
-
-                    <div class="capability-item">
-                        <span class="capability-dot"></span>
-                        <span>Book or reschedule meetings</span>
-                    </div>
-
-                    <div class="capability-item">
-                        <span class="capability-dot"></span>
-                        <span>Provide current market and economic information</span>
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <section class="info-card">
-
-                <div class="info-card-header">
-                    <h2>Where it stops</h2>
-                </div>
-
-                <div class="info-card-body">
-
-                    <div class="restriction-item">
-                        <span class="restriction-dot"></span>
-                        <span>Product or contribution recommendations</span>
-                    </div>
-
-                    <div class="restriction-item">
-                        <span class="restriction-dot"></span>
-                        <span>Tax or estate advice</span>
-                    </div>
-
-                    <div class="restriction-item">
-                        <span class="restriction-dot"></span>
-                        <span>Anything requiring an FSP licence</span>
-                    </div>
-
-
-                    <div class="compliance-note">
-                        Every escalation is logged against the client case
-                        so the adviser has full context and an audit trail.
-                    </div>
-
-                </div>
-
+            <section class="info-card about-card">
+                <h2>About the assistant</h2>
+                <p>It answers admin questions from the Nexus FAQs and can book client meetings. It won't give product, tax or estate advice, or anything that needs an FSP licence. Those questions are flagged for a person.</p>
+                <a href="/faqs" class="about-link">Browse all FAQs</a>
             </section>
 
         </aside>
@@ -519,6 +463,7 @@
             var (matches, error) = await FaqStore.SearchAsync(text);
 
             string replyText;
+        string? source = null;
             var handoff = false;
 
             if (error is not null)
@@ -529,6 +474,7 @@
             {
                 var bestMatch = matches[0];
                 replyText = bestMatch.Answer;
+            source = bestMatch.Category;
                 handoff = bestMatch.RequiresHandoff;
             }
             else
@@ -540,6 +486,7 @@
             }
 
             await TypeAssistantReply(replyText);
+        if (source is not null && ConversationItems.LastOrDefault() is { IsAssistant: true } answered) answered.Source = source;
             IsHandedToAdviser = handoff;
         }
         finally
@@ -764,6 +711,9 @@
         public string TimeText { get; set; } = string.Empty;
 
         public bool IsAssistant { get; set; }
+
+        /// <summary>The FAQ question the answer came from, shown under the reply.</summary>
+        public string? Source { get; set; }
     }
 }
 

@@ -66,7 +66,10 @@
 
                     <div class="hours-card-body">
 
-                        <p class="hours-intro">Switch on the days you work and set the hours for each. Days that are switched off are days off.</p>
+                        <div class="hours-intro-row">
+                            <p class="hours-intro">Switch on the days you work and set the hours for each. Days that are switched off are days off.</p>
+                            <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@IsSavingWeek" @onclick="CopyMondayToWeekdays">Copy Monday to weekdays</button>
+                        </div>
 
                         <div class="week-bar" role="img" aria-label="@WeekBarLabel">
                             @foreach (var day in Days)
@@ -88,6 +91,13 @@
                                         <input type="checkbox" id="@dayId" @bind="day.IsWorkingDay" disabled="@IsSavingWeek" />
                                         <span>@day.Day</span>
                                     </label>
+
+                                    <span class="day-track" aria-hidden="true">
+                                        @if (day.IsWorkingDay && TrackSpan(day.StartTime, day.EndTime) is (double left, double width))
+                                        {
+                                            <i style="left:@Pct(left);width:@Pct(width)"></i>
+                                        }
+                                    </span>
 
                                     @if (day.IsWorkingDay)
                                     {
@@ -138,6 +148,14 @@
                 </section>
 
                 @* ---------- Custom dates ---------- *@
+                <div class="hours-side">
+                <section class="client-preview @(PreviewAvailable ? "is-open" : "is-away")" aria-live="polite">
+                    <span class="client-preview-label">What clients see right now</span>
+                    <strong><span class="client-preview-dot" aria-hidden="true"></span>@(PreviewAvailable ? "Available" : "Out of office")</strong>
+                    <p>@PreviewText</p>
+                    <small>Based on the hours on this page, including changes you haven't saved.</small>
+                </section>
+
                 <section class="hours-card">
 
                     <div class="hours-card-header">
@@ -259,6 +277,7 @@
                     </div>
 
                 </section>
+                </div>
 
             </div>
         }
@@ -516,6 +535,76 @@
         return startTime >= endTime
             ? $"The end time for {dayName} must be after the start time."
             : null;
+    }
+
+    // Day bars run from 06:00 to 21:00.
+    private const double TrackStart = 6 * 60, TrackEnd = 21 * 60;
+
+    private static (double, double)? TrackSpan(string? start, string? end)
+    {
+        if (!TimeOnly.TryParse(start, out var from) || !TimeOnly.TryParse(end, out var to) || to <= from) return null;
+        var left = Math.Clamp((from.ToTimeSpan().TotalMinutes - TrackStart) / (TrackEnd - TrackStart), 0, 1);
+        var right = Math.Clamp((to.ToTimeSpan().TotalMinutes - TrackStart) / (TrackEnd - TrackStart), 0, 1);
+        return (left, right - left);
+    }
+
+    private static string Pct(double fraction) => (fraction * 100).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + "%";
+
+    private void CopyMondayToWeekdays()
+    {
+        var monday = Days.FirstOrDefault(d => d.Day == DayOfWeek.Monday);
+        if (monday is null) return;
+        foreach (var day in Days.Where(d => d.Day is >= DayOfWeek.Tuesday and <= DayOfWeek.Friday))
+        {
+            day.IsWorkingDay = monday.IsWorkingDay;
+            day.StartTime = monday.StartTime;
+            day.EndTime = monday.EndTime;
+        }
+        WeekMessage = "Monday's hours copied to Tuesday to Friday. Save to apply them.";
+    }
+
+    // The hours that apply on a date: a custom date wins over the default week.
+    private (bool Working, string? Start, string? End, string? Note) HoursOn(DateTime date)
+    {
+        var custom = Overrides.FirstOrDefault(o => o.Date == date.ToString("yyyy-MM-dd"));
+        if (custom is not null) return (custom.IsWorkingDay, custom.StartTime, custom.EndTime, custom.Note);
+        var day = Days.FirstOrDefault(d => d.Day == date.DayOfWeek);
+        return (day?.IsWorkingDay == true, day?.StartTime, day?.EndTime, null);
+    }
+
+    // shortcut: uses the server clock as South African time, like the rest of the app; pass a time zone if hosting moves abroad.
+    private bool PreviewAvailable
+    {
+        get
+        {
+            var today = HoursOn(DateTime.Today);
+            var now = TimeOnly.FromDateTime(DateTime.Now);
+            return today.Working && TimeOnly.TryParse(today.Start, out var from) && TimeOnly.TryParse(today.End, out var to) && now >= from && now < to;
+        }
+    }
+
+    private string PreviewText
+    {
+        get
+        {
+            if (Days.All(d => !d.IsWorkingDay)) return "No working days are set, so clients can't message you or book meetings.";
+
+            var today = HoursOn(DateTime.Today);
+            if (PreviewAvailable) return $"Clients can message you and book until {today.End} today.";
+
+            for (var offset = 0; offset < 30; offset++)
+            {
+                var date = DateTime.Today.AddDays(offset);
+                var hours = HoursOn(date);
+                if (!hours.Working || !TimeOnly.TryParse(hours.Start, out var start)) continue;
+                if (offset == 0 && TimeOnly.FromDateTime(DateTime.Now) >= start) continue;
+                var when = offset == 0 ? "today" : offset == 1 ? "tomorrow" : date.ToString("dddd d MMM");
+                var note = string.IsNullOrWhiteSpace(today.Note) ? "" : $" ({today.Note})";
+                return $"Away{note}. Back {when} at {hours.Start}. Clients can still send a meeting request.";
+            }
+
+            return "Away for the next month.";
+        }
     }
 
     private int WorkingDayCount => Days.Count(d => d.IsWorkingDay);

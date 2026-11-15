@@ -11,6 +11,8 @@
 @inject MessageService MessageApi
 @inject ClientNoteService NoteApi
 @inject CurrentUserService CurrentUser
+@inject WorkflowService WorkflowApi
+@using Shared.DTOs.Workflow
 @inject IJSRuntime JS
 
 <PageTitle>Meeting prep | Nexus</PageTitle>
@@ -57,6 +59,64 @@
         }
         else
         {
+            var nextMeeting = UpcomingMeetings.FirstOrDefault();
+            var activeCase = Cases.OrderBy(c => c.PolicyIssuedAt.HasValue).ThenByDescending(c => c.CreatedAt).FirstOrDefault();
+            var stepsDone = activeCase is null ? 0 : Steps.Count(s => s.When(activeCase).HasValue);
+            var lastContact = RecentMessages.FirstOrDefault()?.SentAt;
+
+            <section class="prep-hero">
+                @if (nextMeeting is not null)
+                {
+                    var when = nextMeeting.MeetingDate.ToLocalTime();
+                    <span class="prep-date" aria-hidden="true"><small>@when.ToString("ddd")</small><b>@when.Day</b><small>@when.ToString("MMM")</small></span>
+                    <div>
+                        <h2>@(string.IsNullOrWhiteSpace(nextMeeting.MeetingType) ? "Meeting" : nextMeeting.MeetingType) with @Client.FirstName @Client.LastName</h2>
+                        <p>@Join(when.ToString("dddd d MMMM, HH:mm"), $"{nextMeeting.DurationMinutes} min", nextMeeting.Location, LastMeeting is null ? "first meeting" : "last met " + LastMeeting.MeetingDate.ToLocalTime().ToString("d MMM"))</p>
+                    </div>
+                }
+                else
+                {
+                    <span class="prep-date" aria-hidden="true"><small>No</small><b>–</b><small>date</small></span>
+                    <div>
+                        <h2>Briefing for @Client.FirstName @Client.LastName</h2>
+                        <p>No meeting booked yet@(LastMeeting is null ? "" : " · last met " + LastMeeting.MeetingDate.ToLocalTime().ToString("d MMM yyyy"))</p>
+                    </div>
+                }
+            </section>
+
+            <div class="prep-kpis">
+                <div class="prep-kpi"><span>Application</span><b>@(activeCase is null ? "—" : $"{stepsDone} / {Steps.Length}")</b><small>@(activeCase is null ? "No case yet" : stepsDone == Steps.Length ? "All steps done" : Steps[stepsDone].Label)</small></div>
+                <div class="prep-kpi"><span>Documents</span><b>@OutstandingRequests.Count</b><small>outstanding</small></div>
+                <div class="prep-kpi"><span>Last contact</span><b>@(lastContact is DateTime sent ? Ago(sent) : "—")</b><small>@(lastContact is null ? "No messages yet" : "message")</small></div>
+                <div class="prep-kpi"><span>Total cover</span><b>@ShortMoney(Policies.Sum(p => p.CoverAmount ?? 0))</b><small>@Policies.Count @(Policies.Count == 1 ? "policy" : "policies")</small></div>
+            </div>
+
+            <section class="prep-card prep-agenda">
+                <div class="prep-agenda-head">
+                    <h2>Suggested agenda</h2>
+                    <span>From @(Client.FirstName)’s file · tick items off as you go</span>
+                </div>
+                @if (Agenda.Count == 0)
+                {
+                    <p class="prep-none">Nothing outstanding. A good time for a general review.</p>
+                }
+                else
+                {
+                    <ul class="prep-agenda-list">
+                        @foreach (var item in Agenda)
+                        {
+                            var done = Ticked.Contains(item.Key);
+                            <li @key="item.Key" class="@(done ? "is-done" : "")">
+                                <button type="button" class="prep-tick" role="checkbox" aria-checked="@(done ? "true" : "false")" aria-label="@item.Title" @onclick="() => ToggleTick(item.Key)">
+                                    @if (done) { <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg> }
+                                </button>
+                                <span><strong>@item.Title</strong>@if (!string.IsNullOrWhiteSpace(item.Detail)) { <small>@item.Detail</small> }</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
             <div class="prep-grid">
 
                 @* ---------- Client ---------- *@
@@ -334,6 +394,55 @@
     private string? NoteError;
 
     private List<ChatMessage> RecentMessages = new();
+    private List<AdvisorTaskDto> OpenTasks = new();
+
+    // Suggested agenda, built from what is outstanding on the file. Ticks are for this sitting only.
+    private record AgendaItem(string Key, string Title, string? Detail);
+    private readonly HashSet<string> Ticked = new();
+    private void ToggleTick(string key) { if (!Ticked.Remove(key)) Ticked.Add(key); }
+
+    private List<AgendaItem> Agenda
+    {
+        get
+        {
+            var items = new List<AgendaItem>();
+
+            foreach (var request in OutstandingRequests.OrderBy(r => r.ReviewStatus == "NeedsReplacement" ? 0 : r.IsFulfilled ? 2 : 1))
+            {
+                var name = DocumentTypeNames.Format(request.DocumentType);
+                items.Add(new("doc-" + request.DocumentRequestId,
+                    request.ReviewStatus == "NeedsReplacement" ? $"{name}: needs a new copy" : request.IsFulfilled ? $"{name}: received, still to review" : $"{name}: still outstanding",
+                    request.ReviewStatus == "NeedsReplacement" ? request.ReviewNote : request.PolicyName));
+            }
+
+            foreach (var policyCase in Cases.Where(c => !c.PolicyIssuedAt.HasValue))
+            {
+                var next = Steps.First(s => !s.When(policyCase).HasValue).Label;
+                items.Add(new("case-" + policyCase.CaseId, $"{policyCase.PolicyName ?? "Application"}: next step is {next.ToLowerInvariant()}", null));
+            }
+
+            foreach (var policy in Policies.Where(p => p.EndDate is DateTime end && end >= DateTime.Today && end <= DateTime.Today.AddDays(90)))
+            {
+                items.Add(new("renew-" + policy.PolicyId, $"{policy.PolicyName} ends {policy.EndDate:d MMM}", "Discuss renewal options"));
+            }
+
+            foreach (var task in OpenTasks.Take(5))
+            {
+                items.Add(new("task-" + task.AdvisorTaskId, task.Title, task.DueDate.Date < DateTime.Today ? "Overdue task" : $"Task due {task.DueDate:d MMM}"));
+            }
+
+            return items;
+        }
+    }
+
+    private static string Ago(DateTime sentUtc)
+    {
+        var days = (DateTime.Today - sentUtc.ToLocalTime().Date).Days;
+        return days <= 0 ? "Today" : days == 1 ? "1 day" : $"{days} days";
+    }
+
+    private static string ShortMoney(double amount) =>
+        amount >= 1_000_000 ? $"R {amount / 1_000_000:0.#}m" : amount >= 1_000 ? $"R {amount / 1_000:0}k" : $"R {amount:N0}";
     private string? MessageError;
 
     // The client the sheet was last built for, so it rebuilds if the address changes.
@@ -389,8 +498,12 @@
             var requestsTask = RequestApi.GetForClientAsync(clientId);
             var messagesTask = MessageApi.GetConversationAsync(clientId);
             var notesTask = NoteApi.GetForClientAsync(clientId);
+            var tasksTask = WorkflowApi.GetTasksAsync(clientId);
 
-            await Task.WhenAll(policiesTask, casesTask, meetingsTask, documentsTask, requestsTask, messagesTask, notesTask);
+            await Task.WhenAll(policiesTask, casesTask, meetingsTask, documentsTask, requestsTask, messagesTask, notesTask, tasksTask);
+
+            // Tasks only feed the agenda, so a failure just leaves them out.
+            OpenTasks = (tasksTask.Result.Value ?? new()).Where(t => t.CompletedAt is null).OrderBy(t => t.DueDate).ToList();
 
             var (notes, noteError) = notesTask.Result;
             RecentNotes = (notes ?? new List<ClientNoteSummary>()).Take(5).ToList();

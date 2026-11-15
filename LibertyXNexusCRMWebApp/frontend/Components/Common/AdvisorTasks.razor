@@ -26,8 +26,30 @@ else
     {
         <div class="wf-toolbar">
             <div class="wf-search"><span class="wf-search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><input class="nx-input" aria-label="Search tasks" placeholder="@(ClientScoped ? "Search tasks" : "Search tasks or clients")" @bind="Search" @bind:event="oninput" /></div>
+            @if (Board)
+            {
+                <div class="tb-switch" role="group" aria-label="Task view">
+                    <button type="button" class="@(BoardView ? "is-active" : "")" aria-pressed="@BoardView" @onclick="() => BoardView = true">Board</button>
+                    <button type="button" class="@(BoardView ? "" : "is-active")" aria-pressed="@(!BoardView)" @onclick="() => BoardView = false">List</button>
+                </div>
+            }
+            @if (!ShowBoard) {
             <select class="nx-input" aria-label="Filter tasks" @bind="Filter"><option value="Open">Open</option><option value="Overdue">Overdue</option><option value="Completed">Completed</option><option value="All">All tasks</option></select>
+            }
         </div>
+    }
+    @if (Board)
+    {
+        <form class="tb-quick" @onsubmit="AddQuick" @onsubmit:preventDefault="true">
+            <span class="tb-quick-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+            <input class="tb-quick-title" aria-label="New task title" maxlength="200" placeholder="Add a task, for example: call Sipho about his payslip" @bind="QuickTitle" @bind:event="oninput" disabled="@Busy" />
+            <select aria-label="Client for the new task" @bind="QuickClientId" disabled="@Busy">
+                <option value="">No client</option>
+                @foreach (var client in Directory) { <option value="@client.ClientId">@client.FirstName @client.LastName</option> }
+            </select>
+            <input type="date" aria-label="Due date for the new task" @bind="QuickDue" disabled="@Busy" />
+            <button type="submit" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@(Busy || string.IsNullOrWhiteSpace(QuickTitle))">Add</button>
+        </form>
     }
     @if (ShowForm && !Compact)
     {
@@ -46,6 +68,34 @@ else
         </fieldset></EditForm>
     }
     @if (Loading) { <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading tasks</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div> }
+    else if (ShowBoard)
+    {
+        <div class="tb-board">
+            @foreach (var column in BoardColumns)
+            {
+                var items = BoardTasks(column.Key).ToList();
+                <section class="tb-col" aria-label="@column.Label">
+                    <h3><span class="tb-count tb-@column.Key">@items.Count</span>@column.Label</h3>
+                    @foreach (var task in items)
+                    {
+                        <article @key="task.AdvisorTaskId" class="tb-card @(column.Key == "overdue" ? "is-overdue" : "")">
+                            <button class="wf-check" disabled="@Busy" aria-label="@("Complete " + task.Title)" @onclick="() => Toggle(task)">○</button>
+                            <div class="tb-card-body">
+                                <strong>@task.Title</strong>
+                                <div class="tb-meta">
+                                    <span class="tb-chip">@(task.ClientName ?? "General")</span>
+                                    @if (task.IsAutomatic) { <span class="tb-chip tb-auto" title="Created automatically by the app">Auto</span> }
+                                    <span class="tb-chip @(column.Key == "overdue" ? "tb-late" : "")">@DueText(task.DueDate)</span>
+                                </div>
+                            </div>
+                            <button class="wf-link tb-edit" disabled="@Busy" @onclick="() => Edit(task)" aria-label="@("Edit " + task.Title)">Edit</button>
+                        </article>
+                    }
+                    @if (items.Count == 0) { <p class="tb-empty">Nothing here</p> }
+                </section>
+            }
+        </div>
+    }
     else if (!Visible.Any())
     {
         if (Compact)
@@ -89,6 +139,43 @@ else
     [Parameter] public bool Compact { get; set; }
     [Parameter] public int? ClientId { get; set; }
     [Parameter] public string? ClientName { get; set; }
+    // The full Tasks page: a board grouped by when tasks are due, with a one-line quick add.
+    [Parameter] public bool Board { get; set; }
+    bool BoardView = true;
+    bool ShowBoard => Board && BoardView;
+    string QuickTitle = "";
+    int? QuickClientId;
+    DateTime QuickDue = DateTime.Today;
+    static readonly (string Key, string Label)[] BoardColumns = { ("overdue", "Overdue"), ("today", "Today"), ("week", "This week"), ("later", "Later") };
+    static DateTime EndOfWeek => DateTime.Today.AddDays(6 - ((int)DateTime.Today.DayOfWeek + 6) % 7);
+    IEnumerable<AdvisorTaskDto> BoardTasks(string key) => ScopedTasks
+        .Where(t => t.CompletedAt is null)
+        .Where(t => ($"{t.Title} {t.ClientName} {t.PolicyName}").Contains(Search.Trim(), StringComparison.OrdinalIgnoreCase))
+        .Where(t => key switch
+        {
+            "overdue" => t.DueDate.Date < DateTime.Today,
+            "today" => t.DueDate.Date == DateTime.Today,
+            "week" => t.DueDate.Date > DateTime.Today && t.DueDate.Date <= EndOfWeek,
+            _ => t.DueDate.Date > EndOfWeek
+        })
+        .OrderBy(t => t.DueDate);
+    static string DueText(DateTime due)
+    {
+        var days = (due.Date - DateTime.Today).Days;
+        return days switch { < -1 => $"{-days} days late", -1 => "1 day late", 0 => "Today", 1 => "Tomorrow", < 7 => due.ToString("dddd"), _ => due.ToString("d MMM") };
+    }
+    async Task AddQuick()
+    {
+        if (Busy || string.IsNullOrWhiteSpace(QuickTitle)) return;
+        Busy = true;
+        try
+        {
+            var (task, error) = await Api.SaveTaskAsync(null, new TaskInput { Title = QuickTitle.Trim(), ClientId = QuickClientId, DueDate = QuickDue });
+            Error = error;
+            if (task is not null) { QuickTitle = ""; Message = "Task added."; await Load(); }
+        }
+        finally { Busy = false; }
+    }
     bool ClientScoped => ClientId.HasValue && !Compact;
     string ClientLabel => string.IsNullOrWhiteSpace(ClientName) ? "this client" : ClientName;
     List<AdvisorTaskDto> Tasks = new();
