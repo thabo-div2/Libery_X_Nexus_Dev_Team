@@ -2,6 +2,7 @@
 using API.DTOs.Clients;
 using API.DTOs.Policies;
 using API.Services.Interfaces;
+using API.Repositories.Interfaces;
 using API.Tests.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -27,7 +28,7 @@ namespace API.Tests.Controllers
         /// </summary>
         public PoliciesControllerTests()
         {
-            _sut = new PoliciesController(_policyService.Object, _clientService.Object);
+            _sut = new PoliciesController(_policyService.Object, _clientService.Object, Mock.Of<IAuditLogRepository>());
         }
 
         private static PolicyDto PolicyOf(int policyId, int? clientId) => new()

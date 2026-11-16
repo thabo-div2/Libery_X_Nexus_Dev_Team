@@ -25,7 +25,8 @@ namespace API.Tests.Services
         /// </summary>
         public MeetingServiceTests()
         {
-            _sut = new MeetingService(_meetingRepository.Object, _clientRepository.Object, _notificationService.Object);
+            _sut = new MeetingService(_meetingRepository.Object, _clientRepository.Object, _notificationService.Object,
+                Mock.Of<IAvailabilityService>());
         }
 
         /// <summary>
