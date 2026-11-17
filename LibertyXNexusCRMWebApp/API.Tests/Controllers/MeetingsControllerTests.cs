@@ -170,7 +170,10 @@ namespace API.Tests.Controllers
         [Fact]
         public async Task Book_WhenClientBooksForThemselves_ReturnsCreated()
         {
-            _meetingService.Setup(s => s.BookAsync(It.IsAny<BookMeetingRequest>())).ReturnsAsync(MeetingOf(8, 1));
+            _meetingService.Setup(s => s.BookAsync(
+                    It.IsAny<BookMeetingRequest>(),
+                    It.IsAny<bool>()))
+                .ReturnsAsync(MeetingOf(8, 1));
             _sut.AsClient(1);
 
             var result = await _sut.Book(new BookMeetingRequest { ClientId = 1 });
@@ -198,9 +201,11 @@ namespace API.Tests.Controllers
         [Fact]
         public async Task Book_WhenTheSlotIsTaken_ReturnsConflict()
         {
-            _meetingService
-                .Setup(s => s.BookAsync(It.IsAny<BookMeetingRequest>()))
-                .ThrowsAsync(new InvalidOperationException("That time slot is already booked."));
+            _meetingService.Setup(s => s.BookAsync(
+                    It.IsAny<BookMeetingRequest>(),
+                    It.IsAny<bool>()))
+                .ThrowsAsync(new InvalidOperationException(
+                    "That time slot is already booked."));
             _sut.AsClient(1);
 
             var result = await _sut.Book(new BookMeetingRequest { ClientId = 1 });
@@ -215,9 +220,11 @@ namespace API.Tests.Controllers
         [Fact]
         public async Task Book_WhenDetailsAreInvalid_ReturnsBadRequest()
         {
-            _meetingService
-                .Setup(s => s.BookAsync(It.IsAny<BookMeetingRequest>()))
-                .ThrowsAsync(new ArgumentException("Meetings cannot be booked in the past."));
+            _meetingService.Setup(s => s.BookAsync(
+                    It.IsAny<BookMeetingRequest>(),
+                    It.IsAny<bool>()))
+                .ThrowsAsync(new ArgumentException(
+                    "Meetings cannot be booked in the past."));
             _sut.AsClient(1);
 
             var result = await _sut.Book(new BookMeetingRequest { ClientId = 1 });

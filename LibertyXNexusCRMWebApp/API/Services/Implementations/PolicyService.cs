@@ -207,14 +207,42 @@ namespace API.Services.Implementations
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<PolicyDto> UpdateStatusAsync(int policyId, UpdatePolicyStatusRequest request)
+        public async Task<PolicyDto> UpdateStatusAsync(
+            int policyId,
+            UpdatePolicyStatusRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
-            if (request.NewStatus is not PolicyStatus status || !Enum.IsDefined(status))
+
+            if (!Enum.IsDefined(typeof(PolicyStatus), request.NewStatus))
+            {
                 throw new ArgumentException("Choose a valid policy status.");
-            var updated = await policyRepository_.UpdateStatusAsync(policyId, status);
-            return MapToDto(updated);
+            }
+
+            // Retrieve the existing policy first.
+            var policy = await policyRepository_.GetByIdAsync(policyId);
+
+            if (policy is null)
+            {
+                throw new KeyNotFoundException(
+                    $"Policy {policyId} was not found.");
+            }
+
+            // Cancelled policies cannot be reactivated or modified.
+            if (policy.Status == PolicyStatus.Cancelled)
+            {
+                throw new InvalidOperationException(
+                    "A cancelled policy cannot be changed.");
+            }
+
+            // Update the policy status.
+            policy.Status = (PolicyStatus)request.NewStatus;
+            policy.UpdatedAt = DateTime.UtcNow;
+
+            await policyRepository_.UpdateAsync(policy);
+
+            return MapToDto(policy);
         }
+
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>

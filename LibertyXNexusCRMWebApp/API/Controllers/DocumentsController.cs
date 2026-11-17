@@ -285,7 +285,32 @@ namespace API.Controllers
                 // Clients should always be able to see what they uploaded themselves.
                 request.VisibleToClient = true;
 
+                // Get the policies belonging to this client.
+                var policies = await _policyService.GetForClientAsync(request.ClientId);
+
+                if (policies is null || !policies.Any())
+                {
+                    return BadRequest(new
+                    {
+                        message = "You need an existing policy before uploading a document."
+                    });
+                }
+
+                // Use the first policy when no policy was selected.
+                if (request.PolicyId is null or <= 0)
+                {
+                    request.PolicyId = policies.First().PolicyId;
+                }
+                else if (!policies.Any(p => p.PolicyId == request.PolicyId))
+                {
+                    return BadRequest(new
+                    {
+                        message = "The selected policy does not belong to this client."
+                    });
+                }
+
                 var clientName = $"{client.FirstName} {client.LastName}".Trim();
+
                 request.UploadedBy = string.IsNullOrWhiteSpace(clientName)
                     ? $"client-{request.ClientId}"
                     : clientName;
