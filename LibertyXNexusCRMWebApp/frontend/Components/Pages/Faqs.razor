@@ -15,25 +15,14 @@
 
         <div class="faqs-heading">
             <h1>FAQs</h1>
-            <p>Browse common questions and answers, or ask the assistant directly.</p>
+            <p>Answers to common questions about documents, applications and meetings.</p>
         </div>
 
         <div class="header-actions">
-
-            <div class="search-box" role="search">
-                <span class="search-icon" aria-hidden="true">⌕</span>
-
-                <input aria-label="Search FAQs" type="text"
-                       value="@SearchText"
-                       @oninput="OnSearchInput"
-                       placeholder="Search FAQs" />
-            </div>
-
             <a href="/chatbot" class="ask-assistant-button">
                 Ask the assistant
-                <span>→</span>
+                <span class="ask-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
             </a>
-
         </div>
 
     </header>
@@ -45,62 +34,113 @@
 
     <main class="faqs-content">
 
+        <section class="faq-hero">
+            <span class="faq-hero-eyebrow">Help centre</span>
+            <h2>How can we help?</h2>
+            <div class="faq-hero-search" role="search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input aria-label="Search FAQs" type="search" value="@SearchText" @oninput="OnSearchInput" placeholder="Search questions, for example: proof of address" />
+            </div>
+            @if (PopularFaqs.Count > 0)
+            {
+                <div class="faq-popular" aria-label="Popular questions">
+                    @foreach (var faq in PopularFaqs)
+                    {
+                        <button type="button" @onclick="() => OpenFaq(faq)">@faq.Question</button>
+                    }
+                </div>
+            }
+        </section>
+
         @if (IsLoading)
         {
-            <div class="faqs-empty-state">
-                <span>Loading FAQs…</span>
-            </div>
-        }
-        else if (FilteredCategories.Count == 0)
-        {
-            <div class="faqs-empty-state">
-                <span>No FAQs match your search.</span>
-                <a href="/chatbot" class="ask-assistant-link">Ask the assistant instead →</a>
-            </div>
+            <div class="nx-skeleton-stack faq-skeleton" role="status"><span class="visually-hidden">Loading FAQs</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
         }
         else
         {
-            @foreach (var category in FilteredCategories)
+            @if (AllCategories.Count > 1)
             {
-                <section class="faq-category">
+                <div class="faq-topics" role="group" aria-label="Filter by topic">
+                    @foreach (var topic in AllCategories)
+                    {
+                        <button type="button" class="faq-topic @(SelectedCategory == topic.Name ? "is-active" : "")"
+                                aria-pressed="@(SelectedCategory == topic.Name ? "true" : "false")"
+                                @onclick="() => SelectedCategory = SelectedCategory == topic.Name ? null : topic.Name">
+                            <span class="faq-topic-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="@TopicIcon(topic.Name)"/></svg></span>
+                            <strong>@topic.Name</strong>
+                            <small>@topic.Faqs.Count @(topic.Faqs.Count == 1 ? "question" : "questions")</small>
+                        </button>
+                    }
+                </div>
+            }
 
-                    <h2 class="faq-category-title">@category.Name</h2>
-
-                    <div class="faq-list">
-
-                        @foreach (var faq in category.Faqs)
-                        {
-                            <div class="faq-item @(ExpandedFaqId == faq.Id ? "expanded" : "")">
-
-                                <button type="button"
-                                        class="faq-question-button"
-                                        aria-expanded="@(ExpandedFaqId == faq.Id ? "true" : "false")"
-                                        aria-controls="faq-answer-@faq.Id"
-                                        @onclick="() => ToggleFaq(faq.Id)">
-
-                                    <span>@faq.Question</span>
-                                    <span class="faq-toggle-icon" aria-hidden="true">@(ExpandedFaqId == faq.Id ? "−" : "+")</span>
-
-                                </button>
-
-                                @if (ExpandedFaqId == faq.Id)
-                                {
-                                    <div class="faq-answer" id="faq-answer-@faq.Id">
-                                        <p>@faq.Answer</p>
-
-                                        @if (faq.RequiresHandoff)
-                                        {
-                                            <a href="/chatbot" class="faq-handoff-link">Discuss this with the assistant →</a>
-                                        }
-                                    </div>
-                                }
-
-                            </div>
-                        }
-
+            @if (FilteredCategories.Count == 0)
+            {
+                <div class="faqs-empty-state">
+                    <strong>No answers for “@SearchText.Trim()”</strong>
+                    <span>Try different words, or ask someone directly.</span>
+                    <div class="faq-empty-actions">
+                        <a href="/chatbot" class="faq-empty-primary">Ask the assistant</a>
                     </div>
+                </div>
+            }
+            else
+            {
+                @foreach (var category in FilteredCategories)
+                {
+                    <section class="faq-category">
 
-                </section>
+                        <h2 class="faq-category-title">@category.Name<span class="faq-category-count">@category.Faqs.Count</span></h2>
+
+                        <div class="faq-list">
+
+                            @foreach (var faq in category.Faqs)
+                            {
+                                <div class="faq-item @(ExpandedFaqId == faq.Id ? "expanded" : "")" id="faq-@faq.Id">
+
+                                    <button type="button"
+                                            class="faq-question-button"
+                                            aria-expanded="@(ExpandedFaqId == faq.Id ? "true" : "false")"
+                                            aria-controls="faq-answer-@faq.Id"
+                                            @onclick="() => ToggleFaq(faq.Id)">
+
+                                        <span>@faq.Question</span>
+                                        <span class="faq-toggle-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path class="faq-plus-v" d="M12 5v14"/></svg></span>
+
+                                    </button>
+
+                                    @if (ExpandedFaqId == faq.Id)
+                                    {
+                                        <div class="faq-answer" id="faq-answer-@faq.Id">
+                                            <p>@faq.Answer</p>
+
+                                            @if (faq.RequiresHandoff)
+                                            {
+                                                <a href="/chatbot" class="faq-handoff-link">Discuss this with the assistant →</a>
+                                            }
+
+                                            <div class="faq-helpful">
+                                                @if (Helpful.TryGetValue(faq.Id, out var wasHelpful))
+                                                {
+                                                    <span>@(wasHelpful ? "Thanks for letting us know." : "Sorry about that. The assistant may be able to help.")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Was this helpful?</span>
+                                                    <button type="button" @onclick="() => Helpful[faq.Id] = true">Yes</button>
+                                                    <button type="button" @onclick="() => Helpful[faq.Id] = false">No</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                            }
+
+                        </div>
+
+                    </section>
+                }
             }
         }
 
@@ -121,6 +161,32 @@
     private string? LoadError;
     private bool IsLoading = true;
     private int? ExpandedFaqId;
+    private string? SelectedCategory;
+    // shortcut: "Was this helpful?" answers are kept for this visit only; store them once the API has somewhere to put them.
+    private readonly Dictionary<int, bool> Helpful = new();
+
+    private List<FaqCategoryGroup> AllCategories => Group(AllFaqs);
+
+    // No view counts exist yet, so "popular" is the first question of the first three topics.
+    private List<Faq> PopularFaqs => AllCategories.Take(3).Select(c => c.Faqs[0]).ToList();
+
+    private void OpenFaq(Faq faq)
+    {
+        SearchText = string.Empty;
+        SelectedCategory = faq.Category;
+        ExpandedFaqId = faq.Id;
+    }
+
+    private static string TopicIcon(string category)
+    {
+        var name = category.ToLowerInvariant();
+        if (name.Contains("document") || name.Contains("upload") || name.Contains("fica")) return "M6 3h8l5 5v13H6z M14 3v5h5";
+        if (name.Contains("meeting") || name.Contains("calendar")) return "M3.5 5h17v15.5h-17z M3.5 10h17 M8 3v4 M16 3v4";
+        if (name.Contains("account") || name.Contains("security") || name.Contains("login")) return "M5 10h14v10H5z M8 10V7.5a4 4 0 0 1 8 0V10";
+        if (name.Contains("message") || name.Contains("contact")) return "M4 5h16v11H9l-5 4z";
+        if (name.Contains("polic") || name.Contains("application") || name.Contains("case")) return "m5 12.5 4.5 4.5L19 7.5";
+        return "M12 18h.01 M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4";
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -150,22 +216,27 @@
             var query = SearchText.Trim();
 
             var source = string.IsNullOrWhiteSpace(query)
-                ? AllFaqs
+                ? AllFaqs.Where(f => SelectedCategory is null || f.Category == SelectedCategory).ToList()
                 : AllFaqs.Where(f =>
                     f.Question.Contains(query, StringComparison.OrdinalIgnoreCase) ||
                     f.Answer.Contains(query, StringComparison.OrdinalIgnoreCase) ||
                     f.Category.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            return source
-                .GroupBy(f => f.Category)
-                .OrderBy(g => g.Min(f => f.Id))
-                .Select(g => new FaqCategoryGroup
-                {
-                    Name = g.Key,
-                    Faqs = g.OrderBy(f => f.Id).ToList()
-                })
-                .ToList();
+            return Group(source);
         }
+    }
+
+    private static List<FaqCategoryGroup> Group(IEnumerable<Faq> source)
+    {
+        return source
+            .GroupBy(f => f.Category)
+            .OrderBy(g => g.Min(f => f.Id))
+            .Select(g => new FaqCategoryGroup
+            {
+                Name = g.Key,
+                Faqs = g.OrderBy(f => f.Id).ToList()
+            })
+            .ToList();
     }
 
     private class FaqCategoryGroup

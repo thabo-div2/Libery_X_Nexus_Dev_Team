@@ -151,16 +151,15 @@ namespace API.Services.Implementations
                 CreatedAt = DateTime.UtcNow
             };
 
-            var created = await policyRepository_.AddAsync(policy);
-
-            await caseRepository_.AddAsync(new Case
+            // Persist the application and policy as one graph so neither can be left orphaned.
+            policy.Case = new Case
             {
-                PolicyId = created.PolicyId,
                 Status = CaseStatus.InProgress,
                 TargetSubmissionDate = request.TargetSubmissionDate,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
-            });
+            };
+            var created = await policyRepository_.AddAsync(policy);
 
             return MapToDto(created);
         }
@@ -208,22 +207,42 @@ namespace API.Services.Implementations
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<PolicyDto> UpdateStatusAsync(int policyId, UpdatePolicyStatusRequest request)
+        public async Task<PolicyDto> UpdateStatusAsync(
+            int policyId,
+            UpdatePolicyStatusRequest request)
         {
-            var policy = await policyRepository_.GetByIdAsync(policyId)
-                ?? throw new KeyNotFoundException($"Policy {policyId} was not found.");
+            ArgumentNullException.ThrowIfNull(request);
 
-            if (policy.Status is PolicyStatus.Cancelled or PolicyStatus.Matured)
+            if (!Enum.IsDefined(typeof(PolicyStatus), request.NewStatus))
             {
-                throw new InvalidOperationException($"A policy with status '{policy.Status}' cannot be changed further.");
+                throw new ArgumentException("Choose a valid policy status.");
             }
 
-            policy.Status = request.NewStatus;
+            // Retrieve the existing policy first.
+            var policy = await policyRepository_.GetByIdAsync(policyId);
+
+            if (policy is null)
+            {
+                throw new KeyNotFoundException(
+                    $"Policy {policyId} was not found.");
+            }
+
+            // Cancelled policies cannot be reactivated or modified.
+            if (policy.Status == PolicyStatus.Cancelled)
+            {
+                throw new InvalidOperationException(
+                    "A cancelled policy cannot be changed.");
+            }
+
+            // Update the policy status.
+            policy.Status = (PolicyStatus)request.NewStatus;
             policy.UpdatedAt = DateTime.UtcNow;
 
             await policyRepository_.UpdateAsync(policy);
+
             return MapToDto(policy);
         }
+
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>

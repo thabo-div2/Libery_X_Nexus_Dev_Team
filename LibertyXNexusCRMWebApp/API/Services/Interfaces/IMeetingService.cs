@@ -11,6 +11,7 @@ namespace API.Services.Interfaces
         Task<IEnumerable<MeetingDto>> GetByDateRangeAsync(DateTime from, DateTime to, int advisorId);
         Task<IEnumerable<MeetingDto>> GetByStatusAsync(MeetingStatus status, int advisorId);
         Task<MeetingDto> BookAsync(BookMeetingRequest request);
+        Task<MeetingDto> BookAsync(BookMeetingRequest request, bool byAdvisor);
         Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request);
         /// <summary>byAdvisor = true when the advisor made the change: the meeting stays confirmed and the advisor isn't notified about their own action.</summary>
         Task<MeetingDto> RescheduleAsync(int meetingId, RescheduleMeetingRequest request, bool byAdvisor);

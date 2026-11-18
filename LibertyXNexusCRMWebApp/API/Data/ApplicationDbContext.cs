@@ -21,6 +21,11 @@ namespace API.Data
         public DbSet<Invitation> Invitations => Set<Invitation>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
         public DbSet<Message> Messages => Set<Message>();
+        public DbSet<AdvisorWorkingHours> AdvisorWorkingHours => Set<AdvisorWorkingHours>();
+        public DbSet<AdvisorHoursOverride> AdvisorHoursOverrides => Set<AdvisorHoursOverride>();
+        public DbSet<DocumentRequest> DocumentRequests => Set<DocumentRequest>();
+        public DbSet<AdvisorTask> AdvisorTasks => Set<AdvisorTask>();
+        public DbSet<ClientNote> ClientNotes => Set<ClientNote>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -127,6 +132,19 @@ namespace API.Data
                     .HasConversion<int>();
             });
 
+            modelBuilder.Entity<AdvisorTask>(entity =>
+            {
+                entity.HasOne(t => t.Advisor).WithMany().HasForeignKey(t => t.AdvisorId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(t => t.Client).WithMany().HasForeignKey(t => t.ClientId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Policy).WithMany().HasForeignKey(t => t.PolicyId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasIndex(t => new { t.AdvisorId, t.DueDate });
+                // One automatic task per event per advisor.
+                entity.HasIndex(t => new { t.AdvisorId, t.SourceKey }).IsUnique().HasFilter("[SourceKey] IS NOT NULL");
+            });
+
+            modelBuilder.Entity<DocumentRequest>().HasOne(r => r.Policy).WithMany()
+                .HasForeignKey(r => r.PolicyId).OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<ClientQuery>(entity =>
             {
                 entity.HasOne(q => q.Client)
@@ -199,6 +217,54 @@ namespace API.Data
 
                 entity.HasIndex(m => new { m.ClientId, m.SentAt });
                 entity.HasIndex(m => new { m.AdvisorId, m.SentAt });
+            });
+
+            modelBuilder.Entity<AdvisorWorkingHours>(entity =>
+            {
+                entity.HasOne(h => h.Advisor)
+                    .WithMany()
+                    .HasForeignKey(h => h.AdvisorId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // One row per advisor per day of the week.
+                entity.HasIndex(h => new { h.AdvisorId, h.DayOfWeek }).IsUnique();
+
+                entity.Property(h => h.DayOfWeek)
+                    .HasConversion<int>();
+            });
+
+            modelBuilder.Entity<AdvisorHoursOverride>(entity =>
+            {
+                entity.HasOne(o => o.Advisor)
+                    .WithMany()
+                    .HasForeignKey(o => o.AdvisorId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // A date can only have one set of custom hours.
+                entity.HasIndex(o => new { o.AdvisorId, o.Date }).IsUnique();
+            });
+
+            modelBuilder.Entity<DocumentRequest>(entity =>
+            {
+                entity.HasOne(r => r.Client)
+                    .WithMany()
+                    .HasForeignKey(r => r.ClientId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(r => new { r.ClientId, r.FulfilledAt });
+
+                entity.Property(r => r.DocumentType)
+                    .HasConversion<int>();
+            });
+
+            modelBuilder.Entity<ClientNote>(entity =>
+            {
+                entity.HasOne(n => n.Client)
+                    .WithMany()
+                    .HasForeignKey(n => n.ClientId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(n => new { n.ClientId, n.CreatedAt });
             });
 
             modelBuilder.Entity<AuditLog>(entity =>

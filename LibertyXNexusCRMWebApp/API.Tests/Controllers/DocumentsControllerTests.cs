@@ -3,6 +3,7 @@ using API.DTOs.Clients;
 using API.DTOs.Documents;
 using API.DTOs.Policies;
 using API.Services.Interfaces;
+using API.Repositories.Interfaces;
 using API.Tests.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -35,7 +36,8 @@ namespace API.Tests.Controllers
 
         private DocumentsController NewController()
         {
-            return new DocumentsController(_documentService.Object, _clientService.Object, _policyService.Object, _notificationService.Object);
+            return new DocumentsController(_documentService.Object, _clientService.Object, _policyService.Object, _notificationService.Object,
+                Mock.Of<IDocumentRequestService>(), Mock.Of<IAuditLogRepository>());
         }
 
         /// <summary>

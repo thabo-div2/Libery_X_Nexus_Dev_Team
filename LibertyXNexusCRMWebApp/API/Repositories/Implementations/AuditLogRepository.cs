@@ -71,6 +71,21 @@ namespace API.Repositories.Implementations
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// The most recent entries for one user, newest first.
+        /// </summary>
+        public async Task<IEnumerable<AuditLog>> GetRecentForUserAsync(int userId, UserRole userRole, int count)
+        {
+            using var context = await _dbContextFactory.CreateDbContextAsync();
+
+            return await context.AuditLogs
+                .Where(a => a.UserId == userId && a.UserRole == userRole)
+                .OrderByDescending(a => a.Timestamp)
+                .Take(count)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<AuditLog>> GetByUserAsync(int userId, UserRole userRole)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();

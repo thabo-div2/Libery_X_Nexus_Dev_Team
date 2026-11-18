@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.JSInterop;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace frontend.Services
 {
@@ -11,18 +14,21 @@ namespace frontend.Services
         private readonly ProtectedSessionStorage _storage;
         private readonly ProtectedLocalStorage _localStorage;
         private readonly TokenStorageService _tokens;
+        private readonly RealtimeService _realtime;
         private bool _restoreAttempted;
+        private readonly SemaphoreSlim _restoreLock = new(1, 1);
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
         /// Initializes a new instance of the <see cref="CurrentUserService"/> class with the specified <see cref="ProtectedSessionStorage"/> for managing user session data.
         /// </summary>
         /// <param name="storage"></param>
-        public CurrentUserService(ProtectedSessionStorage storage, ProtectedLocalStorage localStorage, TokenStorageService tokens)
+        public CurrentUserService(ProtectedSessionStorage storage, ProtectedLocalStorage localStorage, TokenStorageService tokens, RealtimeService realtime)
         {
             _storage = storage;
             _localStorage = localStorage;
             _tokens = tokens;
+            _realtime = realtime;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -112,6 +118,7 @@ namespace frontend.Services
         /// <returns></returns>
         public async Task SignOutAsync()
         {
+            await _realtime.StopAsync();
             Id = null;
             Role = null;
             FirstName = null;
@@ -136,6 +143,20 @@ namespace frontend.Services
         /// </summary>
         /// <returns></returns>
         public async Task EnsureRestoredAsync()
+        {
+            // Navigation and sidebar counters can restore the same session simultaneously.
+            await _restoreLock.WaitAsync();
+            try
+            {
+                await RestoreCoreAsync();
+            }
+            finally
+            {
+                _restoreLock.Release();
+            }
+        }
+
+        private async Task RestoreCoreAsync()
         {
             if (Id is not null)
             {
@@ -184,9 +205,16 @@ namespace frontend.Services
                 // Mark restoration complete only after storage was accessible.
                 _restoreAttempted = true;
             }
-            catch(InvalidOperationException)
+            catch (Exception ex) when (ex is CryptographicException or JsonException)
             {
-                // Browser storage isn't available; the user will just need to log in again.
+                // A stale/corrupt saved session must not terminate the interactive circuit.
+                await _tokens.ClearTokenAsync();
+                await SignOutAsync();
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or JSException or OperationCanceledException)
+            {
+                // A reconnect or initial render may temporarily make browser storage unavailable.
+                _restoreAttempted = false;
             }
         }
 

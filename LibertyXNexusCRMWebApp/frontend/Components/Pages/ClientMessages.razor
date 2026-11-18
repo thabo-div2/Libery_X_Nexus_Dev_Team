@@ -7,6 +7,7 @@
 @inject ClientService ClientDirectory
 @inject MessageService MessageStore
 @inject MeetingService MeetingStore
+@inject AvailabilityService AvailabilityApi
 @inject MessageNotifier Notifier
 @inject IJSRuntime JS
 
@@ -25,7 +26,7 @@
                     }
                     else
                     {
-                        <span>Your conversation with @AdvisorName.</span>
+                        <span>Your private conversation with @AdvisorName. Questions, updates and meeting requests all live here.</span>
                     }
                 </p>
             </header>
@@ -36,107 +37,267 @@
             }
             else if (IsLoading)
             {
-                <p class="client-messages-error">Loading your messages…</p>
+                <div class="cm-layout" aria-busy="true">
+                    <section class="chat-panel">
+                        <div class="nx-skeleton-stack cm-skeleton" role="status"><span class="visually-hidden">Loading your messages</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
+                    </section>
+                </div>
             }
             else
             {
-                <section class="chat-panel">
+                <div class="cm-layout">
 
-                    <div class="chat-header">
-                        <div class="chat-client">
-                            <span class="adviser-avatar">@AdviserInitials</span>
-                            <h2>@AdvisorName</h2>
+                    <!-- CONVERSATION -->
+                    <section class="chat-panel" aria-label="Conversation with @AdvisorName">
+
+                        <div class="chat-header">
+                            <div class="chat-client">
+                                <span class="adviser-avatar" aria-hidden="true">
+                                    @AdviserInitials
+                                    @if (Availability is { IsConfigured: true })
+                                    {
+                                        <i class="presence @(IsAdvisorAway ? "is-away" : "is-available")"></i>
+                                    }
+                                </span>
+                                <div class="chat-client-text">
+                                    <h2>@AdvisorName</h2>
+                                    <span class="chat-presence @(IsAdvisorAway ? "is-away" : "is-available")">@PresenceText</span>
+                                </div>
+                            </div>
+
+                            <button type="button" class="meeting-toggle-button @(ShowMeetingForm ? "is-open" : "")" @ref="MeetingToggleButton" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
+                                <span class="meeting-toggle-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+                                @(ShowMeetingForm ? "Close" : "Book meeting")
+                            </button>
                         </div>
 
-                        <button type="button" class="meeting-toggle-button" @ref="MeetingToggleButton" aria-expanded="@(ShowMeetingForm ? "true" : "false")" @onclick="ToggleMeetingForm" disabled="@(AdvisorId is null)">
-                            <span aria-hidden="true">♙</span>
-                            Book meeting
-                        </button>
-                    </div>
-
-                    @if (ShowMeetingForm)
-                    {
-                        <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
-                            <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
-                                <DataAnnotationsValidator />
-
+                        @if (ShowMeetingForm && HoursConfigured)
+                        {
+                            @* The adviser has set working hours, so offer the times that are actually open. *@
+                            <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
+    
                                 <label>
-                                    Date &amp; time
-                                    <InputDate Type="InputDateType.DateTimeLocal" min="@MinMeetingTime" @bind-Value="MeetingModel.MeetingDateTime" />
+                                    Date
+                                    <input type="date" min="@MinSlotDate" value="@SlotDate" @onchange="OnSlotDateChangedAsync" disabled="@IsSendingMeeting" />
                                 </label>
-                                <ValidationMessage For="() => MeetingModel.MeetingDateTime" />
-
+    
+                                @if (IsLoadingSlots)
+                                {
+                                    <p class="slot-hint">Checking your adviser's diary…</p>
+                                }
+                                else if (!string.IsNullOrEmpty(SlotMessage))
+                                {
+                                    <p class="slot-hint">@SlotMessage</p>
+                                }
+                                else if (Slots.Count > 0)
+                                {
+                                    <p class="slot-hint">Choose a time (South African time, 60 minutes).</p>
+    
+                                    <div class="slot-grid" role="group" aria-label="Available times">
+                                        @foreach (var slot in Slots)
+                                        {
+                                            var isPicked = SelectedSlot == slot.StartUtc;
+    
+                                            <button type="button"
+                                                    class="slot-button @(isPicked ? "is-selected" : "")"
+                                                    aria-pressed="@(isPicked ? "true" : "false")"
+                                                    disabled="@IsSendingMeeting"
+                                                    @key="slot.StartUtc"
+                                                    @onclick="() => PickSlot(slot.StartUtc)">
+                                                @slot.Label
+                                            </button>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="slot-hint">Pick a date to see the times your adviser is free.</p>
+                                }
+    
                                 <label>
                                     Notes (optional)
-                                    <InputText @bind-Value="MeetingModel.Notes" placeholder="What would you like to discuss?" />
+                                    <input type="text" maxlength="500" @bind="SlotNotes" placeholder="What would you like to discuss?" disabled="@IsSendingMeeting" />
                                 </label>
-                                <ValidationMessage For="() => MeetingModel.Notes" />
-
+    
                                 <div class="meeting-form-actions">
                                     <button type="button" class="meeting-cancel-button" @onclick="ToggleMeetingForm">Cancel</button>
-                                    <button type="submit" class="meeting-send-button" disabled="@IsSendingMeeting">@(IsSendingMeeting ? "Sending…" : "Request meeting")</button>
+                                    <button type="button" class="meeting-send-button" disabled="@(IsSendingMeeting || SelectedSlot is null)" @onclick="SendSlotRequestAsync">@(IsSendingMeeting ? "Sending…" : "Request meeting")</button>
                                 </div>
-
+    
                                 @if (!string.IsNullOrEmpty(MeetingError))
                                 {
                                     <p class="client-messages-error">@MeetingError</p>
                                 }
-                            </EditForm>
-                        </div>
-                    }
-
-                    <div class="chat-body" @ref="ChatBodyRef">
-                        @if (TimelineItems.Count == 0)
-                        {
-                            <p class="client-messages-empty">No messages yet. Say hello to @AdvisorName.</p>
+    
+                            </div>
                         }
-                        else
+                        else if (ShowMeetingForm)
                         {
-                            @foreach (var item in TimelineItems)
+                            <div class="meeting-request-form" role="region" aria-label="Book a meeting" @onkeydown="HandleMeetingFormKeyDown">
+                                <EditForm Model="MeetingModel" OnValidSubmit="SendMeetingRequest" novalidate>
+                                    <DataAnnotationsValidator />
+    
+                                    <label>
+                                        Date &amp; time
+                                        <InputDate Type="InputDateType.DateTimeLocal" min="@MinMeetingTime" @bind-Value="MeetingModel.MeetingDateTime" />
+                                    </label>
+                                    <ValidationMessage For="() => MeetingModel.MeetingDateTime" />
+    
+                                    <label>
+                                        Notes (optional)
+                                        <InputText @bind-Value="MeetingModel.Notes" placeholder="What would you like to discuss?" />
+                                    </label>
+                                    <ValidationMessage For="() => MeetingModel.Notes" />
+    
+                                    <div class="meeting-form-actions">
+                                        <button type="button" class="meeting-cancel-button" @onclick="ToggleMeetingForm">Cancel</button>
+                                        <button type="submit" class="meeting-send-button" disabled="@IsSendingMeeting">@(IsSendingMeeting ? "Sending…" : "Request meeting")</button>
+                                    </div>
+    
+                                    @if (!string.IsNullOrEmpty(MeetingError))
+                                    {
+                                        <p class="client-messages-error">@MeetingError</p>
+                                    }
+                                </EditForm>
+                            </div>
+                        }
+
+                        <div class="chat-body" @ref="ChatBodyRef">
+                            @if (HasEarlierMessages)
                             {
-                                @if (item.Meeting is not null)
-                                {
-                                    <div class="meeting-card @GetMeetingStatusClass(item.Meeting.Status)">
-                                        <strong>Meeting request</strong>
-                                        <span>@item.Meeting.MeetingDate.ToLocalTime().ToString("d MMM yyyy, HH:mm")</span>
+                                <button type="button" class="chat-earlier" @onclick="ShowEarlierMessages">Show earlier messages</button>
+                            }
 
-                                        @if (!string.IsNullOrWhiteSpace(item.Meeting.Notes))
-                                        {
-                                            <span class="meeting-card-notes">@item.Meeting.Notes</span>
-                                        }
-
-                                        <span class="meeting-status-label">@GetMeetingStatusText(item.Meeting.Status)</span>
-                                    </div>
-                                }
-                                else if (item.Message is not null)
+                            @if (TimelineItems.Count == 0)
+                            {
+                                <div class="chat-empty">
+                                    <span class="chat-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" /></svg></span>
+                                    <strong>Start the conversation</strong>
+                                    <span>Ask @AdvisorFirstName anything about your policies, documents or application.</span>
+                                </div>
+                            }
+                            else
+                            {
+                                DateTime? lastDay = null;
+                                @foreach (var item in TimelineItems)
                                 {
-                                    <div class="message-bubble @(item.Message.FromAdvisor ? "message-from-advisor" : "message-from-me")">
-                                        <span class="message-author">@(item.Message.FromAdvisor ? AdvisorName : "You")</span>
-                                        <p>@item.Message.Text</p>
-                                        <span class="message-time">@item.Message.SentAt.ToLocalTime().ToString("d MMM, HH:mm")</span>
-                                    </div>
+                                    var day = item.Timestamp.ToLocalTime().Date;
+                                    @if (day != lastDay)
+                                    {
+                                        lastDay = day;
+                                        <div class="chat-day" role="separator"><span>@DayLabel(day)</span></div>
+                                    }
+
+                                    @if (item.Meeting is not null)
+                                    {
+                                        var meeting = item.Meeting;
+                                        <div class="meeting-event @GetMeetingStatusClass(meeting.Status)">
+                                            <div class="meeting-event-row">
+                                                <span class="meeting-event-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></span>
+                                                <div class="meeting-event-text">
+                                                    <strong>Meeting · @meeting.MeetingDate.ToLocalTime().ToString("ddd d MMM, HH:mm")</strong>
+                                                    @if (!string.IsNullOrWhiteSpace(meeting.Notes))
+                                                    {
+                                                        <span>@meeting.Notes</span>
+                                                    }
+                                                </div>
+                                                <span class="meeting-event-status">@GetMeetingStatusText(meeting.Status)</span>
+                                            </div>
+                                            <MeetingSummaryPanel Meeting="meeting" />
+                                        </div>
+                                    }
+                                    else if (item.Message is not null)
+                                    {
+                                        var mine = !item.Message.FromAdvisor;
+                                        <div class="message-row @(mine ? "is-mine" : "is-theirs")">
+                                            @if (!mine)
+                                            {
+                                                <span class="message-avatar" aria-hidden="true">@AdviserInitials</span>
+                                            }
+                                            <div class="message-bubble">
+                                                <span class="visually-hidden">@(mine ? "You" : AdvisorName) said:</span>
+                                                <p>@item.Message.Text</p>
+                                                <time class="message-time" datetime="@item.Message.SentAt.ToString("o")">@item.Message.SentAt.ToLocalTime().ToString("HH:mm")</time>
+                                            </div>
+                                        </div>
+                                    }
                                 }
                             }
+                        </div>
+
+                        @if (IsAdvisorAway)
+                        {
+                            <div class="away-bar" role="status">
+                                <span class="away-dot" aria-hidden="true"></span>
+                                <span><strong>@AdvisorFirstName is out of office.</strong> @Availability?.Message You can still book a meeting.</span>
+                            </div>
                         }
-                    </div>
 
-                    <div class="client-messages-composer">
-                        <input type="text"
-                               aria-label="Message your adviser"
-                               @bind="Draft"
-                               @bind:event="oninput"
-                               @onkeydown="HandleComposerKeyDown"
-                               placeholder="Write a message to your adviser…"
-                               disabled="@(AdvisorId is null)" />
+                        <div class="client-messages-composer">
+                            <input type="text"
+                                   aria-label="Message your adviser"
+                                   @bind="Draft"
+                                   @bind:event="oninput"
+                                   @onkeydown="HandleComposerKeyDown"
+                                   placeholder="@(IsAdvisorAway ? $"You can message {AdvisorFirstName} once they're back" : $"Write a message to {AdvisorFirstName}…")"
+                                   disabled="@(AdvisorId is null || IsAdvisorAway)" />
 
-                        <button type="button" @onclick="SendMessage" disabled="@(AdvisorId is null)">Send</button>
-                    </div>
-                </section>
-            }
+                            <button type="button" aria-label="Send message" @onclick="SendMessage" disabled="@(AdvisorId is null || IsAdvisorAway || string.IsNullOrWhiteSpace(Draft))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+                        </div>
 
-            @if (!string.IsNullOrEmpty(SendError))
-            {
-                <p class="client-messages-error">@SendError</p>
+                        @if (!string.IsNullOrEmpty(SendError))
+                        {
+                            <p class="client-messages-error composer-error" role="alert">@SendError</p>
+                        }
+                    </section>
+
+                    <!-- ADVISER PANEL -->
+                    <aside class="cm-side" aria-label="About your adviser">
+
+                        @if (AdvisorId is not null)
+                        {
+                            <AdvisorAvailabilityNotice @ref="AvailabilityNotice" OnStatusChanged="OnAvailabilityChanged" />
+                        }
+
+                        @if (NextMeeting is not null)
+                        {
+                            var next = NextMeeting;
+                            var local = next.MeetingDate.ToLocalTime();
+                            <a class="side-card next-meeting" href="/client-calendar">
+                                <span class="side-eyebrow">Next meeting</span>
+                                <span class="next-meeting-row">
+                                    <span class="next-meeting-date" aria-hidden="true"><small>@local.ToString("ddd")</small><b>@local.Day</b></span>
+                                    <span class="next-meeting-text">
+                                        <strong>@(string.IsNullOrWhiteSpace(next.MeetingType) ? "Meeting" : next.MeetingType) · @local.ToString("d MMM")</strong>
+                                        <span>@local.ToString("HH:mm")–@local.AddMinutes(next.DurationMinutes).ToString("HH:mm")</span>
+                                        @if (next.Status == "Requested")
+                                        {
+                                            <span class="next-meeting-pending">Waiting for @AdvisorFirstName to confirm</span>
+                                        }
+                                    </span>
+                                </span>
+                            </a>
+                        }
+
+                        <div class="side-card side-links">
+                            <span class="side-eyebrow">Quick help</span>
+                            <a href="/client-chatbot">
+                                <span class="side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 3.5c.6 3.8 2.2 5.4 6 6-3.8.6-5.4 2.2-6 6-.6-3.8-2.2-5.4-6-6 3.8-.6 5.4-2.2 6-6z" /></svg></span>
+                                <span><strong>Ask the AI assistant</strong><small>Instant answers, any time of day</small></span>
+                            </a>
+                            <a href="/client-faqs">
+                                <span class="side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1v.5M12 16.5h.01" /></svg></span>
+                                <span><strong>Browse FAQs</strong><small>Common questions about policies</small></span>
+                            </a>
+                            <a href="/client-documents">
+                                <span class="side-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h8l5 5v13H6z" /><path d="M14 3v5h5" /></svg></span>
+                                <span><strong>Your documents</strong><small>Upload or check what's requested</small></span>
+                            </a>
+                        </div>
+
+                    </aside>
+
+                </div>
             }
 
         </div>
@@ -147,6 +308,8 @@
         </div>
     </ErrorContent>
 </ErrorBoundary>
+
+<RealtimeRefresh OnChanged="RefreshThreadAsync" />
 
 @code {
     private int? ClientId;
@@ -161,6 +324,26 @@
     private string Draft = string.Empty;
     private string? LoadError;
     private string? SendError;
+
+    // The notice at the top of the chat, and whether it says the advisor is out of hours.
+    // While they are, the message box is locked. The API enforces the same rule.
+    private AdvisorAvailabilityNotice? AvailabilityNotice;
+    private bool IsAdvisorAway;
+
+    // Meeting times. Once the adviser has set working hours, the client picks from the open times
+    // on a date instead of typing any date and time.
+    private bool HoursConfigured;
+    private string SlotDate = string.Empty;
+    private List<MeetingSlot> Slots = new();
+    private DateTime? SelectedSlot;
+    private string? SlotMessage;
+    private bool IsLoadingSlots;
+    private string SlotNotes = string.Empty;
+
+    /// <summary>
+    /// Stops the date picker from offering dates that have already passed.
+    /// </summary>
+    private static string MinSlotDate => DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
     private bool IsLoading = true;
 
     private bool ShowMeetingForm;
@@ -177,19 +360,21 @@
     private string? MeetingError;
 
     private ElementReference ChatBodyRef;
-    private int LastScrollCount;
+    private long LastScrollTicks;
 
     /// <summary>
     /// Scrolls the chat to the bottom when it opens or a new message comes in.
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (TimelineItems.Count == 0 || TimelineItems.Count == LastScrollCount)
+        // Keyed on the newest item, so showing earlier messages doesn't jump to the bottom.
+        var newest = TimelineItems.LastOrDefault()?.Timestamp.Ticks ?? 0;
+        if (TimelineItems.Count == 0 || newest == LastScrollTicks)
         {
             return;
         }
 
-        LastScrollCount = TimelineItems.Count;
+        LastScrollTicks = newest;
 
         try
         {
@@ -233,8 +418,17 @@
 
         IsLoading = false;
 
+        // "Book a meeting" on the client home links here with ?book=1, so open the form straight away.
+        if (OpenBookingForm == 1 && AdvisorId is not null)
+        {
+            ShowMeetingForm = true;
+        }
+
         Notifier.MessageSent += OnMessageSent;
     }
+
+    [SupplyParameterFromQuery(Name = "book")]
+    public int? OpenBookingForm { get; set; }
 
     private void OnMessageSent(int clientId)
     {
@@ -262,8 +456,9 @@
             return;
         }
 
-        var (messages, messageError) = await MessageStore.GetConversationAsync(ClientId.Value);
+        var (messages, hasEarlier, messageError) = await MessageStore.GetRecentConversationAsync(ClientId.Value, MessageWindow);
         Thread = messages;
+        HasEarlierMessages = hasEarlier;
 
         var (meetings, meetingError) = await MeetingStore.GetForClientAsync(ClientId.Value);
         Meetings = meetings;
@@ -272,14 +467,191 @@
         BuildTimeline();
     }
 
+    // Long threads open on their newest messages; "Show earlier messages" widens the window.
+    private const int MessagePageSize = 100;
+    private int MessageWindow = MessagePageSize;
+    private bool HasEarlierMessages;
+
+    private async Task ShowEarlierMessages()
+    {
+        MessageWindow += MessagePageSize;
+        await RefreshThreadAsync();
+    }
+
     private void BuildTimeline()
     {
         var items = new List<TimelineItem>();
 
+        // While older messages are hidden, hide meeting cards from that older stretch too.
+        var from = HasEarlierMessages && Thread.Count > 0 ? Thread.Min(m => m.SentAt) : DateTime.MinValue;
         items.AddRange(Thread.Select(m => new TimelineItem { Timestamp = m.SentAt, Message = m }));
-        items.AddRange(Meetings.Select(m => new TimelineItem { Timestamp = m.CreatedAt, Meeting = m }));
+        items.AddRange(Meetings.Where(m => m.CreatedAt >= from).Select(m => new TimelineItem { Timestamp = m.CreatedAt, Meeting = m }));
 
         TimelineItems = items.OrderBy(i => i.Timestamp).ToList();
+    }
+
+    // The adviser's latest status, for the presence line in the chat header and the away bar.
+    private AdvisorAvailability? Availability;
+
+    private string AdvisorFirstName => AdvisorName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "your adviser";
+
+    private string PresenceText => Availability is not { IsConfigured: true }
+        ? "Your financial adviser"
+        : IsAdvisorAway ? "Out of office" : "Available now";
+
+    // The next confirmed or requested meeting, for the side panel.
+    private MeetingSummary? NextMeeting => Meetings
+        .Where(m => m.MeetingDate > DateTime.UtcNow && (m.Status == "Confirmed" || m.Status == "Requested"))
+        .OrderBy(m => m.MeetingDate)
+        .FirstOrDefault();
+
+    private static string DayLabel(DateTime day) =>
+        day == DateTime.Today ? "Today"
+        : day == DateTime.Today.AddDays(-1) ? "Yesterday"
+        : day.Year == DateTime.Today.Year ? day.ToString("dddd d MMMM") : day.ToString("d MMMM yyyy");
+
+    private void OnAvailabilityChanged(AdvisorAvailability status)
+    {
+        Availability = status;
+        IsAdvisorAway = !status.IsAvailableNow;
+        HoursConfigured = status.IsConfigured;
+
+        if (!IsAdvisorAway)
+        {
+            SendError = null;
+        }
+    }
+
+    /// <summary>
+    /// After the API refuses something, check the advisor's hours again so the notice
+    /// and the message box match what the API just said.
+    /// </summary>
+    private async Task RefreshAvailabilityAsync()
+    {
+        if (AvailabilityNotice is not null)
+        {
+            await AvailabilityNotice.RefreshAsync();
+        }
+    }
+
+    private void PickSlot(DateTime startUtc)
+    {
+        SelectedSlot = startUtc;
+        MeetingError = null;
+    }
+
+    private async Task OnSlotDateChangedAsync(ChangeEventArgs e)
+    {
+        SlotDate = e.Value?.ToString() ?? string.Empty;
+        await LoadSlotsAsync();
+    }
+
+    /// <summary>
+    /// Loads the open times for the chosen date.
+    /// </summary>
+    private async Task LoadSlotsAsync()
+    {
+        Slots = new();
+        SelectedSlot = null;
+        SlotMessage = null;
+        MeetingError = null;
+
+        if (string.IsNullOrWhiteSpace(SlotDate))
+        {
+            return;
+        }
+
+        var date = SlotDate;
+        IsLoadingSlots = true;
+
+        try
+        {
+            var (result, error) = await AvailabilityApi.GetSlotsAsync(date);
+
+            // The client may have picked another date while this one was loading.
+            if (date != SlotDate)
+            {
+                return;
+            }
+
+            if (result is null)
+            {
+                SlotMessage = error ?? "The open times couldn't be loaded. Please try again.";
+                return;
+            }
+
+            if (result.Slots.Count == 0)
+            {
+                SlotMessage = string.IsNullOrWhiteSpace(result.Message)
+                    ? "There are no open times on that day. Please choose another day."
+                    : result.Message;
+                return;
+            }
+
+            Slots = result.Slots;
+        }
+        finally
+        {
+            if (date == SlotDate)
+            {
+                IsLoadingSlots = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Requests a meeting at the time the client picked. If the API refuses (for example someone
+    /// else took the time a moment ago), the reason is shown and the times are loaded again.
+    /// </summary>
+    private async Task SendSlotRequestAsync()
+    {
+        if (IsSendingMeeting || SelectedSlot is not DateTime startUtc)
+        {
+            return;
+        }
+
+        MeetingError = null;
+
+        if (ClientId is null || AdvisorId is null)
+        {
+            MeetingError = "You don't have an adviser assigned yet.";
+            return;
+        }
+
+        if (SlotNotes.Length > 500)
+        {
+            MeetingError = "Keep the note under 500 characters.";
+            return;
+        }
+
+        IsSendingMeeting = true;
+
+        try
+        {
+            var notes = string.IsNullOrWhiteSpace(SlotNotes) ? null : SlotNotes.Trim();
+            var error = await MeetingStore.RequestAsync(ClientId.Value, AdvisorId.Value, fromAdvisor: false, startUtc, notes);
+
+            if (error is not null)
+            {
+                await LoadSlotsAsync();
+                MeetingError = error;
+                await RefreshAvailabilityAsync();
+                return;
+            }
+
+            SlotDate = string.Empty;
+            SlotNotes = string.Empty;
+            Slots = new();
+            SelectedSlot = null;
+            SlotMessage = null;
+            ShowMeetingForm = false;
+
+            await RefreshThreadAsync();
+        }
+        finally
+        {
+            IsSendingMeeting = false;
+        }
     }
 
     private void ToggleMeetingForm()
@@ -355,6 +727,7 @@
         if (error is not null)
         {
             MeetingError = error;
+            await RefreshAvailabilityAsync();
             return;
         }
 
@@ -392,6 +765,7 @@
         if (error is not null)
         {
             SendError = error;
+            await RefreshAvailabilityAsync();
             return;
         }
 
@@ -414,6 +788,7 @@
         {
             "confirmed" => "meeting-confirmed",
             "cancelled" => "meeting-denied",
+            "completed" => "meeting-completed",
             _ => "meeting-pending"
         };
     }
@@ -422,9 +797,10 @@
     {
         return status?.ToLowerInvariant() switch
         {
-            "confirmed" => "Meeting confirmed",
-            "cancelled" => "Meeting request denied",
-            _ => "Waiting for your adviser to confirm"
+            "confirmed" => "Confirmed",
+            "cancelled" => "Cancelled",
+            "completed" => "Completed",
+            _ => "Awaiting confirmation"
         };
     }
 

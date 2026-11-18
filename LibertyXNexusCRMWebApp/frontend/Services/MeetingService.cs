@@ -14,7 +14,7 @@ namespace frontend.Services
         string Status,
         string? Notes,
         DateTime CreatedAt,
-        DateTime UpdatedAt);
+        DateTime UpdatedAt, string? SharedSummary = null, DateTime? SummaryUpdatedAt = null);
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     /// <summary>

@@ -4,6 +4,7 @@
     {
         public int CaseId { get; set; }
         public int PolicyId { get; set; }
+        public string PolicyStatus { get; set; } = "Pending";
         public string? PolicyName { get; set; }
         public string Status { get; set; } = string.Empty;
         public string? Notes { get; set; }

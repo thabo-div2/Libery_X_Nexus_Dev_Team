@@ -1,0 +1,173 @@
+@using frontend.Services
+@using Shared.DTOs.Insights
+@using Shared.Models.Enums
+@inject InsightsService Api
+@inject ClientService Clients
+
+@* Ask several clients for the same general document at once, e.g. this year's tax certificate. *@
+<section class="wf-card bulk-request" aria-labelledby="bulk-request-title">
+    <div class="wf-heading">
+        <div>
+            <h2 id="bulk-request-title">Request a document from several clients</h2>
+            <p>Each client gets their own request and a notification. Clients who already have this request open are skipped.</p>
+        </div>
+        <button type="button" class="wf-link" @onclick="Close">Close</button>
+    </div>
+
+    <div class="wf-form bulk-form">
+        <div class="wf-form-grid">
+            <label>
+                Document
+                <select class="nx-input" @bind="DocumentType">
+                    @foreach (var type in ClientDocumentRequests.RequestableTypes)
+                    {
+                        <option value="@type">@DocumentTypeNames.Format(type.ToString())</option>
+                    }
+                </select>
+            </label>
+            <label>
+                Note for clients (optional)
+                <input class="nx-input" maxlength="300" placeholder="e.g. Your 2026 IRP5 from your employer" @bind="Note" />
+            </label>
+        </div>
+
+        <div class="bulk-clients">
+            <div class="bulk-clients-head">
+                <div class="bulk-clients-title">
+                    <strong>Clients</strong>
+                    <span class="bulk-count @(Selected.Count > 0 ? "has-selection" : "")">@Selected.Count selected</span>
+                </div>
+                <div class="bulk-clients-tools">
+                    <div class="bulk-search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+                        <input aria-label="Filter clients" placeholder="Search by name or email" @bind="Filter" @bind:event="oninput" />
+                    </div>
+                    <button type="button" class="bulk-tool-btn" disabled="@(!Visible.Any())" @onclick="SelectAllVisible">Select all</button>
+                    <button type="button" class="bulk-tool-btn" disabled="@(Selected.Count == 0)" @onclick="ClearSelection">Clear</button>
+                </div>
+            </div>
+
+            @if (Directory is null)
+            {
+                <div class="nx-skeleton-stack" role="status"><span class="visually-hidden">Loading clients</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
+            }
+            else if (!Visible.Any())
+            {
+                <p class="bulk-empty">No clients match "@Filter.Trim()".</p>
+            }
+            else
+            {
+                <ul class="bulk-client-grid" aria-label="Choose clients">
+                    @foreach (var client in Visible)
+                    {
+                        var id = client.ClientId;
+                        var picked = Selected.Contains(id);
+                        <li @key="id">
+                            <label class="bulk-client @(picked ? "is-selected" : "")">
+                                <input type="checkbox" class="bulk-client-input" checked="@picked" @onchange="e => Toggle(id, e)" />
+                                <span class="bulk-avatar" aria-hidden="true">@Initials(client)</span>
+                                <span class="bulk-client-text">
+                                    <span class="bulk-client-name">@client.FirstName @client.LastName</span>
+                                    <span class="bulk-client-email">@client.Email</span>
+                                </span>
+                                @if (!string.Equals(client.Status, "Active", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(client.Status))
+                                {
+                                    <span class="bulk-client-status">@client.Status</span>
+                                }
+                                <span class="bulk-check" aria-hidden="true">
+                                    <svg viewBox="0 0 16 16"><path d="M3 8.5L6.5 12L13 4.5" /></svg>
+                                </span>
+                            </label>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        @if (Error is not null) { <p class="wf-error" role="alert">@Error</p> }
+        @if (Result is not null)
+        {
+            <div class="bulk-result" role="status">
+                <strong>@Result.Created @(Result.Created == 1 ? "request" : "requests") sent.</strong>
+                @if (Result.Skipped.Count > 0)
+                {
+                    <span>Skipped @Result.Skipped.Count:</span>
+                    <ul>
+                        @foreach (var skip in Result.Skipped) { <li>@skip.ClientName: @skip.Reason</li> }
+                    </ul>
+                }
+            </div>
+        }
+
+        <div class="wf-actions">
+            <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@(Busy || Selected.Count == 0)" @onclick="Send">
+                @(Busy ? "Sending…" : Selected.Count == 0 ? "Choose clients" : $"Send to {Selected.Count} {(Selected.Count == 1 ? "client" : "clients")}")
+            </button>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnSent { get; set; }
+
+    List<ClientProfile>? Directory;
+    readonly HashSet<int> Selected = new();
+    DocumentType DocumentType = DocumentType.TaxCertificate;
+    string? Note;
+    string Filter = "";
+    bool Busy;
+    string? Error;
+    BulkDocumentRequestResult? Result;
+
+    IEnumerable<ClientProfile> Visible => (Directory ?? new())
+        .Where(c => !string.Equals(c.Status, "Offboarded", StringComparison.OrdinalIgnoreCase))
+        .Where(c => Filter.Trim().Length == 0
+            || $"{c.FirstName} {c.LastName} {c.Email}".Contains(Filter.Trim(), StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        var (clients, error) = await Clients.SearchAsync(null, null);
+        Directory = clients;
+        Error = error;
+    }
+
+    void Toggle(int id, ChangeEventArgs e)
+    {
+        if (e.Value is true) Selected.Add(id); else Selected.Remove(id);
+        Result = null;
+    }
+
+    void SelectAllVisible() { foreach (var c in Visible) Selected.Add(c.ClientId); Result = null; }
+
+    void ClearSelection() { Selected.Clear(); Result = null; }
+
+    static string Initials(ClientProfile c) =>
+        string.Concat(new[] { c.FirstName, c.LastName }.Where(n => !string.IsNullOrWhiteSpace(n)).Select(n => char.ToUpperInvariant(n.Trim()[0]))) is { Length: > 0 } i ? i : "?";
+
+    Task Close() => OnClose.InvokeAsync();
+
+    async Task Send()
+    {
+        if (Busy || Selected.Count == 0) return;
+        Busy = true; Error = null; Result = null;
+        try
+        {
+            var (result, error) = await Api.RequestDocumentsAsync(new BulkDocumentRequestInput
+            {
+                ClientIds = Selected.ToList(),
+                DocumentType = DocumentType,
+                Note = string.IsNullOrWhiteSpace(Note) ? null : Note.Trim()
+            });
+            Error = error;
+            Result = result;
+            if (result is not null)
+            {
+                // Keep the skipped clients ticked so they are easy to see; clear the ones that went out.
+                Selected.IntersectWith(result.Skipped.Select(s => s.ClientId));
+                if (result.Created > 0) await OnSent.InvokeAsync();
+            }
+        }
+        finally { Busy = false; }
+    }
+}

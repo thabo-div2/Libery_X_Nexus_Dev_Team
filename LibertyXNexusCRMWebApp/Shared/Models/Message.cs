@@ -30,6 +30,11 @@ namespace Shared.Models
         public string Text { get; set; } = string.Empty;
 
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// When the person the message was sent to opened the conversation. Null while it is unread.
+        /// </summary>
+        public DateTime? ReadAt { get; set; }
     }
 }
 

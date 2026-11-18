@@ -272,6 +272,129 @@ namespace API.Migrations
                     b.ToTable("Advisors");
                 });
 
+            modelBuilder.Entity("Shared.Models.AdvisorHoursOverride", b =>
+                {
+                    b.Property<int>("AdvisorHoursOverrideId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdvisorHoursOverrideId"));
+
+                    b.Property<int>("AdvisorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsWorkingDay")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("AdvisorHoursOverrideId");
+
+                    b.HasIndex("AdvisorId", "Date")
+                        .IsUnique();
+
+                    b.ToTable("AdvisorHoursOverrides");
+                });
+
+            modelBuilder.Entity("Shared.Models.AdvisorTask", b =>
+                {
+                    b.Property<int>("AdvisorTaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdvisorTaskId"));
+
+                    b.Property<int>("AdvisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int?>("PolicyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceKey")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("AdvisorTaskId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("PolicyId");
+
+                    b.HasIndex("AdvisorId", "DueDate");
+
+                    b.HasIndex("AdvisorId", "SourceKey")
+                        .IsUnique()
+                        .HasFilter("[SourceKey] IS NOT NULL");
+
+                    b.ToTable("AdvisorTasks");
+                });
+
+            modelBuilder.Entity("Shared.Models.AdvisorWorkingHours", b =>
+                {
+                    b.Property<int>("AdvisorWorkingHoursId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdvisorWorkingHoursId"));
+
+                    b.Property<int>("AdvisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsWorkingDay")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("AdvisorWorkingHoursId");
+
+                    b.HasIndex("AdvisorId", "DayOfWeek")
+                        .IsUnique();
+
+                    b.ToTable("AdvisorWorkingHours");
+                });
+
             modelBuilder.Entity("Shared.Models.AuditLog", b =>
                 {
                     b.Property<long>("AuditLogId")
@@ -512,6 +635,35 @@ namespace API.Migrations
                     b.ToTable("Clients");
                 });
 
+            modelBuilder.Entity("Shared.Models.ClientNote", b =>
+                {
+                    b.Property<int>("ClientNoteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClientNoteId"));
+
+                    b.Property<int>("AdvisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.HasKey("ClientNoteId");
+
+                    b.HasIndex("ClientId", "CreatedAt");
+
+                    b.ToTable("ClientNotes");
+                });
+
             modelBuilder.Entity("Shared.Models.ClientQuery", b =>
                 {
                     b.Property<int>("QueryId")
@@ -592,8 +744,18 @@ namespace API.Migrations
                     b.Property<long>("FileSizeBytes")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("PolicyId")
+                    b.Property<int?>("PolicyId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ReviewNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ReviewStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("SignatureStatus")
                         .HasColumnType("int");
@@ -618,6 +780,52 @@ namespace API.Migrations
                     b.HasIndex("ClientId", "VisibleToClient");
 
                     b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("Shared.Models.DocumentRequest", b =>
+                {
+                    b.Property<int>("DocumentRequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentRequestId"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DocumentType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("FulfilledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FulfilledDocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int?>("PolicyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ReviewStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("DocumentRequestId");
+
+                    b.HasIndex("PolicyId");
+
+                    b.HasIndex("ClientId", "FulfilledAt");
+
+                    b.ToTable("DocumentRequests");
                 });
 
             modelBuilder.Entity("Shared.Models.Invitation", b =>
@@ -700,8 +908,15 @@ namespace API.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<string>("SharedSummary")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("SummaryUpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -731,6 +946,9 @@ namespace API.Migrations
 
                     b.Property<bool>("FromAdvisor")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
@@ -908,6 +1126,53 @@ namespace API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Shared.Models.AdvisorHoursOverride", b =>
+                {
+                    b.HasOne("Shared.Models.Advisor", "Advisor")
+                        .WithMany()
+                        .HasForeignKey("AdvisorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advisor");
+                });
+
+            modelBuilder.Entity("Shared.Models.AdvisorTask", b =>
+                {
+                    b.HasOne("Shared.Models.Advisor", "Advisor")
+                        .WithMany()
+                        .HasForeignKey("AdvisorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Shared.Models.Policy", "Policy")
+                        .WithMany()
+                        .HasForeignKey("PolicyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Advisor");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Policy");
+                });
+
+            modelBuilder.Entity("Shared.Models.AdvisorWorkingHours", b =>
+                {
+                    b.HasOne("Shared.Models.Advisor", "Advisor")
+                        .WithMany()
+                        .HasForeignKey("AdvisorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advisor");
+                });
+
             modelBuilder.Entity("Shared.Models.Case", b =>
                 {
                     b.HasOne("Shared.Models.Policy", "Policy")
@@ -927,6 +1192,17 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Advisor");
+                });
+
+            modelBuilder.Entity("Shared.Models.ClientNote", b =>
+                {
+                    b.HasOne("Shared.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("Shared.Models.ClientQuery", b =>
@@ -958,8 +1234,25 @@ namespace API.Migrations
                     b.HasOne("Shared.Models.Policy", "Policy")
                         .WithMany("Documents")
                         .HasForeignKey("PolicyId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Policy");
+                });
+
+            modelBuilder.Entity("Shared.Models.DocumentRequest", b =>
+                {
+                    b.HasOne("Shared.Models.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Shared.Models.Policy", "Policy")
+                        .WithMany()
+                        .HasForeignKey("PolicyId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Client");
 

@@ -1,0 +1,605 @@
+﻿@page "/meeting-prep"
+@layout MainLayout
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using frontend.Services
+@inject ClientService ClientApi
+@inject PolicyService PolicyApi
+@inject CaseService CaseApi
+@inject MeetingService MeetingApi
+@inject DocumentService DocumentApi
+@inject DocumentRequestService RequestApi
+@inject MessageService MessageApi
+@inject ClientNoteService NoteApi
+@inject CurrentUserService CurrentUser
+@inject WorkflowService WorkflowApi
+@using Shared.DTOs.Workflow
+@inject IJSRuntime JS
+
+<PageTitle>Meeting prep | Nexus</PageTitle>
+
+@* Everything the advisor needs before meeting a client, on one page that prints cleanly.
+   Each section loads on its own, so one failing doesn't blank the whole sheet. *@
+
+<div class="prep-page">
+
+    <header class="prep-header">
+
+        <div class="prep-heading">
+            <h1>@(Client is null ? "Meeting prep" : $"Meeting prep: {Client.FirstName} {Client.LastName}")</h1>
+            <p>Prepared @DateTime.Now.ToString("ddd d MMM yyyy, HH:mm")</p>
+        </div>
+
+        <div class="prep-actions">
+            <a href="/clients" class="nx-btn nx-btn-secondary nx-btn-sm">Back to clients</a>
+
+            @if (Client is not null)
+            {
+                <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" @onclick="PrintAsync">Print</button>
+            }
+        </div>
+
+    </header>
+
+    <main class="prep-content">
+
+        @if (IsLoading)
+        {
+            <div class="prep-empty">
+                <strong>Loading...</strong>
+                <span>Putting the prep sheet together.</span>
+            </div>
+        }
+        else if (Client is null)
+        {
+            <div class="prep-empty">
+                <strong>Unable to open the prep sheet</strong>
+                <span>@(LoadError ?? "That client could not be found.")</span>
+                <a href="/clients" class="nx-btn nx-btn-secondary">Back to clients</a>
+            </div>
+        }
+        else
+        {
+            var nextMeeting = UpcomingMeetings.FirstOrDefault();
+            var activeCase = Cases.OrderBy(c => c.PolicyIssuedAt.HasValue).ThenByDescending(c => c.CreatedAt).FirstOrDefault();
+            var stepsDone = activeCase is null ? 0 : Steps.Count(s => s.When(activeCase).HasValue);
+            var lastContact = RecentMessages.FirstOrDefault()?.SentAt;
+
+            <section class="prep-hero">
+                @if (nextMeeting is not null)
+                {
+                    var when = nextMeeting.MeetingDate.ToLocalTime();
+                    <span class="prep-date" aria-hidden="true"><small>@when.ToString("ddd")</small><b>@when.Day</b><small>@when.ToString("MMM")</small></span>
+                    <div>
+                        <h2>@(string.IsNullOrWhiteSpace(nextMeeting.MeetingType) ? "Meeting" : nextMeeting.MeetingType) with @Client.FirstName @Client.LastName</h2>
+                        <p>@Join(when.ToString("dddd d MMMM, HH:mm"), $"{nextMeeting.DurationMinutes} min", nextMeeting.Location, LastMeeting is null ? "first meeting" : "last met " + LastMeeting.MeetingDate.ToLocalTime().ToString("d MMM"))</p>
+                    </div>
+                }
+                else
+                {
+                    <span class="prep-date" aria-hidden="true"><small>No</small><b>–</b><small>date</small></span>
+                    <div>
+                        <h2>Briefing for @Client.FirstName @Client.LastName</h2>
+                        <p>No meeting booked yet@(LastMeeting is null ? "" : " · last met " + LastMeeting.MeetingDate.ToLocalTime().ToString("d MMM yyyy"))</p>
+                    </div>
+                }
+            </section>
+
+            <div class="prep-kpis">
+                <div class="prep-kpi"><span>Application</span><b>@(activeCase is null ? "—" : $"{stepsDone} / {Steps.Length}")</b><small>@(activeCase is null ? "No case yet" : stepsDone == Steps.Length ? "All steps done" : Steps[stepsDone].Label)</small></div>
+                <div class="prep-kpi"><span>Documents</span><b>@OutstandingRequests.Count</b><small>outstanding</small></div>
+                <div class="prep-kpi"><span>Last contact</span><b>@(lastContact is DateTime sent ? Ago(sent) : "—")</b><small>@(lastContact is null ? "No messages yet" : "message")</small></div>
+                <div class="prep-kpi"><span>Total cover</span><b>@ShortMoney(Policies.Sum(p => p.CoverAmount ?? 0))</b><small>@Policies.Count @(Policies.Count == 1 ? "policy" : "policies")</small></div>
+            </div>
+
+            <section class="prep-card prep-agenda">
+                <div class="prep-agenda-head">
+                    <h2>Suggested agenda</h2>
+                    <span>From @(Client.FirstName)’s file · tick items off as you go</span>
+                </div>
+                @if (Agenda.Count == 0)
+                {
+                    <p class="prep-none">Nothing outstanding. A good time for a general review.</p>
+                }
+                else
+                {
+                    <ul class="prep-agenda-list">
+                        @foreach (var item in Agenda)
+                        {
+                            var done = Ticked.Contains(item.Key);
+                            <li @key="item.Key" class="@(done ? "is-done" : "")">
+                                <button type="button" class="prep-tick" role="checkbox" aria-checked="@(done ? "true" : "false")" aria-label="@item.Title" @onclick="() => ToggleTick(item.Key)">
+                                    @if (done) { <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg> }
+                                </button>
+                                <span><strong>@item.Title</strong>@if (!string.IsNullOrWhiteSpace(item.Detail)) { <small>@item.Detail</small> }</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
+            <div class="prep-grid">
+
+                @* ---------- Client ---------- *@
+                <section class="prep-card">
+                    <h2>Client</h2>
+
+                    <dl class="prep-facts">
+                        <div><dt>Status</dt><dd>@Client.Status</dd></div>
+                        <div><dt>Email</dt><dd>@Client.Email</dd></div>
+                        <div><dt>Phone</dt><dd>@Text(Client.Phone)</dd></div>
+                        <div><dt>Risk profile</dt><dd>@Text(Client.RiskProfile)</dd></div>
+                        <div><dt>Occupation</dt><dd>@Text(Client.Occupation)</dd></div>
+                        <div><dt>Employer</dt><dd>@Text(Client.Employer)</dd></div>
+                        <div><dt>Marital status</dt><dd>@Text(Client.MaritalStatus)</dd></div>
+                        <div><dt>Dependants</dt><dd>@(Client.Dependants?.ToString() ?? "—")</dd></div>
+                        <div><dt>Primary goal</dt><dd>@Text(Client.PrimaryGoal)</dd></div>
+                        <div><dt>Investment horizon</dt><dd>@(Client.InvestmentHorizonYears is int years ? $"{years} years" : "—")</dd></div>
+                    </dl>
+                </section>
+
+                @* ---------- Finances ---------- *@
+                <section class="prep-card">
+                    <h2>Financial snapshot</h2>
+
+                    <dl class="prep-facts">
+                        <div><dt>Gross monthly income</dt><dd>@Money(Client.GrossMonthlyIncome)</dd></div>
+                        <div><dt>Net monthly income</dt><dd>@Money(Client.NetMonthlyIncome)</dd></div>
+                        <div><dt>Monthly expenses</dt><dd>@Money(Client.MonthlyExpenses)</dd></div>
+                        <div><dt>Existing investments</dt><dd>@Money(Client.ExistingInvestments)</dd></div>
+                        <div><dt>Retirement savings</dt><dd>@Money(Client.RetirementSavings)</dd></div>
+                        <div><dt>Property value</dt><dd>@Money(Client.PropertyValue)</dd></div>
+                        <div><dt>Outstanding debt</dt><dd>@Money(Client.OutstandingDebt)</dd></div>
+                    </dl>
+                </section>
+
+                @* ---------- Policies ---------- *@
+                <section class="prep-card prep-card-wide">
+                    <h2>Policies and application progress</h2>
+
+                    @if (PolicyError is not null)
+                    {
+                        <p class="prep-section-error">Policies couldn't be loaded: @PolicyError</p>
+                    }
+                    else if (Policies.Count == 0)
+                    {
+                        <p class="prep-none">No policies on file.</p>
+                    }
+                    else
+                    {
+                        <table class="prep-table">
+                            <thead>
+                                <tr>
+                                    <th>Policy</th>
+                                    <th>Provider</th>
+                                    <th>Status</th>
+                                    <th>Premium</th>
+                                    <th>Cover</th>
+                                    <th>Ends</th>
+                                    <th>Progress</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var policy in Policies)
+                                {
+                                    <tr @key="policy.PolicyId">
+                                        <td>@policy.PolicyName</td>
+                                        <td>@policy.Provider</td>
+                                        <td>@policy.Status</td>
+                                        <td>@Money(policy.PremiumAmount)</td>
+                                        <td>@Money(policy.CoverAmount)</td>
+                                        <td>@(policy.EndDate?.ToString("d MMM yyyy") ?? "—")</td>
+                                        <td>@DescribeProgress(policy.PolicyId)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </section>
+
+                @* ---------- Meetings ---------- *@
+                <section class="prep-card">
+                    <h2>Meetings</h2>
+
+                    @if (MeetingError is not null)
+                    {
+                        <p class="prep-section-error">Meetings couldn't be loaded: @MeetingError</p>
+                    }
+                    else
+                    {
+                        <h3>Upcoming</h3>
+
+                        @if (UpcomingMeetings.Count == 0)
+                        {
+                            <p class="prep-none">Nothing booked.</p>
+                        }
+                        else
+                        {
+                            <ul class="prep-list">
+                                @foreach (var meeting in UpcomingMeetings)
+                                {
+                                    <li @key="meeting.MeetingId">
+                                        <strong>@meeting.MeetingDate.ToLocalTime().ToString("ddd d MMM yyyy, HH:mm")</strong>
+                                        <span>@Join(meeting.Status, $"{meeting.DurationMinutes} min", meeting.Notes)</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                        <h3>Last meeting</h3>
+
+                        @if (LastMeeting is null)
+                        {
+                            <p class="prep-none">No previous meetings.</p>
+                        }
+                        else
+                        {
+                            <ul class="prep-list">
+                                <li>
+                                    <strong>@LastMeeting.MeetingDate.ToLocalTime().ToString("ddd d MMM yyyy, HH:mm")</strong>
+                                    <span>@Join(LastMeeting.Status, LastMeeting.Notes)</span>
+                                </li>
+                            </ul>
+                        }
+                    }
+                </section>
+
+                @* ---------- Documents ---------- *@
+                <section class="prep-card">
+                    <h2>Documents</h2>
+
+                    <h3>Document requests & reviews</h3>
+
+                    @if (RequestError is not null)
+                    {
+                        <p class="prep-section-error">Document requests couldn't be loaded: @RequestError</p>
+                    }
+                    else if (OutstandingRequests.Count == 0)
+                    {
+                        <p class="prep-none">Nothing outstanding.</p>
+                    }
+                    else
+                    {
+                        <ul class="prep-list">
+                            @foreach (var request in OutstandingRequests)
+                            {
+                                <li @key="request.DocumentRequestId">
+                                    <strong>@DocumentTypeNames.Format(request.DocumentType)</strong>
+                                    <span>@(request.ReviewStatus == "NeedsReplacement" ? "Needs replacement: " + request.ReviewNote : request.IsFulfilled ? "Received · awaiting adviser review" : "Still needed")</span>
+                                    <span>@(request.PolicyId is int id ? $"{request.PolicyName ?? "Policy"} (#{id})" : "General documents")</span>
+                                    <span>@Join("Requested " + request.CreatedAt.ToLocalTime().ToString("d MMM yyyy"), request.Note)</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    <h3>On file</h3>
+
+                    @if (DocumentError is not null)
+                    {
+                        <p class="prep-section-error">Documents couldn't be loaded: @DocumentError</p>
+                    }
+                    else if (Documents.Count == 0)
+                    {
+                        <p class="prep-none">No documents on file.</p>
+                    }
+                    else
+                    {
+                        <p class="prep-none">@Documents.Count on file, @AwaitingSignatureCount awaiting signature.</p>
+
+                        <ul class="prep-list">
+                            @foreach (var document in Documents.Take(5))
+                            {
+                                <li @key="document.DocumentId">
+                                    <strong>@document.FileName</strong>
+                                    <span>@Join(DocumentTypeNames.Format(document.DocumentType), document.SignatureStatus == "Awaiting" ? "Awaiting signature" : null)</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+
+                @* ---------- Notes ---------- *@
+                <section class="prep-card prep-card-wide">
+                    <h2>Your private notes</h2>
+
+                    @if (NoteError is not null)
+                    {
+                        <p class="prep-section-error">Notes couldn't be loaded: @NoteError</p>
+                    }
+                    else if (RecentNotes.Count == 0)
+                    {
+                        <p class="prep-none">No notes yet.</p>
+                    }
+                    else
+                    {
+                        <ul class="prep-list">
+                            @foreach (var note in RecentNotes)
+                            {
+                                <li @key="note.ClientNoteId">
+                                    <strong>@note.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")</strong>
+                                    <span>@note.Text</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+
+                @* ---------- Messages ---------- *@
+                <section class="prep-card prep-card-wide">
+                    <h2>Recent messages</h2>
+
+                    @if (MessageError is not null)
+                    {
+                        <p class="prep-section-error">Messages couldn't be loaded: @MessageError</p>
+                    }
+                    else if (RecentMessages.Count == 0)
+                    {
+                        <p class="prep-none">No messages yet.</p>
+                    }
+                    else
+                    {
+                        <ul class="prep-list">
+                            @foreach (var message in RecentMessages)
+                            {
+                                <li @key="message.Id">
+                                    <strong>@Join(message.FromAdvisor ? "You" : Client.FirstName, message.SentAt.ToLocalTime().ToString("d MMM, HH:mm"))</strong>
+                                    <span>@message.Text</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+
+            </div>
+        }
+
+    </main>
+
+</div>
+
+@code {
+    /// <summary>The client the sheet is for, from the address: /meeting-prep?clientId=5</summary>
+    [SupplyParameterFromQuery(Name = "clientId")]
+    public int? ClientId { get; set; }
+
+    private static readonly (string Label, Func<CaseSummary, DateTime?> When)[] Steps =
+    {
+        ("Details submitted", c => c.DetailsSubmittedAt),
+        ("Adviser review", c => c.AdviserReviewAt),
+        ("FICA verification", c => c.FicaVerifiedAt),
+        ("Submitted to Liberty", c => c.SubmittedToLibertyAt),
+        ("Policy issued", c => c.PolicyIssuedAt)
+    };
+
+    private bool IsLoading = true;
+    private string? LoadError;
+    private ClientProfile? Client;
+
+    private List<PolicySummary> Policies = new();
+    private List<CaseSummary> Cases = new();
+    private string? PolicyError;
+
+    private List<MeetingSummary> UpcomingMeetings = new();
+    private MeetingSummary? LastMeeting;
+    private string? MeetingError;
+
+    private List<DocumentSummary> Documents = new();
+    private int AwaitingSignatureCount;
+    private string? DocumentError;
+
+    private List<DocumentRequestSummary> OutstandingRequests = new();
+    private string? RequestError;
+
+    private List<ClientNoteSummary> RecentNotes = new();
+    private string? NoteError;
+
+    private List<ChatMessage> RecentMessages = new();
+    private List<AdvisorTaskDto> OpenTasks = new();
+
+    // Suggested agenda, built from what is outstanding on the file. Ticks are for this sitting only.
+    private record AgendaItem(string Key, string Title, string? Detail);
+    private readonly HashSet<string> Ticked = new();
+    private void ToggleTick(string key) { if (!Ticked.Remove(key)) Ticked.Add(key); }
+
+    private List<AgendaItem> Agenda
+    {
+        get
+        {
+            var items = new List<AgendaItem>();
+
+            foreach (var request in OutstandingRequests.OrderBy(r => r.ReviewStatus == "NeedsReplacement" ? 0 : r.IsFulfilled ? 2 : 1))
+            {
+                var name = DocumentTypeNames.Format(request.DocumentType);
+                items.Add(new("doc-" + request.DocumentRequestId,
+                    request.ReviewStatus == "NeedsReplacement" ? $"{name}: needs a new copy" : request.IsFulfilled ? $"{name}: received, still to review" : $"{name}: still outstanding",
+                    request.ReviewStatus == "NeedsReplacement" ? request.ReviewNote : request.PolicyName));
+            }
+
+            foreach (var policyCase in Cases.Where(c => !c.PolicyIssuedAt.HasValue))
+            {
+                var next = Steps.First(s => !s.When(policyCase).HasValue).Label;
+                items.Add(new("case-" + policyCase.CaseId, $"{policyCase.PolicyName ?? "Application"}: next step is {next.ToLowerInvariant()}", null));
+            }
+
+            foreach (var policy in Policies.Where(p => p.EndDate is DateTime end && end >= DateTime.Today && end <= DateTime.Today.AddDays(90)))
+            {
+                items.Add(new("renew-" + policy.PolicyId, $"{policy.PolicyName} ends {policy.EndDate:d MMM}", "Discuss renewal options"));
+            }
+
+            foreach (var task in OpenTasks.Take(5))
+            {
+                items.Add(new("task-" + task.AdvisorTaskId, task.Title, task.DueDate.Date < DateTime.Today ? "Overdue task" : $"Task due {task.DueDate:d MMM}"));
+            }
+
+            return items;
+        }
+    }
+
+    private static string Ago(DateTime sentUtc)
+    {
+        var days = (DateTime.Today - sentUtc.ToLocalTime().Date).Days;
+        return days <= 0 ? "Today" : days == 1 ? "1 day" : $"{days} days";
+    }
+
+    private static string ShortMoney(double amount) =>
+        amount >= 1_000_000 ? $"R {amount / 1_000_000:0.#}m" : amount >= 1_000 ? $"R {amount / 1_000:0}k" : $"R {amount:N0}";
+    private string? MessageError;
+
+    // The client the sheet was last built for, so it rebuilds if the address changes.
+    private int? _loadedClientId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_loadedClientId == ClientId && !IsLoading)
+        {
+            return;
+        }
+
+        _loadedClientId = ClientId;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        IsLoading = true;
+        LoadError = null;
+        Client = null;
+
+        try
+        {
+            await CurrentUser.EnsureRestoredAsync();
+
+            if (CurrentUser.Id is null || !CurrentUser.IsAdvisor)
+            {
+                LoadError = "You need to be signed in as an advisor to open a prep sheet.";
+                return;
+            }
+
+            if (ClientId is not int clientId || clientId <= 0)
+            {
+                LoadError = "No client was chosen. Open the prep sheet from the Clients page.";
+                return;
+            }
+
+            // The API only returns the client if they belong to this advisor.
+            var (client, clientError) = await ClientApi.GetByIdAsync(clientId);
+
+            if (client is null)
+            {
+                LoadError = clientError ?? "That client could not be found.";
+                return;
+            }
+
+            // Load the sections side by side. Each one keeps its own error.
+            var policiesTask = PolicyApi.GetForClientAsync(clientId);
+            var casesTask = CaseApi.GetForClientAsync(clientId);
+            var meetingsTask = MeetingApi.GetForClientAsync(clientId);
+            var documentsTask = DocumentApi.GetForClientAsync(clientId);
+            var requestsTask = RequestApi.GetForClientAsync(clientId);
+            var messagesTask = MessageApi.GetConversationAsync(clientId);
+            var notesTask = NoteApi.GetForClientAsync(clientId);
+            var tasksTask = WorkflowApi.GetTasksAsync(clientId);
+
+            await Task.WhenAll(policiesTask, casesTask, meetingsTask, documentsTask, requestsTask, messagesTask, notesTask, tasksTask);
+
+            // Tasks only feed the agenda, so a failure just leaves them out.
+            OpenTasks = (tasksTask.Result.Value ?? new()).Where(t => t.CompletedAt is null).OrderBy(t => t.DueDate).ToList();
+
+            var (notes, noteError) = notesTask.Result;
+            RecentNotes = (notes ?? new List<ClientNoteSummary>()).Take(5).ToList();
+            NoteError = noteError;
+
+            var (policies, policyError) = policiesTask.Result;
+            var (cases, caseError) = casesTask.Result;
+            Policies = (policies ?? new List<PolicySummary>()).OrderBy(p => p.CreatedAt).ToList();
+            Cases = cases ?? new List<CaseSummary>();
+            PolicyError = policyError ?? caseError;
+
+            var (meetings, meetingError) = meetingsTask.Result;
+            var now = DateTime.UtcNow;
+            var active = (meetings ?? new List<MeetingSummary>())
+                .Where(m => !string.Equals(m.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            UpcomingMeetings = active.Where(m => AsUtc(m.MeetingDate) >= now).OrderBy(m => m.MeetingDate).Take(3).ToList();
+            LastMeeting = active.Where(m => AsUtc(m.MeetingDate) < now).OrderByDescending(m => m.MeetingDate).FirstOrDefault();
+            MeetingError = meetingError;
+
+            var (documents, documentError) = documentsTask.Result;
+            Documents = (documents ?? new List<DocumentSummary>()).OrderByDescending(d => d.UpdateAt ?? DateTime.MinValue).ToList();
+            AwaitingSignatureCount = Documents.Count(d => d.SignatureStatus == "Awaiting");
+            DocumentError = documentError;
+
+            var (requests, requestError) = requestsTask.Result;
+            OutstandingRequests = (requests ?? new List<DocumentRequestSummary>()).Where(r => !r.IsFulfilled || r.ReviewStatus != "Accepted").ToList();
+            RequestError = requestError;
+
+            var (messages, messageError) = messagesTask.Result;
+            RecentMessages = (messages ?? new List<ChatMessage>()).OrderByDescending(m => m.SentAt).Take(5).ToList();
+            MessageError = messageError;
+
+            Client = client;
+        }
+        catch (Exception)
+        {
+            LoadError = "The prep sheet couldn't be put together. Please try again.";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// "3 of 5 steps, next: Submitted to Liberty" for the policy's case.
+    /// </summary>
+    private string DescribeProgress(int policyId)
+    {
+        var policyCase = Cases.FirstOrDefault(c => c.PolicyId == policyId);
+
+        if (policyCase is null)
+        {
+            return "—";
+        }
+
+        var done = Steps.Count(s => s.When(policyCase).HasValue);
+        var next = Steps.FirstOrDefault(s => !s.When(policyCase).HasValue).Label;
+
+        return next is null
+            ? "All steps complete"
+            : $"{done} of {Steps.Length} steps, next: {next}";
+    }
+
+    private async Task PrintAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("print");
+        }
+        catch (Exception)
+        {
+            // The page is closing or printing isn't available; nothing else to do.
+        }
+    }
+
+    // Dates from the API are UTC but arrive without that marked.
+    private static DateTime AsUtc(DateTime value)
+    {
+        return value.Kind == DateTimeKind.Local ? value.ToUniversalTime() : DateTime.SpecifyKind(value, DateTimeKind.Utc);
+    }
+
+    /// <summary>
+    /// Joins the parts that have something in them: "Confirmed · 60 min · Annual review".
+    /// </summary>
+    private static string Join(params string?[] parts)
+    {
+        return string.Join(" · ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
+    }
+
+    private static string Text(string? value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
+
+    private static string Money(decimal? value) => value is decimal amount ? $"R {amount:N0}" : "—";
+
+    private static string Money(double? value) => value is double amount ? $"R {amount:N0}" : "—";
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

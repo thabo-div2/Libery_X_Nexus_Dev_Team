@@ -173,7 +173,8 @@ namespace API.Controllers
 
             try
             {
-                var created = await meetingService_.BookAsync(request);
+                var created = await meetingService_.BookAsync(request, byAdvisor: IsAdvisor);
+                await SyncMeetingTaskAsync(created.MeetingId);
                 return CreatedAtAction(nameof(GetById), new { id = created.MeetingId }, created);
             }
             catch (ArgumentException ex)
@@ -210,7 +211,9 @@ namespace API.Controllers
 
             try
             {
-                return Ok(await meetingService_.RescheduleAsync(id, request, byAdvisor: IsAdvisor));
+                var moved = await meetingService_.RescheduleAsync(id, request, byAdvisor: IsAdvisor);
+                await SyncMeetingTaskAsync(id);
+                return Ok(moved);
             }
             catch (ArgumentException ex)
             {
@@ -243,7 +246,9 @@ namespace API.Controllers
 
             try
             {
-                return Ok(await meetingService_.CancelAsync(id, byAdvisor: IsAdvisor));
+                var cancelled = await meetingService_.CancelAsync(id, byAdvisor: IsAdvisor);
+                await SyncMeetingTaskAsync(id);
+                return Ok(cancelled);
             }
             catch (KeyNotFoundException ex)
             {
@@ -273,7 +278,9 @@ namespace API.Controllers
 
             try
             {
-                return Ok(await meetingService_.ConfirmAsync(id));
+                var confirmed = await meetingService_.ConfirmAsync(id);
+                await SyncMeetingTaskAsync(id);
+                return Ok(confirmed);
             }
             catch (KeyNotFoundException ex)
             {
@@ -283,6 +290,19 @@ namespace API.Controllers
             {
                 return Conflict(new { message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Keeps the advisor's automatic "prepare for meeting" task in step with the meeting.
+        /// Resolved per request (not via the constructor) and never allowed to fail the meeting change itself.
+        /// </summary>
+        private async Task SyncMeetingTaskAsync(int meetingId)
+        {
+            var automation = HttpContext?.RequestServices?.GetService(typeof(ITaskAutomationService)) as ITaskAutomationService;
+            if (automation is null) return;
+
+            try { await automation.SyncMeetingTaskAsync(meetingId); }
+            catch (Exception) { /* The meeting change is saved; a missing helper task is not worth failing it. */ }
         }
     }
 }

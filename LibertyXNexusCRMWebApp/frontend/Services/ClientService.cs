@@ -165,6 +165,42 @@ namespace frontend.Services
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
+        /// Loads one page of the advisor's clients, plus how many match in total, so long lists can load more on demand.
+        /// </summary>
+        public async Task<(List<ClientProfile> Clients, int Total, string? Error)> SearchPageAsync(string? search, ClientStatus? status, int skip, int take)
+        {
+            try
+            {
+                var queryParams = new List<string> { $"skip={skip}", $"take={take}" };
+                if (!string.IsNullOrWhiteSpace(search)) queryParams.Add($"searchTerm={Uri.EscapeDataString(search.Trim())}");
+                if (status.HasValue) queryParams.Add($"status={Uri.EscapeDataString(status.Value.ToString())}");
+
+                var response = await _http.GetAsync($"clients?{string.Join("&", queryParams)}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return (new List<ClientProfile>(), 0, $"The server reported an error (status {(int)response.StatusCode}).");
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<List<ClientProfile>>() ?? new List<ClientProfile>();
+                foreach (var client in result)
+                    client.NormalizeName();
+
+                var total = response.Headers.TryGetValues("X-Total-Count", out var values) && int.TryParse(values.FirstOrDefault(), out var parsed)
+                    ? parsed : skip + result.Count;
+                return (result, total, null);
+            }
+            catch (HttpRequestException)
+            {
+                return (new List<ClientProfile>(), 0, "Can't reach the server. Make sure the Backend project is running.");
+            }
+            catch (Exception ex)
+            {
+                return (new List<ClientProfile>(), 0, $"Something went wrong: {ex.Message}");
+            }
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
         /// Creates a new client profile.
         /// </summary>
         /// <param name="request"></param>

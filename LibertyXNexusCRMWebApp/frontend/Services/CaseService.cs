@@ -18,7 +18,8 @@ namespace frontend.Services
             DateTime? AdviserReviewAt,
             DateTime? FicaVerifiedAt,
             DateTime? SubmittedToLibertyAt,
-            DateTime? PolicyIssuedAt
+            DateTime? PolicyIssuedAt,
+            string PolicyStatus = "Pending"
         );
 
     /// <summary>
@@ -104,7 +105,25 @@ namespace frontend.Services
 
             if (!string.IsNullOrWhiteSpace(body))
             {
-                return $"API returned HTTP {(int)response.StatusCode}: {body}";
+                // The API sends its errors as { "message": "..." }, so show just the message.
+                try
+                {
+                    using var json = System.Text.Json.JsonDocument.Parse(body);
+
+                    if (json.RootElement.ValueKind == System.Text.Json.JsonValueKind.Object
+                        && json.RootElement.TryGetProperty("message", out var message)
+                        && message.ValueKind == System.Text.Json.JsonValueKind.String
+                        && !string.IsNullOrWhiteSpace(message.GetString()))
+                    {
+                        return message.GetString()!;
+                    }
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    // Not JSON, so fall through to the plain message below.
+                }
+
+                return $"The server reported an error (status {(int)response.StatusCode}).";
             }
 
             return $"The server reported an error (status {(int)response.StatusCode}).";

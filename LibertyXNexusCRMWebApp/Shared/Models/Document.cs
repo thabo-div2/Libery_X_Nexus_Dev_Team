@@ -21,11 +21,11 @@ namespace Shared.Models
         [ForeignKey(nameof(ClientId))]
         public Client Client { get; set; } = null;
 
-        [Required]
-        public int PolicyId { get; set; }
+        // Null means a general client document, unrelated to a policy.
+        public int? PolicyId { get; set; }
 
         [ForeignKey(nameof(PolicyId))]
-        public Policy Policy { get; set; }
+        public Policy? Policy { get; set; }
 
         [Required, MaxLength(300)]
         public string FileName { get; set; } = string.Empty;
@@ -39,6 +39,10 @@ namespace Shared.Models
         public long FileSizeBytes { get; set; }
 
         public DocumentType DocumentType { get; set; } = DocumentType.Other;
+
+        public DocumentReviewStatus ReviewStatus { get; set; } = DocumentReviewStatus.Received;
+        [MaxLength(500)] public string? ReviewNote { get; set; }
+        public DateTime? ReviewedAt { get; set; }
 
         public SignatureStatus SignatureStatus { get; set; } = SignatureStatus.NotRequired;
 

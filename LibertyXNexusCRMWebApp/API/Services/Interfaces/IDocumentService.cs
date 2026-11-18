@@ -14,6 +14,7 @@ namespace API.Services.Interfaces
         Task<DocumentDto> UploadAsync(UploadDocumentRequest request);
         Task<Uri> GetDownloadUriAsync(int documentId);
         Task<DocumentDto> SetVisibilityAsync(int documentId, bool visibleToClient);
+        Task<DocumentDto> SetSignatureStatusAsync(int documentId, SignatureStatus status);
         Task<bool> DeleteAsync(int documentId);
     }
 }

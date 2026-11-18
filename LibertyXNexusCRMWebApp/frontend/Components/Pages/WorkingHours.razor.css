@@ -1,0 +1,767 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+/* ===============================
+   PAGE
+   =============================== */
+
+.hours-page {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--color-page-bg);
+    color: var(--color-text);
+    font-family: var(--font-family);
+}
+
+.hours-header {
+    min-height: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    padding: var(--space-8) var(--space-8) var(--space-2);
+    background: transparent;
+    flex-wrap: wrap;
+}
+
+.hours-heading h1 {
+    margin: 0 0 var(--space-1);
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+}
+
+.hours-heading p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.hours-content {
+    padding: var(--space-4) var(--space-8) var(--space-12);
+}
+
+.hours-banner {
+    margin: 0 0 var(--space-4);
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.hours-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+}
+
+
+/* ===============================
+   CARDS
+   =============================== */
+
+.hours-card {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    box-shadow: var(--shadow-md);
+}
+
+.hours-card-header {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+    .hours-card-header h2 {
+        margin: 0;
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+.hours-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+}
+
+    .hours-card-body .nx-alert {
+        margin: 0;
+    }
+
+.hours-intro {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.hours-optional {
+    color: var(--color-text-muted);
+    font-weight: normal;
+}
+
+.hours-save-button {
+    align-self: flex-start;
+}
+
+
+/* ===============================
+   DEFAULT WEEK
+   =============================== */
+
+.week-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.week-row {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-white);
+}
+
+    .week-row.is-off {
+        background: var(--color-page-bg);
+    }
+
+.week-day {
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+}
+
+    .week-day input {
+        width: 15px;
+        height: 15px;
+        margin: 0;
+        cursor: pointer;
+    }
+
+.week-times {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+    .week-times .nx-input {
+        width: 120px;
+    }
+
+.week-to {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.week-off-label {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+
+/* ===============================
+   CUSTOM DATES
+   =============================== */
+
+.override-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.override-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.override-list-title {
+    margin: var(--space-3) 0 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-light);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+}
+
+.override-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.override-row {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.override-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+    .override-info strong {
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+    .override-info > span {
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+    }
+
+
+/* ===============================
+   EMPTY STATES
+   =============================== */
+
+.hours-empty-state {
+    min-height: 275px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    text-align: center;
+}
+
+    .hours-empty-state strong {
+        color: var(--color-text);
+        font-size: var(--text-sm);
+        font-weight: var(--weight-semibold);
+    }
+
+    .hours-empty-state span {
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+    }
+
+.hours-small-empty {
+    padding: var(--space-3) 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+
+/* ===============================
+   SMALLER SCREENS
+   =============================== */
+
+@media (max-width: 1100px) {
+
+    .hours-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .hours-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .hours-content {
+        padding: var(--space-4);
+    }
+
+    .week-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .week-times .nx-input {
+        width: 110px;
+    }
+}
+
+/* ================================ EndOfFile ============================== */
+
+
+/* ================================ NEXUS 2.0 WORKING HOURS ============================== */
+
+.hours-content {
+    padding-top: var(--space-6);
+}
+
+.hours-grid {
+    gap: var(--space-6);
+}
+
+.hours-card {
+    border: 0;
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 0 0 6px rgba(12, 35, 64, 0.04),
+        0 0 0 7px rgba(12, 35, 64, 0.06),
+        0 18px 36px -20px rgba(12, 35, 64, 0.24);
+}
+
+.hours-card-header {
+    min-height: 76px;
+    padding: 0 var(--space-6);
+    border-bottom: 1px solid rgba(12, 35, 64, 0.06);
+}
+
+.hours-card-header h2 {
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.01em;
+}
+
+.hours-card-body {
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-6) var(--space-6);
+}
+
+.hours-intro {
+    font-size: 13.5px;
+    line-height: 1.55;
+}
+
+/* ---- weekly availability bar ---- */
+.week-bar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.week-bar-seg {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--color-page-bg);
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background-color 360ms cubic-bezier(0.32, 0.72, 0, 1), color 360ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.week-bar-seg.is-on {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.week-summary {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 13.5px;
+}
+
+.week-summary strong {
+    margin-right: 4px;
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.01em;
+    vertical-align: -3px;
+}
+
+/* ---- day rows with a toggle ---- */
+.week-list {
+    gap: 8px;
+}
+
+.week-row {
+    min-height: 64px;
+    padding: 10px var(--space-4);
+    border: 0;
+    border-radius: 18px;
+    background: var(--color-white);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.1);
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.week-row.is-off {
+    background: var(--color-page-bg);
+    box-shadow: none;
+}
+
+.week-day {
+    min-width: 150px;
+    gap: 14px;
+    color: var(--color-primary);
+    font-size: 14.5px;
+}
+
+.week-day input {
+    position: relative;
+    flex-shrink: 0;
+    width: 44px;
+    height: 26px;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--color-primary) 40%, var(--color-white));
+    transition: background-color 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.week-day input::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-white);
+    box-shadow: 0 2px 4px rgba(12, 35, 64, 0.25);
+    transition: transform 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.week-day input:checked {
+    background: var(--color-primary);
+}
+
+.week-day input:checked::after {
+    transform: translateX(18px);
+}
+
+.week-day input:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+}
+
+.week-day input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.week-times {
+    gap: 10px;
+}
+
+.week-times .nx-input,
+.override-field .nx-input {
+    height: 44px;
+    padding: 0 var(--space-4);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: var(--color-page-bg);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.08);
+    color: var(--color-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.week-times .nx-input {
+    width: 124px;
+}
+
+.week-times .nx-input:focus,
+.override-field .nx-input:focus,
+.week-times .nx-input:focus-visible,
+.override-field .nx-input:focus-visible {
+    outline: none;
+    background: var(--color-white);
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.week-to {
+    font-size: 13px;
+}
+
+.week-off-label {
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    background: var(--color-white);
+    font-size: 12.5px;
+    font-weight: var(--weight-medium);
+}
+
+/* ---- save buttons ---- */
+.hours-save-button {
+    min-height: 50px;
+    padding: 0 var(--space-6);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--color-accent-deep) 80%, transparent);
+    color: var(--color-on-accent);
+    font-weight: var(--weight-semibold);
+    transition: filter var(--transition-fast), transform var(--transition-fast);
+}
+
+.hours-save-button:hover:not(:disabled) {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    filter: brightness(0.95);
+}
+
+.hours-save-button:active:not(:disabled) {
+    transform: scale(0.985);
+}
+
+.hours-save-button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+/* ---- custom dates ---- */
+.override-form {
+    gap: var(--space-4);
+}
+
+.override-field {
+    gap: 8px;
+}
+
+.override-field .nx-label {
+    margin-left: 8px;
+    color: var(--color-primary);
+    font-size: 12.5px;
+    font-weight: var(--weight-semibold);
+}
+
+.override-list-title {
+    margin-top: var(--space-4);
+    padding-top: var(--space-5);
+    border-top-color: rgba(12, 35, 64, 0.08);
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: var(--weight-regular);
+    letter-spacing: -0.01em;
+}
+
+.override-list {
+    gap: 8px;
+}
+
+.override-row {
+    min-height: 72px;
+    gap: 14px;
+    padding: 12px var(--space-4);
+    border: 0;
+    border-radius: 18px;
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.1);
+}
+
+.override-tile {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background: var(--color-page-bg);
+}
+
+.override-tile strong {
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: var(--weight-regular);
+    line-height: 1;
+}
+
+.override-tile span {
+    margin-top: 2px;
+    color: var(--color-accent-deep);
+    font-size: 10px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.override-info {
+    flex: 1;
+}
+
+.override-info strong {
+    color: var(--color-primary);
+    font-size: 14px;
+}
+
+.override-info > span {
+    font-size: 12.5px;
+}
+
+.override-pill {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+}
+
+.override-pill.is-custom {
+    background: color-mix(in srgb, var(--color-accent) 22%, var(--color-white));
+    color: var(--color-accent-deep);
+}
+
+.override-pill.is-off {
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-white));
+    color: var(--color-primary);
+}
+
+.override-row .nx-btn {
+    border-radius: var(--radius-full);
+}
+
+.hours-small-empty {
+    padding: var(--space-6) var(--space-4);
+    border-radius: 18px;
+    background: var(--color-page-bg);
+    text-align: center;
+}
+
+.hours-empty-state strong {
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: var(--weight-regular);
+}
+
+@media (max-width: 600px) {
+    .hours-card-header,
+    .hours-card-body {
+        padding-left: var(--space-5);
+        padding-right: var(--space-5);
+    }
+
+    .week-bar-seg {
+        height: 38px;
+        font-size: 10px;
+        letter-spacing: 0.04em;
+    }
+
+    .week-row {
+        align-items: stretch;
+    }
+
+    .override-row {
+        flex-wrap: wrap;
+    }
+
+    .override-info {
+        flex-basis: calc(100% - 140px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .week-bar-seg,
+    .week-day input,
+    .week-day input::after,
+    .week-row,
+    .hours-save-button {
+        transition: none;
+    }
+}
+
+/* ================================ VISUAL WEEK + CLIENT PREVIEW ============================== */
+
+.hours-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+}
+
+.hours-side {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.hours-intro-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.hours-intro-row .hours-intro { flex: 1 1 260px; margin: 0; }
+
+.day-track {
+    position: relative;
+    flex: 1;
+    min-width: 60px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-page-bg);
+}
+
+.day-track i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--color-primary), #19496b);
+}
+
+.client-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 0 0 1px rgba(12, 35, 64, 0.08);
+}
+
+.client-preview.is-open { background: linear-gradient(160deg, var(--color-green-40), var(--color-white) 75%); }
+.client-preview.is-away { background: linear-gradient(160deg, var(--color-warning-bg), var(--color-white) 75%); }
+
+.client-preview-label { color: var(--color-text-muted); font-size: 11px; font-weight: var(--weight-bold); letter-spacing: 0.06em; text-transform: uppercase; }
+.client-preview strong { display: flex; align-items: center; gap: 8px; font-size: 16px; }
+.client-preview.is-open strong { color: var(--color-green-690); }
+.client-preview.is-away strong { color: var(--color-warning-text); }
+.client-preview-dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.client-preview p { margin: 0; color: var(--color-text); font-size: 13px; }
+.client-preview small { color: var(--color-text-muted); font-size: 11.5px; }
+
+@media (max-width: 1000px) {
+    .hours-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .day-track { width: 100%; flex: none; }
+}

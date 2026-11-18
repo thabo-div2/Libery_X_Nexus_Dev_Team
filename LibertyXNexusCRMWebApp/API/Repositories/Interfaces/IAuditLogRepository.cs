@@ -19,6 +19,7 @@ namespace API.Repositories.Interfaces
         Task<IEnumerable<AuditLog>> GetByEntityAsync(string entityAffected, int entityId);
         Task<IEnumerable<AuditLog>> GetByUserAsync(int userId, UserRole userRole);
         Task<IEnumerable<AuditLog>> GetRecentAsync(int count = 100);
+        Task<IEnumerable<AuditLog>> GetRecentForUserAsync(int userId, UserRole userRole, int count);
     }
 }
 

@@ -1,0 +1,44 @@
+@using frontend.Services
+@using Shared.DTOs.Workflow
+@inject WorkflowService Api
+<section class="wf-card @(Compact ? "onboarding-compact" : "")">
+    @if (Compact)
+    {
+        <details class="onboarding-details">
+            <summary><span><strong>Getting started</strong><span class="onboarding-count">@ProgressText</span></span><span class="onboarding-expand">View checklist</span></summary>
+            @ChecklistContent
+        </details>
+    }
+    else
+    {
+        <div class="wf-heading"><div><h2>Getting started</h2><p>@ProgressText</p></div></div>
+        @ChecklistContent
+    }
+    @if(Error is not null) { <p class="wf-error" role="alert">@Error</p> }
+</section>
+<RealtimeRefresh OnChanged="Load" />
+
+@code {
+    [Parameter,EditorRequired] public int ClientId {get;set;}
+    [Parameter] public bool Compact {get;set;}
+    OnboardingDto? Checklist;
+    string? Error;
+    static readonly MarkupString CheckIcon = new("<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m5 12.5 4.5 4.5L19 7.5'/></svg>");
+    static readonly MarkupString NoIcon = new("");
+    bool Busy;
+    int LoadedId;
+    string ProgressText => Checklist is null ? "Your onboarding checklist" : $"{Checklist.Steps.Count(s => s.Complete)} of {Checklist.Steps.Count} complete";
+    RenderFragment ChecklistContent => @<div class="onboarding-content">
+        @if(Checklist is not null) {
+            <progress class="wf-progress" value="@Checklist.Steps.Count(s=>s.Complete)" max="@Checklist.Steps.Count" aria-label="Onboarding progress"></progress>
+            <ul class="wf-list">@foreach(var step in Checklist.Steps) {
+                <li class="wf-row"><span class="wf-step @(step.Complete ? "wf-done" : "")" aria-label="@(step.Complete ? "Complete" : "Outstanding")">@(step.Complete ? CheckIcon : NoIcon)</span>
+                <div class="wf-grow"><strong>@step.Title</strong><span class="wf-muted">@step.Detail</span></div>
+                @if(step.Link is not null && !step.Complete) { <a class="wf-link" href="@step.Link">View</a> }</li>
+            }</ul>
+        } else if(Busy) { <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading checklist</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div> }
+        <button type="button" class="wf-link" @onclick="Load" disabled="@Busy">@(Busy ? "Refreshing..." : "Refresh checklist")</button>
+    </div>;
+    protected override async Task OnParametersSetAsync() { if(LoadedId!=ClientId) {LoadedId=ClientId; Checklist=null; await Load();} }
+    async Task Load() { Busy=true; var id=ClientId; try {var(value,error)=await Api.OnboardingAsync(id); if(id!=ClientId)return; Checklist=value; Error=error;} finally {if(id==ClientId) Busy=false;} }
+}

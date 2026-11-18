@@ -76,60 +76,24 @@ namespace API.Repositories.Implementations
 
         public async Task<Case> MarkStepCompleteAsync(int caseId, CaseStep step)
         {
-            using var context = await _dbContextFactory.CreateDbContextAsync();
-
-            var caseRecord = await context.Cases.Include(c => c.Policy).FirstOrDefaultAsync(c => c.CaseId == caseId);
-
-            if (caseRecord is null)
-                throw new KeyNotFoundException($"Case with id {caseId} was not found.");
-
-            // Steps must happen in order and only once.
-            var stepTimes = new Dictionary<CaseStep, DateTime?>
+            using var strategyDb = await _dbContextFactory.CreateDbContextAsync();
+            return await strategyDb.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
             {
-                [CaseStep.DetailsSubmitted] = caseRecord.DetailsSubmittedAt,
-                [CaseStep.AdviserReview] = caseRecord.AdviserReviewAt,
-                [CaseStep.FicaVerification] = caseRecord.FicaVerifiedAt,
-                [CaseStep.SubmittedToLiberty] = caseRecord.SubmittedToLibertyAt,
-                [CaseStep.PolicyIssued] = caseRecord.PolicyIssuedAt
-            };
+                using var context = await _dbContextFactory.CreateDbContextAsync();
 
-            if (stepTimes[step].HasValue)
-                throw new InvalidOperationException($"The step '{step}' has already been completed.");
+                await using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+                var caseRecord = await context.Cases.Include(c => c.Policy).FirstOrDefaultAsync(c => c.CaseId == caseId);
 
-            if (step != CaseStep.DetailsSubmitted)
-            {
-                var previous = (CaseStep)((int)step - 1);
-                if (!stepTimes[previous].HasValue)
-                    throw new InvalidOperationException($"Complete '{previous}' before '{step}'.");
-            }
+                if (caseRecord is null)
+                    throw new KeyNotFoundException($"Case with id {caseId} was not found.");
 
-            var now = DateTime.UtcNow;
+                PolicyLifecycle.CompleteStep(caseRecord, step, DateTime.UtcNow);
 
-            switch (step)
-            {
-                case CaseStep.DetailsSubmitted:
-                    caseRecord.DetailsSubmittedAt = now;
-                    break;
-                case CaseStep.AdviserReview:
-                    caseRecord.AdviserReviewAt = now;
-                    break;
-                case CaseStep.FicaVerification:
-                    caseRecord.FicaVerifiedAt = now;
-                    break;
-                case CaseStep.SubmittedToLiberty:
-                    caseRecord.SubmittedToLibertyAt = now;
-                    caseRecord.Status = CaseStatus.AwaitingApproval;
-                    break;
-                case CaseStep.PolicyIssued:
-                    caseRecord.PolicyIssuedAt = now;
-                    caseRecord.Status = CaseStatus.Completed;
-                    break;
-            }
-            caseRecord.UpdatedAt = now;
+                await context.SaveChangesAsync();
 
-            await context.SaveChangesAsync();
-
-            return caseRecord;
+                await transaction.CommitAsync();
+                return caseRecord;
+            });
         }
     }
 }

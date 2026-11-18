@@ -4,10 +4,13 @@ namespace API.Services.Interfaces
 {
     public interface IMessageService 
     {
-        Task<IEnumerable<MessageDto>> GetConversationForClientAsync(int clientId);
-        Task<IEnumerable<MessageDto>> GetConversationForAdvisorAsync(int advisorId, int clientId);
+        Task<IEnumerable<MessageDto>> GetConversationForClientAsync(int clientId, int? latest = null);
+        Task<IEnumerable<MessageDto>> GetConversationForAdvisorAsync(int advisorId, int clientId, int? latest = null);
         Task<IEnumerable<ConversationSummaryDto>> GetConversationsForAdvisorAsync(int advisorId);
         Task<MessageDto> SendAsync(SendMessageRequest request, bool fromAdvisor);
+
+        /// <summary>How many messages are waiting to be read by this advisor (forAdvisor) or this client.</summary>
+        Task<int> GetUnreadCountAsync(bool forAdvisor, int id);
     }
 }
 

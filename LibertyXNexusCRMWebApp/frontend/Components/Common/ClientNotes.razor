@@ -1,0 +1,185 @@
+﻿@using frontend.Services
+@inject ClientNoteService NoteApi
+
+@* The advisor's private notes about a client: call summaries, follow-ups, things to remember.
+   Clients never see these. Used in the client panel on the Clients page. *@
+
+<div class="client-notes">
+
+    <span class="client-notes-title">Private notes <span class="client-notes-hint">(only you can see these)</span></span>
+
+    @if (!string.IsNullOrWhiteSpace(Error))
+    {
+        <p class="nx-alert nx-alert-danger" role="alert">@Error</p>
+    }
+
+    <textarea class="nx-input"
+              rows="3"
+              maxlength="@MaxLength"
+              aria-label="New note"
+              placeholder="e.g. Called about retirement annuity, follow up after payday."
+              @bind="NewText"
+              @bind:event="oninput"
+              disabled="@IsSaving"></textarea>
+
+    <div class="client-notes-actions">
+        <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@(IsSaving || string.IsNullOrWhiteSpace(NewText))" @onclick="AddAsync">
+            @(IsSaving ? "Saving…" : "Add note")
+        </button>
+        <span class="client-notes-hint">@NewText.Length / @MaxLength</span>
+    </div>
+
+    @if (IsLoading)
+    {
+        <span class="client-notes-hint">Loading…</span>
+    }
+    else if (Notes.Count == 0)
+    {
+        <span class="client-notes-hint">No notes yet.</span>
+    }
+    else
+    {
+        <ul class="client-notes-list">
+            @foreach (var note in Notes)
+            {
+                <li class="client-notes-row" @key="note.ClientNoteId">
+                    <div class="client-notes-meta">
+                        <span>@note.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")</span>
+                        <button type="button"
+                                class="client-notes-delete"
+                                disabled="@(DeletingId is not null)"
+                                @onclick="() => DeleteAsync(note.ClientNoteId)">
+                            @(DeletingId == note.ClientNoteId ? "Deleting…" : "Delete")
+                        </button>
+                    </div>
+                    <p>@note.Text</p>
+                </li>
+            }
+        </ul>
+    }
+
+</div>
+
+@code {
+    /// <summary>The client the notes are about.</summary>
+    [Parameter, EditorRequired] public int ClientId { get; set; }
+
+    private const int MaxLength = 2000;
+
+    private List<ClientNoteSummary> Notes = new();
+    private bool IsLoading = true;
+    private bool IsSaving;
+    private int? DeletingId;
+    private string? Error;
+    private string NewText = string.Empty;
+
+    // The client the notes were last loaded for, so they reload when the advisor picks another client.
+    private int _loadedClientId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ClientId == _loadedClientId)
+        {
+            return;
+        }
+
+        _loadedClientId = ClientId;
+        NewText = string.Empty;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        var clientId = ClientId;
+
+        IsLoading = true;
+        Error = null;
+
+        var (notes, error) = await NoteApi.GetForClientAsync(clientId);
+
+        // The advisor may have picked another client while this was loading.
+        if (clientId != ClientId)
+        {
+            return;
+        }
+
+        Notes = notes ?? new List<ClientNoteSummary>();
+        Error = error;
+        IsLoading = false;
+    }
+
+    private async Task AddAsync()
+    {
+        var text = NewText.Trim();
+
+        if (IsSaving || text.Length == 0)
+        {
+            return;
+        }
+
+        Error = null;
+
+        if (text.Length > MaxLength)
+        {
+            Error = $"A note cannot be longer than {MaxLength} characters.";
+            return;
+        }
+
+        var clientId = ClientId;
+        IsSaving = true;
+
+        try
+        {
+            var (note, error) = await NoteApi.CreateAsync(clientId, text);
+
+            if (clientId != ClientId)
+            {
+                return;
+            }
+
+            if (note is null)
+            {
+                // Keep what was typed so it isn't lost.
+                Error = error ?? "The note couldn't be saved. Please try again.";
+                return;
+            }
+
+            Notes.Insert(0, note);
+            NewText = string.Empty;
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private async Task DeleteAsync(int clientNoteId)
+    {
+        if (DeletingId is not null)
+        {
+            return;
+        }
+
+        Error = null;
+        DeletingId = clientNoteId;
+
+        try
+        {
+            var error = await NoteApi.DeleteAsync(clientNoteId);
+
+            if (error is not null)
+            {
+                Error = error;
+                return;
+            }
+
+            Notes.RemoveAll(n => n.ClientNoteId == clientNoteId);
+        }
+        finally
+        {
+            DeletingId = null;
+        }
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

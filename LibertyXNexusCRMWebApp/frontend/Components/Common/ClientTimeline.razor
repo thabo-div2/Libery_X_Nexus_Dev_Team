@@ -1,0 +1,112 @@
+@using frontend.Services
+@using Shared.DTOs.Insights
+@inject InsightsService Api
+
+@* Everything that happened for one client, newest first, in one list. *@
+<section class="wf-card client-timeline">
+    <div class="wf-heading">
+        <div>
+            <h2>Activity timeline</h2>
+            <p>Meetings, documents, messages, notes, tasks and policies, newest first.</p>
+        </div>
+    </div>
+
+    <div class="timeline-filters" role="group" aria-label="Show activity of type">
+        @foreach (var (key, label) in Kinds)
+        {
+            <button type="button" class="timeline-chip @(Kind == key ? "active" : "")" aria-pressed="@(Kind == key)"
+                    @onclick="() => SetKind(key)">@label</button>
+        }
+    </div>
+
+    @if (Error is not null) { <p class="wf-error" role="alert">@Error</p> }
+
+    @if (Page is null)
+    {
+        <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading activity</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
+    }
+    else if (Page.Items.Count == 0)
+    {
+        <p class="wf-empty">Nothing here yet.</p>
+    }
+    else
+    {
+        <ol class="timeline-list">
+            @foreach (var group in Page.Items.GroupBy(i => i.At.ToLocalTime().Date))
+            {
+                <li class="timeline-day">
+                    <span class="timeline-date">@DayLabel(group.Key)</span>
+                    <ol>
+                        @foreach (var item in group)
+                        {
+                            <li class="timeline-item timeline-@item.Kind">
+                                <span class="timeline-dot" aria-hidden="true"></span>
+                                <div class="wf-grow">
+                                    <strong>
+                                        @if (item.Link is not null) { <a href="@item.Link">@item.Title</a> }
+                                        else { @item.Title }
+                                    </strong>
+                                    @if (!string.IsNullOrWhiteSpace(item.Detail)) { <span class="wf-muted">@item.Detail</span> }
+                                </div>
+                                <time class="timeline-time" datetime="@item.At.ToString("o")">@item.At.ToLocalTime().ToString("HH:mm")</time>
+                            </li>
+                        }
+                    </ol>
+                </li>
+            }
+        </ol>
+        @if (Page.HasMore)
+        {
+            <div class="wf-load-more"><button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@Loading" @onclick="ShowMore">@(Loading ? "Loading…" : "Show more")</button></div>
+        }
+    }
+</section>
+<RealtimeRefresh OnChanged="Load" />
+
+@code {
+    [Parameter, EditorRequired] public int ClientId { get; set; }
+
+    static readonly (string Key, string Label)[] Kinds =
+    {
+        ("", "All"), ("meeting", "Meetings"), ("document", "Documents"), ("message", "Messages"),
+        ("note", "Notes"), ("task", "Tasks"), ("policy", "Policies")
+    };
+
+    const int PageSize = 30;
+    TimelinePageDto? Page;
+    string Kind = "";
+    int Take = PageSize;
+    bool Loading;
+    string? Error;
+    int LoadedClientId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (LoadedClientId == ClientId) return;
+        LoadedClientId = ClientId; Page = null; Kind = ""; Take = PageSize;
+        await Load();
+    }
+
+    async Task SetKind(string kind) { Kind = kind; Take = PageSize; Page = null; await Load(); }
+
+    async Task ShowMore() { Take += PageSize; await Load(); }
+
+    async Task Load()
+    {
+        var (id, kind, take) = (ClientId, Kind, Take);
+        Loading = true;
+        try
+        {
+            var (value, error) = await Api.GetTimelineAsync(id, take, kind);
+            if (id != ClientId || kind != Kind || take != Take) return; // A newer view was asked for.
+            Page = value ?? Page ?? new TimelinePageDto(new(), false);
+            Error = value is null ? error : null;
+        }
+        finally { Loading = false; }
+    }
+
+    static string DayLabel(DateTime day) =>
+        day == DateTime.Today ? "Today"
+        : day == DateTime.Today.AddDays(-1) ? "Yesterday"
+        : day.Year == DateTime.Today.Year ? day.ToString("ddd d MMM") : day.ToString("d MMM yyyy");
+}

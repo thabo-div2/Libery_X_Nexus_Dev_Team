@@ -1,0 +1,245 @@
+@using frontend.Services
+@using Shared.DTOs.Workflow
+@inject WorkflowService Api
+@inject ClientService Clients
+@inject PolicyService Policies
+@inject CurrentUserService User
+@if (ClientScoped && Loading) { }
+else if (ClientScoped && !Tasks.Any() && !ShowForm && Error is null)
+{
+    @* A client with no tasks gets only a slim add link, not an empty Tasks card. *@
+    <div class="wf-client-add">
+        @if (Message is not null) { <p class="wf-success" role="status">@Message</p> }
+        <button type="button" class="wf-link" disabled="@Busy" @onclick="NewTask">+ Add task for @ClientLabel</button>
+    </div>
+}
+else
+{
+<section class="wf-card">
+    <div class="wf-heading"><div><h2>@(Compact ? "Tasks & follow-ups" : ClientScoped ? $"Tasks for {ClientLabel}" : "Your tasks")</h2><p>@ScopedTasks.Count(t => t.CompletedAt is null && t.DueDate.Date < DateTime.Today) overdue · @ScopedTasks.Count(t => t.CompletedAt is null) open</p></div>
+        @if (Compact) { <a href="/tasks" class="wf-link">View all</a> }
+        else { <button class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@Busy" @onclick="NewTask">New task</button> }
+    </div>
+    @if (Error is not null) { <p class="wf-error" role="alert">@Error</p> }
+    @if (Message is not null) { <p class="wf-success" role="status">@Message</p> }
+    @if (!Compact)
+    {
+        <div class="wf-toolbar">
+            <div class="wf-search"><span class="wf-search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><input class="nx-input" aria-label="Search tasks" placeholder="@(ClientScoped ? "Search tasks" : "Search tasks or clients")" @bind="Search" @bind:event="oninput" /></div>
+            @if (Board)
+            {
+                <div class="tb-switch" role="group" aria-label="Task view">
+                    <button type="button" class="@(BoardView ? "is-active" : "")" aria-pressed="@BoardView" @onclick="() => BoardView = true">Board</button>
+                    <button type="button" class="@(BoardView ? "" : "is-active")" aria-pressed="@(!BoardView)" @onclick="() => BoardView = false">List</button>
+                </div>
+            }
+            @if (!ShowBoard) {
+            <select class="nx-input" aria-label="Filter tasks" @bind="Filter"><option value="Open">Open</option><option value="Overdue">Overdue</option><option value="Completed">Completed</option><option value="All">All tasks</option></select>
+            }
+        </div>
+    }
+    @if (Board)
+    {
+        <form class="tb-quick" @onsubmit="AddQuick" @onsubmit:preventDefault="true">
+            <span class="tb-quick-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>
+            <input class="tb-quick-title" aria-label="New task title" maxlength="200" placeholder="Add a task, for example: call Sipho about his payslip" @bind="QuickTitle" @bind:event="oninput" disabled="@Busy" />
+            <select aria-label="Client for the new task" @bind="QuickClientId" disabled="@Busy">
+                <option value="">No client</option>
+                @foreach (var client in Directory) { <option value="@client.ClientId">@client.FirstName @client.LastName</option> }
+            </select>
+            <input type="date" aria-label="Due date for the new task" @bind="QuickDue" disabled="@Busy" />
+            <button type="submit" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@(Busy || string.IsNullOrWhiteSpace(QuickTitle))">Add</button>
+        </form>
+    }
+    @if (ShowForm && !Compact)
+    {
+        <EditForm Model="Form" OnValidSubmit="Save" class="wf-form">
+            <DataAnnotationsValidator /><ValidationSummary /><fieldset disabled="@Busy" class="wf-fieldset">
+            <h3>@(EditingId.HasValue ? "Edit task" : "New follow-up")</h3>
+            <label>Task title<InputText class="nx-input" maxlength="200" @bind-Value="Form.Title" /></label>
+            <div class="wf-form-grid">
+                <label>Due date<InputDate class="nx-input" @bind-Value="Form.DueDate" /></label>
+                @if (ClientScoped) { <label>Client<input class="nx-input" value="@ClientLabel" disabled /></label> }
+                else { <label>Client<select class="nx-input" @bind="Form.ClientId" @bind:after="ClientChanged"><option value="">General advisor task</option>@foreach(var client in Directory) { <option value="@client.ClientId">@client.FirstName @client.LastName</option> }</select></label> }
+                <label>Policy<select class="nx-input" @bind="Form.PolicyId"><option value="">No specific policy</option>@foreach(var policy in PolicyList) { <option value="@policy.PolicyId">@policy.PolicyName (#@policy.PolicyId)</option> }</select></label>
+            </div>
+            <label>Notes<InputTextArea class="nx-input" rows="2" maxlength="1000" @bind-Value="Form.Note" /></label>
+            <div class="wf-actions"><button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@Busy" @onclick="() => ShowForm = false">Cancel</button><button class="nx-btn nx-btn-primary nx-btn-sm" disabled="@Busy">@(Busy ? "Saving…" : "Save task")</button></div>
+        </fieldset></EditForm>
+    }
+    @if (Loading) { <div class="nx-skeleton-stack wf-skeleton" role="status"><span class="visually-hidden">Loading tasks</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div> }
+    else if (ShowBoard)
+    {
+        <div class="tb-board">
+            @foreach (var column in BoardColumns)
+            {
+                var items = BoardTasks(column.Key).ToList();
+                <section class="tb-col" aria-label="@column.Label">
+                    <h3><span class="tb-count tb-@column.Key">@items.Count</span>@column.Label</h3>
+                    @foreach (var task in items)
+                    {
+                        <article @key="task.AdvisorTaskId" class="tb-card @(column.Key == "overdue" ? "is-overdue" : "")">
+                            <button class="wf-check" disabled="@Busy" aria-label="@("Complete " + task.Title)" @onclick="() => Toggle(task)">○</button>
+                            <div class="tb-card-body">
+                                <strong>@task.Title</strong>
+                                <div class="tb-meta">
+                                    <span class="tb-chip">@(task.ClientName ?? "General")</span>
+                                    @if (task.IsAutomatic) { <span class="tb-chip tb-auto" title="Created automatically by the app">Auto</span> }
+                                    <span class="tb-chip @(column.Key == "overdue" ? "tb-late" : "")">@DueText(task.DueDate)</span>
+                                </div>
+                            </div>
+                            <button class="wf-link tb-edit" disabled="@Busy" @onclick="() => Edit(task)" aria-label="@("Edit " + task.Title)">Edit</button>
+                        </article>
+                    }
+                    @if (items.Count == 0) { <p class="tb-empty">Nothing here</p> }
+                </section>
+            }
+        </div>
+    }
+    else if (!Visible.Any())
+    {
+        if (Compact)
+        {
+            <div class="wf-empty-card">
+                <span class="wf-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+                <div class="wf-empty-text"><strong>You are up to date</strong><span>No open tasks right now.</span></div>
+            </div>
+        }
+        else { <p class="wf-empty">No tasks match this view.</p> }
+    }
+    else
+    {
+        <ul class="wf-list">
+        @foreach(var task in Visible)
+        {
+            <li @key="task.AdvisorTaskId" class="wf-task @(task.CompletedAt is null && task.DueDate.Date < DateTime.Today ? "wf-overdue" : "") @(task.CompletedAt is not null ? "wf-completed" : "")">
+                <button class="wf-check @(task.CompletedAt is not null ? "wf-done" : "")" disabled="@Busy" aria-label="@(task.CompletedAt is null ? "Complete " + task.Title : "Reopen " + task.Title)" @onclick="() => Toggle(task)">@(task.CompletedAt is null ? "○" : "✓")</button>
+                <div class="wf-grow"><strong>@task.Title@if (task.IsAutomatic) { <span class="wf-auto-tag" title="Created automatically by the app">Auto</span> }</strong><span class="wf-muted">@(task.ClientName ?? "General advisor task")@(task.PolicyId is int policyId ? $" · {task.PolicyName} (#{policyId})" : "")</span>
+                    @if (!string.IsNullOrWhiteSpace(task.Note) && !Compact) { <p class="wf-prewrap">@task.Note</p> }
+                </div>
+                <span class="wf-badge @(task.CompletedAt is not null ? "wf-badge-done" : "")">@(task.CompletedAt is not null ? "Completed" : task.DueDate.Date < DateTime.Today ? "Overdue · " + task.DueDate.ToString("dd MMM") : task.DueDate.ToString("dd MMM yyyy"))</span>
+                @if (!Compact) {
+                    <button class="wf-link" disabled="@Busy" @onclick="() => Edit(task)">Edit</button>
+                    @if (DeleteId == task.AdvisorTaskId) { <button class="wf-link" disabled="@Busy" @onclick="() => Delete(task.AdvisorTaskId)">Confirm delete</button><button class="wf-link" @onclick="() => DeleteId = null">Keep</button> }
+                    else { <button class="wf-link" disabled="@Busy" @onclick="() => DeleteId = task.AdvisorTaskId">Delete</button> }
+                }
+            </li>
+        }
+        </ul>
+    }
+    @if (!Loading && HasMoreCompleted)
+    {
+        <div class="wf-load-more"><button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@Busy" @onclick="LoadMoreCompleted">Load more completed (@CompletedLoaded of @CompletedTotal)</button></div>
+    }
+</section>
+}
+<RealtimeRefresh OnChanged="Load" />
+
+@code {
+    [Parameter] public bool Compact { get; set; }
+    [Parameter] public int? ClientId { get; set; }
+    [Parameter] public string? ClientName { get; set; }
+    // The full Tasks page: a board grouped by when tasks are due, with a one-line quick add.
+    [Parameter] public bool Board { get; set; }
+    bool BoardView = true;
+    bool ShowBoard => Board && BoardView;
+    string QuickTitle = "";
+    int? QuickClientId;
+    DateTime QuickDue = DateTime.Today;
+    static readonly (string Key, string Label)[] BoardColumns = { ("overdue", "Overdue"), ("today", "Today"), ("week", "This week"), ("later", "Later") };
+    static DateTime EndOfWeek => DateTime.Today.AddDays(6 - ((int)DateTime.Today.DayOfWeek + 6) % 7);
+    IEnumerable<AdvisorTaskDto> BoardTasks(string key) => ScopedTasks
+        .Where(t => t.CompletedAt is null)
+        .Where(t => ($"{t.Title} {t.ClientName} {t.PolicyName}").Contains(Search.Trim(), StringComparison.OrdinalIgnoreCase))
+        .Where(t => key switch
+        {
+            "overdue" => t.DueDate.Date < DateTime.Today,
+            "today" => t.DueDate.Date == DateTime.Today,
+            "week" => t.DueDate.Date > DateTime.Today && t.DueDate.Date <= EndOfWeek,
+            _ => t.DueDate.Date > EndOfWeek
+        })
+        .OrderBy(t => t.DueDate);
+    static string DueText(DateTime due)
+    {
+        var days = (due.Date - DateTime.Today).Days;
+        return days switch { < -1 => $"{-days} days late", -1 => "1 day late", 0 => "Today", 1 => "Tomorrow", < 7 => due.ToString("dddd"), _ => due.ToString("d MMM") };
+    }
+    async Task AddQuick()
+    {
+        if (Busy || string.IsNullOrWhiteSpace(QuickTitle)) return;
+        Busy = true;
+        try
+        {
+            var (task, error) = await Api.SaveTaskAsync(null, new TaskInput { Title = QuickTitle.Trim(), ClientId = QuickClientId, DueDate = QuickDue });
+            Error = error;
+            if (task is not null) { QuickTitle = ""; Message = "Task added."; await Load(); }
+        }
+        finally { Busy = false; }
+    }
+    bool ClientScoped => ClientId.HasValue && !Compact;
+    string ClientLabel => string.IsNullOrWhiteSpace(ClientName) ? "this client" : ClientName;
+    List<AdvisorTaskDto> Tasks = new();
+    List<ClientProfile> Directory = new();
+    List<PolicySummary> PolicyList = new();
+    TaskInput Form = new();
+    bool Loading = true, Busy, ShowForm;
+    int? EditingId, DeleteId;
+    string? Error, Message;
+    string Filter = "Open", Search = "";
+    IEnumerable<AdvisorTaskDto> ScopedTasks => Tasks.Where(t => !ClientId.HasValue || t.ClientId == ClientId);
+    IEnumerable<AdvisorTaskDto> Visible => ScopedTasks
+        .Where(t => Compact || Filter == "Open" ? t.CompletedAt is null : Filter == "Overdue" ? t.CompletedAt is null && t.DueDate.Date < DateTime.Today : Filter == "Completed" ? t.CompletedAt is not null : true)
+        .Where(t => ($"{t.Title} {t.ClientName} {t.PolicyName}").Contains(Search.Trim(), StringComparison.OrdinalIgnoreCase))
+        .Take(Compact ? 5 : int.MaxValue);
+    protected override async Task OnInitializedAsync()
+    {
+        await User.EnsureRestoredAsync();
+        if (!User.IsAdvisor) { Loading = false; Error = "Sign in as an advisor to manage tasks."; return; }
+        await Load();
+        // The client picker is only needed on the full task page; a client profile is fixed to one client.
+        if (!Compact && !ClientId.HasValue) { var (clients, error) = await Clients.SearchAsync(null, null); Directory = clients; Error ??= error; }
+    }
+    // The full task page loads every open task but only a page of completed ones, which pile up over time.
+    const int CompletedPageSize = 25;
+    int CompletedTotal, CompletedLoaded;
+    bool PagesCompleted => !Compact && !ClientId.HasValue;
+    bool HasMoreCompleted => PagesCompleted && CompletedLoaded < CompletedTotal && (Filter == "Completed" || Filter == "All");
+    async Task Load()
+    {
+        if (ClientId.HasValue)
+        {
+            var (tasks, error) = await Api.GetTasksAsync(ClientId); Tasks = tasks ?? new(); Error = error;
+        }
+        else
+        {
+            var (open, error) = await Api.GetOpenTasksAsync();
+            var completed = new List<AdvisorTaskDto>();
+            if (PagesCompleted && error is null)
+            {
+                var (items, total, pageError) = await Api.GetCompletedTasksAsync(0, Math.Max(CompletedPageSize, CompletedLoaded));
+                completed = items; CompletedTotal = total; CompletedLoaded = items.Count; error = pageError;
+            }
+            Tasks = (open ?? new()).Concat(completed).ToList(); Error = error;
+        }
+        Loading = false;
+    }
+    async Task LoadMoreCompleted()
+    {
+        if (Busy) return; Busy = true;
+        try
+        {
+            var (items, total, error) = await Api.GetCompletedTasksAsync(CompletedLoaded, CompletedPageSize);
+            var known = Tasks.Select(t => t.AdvisorTaskId).ToHashSet();
+            Tasks.AddRange(items.Where(t => known.Add(t.AdvisorTaskId)));
+            CompletedLoaded += items.Count; CompletedTotal = total; Error = error;
+        }
+        finally { Busy = false; }
+    }
+    async Task NewTask() { EditingId = null; Form = new() { ClientId = ClientId }; ShowForm = true; Error = null; Message = null; await ClientChanged(); }
+    async Task ClientChanged() { var form=Form; Form.PolicyId = null; PolicyList.Clear(); if(Form.ClientId is int id) { var (policies, error) = await Policies.GetForClientAsync(id); if(!ReferenceEquals(form,Form) || Form.ClientId!=id) return; PolicyList = policies; Error = error; } }
+    async Task Edit(AdvisorTaskDto t) { EditingId = t.AdvisorTaskId; var form=Input(t); Form = form; ShowForm = true; await ClientChanged(); if(ReferenceEquals(Form,form)) Form.PolicyId = t.PolicyId; }
+    static TaskInput Input(AdvisorTaskDto t) => new() { Title = t.Title, Note = t.Note, DueDate = t.DueDate, ClientId = t.ClientId, PolicyId = t.PolicyId, Completed = t.CompletedAt is not null };
+    async Task Save() { if(Busy) return; Busy = true; try { var (task,error) = await Api.SaveTaskAsync(EditingId, Form); Error = error; if(task is not null) { ShowForm = false; await Load(); Message = "Task saved."; } } finally { Busy = false; } }
+    async Task Toggle(AdvisorTaskDto t) { if(Busy) return; Busy = true; try { var input = Input(t); input.Completed = t.CompletedAt is null; var (_, error) = await Api.SaveTaskAsync(t.AdvisorTaskId,input); if(error is null) await Load(); else Error=error; } finally { Busy=false; } }
+    async Task Delete(int id) { if(Busy) return; Busy=true; try { var error=await Api.DeleteTaskAsync(id); if(error is null) { DeleteId=null; await Load(); } else Error=error; } finally { Busy=false; } }
+}

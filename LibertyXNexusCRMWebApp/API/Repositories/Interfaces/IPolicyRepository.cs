@@ -10,6 +10,7 @@ namespace API.Repositories.Interfaces
         Task<IEnumerable<Policy>> GetCatalogoueAsync();
         Task<IEnumerable<Policy>> GetByStatusAsync(PolicyStatus status, int advisorId);
         Task<Policy?> GetWithDocumentAsync(int policyId);
+        Task<Policy> UpdateStatusAsync(int policyId, PolicyStatus status);
         Task<bool> BelongsToClientAsync(int policyId, int clientId);
     }
 }

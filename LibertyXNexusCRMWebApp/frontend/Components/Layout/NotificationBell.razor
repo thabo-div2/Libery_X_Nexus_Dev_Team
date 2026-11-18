@@ -1,10 +1,11 @@
-﻿@implements IAsyncDisposable
+@implements IAsyncDisposable
 @using frontend.Services
 @inject NotificationService Notifications
 @inject CurrentUserService CurrentUser
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
-<div class="notification-bell" @onkeydown="HandleKeyDown">
+<div class="notification-bell" @ref="BellRoot" @onkeydown="HandleKeyDown">
     <button type="button"
             class="notification-button"
             aria-label="@BellLabel"
@@ -13,7 +14,7 @@
             aria-controls="notification-panel"
             @ref="BellButton"
             @onclick="ToggleOpen">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         @if (UnreadCount > 0)
         {
             <span class="notification-badge">@(UnreadCount > 9 ? "9+" : UnreadCount.ToString())</span>
@@ -35,6 +36,11 @@
             @if (IsLoading)
             {
                 <p class="notification-empty">Loading…</p>
+            }
+            else if (Feed.Error is not null || ActionError is not null)
+            {
+                <p class="notification-empty" role="alert">@(ActionError ?? Feed.Error)</p>
+                <button type="button" class="notification-mark-all" @onclick="ReloadFeedAsync">Try again</button>
             }
             else if (Feed.Items.Count == 0)
             {
@@ -71,8 +77,31 @@
     }
 </div>
 
+<RealtimeRefresh OnChanged="ReloadFeedAsync" />
+
 @code {
+    private ElementReference BellRoot;
+    private IJSObjectReference? OutsideModule;
+    private DotNetObjectReference<NotificationBell>? OutsideReference;
+    private bool Disposed;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || Disposed) return;
+        OutsideModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/notification-dismiss.js");
+        if (Disposed) { await OutsideModule.DisposeAsync(); return; }
+        OutsideReference = DotNetObjectReference.Create(this);
+        await OutsideModule.InvokeVoidAsync("bind", BellRoot, OutsideReference);
+    }
+    [Microsoft.JSInterop.JSInvokable]
+    public Task DismissOutsideAsync() => InvokeAsync(() =>
+    {
+        if (Disposed || !IsOpen) return;
+        IsOpen = false;
+        StateHasChanged();
+    });
+
     private bool IsOpen;
+    private string? ActionError;
     private bool IsLoading;
 
     /// <summary>
@@ -105,7 +134,7 @@
 
         if (CurrentUser.Id is int userId)
         {
-            UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient);
+            UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient, UnreadCount);
         }
 
         _cts = new CancellationTokenSource();
@@ -121,7 +150,7 @@
             {
                 if (CurrentUser.Id is not int userId) continue;
 
-                UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient);
+                UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient, UnreadCount);
 
                 if (IsOpen)
                 {
@@ -145,7 +174,7 @@
         {
             IsLoading = true;
             Feed = await Notifications.GetFeedAsync(userId, IsClient);
-            UnreadCount = Feed.UnreadCount;
+            if (Feed.Error is null) UnreadCount = Feed.UnreadCount;
             IsLoading = false;
         }
     }
@@ -166,11 +195,16 @@
     {
         if (!item.IsReminder && !item.IsRead)
         {
-            await Notifications.MarkAsReadAsync(item.NotificationId);
+            if (!await Notifications.MarkAsReadAsync(item.NotificationId))
+            {
+                ActionError = "The notification could not be marked as read. Please try again.";
+                return;
+            }
+            ActionError = null;
 
             if (CurrentUser.Id is int userId)
             {
-                UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient);
+                UnreadCount = await Notifications.GetUnreadCountAsync(userId, IsClient, UnreadCount);
             }
 
             Feed = Feed with
@@ -189,11 +223,26 @@
         }
     }
 
+    private async Task ReloadFeedAsync()
+    {
+        if (CurrentUser.Id is not int userId) return;
+        IsLoading = true;
+        ActionError = null;
+        Feed = await Notifications.GetFeedAsync(userId, IsClient);
+        if (Feed.Error is null) UnreadCount = Feed.UnreadCount;
+        IsLoading = false;
+    }
+
     private async Task MarkAllAsReadAsync()
     {
         if (CurrentUser.Id is not int userId) return;
 
-        await Notifications.MarkAllAsReadAsync(userId, IsClient);
+        if (!await Notifications.MarkAllAsReadAsync(userId, IsClient))
+        {
+            ActionError = "Notifications could not be marked as read. Please try again.";
+            return;
+        }
+        ActionError = null;
         UnreadCount = 0;
 
         Feed = Feed with
@@ -202,12 +251,18 @@
         };
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
+        Disposed = true;
         _cts?.Cancel();
         _timer?.Dispose();
         _cts?.Dispose();
-        return ValueTask.CompletedTask;
+        if (OutsideModule is not null)
+        {
+            try { await OutsideModule.InvokeVoidAsync("unbind", BellRoot); await OutsideModule.DisposeAsync(); }
+            catch (Microsoft.JSInterop.JSDisconnectedException) { }
+        }
+        OutsideReference?.Dispose();
     }
 }
 

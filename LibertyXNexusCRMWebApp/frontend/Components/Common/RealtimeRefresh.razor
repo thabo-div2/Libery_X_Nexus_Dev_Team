@@ -1,0 +1,24 @@
+@implements IDisposable
+@inject frontend.Services.RealtimeService Realtime
+@code {
+    [Parameter] public EventCallback OnChanged { get; set; }
+    private bool disposed, refreshing, pending;
+    protected override void OnInitialized() => Realtime.Changed += Refresh;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await Realtime.StartAsync();
+    }
+    private Task Refresh() => InvokeAsync(async () =>
+    {
+        if (disposed) return;
+        pending = true;
+        if (refreshing) return;
+        refreshing = true;
+        try
+        {
+            do { pending = false; await OnChanged.InvokeAsync(); } while (pending && !disposed);
+        }
+        finally { refreshing = false; }
+    });
+    public void Dispose() { disposed = true; Realtime.Changed -= Refresh; }
+}

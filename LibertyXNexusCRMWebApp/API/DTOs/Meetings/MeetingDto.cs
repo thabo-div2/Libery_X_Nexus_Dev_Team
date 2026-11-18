@@ -18,6 +18,8 @@
 
         public string? Notes { get; set; }
 
+        public string? SharedSummary { get; set; }
+        public DateTime? SummaryUpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt {  get; set; }

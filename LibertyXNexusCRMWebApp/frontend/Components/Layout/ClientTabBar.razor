@@ -1,0 +1,28 @@
+@* Client navigation on phones: a bottom tab bar within thumb reach, in place of the narrow sidebar.
+   Shown only on small screens (see ClientTabBar.razor.css); larger screens keep the sidebar. *@
+<nav class="client-tabbar" aria-label="Main navigation">
+    <NavLink class="tab-item" href="/client" Match="NavLinkMatch.All">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5V20h-6v-6H9v6H3z" /></svg>
+        <span>Home</span>
+    </NavLink>
+    <NavLink class="tab-item" href="/client-documents">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v13H6z" /><path d="M14 3v5h5" /></svg>
+        <span>Documents</span>
+    </NavLink>
+    <NavLink class="tab-item" href="/client-calendar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg>
+        <span>Calendar</span>
+    </NavLink>
+    <NavLink class="tab-item" href="/client-messages">
+        <span class="tab-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" /></svg>
+            <UnreadMessagesBadge />
+        </span>
+        <span>Messages</span>
+    </NavLink>
+    @* Help covers FAQs, which links on to the AI assistant. *@
+    <NavLink class="tab-item" href="/client-faqs">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1v.5M12 16.5h.01" /></svg>
+        <span>Help</span>
+    </NavLink>
+</nav>

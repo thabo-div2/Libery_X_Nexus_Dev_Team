@@ -19,6 +19,7 @@ namespace API.Controllers
     {
         private readonly IClientService _clientService;
         private readonly IAuditLogRepository _auditLogRepository;
+        private readonly IClientCleanupService _clientCleanupService;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -26,10 +27,11 @@ namespace API.Controllers
         /// </summary>
         /// <param name="clientService"></param>
         /// <param name="auditLogRepository"></param>
-        public ClientsController(IClientService clientService, IAuditLogRepository auditLogRepository)
+        public ClientsController(IClientService clientService, IAuditLogRepository auditLogRepository, IClientCleanupService clientCleanupService)
         {
             _clientService = clientService;
             _auditLogRepository = auditLogRepository;
+            _clientCleanupService = clientCleanupService;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -58,8 +60,17 @@ namespace API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Roles = AppRoles.Advisor)]
-        public async Task<ActionResult<IEnumerable<ClientListItemDto>>> Search([FromQuery] string? searchTerm, [FromQuery] ClientStatus? status)
+        public async Task<ActionResult<IEnumerable<ClientListItemDto>>> Search([FromQuery] string? searchTerm, [FromQuery] ClientStatus? status,
+            [FromQuery] int? skip = null, [FromQuery] int? take = null)
         {
+            // With take, return one page and the full match count in X-Total-Count; without it, the whole list as before.
+            if (take.HasValue)
+            {
+                var (items, total) = await _clientService.SearchPageAsync(searchTerm, status, CurrentAdvisorId, skip ?? 0, take.Value);
+                Response.Headers["X-Total-Count"] = total.ToString();
+                return Ok(items);
+            }
+
             var results = await _clientService.SearchAsync(searchTerm, status, CurrentAdvisorId);
             return Ok(results);
         }
@@ -191,6 +202,18 @@ namespace API.Controllers
             if (existing is null || existing.AdvisorId != CurrentAdvisorId)
             {
                 return NotFound(new { message = $"Client {id} was not found" });
+            }
+
+            // Keep the records and blob references until cleanup succeeds, so failures can be retried.
+            try
+            {
+                var cleanup = await _clientCleanupService.CollectAsync(id);
+                await _clientCleanupService.RunAsync(cleanup);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable,
+                    new { message = "Client cleanup could not finish. Please retry deleting the client." });
             }
 
             await _clientService.DeleteAsync(id);

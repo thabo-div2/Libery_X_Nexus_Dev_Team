@@ -44,6 +44,7 @@ namespace API.Services.Implementations
                 .Select(c => new
                 {
                     c.Status,
+                    PolicyStatus = c.Policy.Status,
                     c.UpdatedAt,
 
                     ClientFirstName = c.Policy.Client!.FirstName,
@@ -57,13 +58,16 @@ namespace API.Services.Implementations
                 .ToListAsync();
 
             var activeCases = cases.Count(c =>
-                c.Status == Shared.Models.Enums.CaseStatus.InProgress ||
-                c.Status == Shared.Models.Enums.CaseStatus.AwaitingApproval);
+                (c.Status == CaseStatus.InProgress || c.Status == CaseStatus.AwaitingApproval) &&
+                c.PolicyStatus == PolicyStatus.Pending);
 
             var waitingOnClient = cases.Count(c =>
-                c.Status == Shared.Models.Enums.CaseStatus.OnHold);
+                c.Status == CaseStatus.OnHold && c.PolicyStatus == PolicyStatus.Pending);
 
-            var awaitingDocuments = cases.Count(c => !c.HasDocuments);
+            var outstandingRequests = await context.DocumentRequests.AsNoTracking()
+                .Where(r => r.Client.AdvisorId == advisorId && r.FulfilledAt == null)
+                .Select(r => r.CreatedAt).ToListAsync();
+            var awaitingDocuments = outstandingRequests.Count;
 
             var today = DateTime.UtcNow.Date;
 
@@ -104,53 +108,24 @@ namespace API.Services.Implementations
                 meetingsThisWeek,
                 meetingsLastWeek);
 
-            var pipelineValue = await context.Policies
-                .AsNoTracking()
-                .Where(p =>
-                    p.Client != null &&
-                    p.Client.AdvisorId == advisorId &&
-                    !p.IsCatalogueItem &&
-                    p.Status != PolicyStatus.Cancelled &&
-                    p.Status != PolicyStatus.Matured)
-                .SumAsync(p => p.PremiumAmount ?? 0);
-
-            var pipelineThisWeek = await context.Policies
-                .AsNoTracking()
-                .Where(p =>
-                    p.Client != null &&
-                    p.Client.AdvisorId == advisorId &&
-                    !p.IsCatalogueItem &&
-                    p.Status != PolicyStatus.Cancelled &&
-                    p.Status != PolicyStatus.Matured &&
-                    p.CreatedAt >= startOfWeek &&
-                    p.CreatedAt < endOfWeek)
-                .SumAsync(p => p.PremiumAmount ?? 0);
-
-            var pipelineLastWeek = await context.Policies
-                .AsNoTracking()
-                .Where(p =>
-                    p.Client != null &&
-                    p.Client.AdvisorId == advisorId &&
-                    !p.IsCatalogueItem &&
-                    p.Status != PolicyStatus.Cancelled &&
-                    p.Status != PolicyStatus.Matured &&
-                    p.CreatedAt >= previousWeekStart &&
-                    p.CreatedAt < previousWeekEnd)
-                .SumAsync(p => p.PremiumAmount ?? 0);
-
-            var pipelineValueChange = CalculatePercentageChange(
-                pipelineThisWeek,
-                pipelineLastWeek);
+            // Premiums on unfinished applications, including on-hold work.
+            var pipelinePolicies = context.Policies.AsNoTracking().Where(p =>
+                p.Client != null && p.Client.AdvisorId == advisorId && !p.IsCatalogueItem &&
+                p.Status == PolicyStatus.Pending &&
+                p.Case != null && p.Case.Status != CaseStatus.Completed && p.Case.PolicyIssuedAt == null);
+            var pipelineValue = await pipelinePolicies.SumAsync(p => p.PremiumAmount ?? 0);
 
             var activeCasesThisWeek = cases.Count(c =>
                 (c.Status == CaseStatus.InProgress ||
                  c.Status == CaseStatus.AwaitingApproval) &&
+                c.PolicyStatus == PolicyStatus.Pending &&
                 c.UpdatedAt >= startOfWeek &&
                 c.UpdatedAt < endOfWeek);
 
             var activeCasesLastWeek = cases.Count(c =>
                 (c.Status == CaseStatus.InProgress ||
                     c.Status == CaseStatus.AwaitingApproval) &&
+                c.PolicyStatus == PolicyStatus.Pending &&
                 c.UpdatedAt >= previousWeekStart &&
                 c.UpdatedAt < previousWeekEnd);
 
@@ -158,22 +133,17 @@ namespace API.Services.Implementations
                 activeCasesThisWeek,
                 activeCasesLastWeek);
 
-            var awaitingDocumentsThisWeek = cases.Count(c =>
-                !c.HasDocuments &&
-                c.UpdatedAt >= startOfWeek &&
-                c.UpdatedAt < endOfWeek);
+            var awaitingDocumentsThisWeek = outstandingRequests.Count(created =>
+                created >= startOfWeek && created < endOfWeek);
 
-            var awaitingDocumentsLastWeek = cases.Count(c =>
-                !c.HasDocuments &&
-                c.UpdatedAt >= previousWeekStart &&
-                c.UpdatedAt < previousWeekEnd);
+            var awaitingDocumentsLastWeek = outstandingRequests.Count(created =>
+                created >= previousWeekStart && created < previousWeekEnd);
 
             var awaitingDocumentsChange = CalculatePercentageChange(
                 awaitingDocumentsThisWeek,
                 awaitingDocumentsLastWeek);
 
             var caseItems = cases
-                .Take(10)
                 .Select(c => new CasePipelineItemDto
                 {
                     ClientName = string.IsNullOrWhiteSpace(c.ClientFirstName) &&
@@ -183,7 +153,8 @@ namespace API.Services.Implementations
 
                     Product = c.PolicyName,
                     Institution = c.Provider,
-                    Status = c.Status.ToString(),
+                    Status = c.PolicyStatus is PolicyStatus.Cancelled or PolicyStatus.Matured or PolicyStatus.Lapsed
+                        ? c.PolicyStatus.ToString() : c.Status.ToString(),
                     UpdatedAt = c.UpdatedAt
                 })
                 .ToList();
@@ -195,6 +166,9 @@ namespace API.Services.Implementations
                 .Where(p =>
                 p.Client != null &&
                 p.Client.AdvisorId == advisorId &&
+                !p.IsCatalogueItem &&
+                p.Status != PolicyStatus.Cancelled &&
+                p.Status != PolicyStatus.Matured &&
                 p.EndDate.HasValue &&
                 p.EndDate.Value >= today &&
                 p.EndDate.Value <= deadlineDate)
@@ -245,7 +219,7 @@ namespace API.Services.Implementations
                 ActiveCasesChange = activeCasesChange,
                 AwaitingDocumentsChange = awaitingDocumentsChange,
                 MeetingsChange = meetingsChange,
-                PipelineValueChange = pipelineValueChange,
+                PipelineValueChange = "Total premiums on open applications",
                 Cases = caseItems,
                 Deadlines = deadlines,
                 Institutions = institutions,

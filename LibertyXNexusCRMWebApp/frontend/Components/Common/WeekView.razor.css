@@ -1,0 +1,133 @@
+.week-view {
+    --wv-hour: 52px;
+    padding: 4px var(--space-5) var(--space-5);
+    overflow-x: auto;
+}
+
+.wv-head,
+.wv-body {
+    display: grid;
+    grid-template-columns: 52px repeat(7, minmax(84px, 1fr));
+    min-width: 640px;
+}
+
+.wv-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(12, 35, 64, 0.08);
+    background: var(--color-white);
+}
+
+.wv-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--color-text-muted);
+    font-size: 11.5px;
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.wv-day b {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: var(--weight-regular);
+    letter-spacing: 0;
+}
+
+.wv-day.is-today { color: var(--color-primary); }
+.wv-day.is-today b { background: var(--color-primary); color: var(--color-white); }
+
+.wv-body {
+    height: calc(var(--wv-hours) * var(--wv-hour));
+}
+
+.wv-times {
+    display: grid;
+    grid-auto-rows: var(--wv-hour);
+}
+
+.wv-times span {
+    padding-right: 8px;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    transform: translateY(-7px);
+}
+
+.wv-times span:first-child { visibility: hidden; }
+
+.wv-col {
+    position: relative;
+    border-left: 1px solid rgba(12, 35, 64, 0.06);
+    background-image: linear-gradient(rgba(12, 35, 64, 0.06) 1px, transparent 1px);
+    background-size: 100% var(--wv-hour);
+}
+
+.wv-col.is-today { background-color: color-mix(in srgb, var(--color-primary) 3%, transparent); }
+
+.wv-event {
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    min-height: 22px;
+    display: block;
+    overflow: hidden;
+    padding: 4px 7px;
+    border: 0;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 11.5px;
+    line-height: 1.25;
+    text-align: left;
+    cursor: pointer;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.wv-event:hover { box-shadow: 0 8px 18px -10px rgba(12, 35, 64, 0.5); }
+.wv-event:active { transform: scale(0.98); }
+.wv-event:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; z-index: 1; }
+.wv-event.is-selected { box-shadow: 0 0 0 2px var(--color-primary); z-index: 1; }
+
+/* Time and name share a line, so a 30-minute meeting still shows who it is with. */
+.wv-time { margin-right: 5px; font-weight: var(--weight-bold); font-variant-numeric: tabular-nums; }
+.wv-title { font-weight: var(--weight-semibold); }
+
+.wv-event.is-confirmed {
+    background: color-mix(in srgb, var(--color-primary) 10%, var(--color-white));
+    color: var(--color-primary);
+    box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.wv-event.is-requested {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+    box-shadow: inset 3px 0 0 #d7a300;
+    outline: 1px dashed color-mix(in srgb, var(--color-warning-text) 40%, transparent);
+    outline-offset: -1px;
+}
+
+.wv-event.is-completed {
+    background: var(--color-green-40);
+    color: var(--color-green-690);
+    box-shadow: inset 3px 0 0 var(--color-green-690);
+}
+
+.wv-event.is-confirmed.is-selected,
+.wv-event.is-requested.is-selected,
+.wv-event.is-completed.is-selected { box-shadow: 0 0 0 2px var(--color-primary); }
+
+@media (prefers-reduced-motion: reduce) {
+    .wv-event { transition: none; }
+}

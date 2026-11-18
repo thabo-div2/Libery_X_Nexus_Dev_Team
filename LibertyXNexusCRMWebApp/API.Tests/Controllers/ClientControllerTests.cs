@@ -27,7 +27,9 @@ namespace API.Tests.Controllers
         /// </summary>
         public ClientsControllerTests()
         {
-            _sut = new ClientsController(_clientService.Object, _auditLog.Object);
+            var cleanup = new Mock<IClientCleanupService>();
+            cleanup.Setup(s => s.CollectAsync(It.IsAny<int>())).ReturnsAsync(new ClientCleanupPlan());
+            _sut = new ClientsController(_clientService.Object, _auditLog.Object, cleanup.Object);
         }
 
         private static ClientDetailDto ClientOf(int clientId, int advisorId) => new()

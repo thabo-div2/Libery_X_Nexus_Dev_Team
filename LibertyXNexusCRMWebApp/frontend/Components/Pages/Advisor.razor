@@ -1,4 +1,4 @@
-﻿@page "/advisor"
+@page "/advisor"
 @layout MainLayout
 @rendermode InteractiveServer
 @using Shared.DTOs.Advisor
@@ -6,6 +6,10 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject InvitationService Invite
 @inject AdvisorService Advisors
+@inject InsightsService InsightsApi
+@inject IJSRuntime JS
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
 
 <PageTitle>Advisor Dashboard | Nexus</PageTitle>
 
@@ -17,10 +21,13 @@
             <header class="advisor-header">
 
                 <div class="header-greeting">
+                    <span class="header-eyebrow">@DateTime.Today.ToString("dddd, d MMMM")</span>
                     <h1>
-                        Good afternoon@(string.IsNullOrWhiteSpace(AdvisorFirstName)
-                                                                                            ? "!"
-                                                                                            : $", {AdvisorFirstName}!")
+                        <text>@Greeting</text>
+                        @if (!string.IsNullOrWhiteSpace(AdvisorFirstName))
+                        {
+                            <text>, <em class="greeting-name">@AdvisorFirstName</em></text>
+                        }
                     </h1>
 
                     <p>
@@ -41,7 +48,7 @@
                 <div class="header-actions">
 
                     <div class="search-box" role="search">
-                        <span class="search-icon" aria-hidden="true">⌕</span>
+                        <span class="search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
 
                         <input aria-label="Search clients, cases, documents" type="text"
                                @bind="SearchText"
@@ -58,13 +65,15 @@
                             aria-controls="invite-panel"
                             @ref="InviteToggleButton"
                             @onclick="ToggleInvitePanel">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                         Invite client
                     </button>
 
-                    <a href="/new-client" class="new-client-button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    <a href="/new-client" class="new-client-button new-client-primary">
                         New client
+                        <span class="new-client-plus" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>
+                        </span>
                     </a>
 
                 </div>
@@ -94,7 +103,7 @@
                             </div>
 
                             <button type="submit" class="new-client-button" disabled="@IsSendingInvite">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                                 @(IsSendingInvite ? "Sending..." : "Send invitation")
                             </button>
                         </div>
@@ -122,284 +131,224 @@
             <!-- DASHBOARD CONTENT -->
             <main class="advisor-content">
 
-                <!-- STAT CARDS -->
-                <section class="stats-grid">
-
-                    <article class="stat-card">
-                        <span class="stat-label">ACTIVE CASES</span>
-
-                        <strong class="stat-value">
-                            @(Dashboard?.ActiveCases ?? 0)
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.ActiveCasesChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.ActiveCasesChange))
-                            {
-                                @Dashboard?.ActiveCasesChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-
-                    <article class="stat-card">
-                        <span class="stat-label">AWAITING DOCUMENTS</span>
-
-                        <strong class="stat-value">
-                            @(Dashboard?.AwaitingDocuments ?? 0)
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.AwaitingDocumentsChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.AwaitingDocumentsChange))
-                            {
-                                @Dashboard?.AwaitingDocumentsChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-
-                    <article class="stat-card">
-                        <span class="stat-label">MEETINGS THIS WEEK</span>
-
-                        <strong class="stat-value">
-                            @(Dashboard?.MeetingsThisWeek ?? 0)
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.MeetingsChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.MeetingsChange))
-                            {
-                                @Dashboard?.MeetingsChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-
-                    <article class="stat-card">
-                        <span class="stat-label">VALUE IN PIPELINE</span>
-
-                        <strong class="stat-value">
-                            @($"R {Dashboard?.PipelineValue:N0}" ?? "-")
-                        </strong>
-
-                        <span class="stat-change @GetChangeClass(Dashboard?.PipelineValueChange)">
-                            @if (!string.IsNullOrWhiteSpace(Dashboard?.PipelineValueChange))
-                            {
-                                @Dashboard?.PipelineValueChange
-                            }
-                            else
-                            {
-                                <span>Data not loaded</span>
-                            }
-                        </span>
-                    </article>
-
-                </section>
-
-
-                <!-- LOWER DASHBOARD -->
+                <!-- DASHBOARD: two columns that each stack their own panels -->
                 <section class="dashboard-grid">
+
+                    <!-- LEFT: what needs doing, then the pipeline. Stacked so a short list never leaves a gap. -->
+                    <div class="left-column">
+
+                    <AttentionList />
 
                     <!-- CASE PIPELINE -->
                     <article class="dashboard-card pipeline-card">
 
                         <div class="card-header">
 
-                            <h2>Case pipeline</h2>
+                            <div class="card-heading">
+                                <h2>Case pipeline</h2>
+                                <span class="card-sub">Applications by institution, most recently updated first</span>
+                            </div>
 
-                            <div class="pipeline-filters">
-
-                                <button type="button"
-                                        class="filter-pill @(SelectedInstitution == "All" ? "active" : "")"
-                                        @onclick='() => SetInstitutionFilter("All")'> All
-                                </button>
-
-                                <button type="button"
-                                        class="filter-pill @(SelectedInstitution == "Liberty" ? "active" : "")"
-                                        @onclick='() => SetInstitutionFilter("Liberty")'> Liberty
-                                </button>
-
-                                <button type="button"
-                                        class="filter-pill @(SelectedInstitution == "Standard Bank" ? "active" : "")"
-                                        @onclick='() => SetInstitutionFilter("Standard Bank")'> Standard Bank
-                                </button>
-
+                            @{
+                                var institutionTabs = PipelineInstitutions.ToList();
+                                var selectedTab = Math.Max(0, institutionTabs.IndexOf(SelectedInstitution));
+                            }
+                            <div class="pipeline-filters" @ref="PipelineFilters" role="group" aria-label="Filter cases by institution"
+                                 style="--n:@institutionTabs.Count;--i:@selectedTab">
+                                <span class="seg-thumb" aria-hidden="true"></span>
+                                @foreach (var institution in institutionTabs)
+                                {
+                                    <button type="button" class="filter-pill @(SelectedInstitution == institution ? "active" : "")"
+                                            aria-pressed="@(SelectedInstitution == institution)"
+                                            @onclick="() => SetInstitutionFilter(institution)">
+                                        <span class="filter-label">@institution</span>
+                                        <span class="filter-count">@CaseCount(institution)</span>
+                                    </button>
+                                }
                             </div>
 
                         </div>
 
 
                         <div class="table-container">
-
                             <table class="pipeline-table">
-
-                                <thead>
-                                    <tr>
-                                        <th>CLIENT</th>
-                                        <th>PRODUCT</th>
-                                        <th>INSTITUTION</th>
-                                        <th>STAGE</th>
-                                        <th class="updated-heading">UPDATED</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-
-                                    @if (Dashboard?.Cases is not null && Dashboard.Cases.Any(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution))
+                                <caption class="visually-hidden">Client cases and their current application status</caption>
+                                <thead><tr><th scope="col">Client / product</th><th scope="col">Institution</th><th scope="col">Stage</th><th scope="col" class="updated-heading">Updated</th></tr></thead>
+                                <tbody @key="SelectedInstitution">
+                                    @if (isLoading)
                                     {
-                                        @foreach (var caseItem in Dashboard.Cases.Where(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution))
+                                        @* Placeholder rows shaped like the table while it loads. *@
+                                        @for (var row = 0; row < 4; row++)
                                         {
-                                            <tr>
-                                                <td class="client-name">
-                                                    @caseItem.ClientName
-                                                </td>
-
-                                                <td>
-                                                    @caseItem.Product
-                                                </td>
-
-                                                <td>
-                                                    @caseItem.Institution
-                                                </td>
-
-                                                <td>
-                                                    <span class="status-badge @GetStatusClass(caseItem.Status)">
-                                                        <span class="status-dot"></span>
-                                                        @caseItem.Status
-                                                    </span>
-                                                </td>
-
-                                                <td class="updated-cell">
-                                                    @caseItem.UpdatedAt
-                                                </td>
+                                            <tr class="pipeline-skeleton" aria-hidden="true">
+                                                <td><span class="nx-skeleton" style="width:70%"></span></td>
+                                                <td><span class="nx-skeleton" style="width:60%"></span></td>
+                                                <td><span class="nx-skeleton" style="width:50%"></span></td>
+                                                <td><span class="nx-skeleton" style="width:60%"></span></td>
                                             </tr>
                                         }
                                     }
-                                    else
+                                    else if (!string.IsNullOrWhiteSpace(LoadError) || !FilteredCases.Any())
                                     {
-                                        <tr class="empty-table-row">
-                                            <td colspan="5">
-
-                                                <div class="table-empty-state">
-                                                    <div class="empty-icon">⌕</div>
-
-                                                    <strong>No cases to display</strong>
-
-                                                    <span>
-                                                        Client cases will appear here once they
-                                                        are loaded.
-                                                    </span>
-                                                </div>
-
+                                        <tr>
+                                            <td colspan="4" class="pipeline-empty" role="status">
+                                                @if (!string.IsNullOrWhiteSpace(LoadError))
+                                                {
+                                                    @LoadError
+                                                }
+                                                else if ((Dashboard?.Cases?.Count ?? 0) == 0)
+                                                {
+                                                    <span>No cases yet. A case starts when you add a policy to a client.</span>
+                                                    <a href="/new-client" class="pipeline-empty-action">Add a client</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>No cases with @SelectedInstitution yet.</span>
+                                                }
                                             </td>
                                         </tr>
                                     }
-
+                                    else
+                                    {
+                                        @foreach (var caseItem in FilteredCases)
+                                        {
+                                            <tr>
+                                                <td><div class="pipeline-client"><span class="pipeline-avatar" aria-hidden="true">@GetInitials(caseItem.ClientName)</span><div><strong>@caseItem.ClientName</strong><span class="pipeline-product">@caseItem.Product</span></div></div></td>
+                                                <td><span class="pipeline-provider"><span class="inst-chip inst-c@(InstitutionSlot(caseItem.Institution))" aria-hidden="true">@InstitutionCode(caseItem.Institution)</span>@caseItem.Institution</span></td>
+                                                <td><span class="status-badge @GetStatusClass(caseItem.Status)"><span class="status-dot" aria-hidden="true"></span>@FormatStatus(caseItem.Status)</span></td>
+                                                <td class="updated-cell">@caseItem.UpdatedAt.ToLocalTime().ToString("dd MMM yyyy")</td>
+                                            </tr>
+                                        }
+                                    }
                                 </tbody>
-
                             </table>
-
                         </div>
 
+                        <div class="pipeline-footer">
+                            <span class="pipeline-footer-count">Showing @FilteredCases.Count() of @(Dashboard?.Cases?.Count ?? 0) cases</span>
+                            <a href="/clients" class="pipeline-footer-link">
+                                View all cases
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                            </a>
+                        </div>
+
+
                     </article>
+                    </div>
 
 
                     <!-- RIGHT COLUMN -->
                     <aside class="right-column">
-
-                        <!-- UPCOMING DEADLINES -->
-                        <article class="dashboard-card deadlines-card">
-
-                            <div class="card-header">
-                                <h2>Upcoming deadlines</h2>
+                        <section class="month-panel" aria-labelledby="month-title" aria-busy="@(isLoading ? "true" : "false")">
+                            <div class="month-head">
+                                <div>
+                                    <span class="month-eyebrow">@DateTime.Today.ToString("MMMM yyyy")</span>
+                                    <h2 id="month-title">This month</h2>
+                                </div>
+                                <a href="/clients">All clients <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
                             </div>
 
-                            <div class="deadline-list">
+                            <div class="month-metrics">
+                                <div class="month-metric">
+                                    <span class="month-icon icon-blue" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="3" /><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 12.5h17" /></svg></span>
+                                    <span class="month-label">Active cases</span>
+                                    @if (isLoading) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else { <strong class="month-value">@(Dashboard?.ActiveCases ?? 0)</strong> }
+                                    <span class="month-change @GetChangeClass(Dashboard?.ActiveCasesChange)">@Dashboard?.ActiveCasesChange</span>
+                                </div>
 
-                                @if (Dashboard?.Deadlines is not null && Dashboard.Deadlines.Any())
-                                {
-                                    @foreach (var deadline in Dashboard.Deadlines)
+                                <div class="month-metric">
+                                    <span class="month-icon icon-orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8" /><path d="M14 8h6v6" /></svg></span>
+                                    <span class="month-label">Pipeline value</span>
+                                    @if (isLoading) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else { <strong class="month-value">@FormatRand(Dashboard?.PipelineValue)</strong> }
+                                    <span class="month-change @GetChangeClass(Dashboard?.PipelineValueChange)">@Dashboard?.PipelineValueChange</span>
+                                </div>
+
+                                <div class="month-metric">
+                                    <span class="month-icon icon-green" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg></span>
+                                    <span class="month-label">Meetings this week</span>
+                                    @if (isLoading) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else { <strong class="month-value">@(Dashboard?.MeetingsThisWeek ?? 0)</strong> }
+                                    <span class="month-change @GetChangeClass(Dashboard?.MeetingsChange)">@Dashboard?.MeetingsChange</span>
+                                </div>
+
+                                <div class="month-metric month-metric-ring">
+                                    <span class="month-label">Fully onboarded</span>
+                                    @if (Insights is null) { <span class="nx-skeleton month-skeleton"></span> }
+                                    else
                                     {
-                                        <div class="deadline-item">
-
-                                            <div class="deadline-details">
-                                                <span class="deadline-title">
-                                                    @deadline.Title
-                                                </span>
-
-                                                <span class="deadline-client">
-                                                    @deadline.ClientName
-                                                </span>
-                                            </div>
-
-                                            <span class="deadline-date @GetDeadlineClass(deadline.Urgency)">
-                                                @deadline.Date
-                                            </span>
-
-                                        </div>
+                                        <strong class="month-value">@Insights.ClientsOnboarded<span class="month-of"> of @Insights.ClientsTotal</span></strong>
+                                        <span class="month-change">active clients</span>
+                                        @* Progress ring: the circle's length is 100, so the dash length is the percentage. *@
+                                        <span class="month-ring" role="img" aria-label="@OnboardedPercent percent of active clients fully onboarded">
+                                            <svg viewBox="0 0 36 36" aria-hidden="true">
+                                                <circle class="ring-track" cx="18" cy="18" r="15.9155" />
+                                                @if (OnboardedPercent > 0)
+                                                {
+                                                    @* Skipped at 0%: a round line cap would still draw a dot. *@
+                                                    <circle class="ring-fill" cx="18" cy="18" r="15.9155" stroke-dasharray="@OnboardedPercent 100" />
+                                                }
+                                            </svg>
+                                            <b>@OnboardedPercent%</b>
+                                        </span>
                                     }
-                                }
-                                else
-                                {
-                                    <div class="small-empty-state">
-                                        <span>No upcoming deadlines</span>
-                                    </div>
-                                }
-
+                                </div>
                             </div>
 
-                        </article>
+                            @if (!string.IsNullOrWhiteSpace(LoadError))
+                            {
+                                <p class="month-error" role="alert">@LoadError</p>
+                            }
+                        </section>
 
+                        <RenewalsCard />
 
                         <!-- CASES BY INSTITUTION -->
                         <article class="dashboard-card institutions-card">
 
                             <div class="card-header">
                                 <h2>Cases by institution</h2>
+                                @if (Dashboard?.Institutions is not null && Dashboard.Institutions.Any())
+                                {
+                                    <span class="card-count">@Dashboard.Institutions.Sum(i => i.CaseCount) total</span>
+                                }
                             </div>
 
                             <div class="institution-list">
 
                                 @if (Dashboard?.Institutions is not null && Dashboard.Institutions.Any())
                                 {
-                                    @foreach (var institution in Dashboard.Institutions)
-                                    {
-                                        <div class="institution-item">
+                                    var institutionRows = Dashboard.Institutions.ToList();
+                                    var institutionSummary = string.Join(", ", institutionRows.Select(i => i.Name + " " + i.CaseCount));
 
-                                            <div class="institution-info">
-                                                <span class="institution-name">
-                                                    @institution.Name
-                                                </span>
+                                    <div class="institution-bar" role="img" aria-label="Cases by institution: @institutionSummary">
+                                        @for (var i = 0; i < institutionRows.Count; i++)
+                                        {
+                                            <div class="institution-segment inst-c@(i % 4)" style="flex: @Math.Max(institutionRows[i].CaseCount, 1) 1 0"></div>
+                                        }
+                                    </div>
 
-                                                <span class="institution-count">
-                                                    @institution.CaseCount
-                                                    @(institution.CaseCount == 1 ? "case" : "cases")
-                                                </span>
-                                            </div>
-
-                                            <div class="institution-progress">
-                                                <div class="institution-progress-fill"
-                                                     style="width: @institution.Percentage%">
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    }
+                                    <ul class="institution-legend">
+                                        @for (var i = 0; i < institutionRows.Count; i++)
+                                        {
+                                            <li>
+                                                <span class="legend-name"><span class="legend-swatch inst-c@(i % 4)" aria-hidden="true"></span>@institutionRows[i].Name</span>
+                                                <span class="legend-count">@institutionRows[i].CaseCount @(institutionRows[i].CaseCount == 1 ? "case" : "cases")</span>
+                                            </li>
+                                        }
+                                    </ul>
                                 }
                                 else
                                 {
-                                    <div class="small-empty-state">
-                                        <span>No institution data available</span>
+                                    <div class="empty-note is-info">
+                                        <span class="empty-note-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="3"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 12.5h17"/></svg>
+                                        </span>
+                                        <div class="empty-note-text">
+                                            <strong>No institution data yet</strong>
+                                            <span>Cases appear here once they are opened.</span>
+                                        </div>
                                     </div>
                                 }
 
@@ -412,14 +361,21 @@
                         <a href="/chatbot" class="assistant-card">
 
                             <div class="assistant-text">
+                                <span class="assistant-eyebrow">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 3.5c.6 3.8 2.2 5.4 6 6-3.8.6-5.4 2.2-6 6-.6-3.8-2.2-5.4-6-6 3.8-.6 5.4-2.2 6-6z"/></svg>
+                                    Nexus assistant
+                                </span>
+
                                 <strong>Ask the Nexus assistant</strong>
 
-                                <span>
+                                <span class="assistant-sub">
                                     Draft a service package or summarise a case
                                 </span>
                             </div>
 
-                            <span class="assistant-arrow">↗</span>
+                            <span class="assistant-arrow" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+                            </span>
                         </a>
 
                     </aside>
@@ -438,7 +394,46 @@
 </ErrorBoundary>
 
 
+<RealtimeRefresh OnChanged="OnInitializedAsync" />
+
 @code {
+
+    // Drag support for the institution switch (see wwwroot/js/segmented-drag.js).
+    private ElementReference PipelineFilters;
+    private IJSObjectReference? DragModule;
+    private IDisposable? SelfRef;
+    private bool DragBound;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (DragBound || PipelineFilters.Context is null) return;
+        DragBound = true;
+        try
+        {
+            DragModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/segmented-drag.js");
+            var selfRef = DotNetObjectReference.Create(this);
+            SelfRef = selfRef;
+            await DragModule.InvokeVoidAsync("init", PipelineFilters, selfRef);
+        }
+        catch (JSException) { }
+        catch (JSDisconnectedException) { }
+        catch (TaskCanceledException) { }
+    }
+
+    [JSInvokable]
+    public async Task SetInstitutionByIndex(int index)
+    {
+        var tabs = PipelineInstitutions.ToList();
+        if (index < 0 || index >= tabs.Count) return;
+        SelectedInstitution = tabs[index];
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        SelfRef?.Dispose();
+        if (DragModule is not null) try { await DragModule.DisposeAsync(); } catch (JSDisconnectedException) { } catch (TaskCanceledException) { }
+    }
     private AdvisorDashboardDto? Dashboard;
 
     private string? AdvisorFirstName;
@@ -556,46 +551,100 @@
         isLoading = true;
         LoadError = null;
 
-        var (dashboard, error) = await Advisors.GetDashboardAsync();
+        var dashboardTask = Advisors.GetDashboardAsync();
+        var insightsTask = InsightsApi.GetDashboardAsync();
+        await Task.WhenAll(dashboardTask, insightsTask);
 
+        var (dashboard, error) = dashboardTask.Result;
         Dashboard = dashboard;
         AdvisorFirstName = dashboard?.AdvisorFirstName;
         LoadError = error;
+        Insights = insightsTask.Result.Value;
 
         isLoading = false;
     }
 
 
-    private static string GetStatusClass(string? status)
-    {
-        if (string.IsNullOrWhiteSpace(status))
-            return "status-neutral";
 
-        return status.ToLowerInvariant() switch
+
+    private IEnumerable<CasePipelineItemDto> FilteredCases =>
+        (Dashboard?.Cases ?? new()).Where(c => SelectedInstitution == "All" || c.Institution == SelectedInstitution);
+
+    // Short code for the institution tile, e.g. "Standard Bank" -> "SB", "Liberty" -> "LI".
+    private static string InstitutionCode(string? name)
+    {
+        var words = (name ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length == 0) return "?";
+        return words.Length == 1
+            ? words[0][..Math.Min(2, words[0].Length)].ToUpperInvariant()
+            : string.Concat(words.Take(2).Select(w => char.ToUpperInvariant(w[0])));
+    }
+
+    // Stable colour slot (0-3) per institution so the same bank always gets the same tile colour.
+    private int InstitutionSlot(string? name)
+    {
+        var names = (Dashboard?.Cases ?? new()).Select(c => c.Institution).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x).ToList();
+        var index = names.IndexOf(name ?? "");
+        return index < 0 ? 0 : index % 4;
+    }
+
+    // Number of cases behind each filter tab, shown as a small count badge.
+    private int CaseCount(string institution) =>
+        (Dashboard?.Cases ?? new()).Count(c => institution == "All" || c.Institution == institution);
+
+    private IEnumerable<string> PipelineInstitutions => new[] { "All" }.Concat(
+        (Dashboard?.Cases ?? new()).Select(c => c.Institution).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().OrderBy(x => x));
+
+    private static string FormatStatus(string status) => status switch
+    {
+        "InProgress" => "In progress",
+        "AwaitingApproval" => "Awaiting approval",
+        "OnHold" => "On hold",
+        "Completed" => "Completed",
+        _ => status
+    };
+
+    private static string GetInitials(string name) => string.Concat(name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpperInvariant(p[0])));
+
+    private static string GetStatusClass(string? status) => status switch
+    {
+        "InProgress" => "status-blue",
+        "AwaitingApproval" => "status-yellow",
+        "OnHold" => "status-red",
+        "Completed" => "status-green",
+        "Cancelled" or "Lapsed" => "status-red",
+        "Matured" => "status-neutral",
+        _ => "status-neutral"
+    };
+
+    // "This month" panel: onboarding comes from the insights endpoint, the rest from the dashboard call.
+    private Shared.DTOs.Insights.PracticeInsightsDto? Insights;
+
+    private int OnboardedPercent => Insights is null || Insights.ClientsTotal == 0
+        ? 0
+        : (int)Math.Round(100.0 * Insights.ClientsOnboarded / Insights.ClientsTotal);
+
+    /// <summary>
+    /// Rand amounts in short form so they fit the panel: R 1.42m, R 845k, R 12 300.
+    /// </summary>
+    private static string FormatRand(double? value)
+    {
+        if (value is not double amount) return "—";
+        return amount switch
         {
-            "submitted" => "status-green",
-            "issued" => "status-green",
-            "awaiting fica" => "status-yellow",
-            "awaiting signature" => "status-yellow",
-            "info incomplete" => "status-red",
-            "consultation booked" => "status-blue",
-            _ => "status-neutral"
+            >= 1_000_000 => $"R {amount / 1_000_000:0.##}m",
+            >= 100_000 => $"R {amount / 1_000:0}k",
+            _ => "R " + amount.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))
         };
     }
 
-
-    private static string GetDeadlineClass(string? urgency)
+    // Matches the time of day in South Africa, where advisors work.
+    private static string Greeting => DateTime.Now.Hour switch
     {
-        if (string.IsNullOrWhiteSpace(urgency))
-            return "deadline-normal";
-
-        return urgency.ToLowerInvariant() switch
-        {
-            "urgent" => "deadline-urgent",
-            "soon" => "deadline-soon",
-            _ => "deadline-normal"
-        };
-    }
+        < 12 => "Good morning",
+        < 17 => "Good afternoon",
+        _ => "Good evening"
+    };
 
 
     public class CasePipelineItem

@@ -1,0 +1,69 @@
+@using frontend.Services
+@using Shared.DTOs.Workflow
+@inject WorkflowService Api
+@inject MessageNotifier Notifier
+@if (CanEdit || !string.IsNullOrWhiteSpace(Text))
+{
+    <section class="wf-meeting-summary">
+        <h3>Meeting summary</h3>
+        @if(ForAdvisor && CanEdit) {
+            <p class="wf-muted">Shared with the client as soon as you save. Keep private call notes in Private notes.</p>
+            <label class="wf-label">Summary<textarea class="nx-input" rows="4" maxlength="2000" @bind="Text" disabled="@Busy"></textarea></label>
+            @if(Status != "Completed") { <label class="wf-checkbox"><input type="checkbox" @bind="Complete" disabled="@Busy" /> Mark this meeting completed</label> }
+            <button class="nx-btn nx-btn-primary nx-btn-sm" @onclick="Save" disabled="@Busy">@(Busy ? "Saving…" : "Save shared summary")</button>
+        } else {
+            @if(ForAdvisor && IsSaved) { <p class="wf-summary-saved"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Summary saved and shared with the client. It can only be saved once.</p> }
+            <p class="wf-prewrap">@Text</p>
+        }
+        @if(Error is not null) { <p class="wf-error" role="alert">@Error</p> }
+        @if(Message is not null) { <p class="wf-success" role="status">@Message</p> }
+    </section>
+}
+@code {
+    [Parameter,EditorRequired]public MeetingSummary Meeting {get;set;}=default!;
+    [Parameter]public bool ForAdvisor {get;set;}
+    [Parameter]public EventCallback OnSaved {get;set;}
+    int LoadedId;
+    DateTime? LoadedVersion;
+    string? Text,Error,Message;
+    string Status="";
+    bool Busy,Complete,Saved;
+    // A meeting gets one shared summary. Once it exists (saved here, or already on the meeting) the form gives way to the read-only text.
+    bool IsSaved => Saved || !string.IsNullOrWhiteSpace(Meeting.SharedSummary);
+    bool CanEdit => ForAdvisor && (Status is "Confirmed" or "Completed") && Meeting.MeetingDate.AddMinutes(Meeting.DurationMinutes)<=DateTime.UtcNow && !IsSaved;
+    protected override void OnParametersSet()
+    {
+        if(LoadedId!=Meeting.MeetingId) {LoadedId=Meeting.MeetingId;LoadedVersion=Meeting.SummaryUpdatedAt;Text=Meeting.SharedSummary;Status=Meeting.Status;Complete=false;Saved=false;Error=null;Message=null;return;}
+        if(LoadedVersion==Meeting.SummaryUpdatedAt&&Status==Meeting.Status)return;
+        // The meeting was refreshed (including by our own save): take the stored text and keep the "saved" message on screen.
+        LoadedVersion=Meeting.SummaryUpdatedAt;Status=Meeting.Status;Text=Meeting.SharedSummary;Complete=false;Error=null;
+    }
+    async Task Save()
+    {
+        if(Busy)return;
+        Busy=true;
+        try
+        {
+            var id=Meeting.MeetingId;
+            var(value,error)=await Api.SaveSummaryAsync(id,new(){Text=Text,CompleteMeeting=Complete});
+            if(id!=Meeting.MeetingId)return;
+            Error=error;
+            if(value is not null)
+            {
+                Status=value.Status;
+                Saved=!string.IsNullOrWhiteSpace(value.Text);
+                Text=value.Text??Text;
+                Message=Saved?"Meeting summary saved.":"Meeting marked completed.";
+                Notifier.NotifyMessageSent(Meeting.ClientId);
+                await OnSaved.InvokeAsync();
+            }
+            else if(error==Shared.Models.WorkflowRules.SummaryAlreadySaved)
+            {
+                // Saved already (another tab, or a stale screen): reload so the stored summary is shown instead of the form.
+                Error=null;Saved=true;Message="A summary was already saved for this meeting.";
+                await OnSaved.InvokeAsync();
+            }
+        }
+        finally{Busy=false;}
+    }
+}

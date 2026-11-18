@@ -13,6 +13,7 @@
 @inject IJSRuntime JS
 @inject ProtectedLocalStorage DraftStorage
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@implements IDisposable
 
 <PageTitle>New Client | Nexus</PageTitle>
 
@@ -31,7 +32,7 @@
             @* Hidden: this search box was not connected to anything, so typing in it did nothing.
                Bring it back once it filters this page (the Clients and FAQ pages have working examples). *@
             @* <div class="search-box" role="search">
-                <span class="search-icon" aria-hidden="true">⌕</span>
+                <span class="search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
                 <input aria-label="Search clients, cases, documents" type="text" placeholder="Search clients, cases, documents" />
             </div> *@
 
@@ -51,28 +52,7 @@
                Pressing Enter in a field moves to the next step. *@
             <EditForm EditContext="WizardContext" OnSubmit="HandleEnterKey" novalidate>
 
-            <!-- STEP INDICATOR -->
-            <section class="stepper-card" aria-label="New client progress">
-                @for (var i = 1; i <= 4; i++)
-                {
-                    var stepIndex = i;
-                    @* Real buttons so keyboard users can go back to an earlier step.
-                       Later steps are disabled because you can only reach them with Continue. *@
-                    <button type="button"
-                            class="step @(stepIndex == CurrentStep ? "active" : "") @(stepIndex < CurrentStep ? "complete" : "")"
-                            aria-current="@(stepIndex == CurrentStep ? "step" : null)"
-                            aria-label="@StepLabel(stepIndex)"
-                            disabled="@(stepIndex > CurrentStep)"
-                            @onclick="() => TryJumpToStep(stepIndex)">
-                        <span class="step-number" aria-hidden="true">@(stepIndex < CurrentStep ? "✓" : stepIndex.ToString())</span>
-                        <span class="step-name" aria-hidden="true">@StepNames[stepIndex - 1]</span>
-                    </button>
-                    if (i < 4)
-                    {
-                        <div class="step-line"></div>
-                    }
-                }
-            </section>
+
 
             @if (!string.IsNullOrEmpty(StepError))
             {
@@ -357,13 +337,17 @@
 
                         <div class="form-group full-width @ErrorClass(nameof(Model.RiskProfile))">
                             <label>Risk appetite</label>
-                            <div class="pipeline-filters">
+                            <div class="risk-cards" role="radiogroup" aria-label="Risk appetite">
                                 @foreach (var option in RiskOptions)
                                 {
                                     <button type="button"
-                                            class="filter-pill @(Model.RiskProfile == option ? "active" : "")"
+                                            role="radio"
+                                            aria-checked="@(Model.RiskProfile == option ? "true" : "false")"
+                                            class="risk-card risk-@option.ToLowerInvariant() @(Model.RiskProfile == option ? "is-selected" : "")"
                                             @onclick="() => SelectRiskProfile(option)">
-                                        @option
+                                        <span class="risk-meter" aria-hidden="true">@for (var bar = 0; bar < 4; bar++) { <i class="@(bar <= Array.IndexOf(RiskOptions, option) ? "is-on" : "")"></i> }</span>
+                                        <strong>@option</strong>
+                                        <span>@RiskBlurb(option)</span>
                                     </button>
                                 }
                             </div>
@@ -409,7 +393,7 @@
                                 else
                                 {
                                     <label class="upload-button">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                         <span>Upload file</span>
                                         <InputFile OnChange="@(e => OnFileSelected(e, slot.Type))" accept=".pdf,.jpg,.jpeg,.png" />
                                     </label>
@@ -510,6 +494,40 @@
 
         <!-- RIGHT SIDEBAR -->
         <aside class="side-column">
+            <!-- STEP INDICATOR -->
+            <section class="stepper-card" aria-label="New client progress">
+                <span class="autosave-note" role="status">
+                    @if (LastAutoSaved is DateTime saved)
+                    {
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+                        <span>Draft saved @saved.ToString("HH:mm")</span>
+                    }
+                    else
+                    {
+                        <span>Saves automatically as you go</span>
+                    }
+                </span>
+                @for (var i = 1; i <= 4; i++)
+                {
+                    var stepIndex = i;
+                    @* Real buttons so keyboard users can go back to an earlier step.
+                       Later steps are disabled because you can only reach them with Continue. *@
+                    <button type="button"
+                            class="step @(stepIndex == CurrentStep ? "active" : "") @(stepIndex < CurrentStep ? "complete" : "")"
+                            aria-current="@(stepIndex == CurrentStep ? "step" : null)"
+                            aria-label="@StepLabel(stepIndex)"
+                            disabled="@(stepIndex > CurrentStep)"
+                            @onclick="() => TryJumpToStep(stepIndex)">
+                        <span class="step-number" aria-hidden="true">@(stepIndex < CurrentStep ? "✓" : stepIndex.ToString())</span>
+                        <span class="step-name" aria-hidden="true">@StepNames[stepIndex - 1]</span>
+                    </button>
+                    if (i < 4)
+                    {
+                        <div class="step-line"></div>
+                    }
+                }
+            </section>
+
             <section class="side-card">
                 <div class="side-card-heading"><h2>Required to submit</h2></div>
                 <div class="requirements-list">
@@ -553,6 +571,62 @@
 
     private readonly string[] StepNames = { "Personal details", "Financial profile", "Documents", "Summary" };
     private readonly string[] RiskOptions = { "Conservative", "Moderate", "Balanced", "Aggressive" };
+
+    private static string RiskBlurb(string option) => option switch
+    {
+        "Conservative" => "Protect what they have",
+        "Moderate" => "Steady growth, small dips",
+        "Balanced" => "Growth with some ups and downs",
+        _ => "Maximum growth, big swings"
+    };
+
+    // Autosave: every few seconds, store the draft if anything changed since the last save.
+    private PeriodicTimer? AutosaveTimer;
+    private string? LastSavedJson;
+    private DateTime? LastAutoSaved;
+
+    private string DraftJson()
+    {
+        var payload = BuildDraftPayload();
+        payload.SavedAt = default;
+        return JsonSerializer.Serialize(payload);
+    }
+
+    private async Task AutosaveLoopAsync()
+    {
+        AutosaveTimer = new PeriodicTimer(TimeSpan.FromSeconds(6));
+        try
+        {
+            while (await AutosaveTimer.WaitForNextTickAsync())
+            {
+                await InvokeAsync(AutosaveAsync);
+            }
+        }
+        catch (ObjectDisposedException) { }
+    }
+
+    private async Task AutosaveAsync()
+    {
+        // Never overwrite a draft the advisor hasn't chosen to resume or discard, and stop once the client exists.
+        if (ShowDraftBanner || IsSubmitting || CreatedClientId is not null) return;
+
+        var json = DraftJson();
+        if (json == LastSavedJson) return;
+
+        try
+        {
+            await DraftStorage.SetAsync(DraftStorageKey, BuildDraftPayload());
+            LastSavedJson = json;
+            LastAutoSaved = DateTime.Now;
+            StateHasChanged();
+        }
+        catch
+        {
+            // Storage blocked or the page is closing; the Save draft button still reports errors.
+        }
+    }
+
+    public void Dispose() => AutosaveTimer?.Dispose();
 
     private readonly List<DocumentSlot> DocumentSlots = new()
     {
@@ -919,6 +993,9 @@
         if (firstRender)
         {
             await CheckForDraftAsync();
+            // The empty form counts as saved, so a blank draft is never stored.
+            LastSavedJson = DraftJson();
+            _ = AutosaveLoopAsync();
             StateHasChanged();
         }
 

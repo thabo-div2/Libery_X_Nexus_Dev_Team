@@ -525,18 +525,7 @@ namespace frontend.Services
         private static async Task<string> ReadErrorAsync(
             HttpResponseMessage response)
         {
-            var body =
-                await response.Content.ReadAsStringAsync();
-
-            if (!string.IsNullOrWhiteSpace(body))
-            {
-                return
-                    $"API returned HTTP {(int)response.StatusCode}: {body}";
-            }
-
-            return
-                $"The server reported an error " +
-                $"(status {(int)response.StatusCode}).";
+            return await ApiErrors.ReadAsync(response);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using API.DTOs.Policies;
 using API.Identity;
+using API.Repositories.Interfaces;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace API.Controllers
     {
         private readonly IPolicyService policyService_;
         private readonly IClientService _clientService;
+        private readonly IAuditLogRepository _auditLogRepository;
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -25,10 +27,11 @@ namespace API.Controllers
         /// </summary>
         /// <param name="policyService"></param>
         /// <param name="clientService"></param>
-        public PoliciesController(IPolicyService policyService, IClientService clientService)
+        public PoliciesController(IPolicyService policyService, IClientService clientService, IAuditLogRepository auditLogRepository)
         {
             policyService_ = policyService;
             _clientService = clientService;
+            _auditLogRepository = auditLogRepository;
         }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -52,6 +55,28 @@ namespace API.Controllers
         private int CurrentClientId => int.TryParse(User.FindFirstValue("clientId"), out var id)
             ? id
             : throw new InvalidOperationException("Token has no clientId claim.");
+
+        //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        /// <summary>
+        /// Records a policy change in the activity log. Logging must never break the request.
+        /// </summary>
+        private async Task LogAsync(AuditActionType action, int policyId, string details)
+        {
+            try
+            {
+                await _auditLogRepository.LogAsync(
+                    userId: CurrentAdvisorId,
+                    userRole: UserRole.FinancialAdviser,
+                    actionType: action,
+                    entityAffected: "Policy",
+                    entityId: policyId,
+                    details: details);
+            }
+            catch (Exception)
+            {
+                // Ignore - the action itself worked.
+            }
+        }
 
         //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
         /// <summary>
@@ -166,6 +191,7 @@ namespace API.Controllers
         public async Task<ActionResult<PolicyDto>> CreateCatalogueItem([FromBody] CreateCataloguePolicyRequest request)
         {
             var created = await policyService_.CreateCatalogueItemAsync(request);
+            await LogAsync(AuditActionType.Create, created.PolicyId, $"Added catalogue policy {created.PolicyName}.");
             return CreatedAtAction(nameof(GetById), new { id = created.PolicyId }, created);
         }
 
@@ -185,6 +211,7 @@ namespace API.Controllers
             try
             {
                 var created = await policyService_.CreateClientPolicyAsync(clientId, request);
+                await LogAsync(AuditActionType.Create, created.PolicyId, $"Added policy {created.PolicyName} to client {clientId}.");
                 return CreatedAtAction(nameof(GetById), new { id = created.PolicyId }, created);
             }
             catch (ArgumentException ex)
@@ -218,6 +245,10 @@ namespace API.Controllers
             try
             {
                 var updated = await policyService_.UpdateAsync(id, request);
+                if (updated is not null)
+                {
+                    await LogAsync(AuditActionType.Update, id, $"Updated policy {updated.PolicyName}.");
+                }
                 return updated is null ? NotFound(new { message = $"Policy {id} was not found." }) : Ok(updated);
             }
             catch (ArgumentException ex)
@@ -246,7 +277,14 @@ namespace API.Controllers
 
             try
             {
-                return Ok(await policyService_.UpdateStatusAsync(id, request));
+                var updated = await policyService_.UpdateStatusAsync(id, request);
+                if (existing.Status != updated.Status)
+                    await LogAsync(AuditActionType.Update, id, $"Changed policy {updated.PolicyName} from {existing.Status} to {updated.Status}.");
+                return Ok(updated);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
             catch (KeyNotFoundException ex)
             {
@@ -278,6 +316,12 @@ namespace API.Controllers
             try
             {
                 var deleted = await policyService_.DeleteAsync(id);
+
+                if (deleted)
+                {
+                    await LogAsync(AuditActionType.Delete, id, $"Removed policy {existing.PolicyName}.");
+                }
+
                 return deleted ? NoContent() : NotFound(new { message = $"Policy {id} was not found." });
             }
             catch (InvalidOperationException ex)

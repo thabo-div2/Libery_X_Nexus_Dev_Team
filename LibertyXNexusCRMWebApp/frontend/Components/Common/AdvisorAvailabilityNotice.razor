@@ -1,0 +1,145 @@
+﻿@using frontend.Services
+@implements IDisposable
+@inject AvailabilityService AvailabilityApi
+
+@* Tells a signed-in client whether their advisor is in their working hours right now.
+   Shows nothing until the advisor has set their hours, or if the status can't be loaded
+   (the API still enforces the hours either way). *@
+
+@if (Status is not null && Status.IsConfigured)
+{
+    <div class="availability-notice @(Status.IsAvailableNow ? "is-available" : "is-away")" role="status">
+
+        <span class="availability-dot" aria-hidden="true"></span>
+
+        <div class="availability-text">
+
+            <strong>@(Status.IsAvailableNow ? "Your advisor is available" : "Your advisor is out of office")</strong>
+
+            @if (!string.IsNullOrWhiteSpace(Status.Message))
+            {
+                <span>@Status.Message</span>
+            }
+
+            @if (!Status.IsAvailableNow)
+            {
+                <span>You can send messages once they are back. You can still request a meeting for a time inside their working hours.</span>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(HoursSummary))
+            {
+                <span class="availability-hours">Working hours: @HoursSummary</span>
+            }
+
+        </div>
+
+    </div>
+}
+
+@code {
+    /// <summary>Runs every time the status is loaded, so the page can lock or unlock what depends on it.</summary>
+    [Parameter] public EventCallback<AdvisorAvailability> OnStatusChanged { get; set; }
+
+    // The advisor's day starts and ends while the page is open, so check again every minute.
+    private static readonly TimeSpan RefreshEvery = TimeSpan.FromSeconds(60);
+
+    private readonly CancellationTokenSource _stop = new();
+
+    private AdvisorAvailability? Status;
+
+    private string HoursSummary = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshAsync();
+        _ = KeepRefreshingAsync();
+    }
+
+    /// <summary>
+    /// Loads the status again. The page calls this after the API refuses a message or meeting,
+    /// so the notice matches what the API just said.
+    /// </summary>
+    public async Task RefreshAsync()
+    {
+        var (status, _) = await AvailabilityApi.GetStatusAsync();
+
+        // Keep showing the last known status if this check failed.
+        if (status is null)
+        {
+            return;
+        }
+
+        Status = status;
+        HoursSummary = BuildSummary(status.Days);
+        StateHasChanged();
+
+        await OnStatusChanged.InvokeAsync(status);
+    }
+
+    private async Task KeepRefreshingAsync()
+    {
+        try
+        {
+            using var timer = new PeriodicTimer(RefreshEvery);
+
+            while (await timer.WaitForNextTickAsync(_stop.Token))
+            {
+                await InvokeAsync(async () =>
+                {
+                    await RefreshAsync();
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (Exception)
+        {
+            // The page was closed or the connection dropped, so there is nothing left to refresh.
+        }
+    }
+
+    /// <summary>
+    /// Turns the week into one line, joining days in a row that share the same hours:
+    /// "Mon to Fri 08:00 to 17:00, Sat 09:00 to 12:00".
+    /// </summary>
+    private static string BuildSummary(List<DayHours> days)
+    {
+        var parts = new List<string>();
+        var i = 0;
+
+        while (i < days.Count)
+        {
+            if (!days[i].IsWorkingDay)
+            {
+                i++;
+                continue;
+            }
+
+            var last = i;
+
+            while (last + 1 < days.Count
+                && days[last + 1].IsWorkingDay
+                && days[last + 1].StartTime == days[i].StartTime
+                && days[last + 1].EndTime == days[i].EndTime)
+            {
+                last++;
+            }
+
+            var label = last == i ? ShortName(days[i].Day) : $"{ShortName(days[i].Day)} to {ShortName(days[last].Day)}";
+            parts.Add($"{label} {days[i].StartTime} to {days[i].EndTime}");
+
+            i = last + 1;
+        }
+
+        return string.Join(", ", parts);
+    }
+
+    private static string ShortName(DayOfWeek day) => day.ToString()[..3];
+
+    public void Dispose()
+    {
+        _stop.Cancel();
+        _stop.Dispose();
+    }
+}
+
+@* //-----------------------------------------------------------------------------0o0o0o End of File 0o0o0o0o0o-------------------------------------------------------------------------------------------------// *@

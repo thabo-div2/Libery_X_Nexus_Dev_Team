@@ -6,7 +6,8 @@ namespace API.DTOs.Policies
     public class UpdatePolicyStatusRequest
     {
         [Required]
-        public PolicyStatus NewStatus { get; set; }
+        [EnumDataType(typeof(PolicyStatus))]
+        public PolicyStatus? NewStatus { get; set; }
     }
 }
 

@@ -64,9 +64,10 @@
         margin: 0 0 var(--space-5) 0;
         font-size: clamp(37.5px, 3.6vw, 64px);
         line-height: 1.13;
-        letter-spacing: -1.8px;
-        font-weight: var(--weight-medium);
         color: var(--color-white);
+        font-family: var(--font-display);
+        font-weight: var(--weight-regular);
+        letter-spacing: -0.02em;
     }
 
 .brand-description {
@@ -481,3 +482,435 @@
 }
 
 /* ================================ EndOfFile ============================== */
+
+
+/* ================================ NEXUS 2.0 AUTH ============================== */
+
+@keyframes auth-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+.login-page {
+    padding: 16px;
+    gap: 16px;
+    background: var(--color-page-bg);
+}
+
+/* Navy brand panel floats on the page with the tray outline */
+.login-brand-panel {
+    flex: 1.1 1 0;
+    width: auto;
+    min-height: calc(100vh - 32px);
+    padding: 48px 56px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background:
+        radial-gradient(90% 70% at 100% 100%, color-mix(in srgb, var(--color-accent) 26%, transparent) 0%, transparent 62%),
+        linear-gradient(160deg, var(--color-blue-790) 0%, var(--color-sidebar) 58%);
+    box-shadow: 0 0 0 6px rgba(12, 35, 64, 0.04), 0 0 0 7px rgba(12, 35, 64, 0.06), 0 30px 60px -30px rgba(12, 35, 64, 0.45);
+}
+
+.login-brand-panel .brand-logo {
+    gap: 12px;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+}
+
+.login-brand-panel .brand-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: var(--weight-regular);
+}
+
+.login-brand-panel .brand-content {
+    max-width: 580px;
+}
+
+.login-brand-panel .brand-content h1 {
+    margin-bottom: var(--space-6);
+    font-size: clamp(40px, 4.2vw, 68px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+}
+
+.login-brand-panel .brand-content h1 em {
+    color: var(--color-accent);
+    font-style: italic;
+}
+
+.login-brand-panel .brand-description {
+    max-width: 480px;
+    margin-bottom: var(--space-8);
+    line-height: 1.65;
+}
+
+.login-brand-panel .brand-features {
+    gap: 14px;
+}
+
+.login-brand-panel .feature-item {
+    gap: 16px;
+    color: var(--color-slate-180);
+    font-size: 15px;
+}
+
+.login-brand-panel .feature-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: var(--color-white-08);
+    box-shadow: inset 0 0 0 1px var(--color-white-08);
+    color: var(--color-accent);
+}
+
+.login-brand-panel .brand-footer {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Form side */
+.login-form-panel {
+    flex: 1 1 0;
+    width: auto;
+    min-height: calc(100vh - 32px);
+    padding: 48px 40px;
+    background: transparent;
+}
+
+.login-card {
+    max-width: 430px;
+    animation: auth-rise 700ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.login-heading {
+    margin-bottom: var(--space-8);
+}
+
+.login-heading .auth-eyebrow {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: var(--color-accent-deep);
+    font-size: 11px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.login-heading h2 {
+    margin: 0 0 var(--space-3) 0;
+    color: var(--color-primary);
+    font-family: var(--font-display);
+    font-size: clamp(38px, 3.4vw, 52px);
+    font-weight: var(--weight-regular);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+}
+
+.login-heading p {
+    color: var(--color-text-muted);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+/* Pill inputs */
+.form-group label {
+    margin: 0 0 8px 8px;
+    color: var(--color-primary);
+    font-size: 12.5px;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.01em;
+}
+
+.form-group ::deep input {
+    height: 52px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.1);
+    color: var(--color-primary);
+    font-size: 15px;
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-group ::deep input:hover {
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.24);
+}
+
+.form-group ::deep input:focus {
+    background: var(--color-white);
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.form-group ::deep input.invalid {
+    box-shadow: 0 0 0 2px var(--color-danger);
+}
+
+.form-group ::deep .validation-message {
+    margin: 6px 0 0 10px;
+    color: var(--color-danger);
+    font-size: 12.5px;
+    font-weight: var(--weight-medium);
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon .input-icon {
+    position: absolute;
+    left: 20px;
+    display: flex;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    transition: color var(--transition-fast);
+}
+
+.input-with-icon:focus-within .input-icon {
+    color: var(--color-primary);
+}
+
+.input-with-icon ::deep input {
+    padding-left: 50px;
+}
+
+.password-input-wrapper.input-with-icon ::deep input,
+.password-input-wrapper ::deep input {
+    padding-right: 56px;
+}
+
+.password-toggle-button {
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.password-toggle-button:hover {
+    background: rgba(12, 35, 64, 0.06);
+    color: var(--color-primary);
+}
+
+.password-toggle-button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+.field-hint {
+    margin: 8px 0 0 10px;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+/* Primary pill with the orange arrow disc */
+.sign-in-button {
+    position: relative;
+    width: 100%;
+    min-height: 56px;
+    padding: 0 64px;
+    border: none;
+    border-radius: 999px;
+    background: var(--color-primary);
+    box-shadow: 0 14px 28px -14px rgba(12, 35, 64, 0.55);
+    color: var(--color-white);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.sign-in-button:hover:not(:disabled) {
+    background: var(--color-blue-770);
+    color: var(--color-white);
+}
+
+.sign-in-button:active:not(:disabled) {
+    transform: scale(0.985);
+}
+
+.sign-in-button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+}
+
+.sign-in-button:disabled {
+    opacity: 0.7;
+    cursor: default;
+}
+
+.sign-in-button .arrow {
+    position: absolute;
+    top: 50%;
+    right: 7px;
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    transform: translateY(-50%);
+    transition: transform 500ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sign-in-button:hover:not(:disabled) .arrow {
+    transform: translateY(-50%) translateX(2px);
+}
+
+/* Secondary pill under a divider */
+.register-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    margin-top: var(--space-8);
+}
+
+.register-section .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+}
+
+.register-section .auth-divider::before,
+.register-section .auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(12, 35, 64, 0.12);
+}
+
+.register-section .auth-secondary-link {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.12);
+    color: var(--color-primary);
+    font-size: 14.5px;
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+    transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.register-section .auth-secondary-link:hover {
+    background: var(--color-white);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.32);
+    text-decoration: none;
+}
+
+.register-section .auth-secondary-link:active {
+    transform: scale(0.985);
+}
+
+.register-section .auth-secondary-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+.login-error {
+    margin-bottom: var(--space-5);
+    border-left: none;
+    border-radius: 18px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-danger) 35%, transparent);
+}
+
+@media (max-width: 1000px) {
+    .login-brand-panel {
+        padding: 40px;
+    }
+
+    .login-form-panel {
+        padding: 40px 24px;
+    }
+}
+
+@media (max-width: 760px) {
+    .login-page {
+        padding: 12px;
+        gap: 0;
+    }
+
+    .login-brand-panel {
+        flex: none;
+        min-height: auto;
+        padding: 32px 28px 40px;
+    }
+
+    .login-brand-panel .brand-logo {
+        margin-bottom: 56px;
+    }
+
+    .login-brand-panel .brand-content {
+        margin: 0;
+    }
+
+    .login-form-panel {
+        flex: none;
+        min-height: auto;
+        padding: 44px 12px 56px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-card { animation: none; }
+    .sign-in-button, .sign-in-button .arrow, .form-group ::deep input, .register-section .auth-secondary-link { transition: none; }
+}
+
+.remember-me {
+    gap: 10px;
+    font-size: 13px;
+}
+
+.remember-me input {
+    width: 16px;
+    height: 16px;
+}
+
+.forgot-password {
+    color: var(--color-accent-deep);
+    font-size: 13px;
+    font-weight: var(--weight-semibold);
+}
+
+.forgot-password:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+.form-options {
+    margin-top: 0;
+    margin-bottom: var(--space-6);
+    padding: 0 8px;
+}
+
+
+/* ---- invitation-only note (replaces the self-service sign-up link) ---- */
+.register-section .invite-note {
+    margin: 0;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 0 1px rgba(12, 35, 64, 0.08);
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: center;
+}

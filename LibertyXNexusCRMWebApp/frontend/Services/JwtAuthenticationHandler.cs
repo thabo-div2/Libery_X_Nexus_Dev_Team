@@ -60,9 +60,16 @@ namespace frontend.Services
             }
 
 
-            return await base.SendAsync(
-                request,
-                cancellationToken);
+            try
+            {
+                return await base.SendAsync(request, cancellationToken);
+            }
+            catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException)
+            {
+                _logger.LogError(ex, "API transport failed for {Method} {Path}. Error type: {ErrorType}",
+                    request.Method, request.RequestUri?.AbsolutePath, ex.GetType().Name);
+                throw;
+            }
         }
     }
     

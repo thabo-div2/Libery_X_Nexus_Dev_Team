@@ -12,7 +12,8 @@
         int ClientId,
         string ClientName,
         string? LastMessage,
-        DateTime? LastMessageAt);
+        DateTime? LastMessageAt,
+        int UnreadCount = 0);
 
     public record SendMessageRequest(
         int ClientId,

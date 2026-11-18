@@ -315,6 +315,27 @@ namespace API.Services.Implementations
                 CreatedAt: p.EndDate!.Value,
                 IsReminder: true)));
 
+            // Open tasks due today or already overdue (South African date, as advisors see it).
+            var today = DisplayTime.ToSouthAfrica(now).Date;
+            var dueTasks = await db.AdvisorTasks
+                .AsNoTracking()
+                .Include(t => t.Client)
+                .Where(t => t.AdvisorId == advisorId && t.CompletedAt == null && t.DueDate < today.AddDays(1))
+                .OrderBy(t => t.DueDate)
+                .Take(20)
+                .ToListAsync();
+
+            reminders.AddRange(dueTasks.Select(t => new NotificationDtos(
+                0,
+                NotificationType.PendingAction.ToString(),
+                (t.DueDate.Date < today ? $"Overdue task ({t.DueDate:d MMM}): " : "Task due today: ")
+                    + t.Title
+                    + (t.Client is null || t.Title.Contains(t.Client.FullName) ? "" : $" ({t.Client.FullName})"),
+                "/tasks",
+                IsRead: false,
+                CreatedAt: t.DueDate,
+                IsReminder: true)));
+
             return reminders;
         }
     }

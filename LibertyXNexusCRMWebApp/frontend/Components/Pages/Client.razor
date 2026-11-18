@@ -2,400 +2,326 @@
 @layout MainLayout
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using frontend.Services
+@using Shared.DTOs.Workflow
 @inject CurrentUserService CurrentUser
 @inject ClientService ClientDirectory
 @inject PolicyService PolicyDirectory
 @inject MarketInformationService MarketInformation
-@inject DocumentService DocumentDirectory
 @inject CaseService CaseDirectory
+@inject MeetingService MeetingStore
+@inject MessageService MessageStore
+@inject AvailabilityService AvailabilityApi
+@inject WorkflowService Workflow
+@inject DocumentRequestService RequestApi
 @using Shared.Models.Enums
 
-<PageTitle>Client View | Nexus</PageTitle>
+<PageTitle>Home | Nexus</PageTitle>
 
+@* Client home. It answers, in this order: is there anything I need to do, how do I reach my
+   adviser (and when is my next meeting), and how far along is my application. *@
 <ErrorBoundary>
     <ChildContent>
         <div class="client-page">
 
-            <!-- PAGE HEADER -->
             <header class="client-header">
-
                 <div class="client-heading">
-                    <h1>
-                        Welcome back@(string.IsNullOrWhiteSpace(ClientFirstName)
-                                                                    ? "!"
-                                                                    : $", {ClientFirstName}!")
-                    </h1>
+                    <span class="header-eyebrow">@DateTime.Today.ToString("dddd, d MMMM")</span>
+                    <h1>@((MarkupString)GreetingHtml)</h1>
+                    <p>@HeaderSummary</p>
+                </div>
+                <div class="header-actions">
+                    <NotificationBell />
+                </div>
+            </header>
 
-                    <p>
-                        @if (!string.IsNullOrWhiteSpace(CurrentProduct))
+            <main class="home-grid">
+
+                <!-- LEFT: what to do, then progress, then documents -->
+                <div class="home-stack">
+
+                    @if (!ActionsLoaded)
+                    {
+                        <section class="next-step is-loading" aria-busy="true" aria-label="Loading your next step">
+                            <span class="skeleton skeleton-label"></span>
+                            <span class="skeleton skeleton-title"></span>
+                            <span class="skeleton skeleton-line"></span>
+                        </section>
+                    }
+                    else if (NextAction is null)
+                    {
+                        <section class="next-step is-clear" aria-labelledby="next-step-title">
+                            <span class="next-step-label"><i aria-hidden="true"></i>You're all caught up</span>
+                            <h2 id="next-step-title">Nothing needs you right now</h2>
+                            <p>
+                                @if (NextMeeting is not null)
+                                {
+                                    <text>Your next meeting with @AdviserFirstName is on @NextMeeting.MeetingDate.ToLocalTime().ToString("dddd d MMMM 'at' HH:mm").</text>
+                                }
+                                else
+                                {
+                                    <text>We'll let you know here when @AdviserFirstName needs anything from you.</text>
+                                }
+                            </p>
+                        </section>
+                    }
+                    else
+                    {
+                        <section class="next-step" aria-labelledby="next-step-title">
+                            <span class="next-step-label"><i aria-hidden="true"></i>Your next step</span>
+                            <h2 id="next-step-title">@NextAction.Title</h2>
+                            <p>@NextAction.Detail</p>
+                            <div class="next-step-actions">
+                                @if (NextAction.Request is not null)
+                                {
+                                    <button type="button" class="home-btn home-btn-light" @onclick="() => BeginRequestUpload(NextAction.Request)">@NextAction.ActionText</button>
+                                }
+                                else if (NextAction.Href is not null)
+                                {
+                                    <a class="home-btn home-btn-light" href="@NextAction.Href">@NextAction.ActionText</a>
+                                }
+                                <a class="home-btn home-btn-ghost" href="/client-messages">Ask @AdviserFirstName a question</a>
+                            </div>
+                        </section>
+                    }
+
+                    @if (ActionsLoaded && OtherActions.Count > 0)
+                    {
+                        <section class="home-panel" aria-labelledby="todo-title">
+                            <div class="home-panel-head">
+                                <h2 id="todo-title">Also waiting on you · @OtherActions.Count</h2>
+                                <a href="/client-documents">All documents</a>
+                            </div>
+                            <ul class="todo-list">
+                                @foreach (var action in OtherActions)
+                                {
+                                    <li>
+                                        <span class="todo-icon todo-@action.Kind" aria-hidden="true">@ActionIcon(action.Kind)</span>
+                                        <div class="todo-text">
+                                            <strong>@action.Title</strong>
+                                            <span>@action.Detail</span>
+                                        </div>
+                                        @if (action.Request is not null)
+                                        {
+                                            <button type="button" class="todo-link" @onclick="() => BeginRequestUpload(action.Request)">@action.ActionText</button>
+                                        }
+                                        else if (action.Href is not null)
+                                        {
+                                            <a class="todo-link" href="@action.Href">@action.ActionText</a>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </section>
+                    }
+
+                    <!-- APPLICATION PROGRESS -->
+                    <section class="home-panel" aria-labelledby="progress-title">
+                        <div class="home-panel-head">
+                            <h2 id="progress-title">Your application</h2>
+                            @if (SelectedCase is not null)
+                            {
+                                <span class="home-chip @(AllStepsDone ? "chip-done" : "chip-progress")">@CurrentApplicationStatus</span>
+                            }
+                        </div>
+
+                        @if (SelectedCase is null)
                         {
-                            <span>
-                                @CurrentProduct
-                                @if (!string.IsNullOrWhiteSpace(CurrentInstitution))
-                                {
-                                    <span> · @CurrentInstitution</span>
-                                }
-
-                                @if (!string.IsNullOrWhiteSpace(CurrentCaseNumber))
-                                {
-                                    <span> · Case #@CurrentCaseNumber</span>
-                                }
-                            </span>
+                            <p class="home-empty">Once @AdviserFirstName starts your application, you'll see each step here.</p>
                         }
                         else
                         {
-                            <span>Your financial planning overview</span>
-                        }
-                    </p>
-                </div>
+                            <div class="progress-compact">
+                                @if (ClientCases.Count > 1)
+                                {
+                                    <div class="progress-policies" role="group" aria-label="Choose a policy">
+                                        @foreach (var policyCase in ClientCases)
+                                        {
+                                            var picked = policyCase.CaseId == SelectedCaseId;
+                                            <button type="button"
+                                                    class="progress-policy @(picked ? "is-selected" : "")"
+                                                    aria-pressed="@(picked ? "true" : "false")"
+                                                    @key="policyCase.CaseId"
+                                                    @onclick="() => SelectCase(policyCase)">
+                                                @(string.IsNullOrWhiteSpace(policyCase.PolicyName) ? $"Policy {policyCase.PolicyId}" : policyCase.PolicyName)
+                                            </button>
+                                        }
+                                    </div>
+                                }
 
-
-                <div class="header-actions">
-
-                    @* Hidden: this search box was not connected to anything, so typing in it did nothing.
-                       Bring it back once it filters this page (the Clients and FAQ pages have working examples). *@
-                    @* <div class="search-box" role="search">
-
-                        <span class="search-icon" aria-hidden="true">⌕</span>
-
-                        <input aria-label="Search clients, cases, documents" type="text"
-                               placeholder="Search clients, cases, documents" />
-
-                    </div> *@
-
-                    <NotificationBell />
-
-                </div>
-
-            </header>
-
-
-            <!-- MAIN CLIENT CONTENT -->
-            <main class="client-content">
-
-                <!-- LEFT COLUMN -->
-                <div class="main-column">
-
-
-                    <!-- ===============================
-                 APPLICATION PROGRESS
-                 =============================== -->
-                    <section class="dashboard-card progress-card">
-
-                        <div class="card-header">
-
-                            <h2>Application progress</h2>
-
-                            @if (!string.IsNullOrWhiteSpace(CurrentApplicationStatus))
-                            {
-                                <span class="overall-status">
-                                    @CurrentApplicationStatus
-                                </span>
-                            }
-
-                        </div>
-
-
-                        <div class="progress-body">
-
-                            @if (ApplicationSteps.Count > 0)
-                            {
-                                <div class="progress-list">
-
-                                    @foreach (var step in ApplicationSteps)
+                                <div class="progress-summary">
+                                    <strong>
+                                        @(AllStepsDone ? $"All {ApplicationSteps.Count} steps complete" : $"Step {CurrentStepIndex + 1} of {ApplicationSteps.Count} · {ApplicationSteps[CurrentStepIndex].Title}")
+                                    </strong>
+                                    @if (!string.IsNullOrWhiteSpace(ApplicationSteps.FirstOrDefault()?.DateText))
                                     {
-                                        <div class="progress-step">
-
-                                            <div class="progress-marker-column">
-
-                                                <span class="progress-marker @GetStepClass(step.Status)">
-                                                    @GetStepIcon(step.Status)
-                                                </span>
-
-                                                @if (step != ApplicationSteps.Last())
-                                                {
-                                                    <span class="progress-line"></span>
-                                                }
-
-                                            </div>
-
-
-                                            <div class="progress-details">
-
-                                                <strong>@step.Title</strong>
-
-                                                @if (!string.IsNullOrWhiteSpace(step.DateText))
-                                                {
-                                                    <span>@step.DateText</span>
-                                                }
-
-                                            </div>
-
-                                        </div>
+                                        <span>Started @ApplicationSteps[0].DateText</span>
                                     }
-
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="empty-state large-empty">
 
-                                    <strong>No application progress available</strong>
+                                <span class="progress-bar" role="progressbar" aria-label="Application progress"
+                                      aria-valuemin="0" aria-valuemax="@ApplicationSteps.Count" aria-valuenow="@CompletedSteps">
+                                    @for (var i = 0; i < ApplicationSteps.Count; i++)
+                                    {
+                                        <i class="@(i < CompletedSteps ? "is-done" : i == CurrentStepIndex ? "is-now" : "")"></i>
+                                    }
+                                </span>
 
-                                    <span>
-                                        Your application progress will appear here.
-                                    </span>
+                                <ol class="progress-steps">
+                                    @for (var i = 0; i < ApplicationSteps.Count; i++)
+                                    {
+                                        var step = ApplicationSteps[i];
+                                        var done = step.Status == "complete";
+                                        var now = !done && i == CurrentStepIndex;
+                                        <li class="@(done ? "is-done" : now ? "is-now" : "")">
+                                            <span class="progress-dot" aria-hidden="true">
+                                                @if (done) { <svg viewBox="0 0 16 16"><path d="M3 8.5L6.5 12L13 4.5" /></svg> }
+                                            </span>
+                                            <span class="progress-step-text">
+                                                <strong>@step.Title</strong>
+                                                <span>@(done ? step.DateText : now ? "Now" : "")</span>
+                                            </span>
+                                        </li>
+                                    }
+                                </ol>
 
-                                </div>
-                            }
-
-                        </div>
-
+                                <p class="progress-explain"><strong>What happens now:</strong> @WhatHappensNow</p>
+                            </div>
+                        }
                     </section>
 
-
-                    <!-- ===============================
-                 OUTSTANDING DOCUMENTS
-                 =============================== -->
-                    <section class="dashboard-card documents-card">
-
-                        <div class="card-header">
-
-                            <h2>Outstanding documents</h2>
-
-                            <a href="/client-documents" class="view-all-link">View all</a>
-
+                    <!-- DOCUMENTS: the full checklist, with the uploader only when it's needed -->
+                    <section class="home-panel" aria-labelledby="documents-title">
+                        <div class="home-panel-head">
+                            <h2 id="documents-title">Documents</h2>
+                            <a href="/client-documents">View all</a>
                         </div>
-
-
-                        <div class="documents-body">
-
-                            @if (Documents.Count > 0)
+                        <div class="home-panel-body">
+                            @if (CurrentUser.Id is int requestClientId)
                             {
-                                <div class="document-list">
-
-                                    @foreach (var document in Documents)
-                                    {
-                                        <div class="document-row">
-
-                                            <span class="document-name">
-                                                @document.Name
-                                            </span>
-
-                                            <span class="document-status @GetDocumentStatusClass(document.Status)">
-                                                <span class="status-dot"></span>
-
-                                                @document.Status
-                                            </span>
-
-                                        </div>
-                                    }
-
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="empty-state document-empty">
-
-                                    <span>No document information available</span>
-
-                                </div>
+                                <RequestedDocuments @ref="RequestedList" ClientId="requestClientId"
+                                                    OnUploadRequested="BeginRequestUpload"
+                                                    OnLoaded="OnRequestsLoaded" />
                             }
 
-
-                            <!-- Upload document -->
-                            @if (CurrentUser.Id is int uploadClientId)
+                            @if (!ShowUploader)
                             {
-                                <div class="upload-wrapper">
-                                    <DocumentUploader ClientId="uploadClientId"
+                                <button type="button" class="home-btn home-btn-quiet upload-open" @onclick="OpenUploader">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 15v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4" /></svg>
+                                    Upload a document
+                                </button>
+                            }
+
+                            @* Always rendered so it keeps its state; only shown once the client wants to upload. *@
+                            <div class="upload-wrapper" hidden="@(!ShowUploader)">
+                                @if (CurrentUser.Id is int uploadClientId)
+                                {
+                                    <DocumentUploader @ref="Uploader" ClientId="uploadClientId"
                                                       Policies="RawPolicies"
                                                       OnUploaded="OnDocumentUploaded" />
-                                </div>
-                            }
-
+                                }
+                            </div>
                         </div>
-
                     </section>
 
                 </div>
 
+                <!-- RIGHT: adviser and meeting, policies, updates -->
+                <aside class="home-stack">
 
-                <!-- RIGHT COLUMN -->
-                <aside class="side-column">
-
-
-                    <!-- ===============================
-                 MY POLICIES
-                 =============================== -->
-                    <section class="dashboard-card policies-card">
-
-                        <div class="card-header">
-                            <h2>My policies</h2>
+                    <section class="home-panel adviser-panel" aria-labelledby="adviser-title">
+                        <div class="adviser-top">
+                            <span class="adviser-avatar" aria-hidden="true">@(string.IsNullOrWhiteSpace(AdviserInitials) ? "A" : AdviserInitials)</span>
+                            <div>
+                                <h2 id="adviser-title">@(string.IsNullOrWhiteSpace(AdviserName) ? "Adviser not assigned" : AdviserName)</h2>
+                                <span>@(string.IsNullOrWhiteSpace(AdviserFspNumber) ? "Your financial adviser" : $"Your financial adviser · FSP {AdviserFspNumber}")</span>
+                            </div>
                         </div>
 
+                        @if (Availability is { IsConfigured: true })
+                        {
+                            <p class="adviser-status @(Availability.IsAvailableNow ? "is-available" : "is-away")">
+                                <i aria-hidden="true"></i>@AvailabilityText
+                            </p>
+                        }
 
-                        <div class="policies-body">
+                        @if (NextMeeting is not null)
+                        {
+                            var local = NextMeeting.MeetingDate.ToLocalTime();
+                            <a class="adviser-meeting" href="/client-calendar">
+                                <span class="meeting-date" aria-hidden="true">
+                                    <small>@local.ToString("ddd")</small>
+                                    <b>@local.Day</b>
+                                </span>
+                                <span class="meeting-text">
+                                    <strong>@(string.IsNullOrWhiteSpace(NextMeeting.MeetingType) ? "Meeting" : NextMeeting.MeetingType) · @local.ToString("d MMM")</strong>
+                                    <span>@local.ToString("HH:mm")–@local.AddMinutes(NextMeeting.DurationMinutes).ToString("HH:mm")@(string.IsNullOrWhiteSpace(NextMeeting.Location) ? "" : $" · {NextMeeting.Location}")</span>
+                                    @if (NextMeeting.Status == "Requested")
+                                    {
+                                        <span class="meeting-pending">Waiting for @AdviserFirstName to confirm</span>
+                                    }
+                                </span>
+                            </a>
+                        }
 
-                            @if (Policies.Count > 0)
-                            {
-                                @foreach (var policy in Policies)
-                                {
-                                    <div class="policy-row">
-
-                                        <div class="policy-details">
-
-                                            <strong>
-                                                @policy.Name
-                                            </strong>
-
-                                            @if (!string.IsNullOrWhiteSpace(policy.Status))
-                                            {
-                                                <span>
-                                                    @policy.Status
-                                                </span>
-                                            }
-
-                                        </div>
-
-
-                                        @if (policy.Value.HasValue)
-                                        {
-                                            <span class="policy-value">
-                                                R @policy.Value.Value.ToString("N0")
-                                            </span>
-                                        }
-
-                                    </div>
-                                }
-                            }
-                            else
-                            {
-                                <div class="empty-state small-empty">
-                                    <span>No policies available</span>
-                                </div>
-                            }
-
+                        <div class="adviser-actions">
+                            <a href="/client-messages" class="home-btn home-btn-primary">
+                                Message
+                                @if (UnreadCount > 0) { <span class="btn-count" aria-label="@UnreadCount unread">@UnreadCount</span> }
+                            </a>
+                            <a href="/client-messages?book=1" class="home-btn home-btn-quiet">Book a meeting</a>
                         </div>
-
                     </section>
 
-
-                    <!-- ===============================
-                 MARKET & NEXUS UPDATES
-                 =============================== -->
-                    <section class="dashboard-card updates-card">
-
-                        <div class="card-header">
-                            <h2>Market &amp; nexus updates</h2>
+                    <section class="home-panel" aria-labelledby="policies-title">
+                        <div class="home-panel-head">
+                            <h2 id="policies-title">My policies</h2>
                         </div>
+                        @if (RawPolicies.Count == 0)
+                        {
+                            <p class="home-empty">No policies yet. They'll appear here once @AdviserFirstName adds them.</p>
+                        }
+                        else
+                        {
+                            <ul class="policy-list">
+                                @foreach (var policy in RawPolicies)
+                                {
+                                    <li>
+                                        <div class="policy-top">
+                                            <strong>@policy.PolicyName</strong>
+                                            <span class="home-chip @PolicyChipClass(policy.Status)">@FormatPolicyStatus(policy.Status)</span>
+                                        </div>
+                                        <dl>
+                                            <div><dt>Cover</dt><dd>@Money(policy.CoverAmount)</dd></div>
+                                            <div><dt>Premium</dt><dd>@(policy.PremiumAmount.HasValue ? $"{Money(policy.PremiumAmount)}/m" : "—")</dd></div>
+                                            @if (policy.EndDate is DateTime ends)
+                                            {
+                                                <div><dt>Renews</dt><dd>@ends.ToLocalTime().ToString("d MMM yyyy")</dd></div>
+                                            }
+                                            else
+                                            {
+                                                <div><dt>Provider</dt><dd>@(string.IsNullOrWhiteSpace(policy.Provider) ? "—" : policy.Provider)</dd></div>
+                                            }
+                                        </dl>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </section>
 
-
-                        <div class="updates-body">
-
-                            @if (Updates.Count > 0)
-                            {
+                    @if (Updates.Count > 0)
+                    {
+                        <section class="home-panel" aria-labelledby="updates-title">
+                            <div class="home-panel-head">
+                                <h2 id="updates-title">Market updates</h2>
+                            </div>
+                            <ul class="update-list">
                                 @foreach (var update in Updates)
                                 {
-                                    <div class="update-row">
-
-                                        <div class="update-icon">
-                                            ▤
-                                        </div>
-
-                                        <div class="update-content">
-
-                                            <strong>
-                                                @update.Title
-                                            </strong>
-
-                                            @if (!string.IsNullOrWhiteSpace(update.DateText))
-                                            {
-                                                <span>
-                                                    @update.DateText
-                                                </span>
-                                            }
-
-                                        </div>
-
-                                    </div>
+                                    <li><span>@update.Title</span><small>@update.DateText</small></li>
                                 }
-                            }
-                            else
-                            {
-                                <div class="empty-state small-empty">
-                                    <span>No updates available</span>
-                                </div>
-                            }
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- ===============================
-                 ADVISER
-                 =============================== -->
-                    <section class="dashboard-card adviser-card">
-
-                        <div class="card-header">
-                            <h2>Your adviser</h2>
-                        </div>
-
-
-                        <div class="adviser-body">
-
-                            <div class="adviser-information">
-
-                                <div class="adviser-avatar">
-                                    @(string.IsNullOrWhiteSpace(AdviserInitials)
-                                        ? "A"
-                                        : AdviserInitials)
-                                </div>
-
-
-                                <div class="adviser-details">
-
-                                    <strong>
-                                        @(string.IsNullOrWhiteSpace(AdviserName)
-                                            ? "Adviser not assigned"
-                                            : AdviserName)
-                                    </strong>
-
-                                    <span>
-                                        @(string.IsNullOrWhiteSpace(AdviserFspNumber)
-                                            ? "Financial Adviser"
-                                            : $"Financial Adviser · FSP {AdviserFspNumber}")
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="adviser-actions">
-
-                                <a href="/client-messages"
-                                   class="message-button">
-
-                                    <span>✉</span>
-                                    Message
-
-                                </a>
-
-
-                                <a href="/client-messages"
-                                   class="meeting-button">
-
-                                    <span>♙</span>
-                                    Book meeting
-
-                                </a>
-
-                            </div>
-
-                        </div>
-
-                    </section>
+                            </ul>
+                        </section>
+                    }
 
                 </aside>
 
@@ -410,323 +336,352 @@
     </ErrorContent>
 </ErrorBoundary>
 
+@* Live updates reload only what can change from outside (requests, meetings, messages, case),
+   not the whole page, so nothing flickers. *@
+<RealtimeRefresh OnChanged="RefreshLiveAsync" />
 
 @code {
 
     private string? ClientFirstName;
 
+    private string GreetingHtml => string.IsNullOrWhiteSpace(ClientFirstName)
+        ? "Welcome back"
+        : "Welcome back, <em class=\"greeting-name\">" + System.Net.WebUtility.HtmlEncode(ClientFirstName) + "</em>";
+
     private string? CurrentProduct;
     private string? CurrentInstitution;
-    private string? CurrentCaseNumber;
     private string? CurrentApplicationStatus;
 
     private string? AdviserName;
     private string? AdviserInitials;
     private string? AdviserFspNumber;
-
+    private string AdviserFirstName => string.IsNullOrWhiteSpace(AdviserName) ? "your adviser" : AdviserName.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
 
     private List<ApplicationStep> ApplicationSteps { get; set; } = new();
 
-    private List<ClientDocument> Documents { get; set; } = new();
+    // Every case the client has: one per policy. SelectedCaseId is the one whose steps are showing.
+    private List<CaseSummary> ClientCases { get; set; } = new();
+    private int SelectedCaseId { get; set; }
+    private CaseSummary? SelectedCase => ClientCases.FirstOrDefault(c => c.CaseId == SelectedCaseId);
 
-    private List<ClientPolicy> Policies { get; set; } = new();
+    private int CompletedSteps => ApplicationSteps.Count(s => s.Status == "complete");
+    private bool AllStepsDone => ApplicationSteps.Count > 0 && CompletedSteps == ApplicationSteps.Count;
+    private int CurrentStepIndex => Math.Max(0, ApplicationSteps.FindIndex(s => s.Status != "complete"));
 
     // The policies as the API sent them, so the uploader can file documents under one.
     private List<PolicySummary> RawPolicies { get; set; } = new();
 
     private List<ClientUpdate> Updates { get; set; } = new();
 
+    // What the client needs to do, most urgent first. Built from document requests,
+    // unread messages and the onboarding checklist.
+    private List<DocumentRequestSummary> Requests = new();
+    private List<MeetingSummary> Meetings = new();
+    private List<OnboardingStep> OnboardingSteps = new();
+    private int UnreadCount;
+    private AdvisorAvailability? Availability;
+    private bool RequestsLoaded, OtherDataLoaded;
+    private bool ActionsLoaded => RequestsLoaded && OtherDataLoaded;
+    private List<HomeAction> Actions = new();
+    private HomeAction? NextAction => Actions.FirstOrDefault();
+    private List<HomeAction> OtherActions => Actions.Skip(1).ToList();
+
+    private MeetingSummary? NextMeeting => Meetings
+        .Where(m => m.MeetingDate > DateTime.UtcNow && (m.Status == "Confirmed" || m.Status == "Requested"))
+        .OrderBy(m => m.MeetingDate)
+        .FirstOrDefault();
+
+    private string HeaderSummary
+    {
+        get
+        {
+            var product = string.IsNullOrWhiteSpace(CurrentProduct)
+                ? "Your financial planning overview"
+                : string.IsNullOrWhiteSpace(CurrentInstitution) ? CurrentProduct : $"{CurrentProduct} with {CurrentInstitution}";
+            if (!ActionsLoaded) return product;
+            return Actions.Count switch
+            {
+                0 => $"{product} · nothing needs you right now",
+                1 => $"{product} · 1 thing needs you",
+                var n => $"{product} · {n} things need you"
+            };
+        }
+    }
+
+    private string AvailabilityText => Availability is null ? "" :
+        !string.IsNullOrWhiteSpace(Availability.Message) ? Availability.Message :
+        Availability.IsAvailableNow ? "Available now" : "Away right now";
 
     protected override async Task OnInitializedAsync()
     {
         await CurrentUser.EnsureRestoredAsync();
+        if (CurrentUser.Id is not int clientId) return;
 
-        if (CurrentUser.Id is null)
-        {
-            return;
-        }
-
-        var clientId = CurrentUser.Id.Value;
-
-        var (client, clientError) = await ClientDirectory.GetByIdAsync(CurrentUser.Id.Value);
-        if (client is null)
-        {
-            return;
-        }
+        var (client, _) = await ClientDirectory.GetByIdAsync(clientId);
+        if (client is null) return;
 
         ClientFirstName = client.FirstName;
-
-        // ---------------------------------------------------------
-        // Adviser information
-        // ---------------------------------------------------------
         if (!string.IsNullOrWhiteSpace(client.AdvisorName))
         {
             AdviserName = client.AdvisorName;
-
-            AdviserInitials = string.Concat(
-                client.AdvisorName
-                    .Split(
-                        ' ',
-                        StringSplitOptions.RemoveEmptyEntries)
-                    .Select(part =>
-                        char.ToUpperInvariant(part[0])));
+            AdviserInitials = string.Concat(client.AdvisorName
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Take(2)
+                .Select(part => char.ToUpperInvariant(part[0])));
         }
 
-        // ---------------------------------------------------------
-        // Load the client's policies from the API
-        // ---------------------------------------------------------
-        var (policies, policyError) =
-            await PolicyDirectory.GetForClientAsync(
-                CurrentUser.Id.Value);
+        await Task.WhenAll(LoadPoliciesAndCasesAsync(clientId), LoadOtherActionDataAsync(clientId), LoadUpdatesAsync());
+    }
 
+    private async Task LoadPoliciesAndCasesAsync(int clientId)
+    {
+        var (policies, policyError) = await PolicyDirectory.GetForClientAsync(clientId);
         if (policyError is null)
         {
             RawPolicies = policies;
-
-            Policies = policies
-                .Select(policy => new ClientPolicy
-                {
-                    Name = policy.PolicyName,
-                    Status = policy.Status,
-                    Value = policy.CoverAmount.HasValue
-                        ? (decimal)policy.CoverAmount.Value
-                        : null
-                })
-                .ToList();
+            var first = policies.FirstOrDefault();
+            CurrentProduct = first?.PolicyName;
+            CurrentInstitution = first?.Provider;
         }
 
-        // ---------------------------------------------------------
-        // Use the first policy for the header information
-        // ---------------------------------------------------------
-        var currentPolicy = policies.FirstOrDefault();
-
-        if (currentPolicy is not null)
-        {
-            CurrentProduct = currentPolicy.PolicyName;
-            CurrentInstitution = currentPolicy.Provider;
-        }
-
-        // ---------------------------------------------------------
-        // Load the client's documents from the API.
-        // ---------------------------------------------------------
-        var (documents, documentError) =
-            await DocumentDirectory.GetForClientAsync(clientId);
-
-        if (documentError is null)
-        {
-            Documents = documents
-                .Select(document => new ClientDocument
-                {
-                    Name = document.FileName,
-
-                    // The current Documents API exposes the document
-                    // itself rather than an "outstanding" status.
-                    // A document returned by the API is therefore
-                    // displayed as received.
-                    Status = "Received"
-                })
-                .ToList();
-        }
-
-        // ---------------------------------------------------------
-        // Load the client's case and build the application
-        // progress steps from the case status. The "Active"/etc.
-        // badge is driven by the CASE's status, not the policy's,
-        // so it actually moves as the advisor works the case.
-        // ---------------------------------------------------------
         var (cases, caseError) = await CaseDirectory.GetForClientAsync(clientId);
-
         if (caseError is null)
         {
-            var currentCase = cases.FirstOrDefault();
-
-            if (currentCase is not null)
-            {
-                ApplicationSteps = BuildApplicationSteps(currentCase);
-                CurrentApplicationStatus = FormatCaseStatus(currentCase.Status);
-
-                if (string.IsNullOrWhiteSpace(CurrentCaseNumber))
-                {
-                    CurrentCaseNumber = currentCase.CaseId.ToString();
-                }
-            }
+            // Oldest policy first, and keep showing the same one if the page reloads its data.
+            ClientCases = cases.OrderBy(c => c.CreatedAt).ThenBy(c => c.CaseId).ToList();
+            var current = ClientCases.FirstOrDefault(c => c.CaseId == SelectedCaseId) ?? ClientCases.FirstOrDefault();
+            if (current is not null) SelectCase(current);
         }
-
-        // ---------------------------------------------------------
-        // Load market and Nexus updates
-        // ---------------------------------------------------------
-        var (updates, updateError) =
-            await MarketInformation.GetMarketInformationAsync();
-
-        if (updateError is null && updates is not null)
-        {
-            var news = (updates.News ?? new List<MarketNewsItem>())
-                .Select(item => new
-                {
-                    item.Title,
-                    item.PublishedAt
-                });
-
-            var nexusUpdates = (updates.Updates ?? new List<MarketNewsItem>())
-                .Select(item => new
-                {
-                    item.Title,
-                    item.PublishedAt
-                });
-
-            Updates = news
-                .Concat(nexusUpdates)
-                .OrderByDescending(item =>
-                    DateTime.TryParse(item.PublishedAt, out var date)
-                        ? date
-                        : DateTime.MinValue)
-                .Take(5)
-                .Select(item => new ClientUpdate
-                {
-                    Title = item.Title,
-                    DateText = DateTime.TryParse(item.PublishedAt, out var date)
-                        ? date.ToString("dd MMM yyyy")
-                        : item.PublishedAt
-                })
-                .ToList();
-        }
-        else
-        {
-            Updates = new List<ClientUpdate>();
-        }
-
     }
 
-    // Show a freshly uploaded document in the list straight away.
-    private void OnDocumentUploaded(DocumentSummary document)
+    /// <summary>
+    /// Meetings, unread messages, adviser availability and the onboarding checklist.
+    /// Document requests arrive separately, from the RequestedDocuments list (OnRequestsLoaded).
+    /// </summary>
+    private async Task LoadOtherActionDataAsync(int clientId)
     {
-        Documents.Insert(0, new ClientDocument
+        var requestsTask = RequestApi.GetForClientAsync(clientId);
+        var meetingsTask = MeetingStore.GetForClientAsync(clientId);
+        var unreadTask = MessageStore.GetUnreadCountAsync();
+        var availabilityTask = AvailabilityApi.GetStatusAsync();
+        var onboardingTask = Workflow.OnboardingAsync(clientId);
+        await Task.WhenAll(requestsTask, meetingsTask, unreadTask, availabilityTask, onboardingTask);
+
+        // Fetched here as well as by the RequestedDocuments list, so the next-step card never
+        // waits on that list (it doesn't report back if its own load fails).
+        if (requestsTask.Result.Requests is { } requests) Requests = requests;
+        RequestsLoaded = true;
+
+        var (meetings, meetingError) = meetingsTask.Result;
+        if (meetingError is null) Meetings = meetings;
+        UnreadCount = unreadTask.Result;
+        Availability = availabilityTask.Result.Status ?? Availability;
+        OnboardingSteps = onboardingTask.Result.Value?.Steps ?? OnboardingSteps;
+
+        OtherDataLoaded = true;
+        BuildActions();
+    }
+
+    private async Task LoadUpdatesAsync()
+    {
+        var (updates, updateError) = await MarketInformation.GetMarketInformationAsync();
+        if (updateError is not null || updates is null) return;
+
+        Updates = (updates.News ?? new List<MarketNewsItem>())
+            .Concat(updates.Updates ?? new List<MarketNewsItem>())
+            .Select(item => (item.Title, Date: DateTime.TryParse(item.PublishedAt, out var date) ? date : (DateTime?)null, item.PublishedAt))
+            .OrderByDescending(item => item.Date ?? DateTime.MinValue)
+            .Take(3)
+            .Select(item => new ClientUpdate { Title = item.Title, DateText = item.Date?.ToString("d MMM") ?? item.PublishedAt ?? "" })
+            .ToList();
+    }
+
+    private async Task RefreshLiveAsync()
+    {
+        if (CurrentUser.Id is not int clientId) return;
+        var requestsTask = RequestedList?.RefreshAsync() ?? Task.CompletedTask;
+        await Task.WhenAll(requestsTask, LoadPoliciesAndCasesAsync(clientId), LoadOtherActionDataAsync(clientId));
+    }
+
+    private Task OnRequestsLoaded(List<DocumentRequestSummary> requests)
+    {
+        Requests = requests;
+        RequestsLoaded = true;
+        BuildActions();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Ranks what the client needs to do: documents to replace, then documents to upload,
+    /// then unread messages, then unfinished onboarding steps the client can act on.
+    /// </summary>
+    private void BuildActions()
+    {
+        var actions = new List<HomeAction>();
+
+        foreach (var request in Requests.Where(r => r.ReviewStatus == "NeedsReplacement").OrderBy(r => r.CreatedAt))
         {
-            Name = document.FileName,
-            Status = "Received"
-        });
+            actions.Add(new HomeAction(
+                "replace",
+                $"Upload a new {DocumentTypeNames.Format(request.DocumentType).ToLowerInvariant()}",
+                string.IsNullOrWhiteSpace(request.ReviewNote)
+                    ? $"{AdviserFirstName} couldn't accept the last one and needs a new copy{ScopeText(request)}."
+                    : $"{AdviserFirstName} couldn't accept the last one: {request.ReviewNote.Trim().TrimEnd('.')}.",
+                "Upload a new copy", Request: request));
+        }
+
+        foreach (var request in Requests.Where(r => !r.IsFulfilled && r.ReviewStatus != "NeedsReplacement").OrderBy(r => r.CreatedAt))
+        {
+            actions.Add(new HomeAction(
+                "upload",
+                $"Upload your {DocumentTypeNames.Format(request.DocumentType).ToLowerInvariant()}",
+                string.IsNullOrWhiteSpace(request.Note)
+                    ? $"{AdviserFirstName} asked for this on {request.CreatedAt.ToLocalTime():d MMM}{ScopeText(request)}."
+                    : request.Note.Trim(),
+                "Upload", Request: request));
+        }
+
+        if (UnreadCount > 0)
+        {
+            actions.Add(new HomeAction(
+                "message",
+                UnreadCount == 1 ? $"Read your new message from {AdviserFirstName}" : $"Read {UnreadCount} new messages from {AdviserFirstName}",
+                "Reply in Messages if they need an answer.",
+                "Open messages", Href: "/client-messages"));
+        }
+
+        // Onboarding steps the client can do something about. Document requests are already listed
+        // above, and identity verification is done by the adviser, so neither is repeated here.
+        foreach (var step in OnboardingSteps.Where(s => !s.Complete))
+        {
+            if (step.Title == "First meeting arranged" && NextMeeting is null)
+                actions.Add(new HomeAction("meeting", "Book your first meeting", $"Pick a time that suits you and {AdviserFirstName}.", "Book a meeting", Href: "/client-messages?book=1"));
+            else if (step.Title == "Profile details")
+                actions.Add(new HomeAction("profile", "Complete your profile", $"Your contact number, ID number or consent is missing. Send them to {AdviserFirstName} to update.", "Message", Href: "/client-messages"));
+        }
+
+        Actions = actions;
+    }
+
+    private static string ScopeText(DocumentRequestSummary request) =>
+        string.IsNullOrWhiteSpace(request.PolicyName) ? "" : $" for your {request.PolicyName}";
+
+    private string WhatHappensNow
+    {
+        get
+        {
+            if (AllStepsDone) return "your policy has been issued. Your policy documents are in Documents.";
+            return CurrentStepIndex switch
+            {
+                0 => $"{AdviserFirstName} needs your details and documents to start. Anything outstanding is listed above.",
+                1 => $"{AdviserFirstName} is reviewing your details and documents. You'll get a notification when that's done.",
+                2 => $"{AdviserFirstName} is verifying your identity (FICA). If a document can't be accepted, you'll see it at the top of this page.",
+                3 => $"your application has been sent to {CurrentInstitution ?? "the provider"}. You'll get a notification as soon as they respond.",
+                _ => $"{CurrentInstitution ?? "The provider"} is issuing your policy. Your policy documents will appear in Documents."
+            };
+        }
+    }
+
+    private void SelectCase(CaseSummary picked)
+    {
+        SelectedCaseId = picked.CaseId;
+        ApplicationSteps = BuildApplicationSteps(picked);
+        CurrentApplicationStatus = AllStepsDone ? "Policy issued" : FormatCaseStatus(picked.Status);
+    }
+
+    // Upload: the uploader stays hidden until the client asks for it, then opens ready for the right document.
+    private RequestedDocuments? RequestedList;
+    private DocumentUploader? Uploader;
+    private bool ShowUploader;
+
+    private void OpenUploader() => ShowUploader = true;
+
+    private async Task BeginRequestUpload(DocumentRequestSummary request)
+    {
+        ShowUploader = true;
+        StateHasChanged();
+        await Task.Yield(); // let the uploader become visible before it takes focus
+        if (Uploader is not null)
+            await Uploader.PrepareAsync(request.PolicyId, request.DocumentType, request.ReviewNote, request.ReviewStatus == "NeedsReplacement");
+    }
+
+    private async Task OnDocumentUploaded(DocumentSummary document)
+    {
+        if (RequestedList is not null) await RequestedList.RefreshAsync();
     }
 
     private static List<ApplicationStep> BuildApplicationSteps(CaseSummary currentCase)
     {
         var entries = new (string Label, DateTime? When)[]
         {
-           ("Details submitted", currentCase.DetailsSubmittedAt),
+            ("Details sent", currentCase.DetailsSubmittedAt),
             ("Adviser review", currentCase.AdviserReviewAt),
-            ("FICA verification", currentCase.FicaVerifiedAt),
-            ("Submitted to Liberty", currentCase.SubmittedToLibertyAt),
+            ("FICA check", currentCase.FicaVerifiedAt),
+            ("Sent to Liberty", currentCase.SubmittedToLibertyAt),
             ("Policy issued", currentCase.PolicyIssuedAt),
         };
 
-        var steps = new List<ApplicationStep>();
-        int firstIncomplete = Array.FindIndex(entries, e => e.When is null);
-
-        for (int i = 0; i < entries.Length; i++)
+        var firstIncomplete = Array.FindIndex(entries, e => e.When is null);
+        return entries.Select((e, i) => new ApplicationStep
         {
-            steps.Add(new ApplicationStep
-            {
-                Title = entries[i].Label,
-                Status = entries[i].When.HasValue ? "complete" : i == firstIncomplete ? "current" : "",
-                DateText = entries[i].When?.ToString("dd MMM yyyy") ?? string.Empty
-            });
-        }
-        return steps;
+            Title = e.Label,
+            Status = e.When.HasValue ? "complete" : i == firstIncomplete ? "current" : "",
+            DateText = e.When?.ToString("d MMM") ?? string.Empty
+        }).ToList();
     }
 
-
-    private static string GetStepClass(string? status)
+    private static MarkupString ActionIcon(string kind) => new(kind switch
     {
-        return status?.ToLowerInvariant() switch
-        {
-            "complete" => "step-complete",
-            "current" => "step-current",
-            _ => "step-pending"
-        };
-    }
+        "replace" => "<svg viewBox='0 0 24 24'><path d='M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4'/></svg>",
+        "upload" => "<svg viewBox='0 0 24 24'><path d='M6 3h8l5 5v13H6z'/><path d='M14 3v5h5M12 18v-6M9.5 14.5 12 12l2.5 2.5'/></svg>",
+        "message" => "<svg viewBox='0 0 24 24'><path d='M4 5h16v11H9l-5 4z'/></svg>",
+        "meeting" => "<svg viewBox='0 0 24 24'><rect x='3.5' y='5' width='17' height='15.5' rx='3'/><path d='M3.5 10h17M8 3v4M16 3v4'/></svg>",
+        _ => "<svg viewBox='0 0 24 24'><circle cx='12' cy='8' r='4'/><path d='M4 21a8 8 0 0 1 16 0'/></svg>"
+    });
 
+    private static string Money(double? amount) =>
+        amount.HasValue ? "R " + amount.Value.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-ZA")) : "—";
 
-    private static string GetStepIcon(string? status)
+    private static string FormatPolicyStatus(string status) => status switch
     {
-        return status?.ToLowerInvariant() switch
-        {
-            "complete" => "✓",
-            "current" => "!",
-            _ => ""
-        };
-    }
+        "Pending" => "In progress",
+        "Active" => "Active",
+        "Lapsed" => "Lapsed",
+        "Cancelled" => "Cancelled",
+        "Matured" => "Matured",
+        _ => status
+    };
 
-
-    private static string GetDocumentStatusClass(string? status)
+    private static string PolicyChipClass(string status) => status switch
     {
-        return status?.ToLowerInvariant() switch
-        {
-            "required" => "document-required",
-            "in review" => "document-review",
-            "received" => "document-received",
-            _ => "document-neutral"
-        };
-    }
+        "Active" => "chip-done",
+        "Pending" => "chip-progress",
+        _ => "chip-muted"
+    };
 
-
-    private static string FormatCaseStatus(string status)
+    private static string FormatCaseStatus(string status) => status switch
     {
-        return status switch
-        {
-            "InProgress" => "In progress",
-            "AwaitingApproval" => "Awaiting approval",
-            "Completed" => "Completed",
-            "OnHold" => "On hold",
-            _ => status
-        };
-    }
+        "InProgress" => "In progress",
+        "AwaitingApproval" => "Awaiting approval",
+        "Completed" => "Completed",
+        "OnHold" => "On hold",
+        _ => status
+    };
 
+    private sealed record HomeAction(string Kind, string Title, string Detail, string ActionText,
+        DocumentRequestSummary? Request = null, string? Href = null);
 
     public class ApplicationStep
     {
         public string Title { get; set; } = string.Empty;
-
         public string DateText { get; set; } = string.Empty;
-
         public string Status { get; set; } = string.Empty;
     }
-
-
-    public class ClientDocument
-    {
-        public string Name { get; set; } = string.Empty;
-
-        public string Status { get; set; } = string.Empty;
-    }
-
-
-    public class ClientPolicy
-    {
-        public string Name { get; set; } = string.Empty;
-
-        public string Status { get; set; } = string.Empty;
-
-        public decimal? Value { get; set; }
-    }
-
 
     public class ClientUpdate
     {
         public string Title { get; set; } = string.Empty;
-
         public string DateText { get; set; } = string.Empty;
-    }
-
-    public class MarketInformationUpdate
-    {
-        public string Title { get; set; } = string.Empty;
-        public DateTime PublishedAt { get; set; }
-    }
-
-    public class MarketInformationResponse
-    {
-        public List<MarketInformationUpdate> News { get; set; } = new();
-
-        public List<MarketInformationUpdate> Updates { get; set; } = new();
     }
 }
 

@@ -2,38 +2,38 @@
 @using Shared.Models.Enums
 @inject DocumentService DocumentDirectory
 
-@* Lets a signed-in client send a document to their advisor.
-   Used on the client dashboard and the client Documents page. *@
+@* Uploads a document to a client's profile.
+   Clients use it on their dashboard and Documents page to send a document to their advisor.
+   The advisor uses it on the Documents page (ForAdvisor) to file a document for one of their clients. *@
 
 <div class="doc-upload">
-
-    @if (Policies.Count == 0)
+    @if (Prepared)
     {
-        <p class="doc-upload-note">
-            You'll be able to upload documents once your advisor has added a policy to your profile.
-        </p>
+        <div class="prepared-upload" role="status"><strong>@PreparedDescription</strong>
+            <p>The policy and document type are selected for you. Choose the file below.</p>
+            <button type="button" class="wf-link" disabled="@IsUploading" @onclick="ClearPrepared">Upload a different document</button>
+        </div>
     }
-    else
-    {
+
         <div class="doc-upload-fields">
 
-            @if (Policies.Count > 1)
-            {
+
                 <div class="doc-upload-field">
-                    <label class="nx-label" for="@($"{_idPrefix}-policy")">Policy</label>
-                    <select id="@($"{_idPrefix}-policy")" class="nx-input" @bind="SelectedPolicyId" disabled="@IsUploading">
+                    <label class="nx-label" for="@($"{_idPrefix}-policy")">Upload for</label>
+                    <select id="@($"{_idPrefix}-policy")" class="nx-input" @bind="SelectedPolicyId" disabled="@(IsUploading || Prepared)">
+                        <option value="">General documents (no policy)</option>
                         @foreach (var policy in Policies)
                         {
-                            <option value="@policy.PolicyId">@policy.PolicyName</option>
+                            <option value="@policy.PolicyId">@policy.PolicyName (#@policy.PolicyId)</option>
                         }
                     </select>
+                    @if (!Prepared) { <span class="doc-upload-hint">Choose the policy and document type that match your request.</span> }
                 </div>
-            }
 
             <div class="doc-upload-field">
                 <label class="nx-label" for="@($"{_idPrefix}-type")">What is it?</label>
-                <select id="@($"{_idPrefix}-type")" class="nx-input" @bind="SelectedType" disabled="@IsUploading">
-                    @foreach (var type in ClientDocumentTypes)
+                <select id="@($"{_idPrefix}-type")" class="nx-input" @bind="SelectedType" disabled="@(IsUploading || Prepared)">
+                    @foreach (var type in AvailableTypes)
                     {
                         <option value="@type">@FormatType(type)</option>
                     }
@@ -42,7 +42,7 @@
 
             <div class="doc-upload-field">
                 <label class="nx-label" for="@($"{_idPrefix}-file")">File</label>
-                <InputFile @key="_inputKey"
+                <InputFile @ref="FileInput" @key="_inputKey"
                            id="@($"{_idPrefix}-file")"
                            class="doc-upload-file"
                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
@@ -52,15 +52,25 @@
                 <span id="@($"{_idPrefix}-hint")" class="doc-upload-hint">PDF, Word, JPG or PNG, up to 25MB.</span>
             </div>
 
+            @if (ForAdvisor)
+            {
+                <div class="doc-upload-field">
+                    <label class="doc-upload-share">
+                        <input type="checkbox" @bind="ShareWithClient" disabled="@IsUploading" />
+                        <span>Share with the client</span>
+                    </label>
+                    <span class="doc-upload-hint">Leave unticked to keep it private. You can share it later from the list.</span>
+                </div>
+            }
+
         </div>
 
         <button type="button"
                 class="nx-btn nx-btn-primary doc-upload-button"
-                disabled="@(PickedFile is null || IsUploading)"
+                disabled="@(PickedFile is null || IsUploading || InvalidScope)"
                 @onclick="UploadAsync">
             @(IsUploading ? "Uploading…" : "Upload a document")
         </button>
-    }
 
     @if (!string.IsNullOrWhiteSpace(SuccessMessage))
     {
@@ -78,8 +88,14 @@
     /// <summary>The signed-in client's id.</summary>
     [Parameter, EditorRequired] public int ClientId { get; set; }
 
-    /// <summary>The client's policies. Every document has to be filed under one.</summary>
+    /// <summary>The client's policies. General uploads do not require a policy.</summary>
     [Parameter] public IReadOnlyList<PolicySummary> Policies { get; set; } = Array.Empty<PolicySummary>();
+
+    /// <summary>
+    /// True when the advisor is uploading for one of their clients. Shows every document type
+    /// and lets the advisor choose whether the client can see the document.
+    /// </summary>
+    [Parameter] public bool ForAdvisor { get; set; }
 
     /// <summary>Runs after a document has been uploaded so the page can show it straight away.</summary>
     [Parameter] public EventCallback<DocumentSummary> OnUploaded { get; set; }
@@ -94,8 +110,27 @@
         DocumentType.BankStatement,
         DocumentType.Payslip,
         DocumentType.TaxCertificate,
+        DocumentType.AmendmentForm,
+        DocumentType.PolicyStatement,
+        DocumentType.ServicePackageSummary,
         DocumentType.Other
     };
+
+    // The advisor can file any kind of document, including the ones they prepare for the client.
+    private static readonly DocumentType[] AdvisorDocumentTypes =
+    {
+        DocumentType.PolicyStatement,
+        DocumentType.ServicePackageSummary,
+        DocumentType.AmendmentForm,
+        DocumentType.CertifiedIdCopy,
+        DocumentType.ProofOfAddress,
+        DocumentType.BankStatement,
+        DocumentType.Payslip,
+        DocumentType.TaxCertificate,
+        DocumentType.Other
+    };
+
+    private DocumentType[] AvailableTypes => ForAdvisor ? AdvisorDocumentTypes : ClientDocumentTypes;
 
     // The API checks the file type, so send the proper one instead of trusting the browser.
     private static readonly Dictionary<string, string> ContentTypes = new(StringComparer.OrdinalIgnoreCase)
@@ -111,20 +146,54 @@
     private readonly string _idPrefix = $"upload-{Guid.NewGuid():N}";
     private Guid _inputKey = Guid.NewGuid();
 
-    private int SelectedPolicyId;
+    private InputFile? FileInput;
+    private bool Prepared, FocusUpload;
+    private string? PreparedDescription;
+    private bool InvalidScope => SelectedPolicyId.HasValue && !Policies.Any(p => p.PolicyId == SelectedPolicyId);
+
+    public async Task PrepareAsync(int? policyId, string documentType, string? feedback, bool replacement)
+    {
+        if (IsUploading) return;
+        if (!Enum.TryParse<DocumentType>(documentType, out var type) || !Enum.IsDefined(type))
+        { ErrorMessage = "The requested document type is not available. Please refresh the page."; await InvokeAsync(StateHasChanged); return; }
+        if (policyId.HasValue && !Policies.Any(p => p.PolicyId == policyId))
+        { ErrorMessage = "This policy is no longer available. Please refresh or contact your adviser."; await InvokeAsync(StateHasChanged); return; }
+        SelectedPolicyId = policyId;
+        SelectedType = type;
+        Prepared = true;
+        var scope = policyId is int id ? $"{Policies.First(p => p.PolicyId == id).PolicyName} (#{id})" : "General documents";
+        PreparedDescription = $"{(replacement ? "Replacing" : "Uploading")}: {DocumentTypeNames.Format(documentType)} — {scope}";
+        ErrorMessage = null; SuccessMessage = null; PickedFile = null; _inputKey = Guid.NewGuid(); FocusUpload = true;
+        await InvokeAsync(StateHasChanged);
+    }
+    private void ClearPrepared() { Prepared = false; PreparedDescription = null; PickedFile = null; _inputKey = Guid.NewGuid(); }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!FocusUpload) return; FocusUpload = false;
+        try { if (FileInput?.Element is ElementReference element) await element.FocusAsync(); }
+        catch (Exception) { /* Focus may be lost when navigation closes the uploader. */ }
+    }
+
+    private int? SelectedPolicyId;
     private DocumentType SelectedType = DocumentType.CertifiedIdCopy;
     private IBrowserFile? PickedFile;
+    private bool ShareWithClient;
     private bool IsUploading;
     private string? SuccessMessage;
     private string? ErrorMessage;
 
+    protected override void OnInitialized()
+    {
+        if (ForAdvisor)
+        {
+            SelectedType = DocumentType.PolicyStatement;
+        }
+    }
+
     protected override void OnParametersSet()
     {
-        // Default to the first policy, and fix the choice if the list changed underneath it.
-        if (Policies.Count > 0 && !Policies.Any(p => p.PolicyId == SelectedPolicyId))
-        {
-            SelectedPolicyId = Policies[0].PolicyId;
-        }
+        // Never silently switch a document to a different policy.
+        if (InvalidScope) ErrorMessage = "The selected policy is no longer available. Choose another document or refresh the page.";
     }
 
     private void OnFileSelected(InputFileChangeEventArgs e)
@@ -160,7 +229,7 @@
     private async Task UploadAsync()
     {
         // Stops a double click from sending the same file twice.
-        if (PickedFile is null || IsUploading)
+        if (PickedFile is null || IsUploading || InvalidScope)
         {
             return;
         }
@@ -190,7 +259,8 @@
                 PickedFile.Name,
                 ContentTypes[extension],
                 bytes,
-                visibleToClient: true);
+                // A client always sees their own uploads. The advisor decides for theirs.
+                visibleToClient: !ForAdvisor || ShareWithClient);
 
             if (document is null)
             {
@@ -198,7 +268,13 @@
                 return;
             }
 
-            SuccessMessage = $"'{document.FileName}' was sent to your advisor.";
+            SuccessMessage = !ForAdvisor
+                ? $"'{document.FileName}' was sent to your advisor."
+                : ShareWithClient
+                    ? $"'{document.FileName}' was uploaded and shared with the client."
+                    : $"'{document.FileName}' was uploaded. Only you can see it.";
+            Prepared = false;
+            PreparedDescription = null;
             PickedFile = null;
             _inputKey = Guid.NewGuid(); // clears the file box
 
@@ -221,6 +297,9 @@
         DocumentType.BankStatement => "Bank statement",
         DocumentType.Payslip => "Payslip",
         DocumentType.TaxCertificate => "Tax certificate",
+        DocumentType.PolicyStatement => "Policy statement",
+        DocumentType.ServicePackageSummary => "Service package summary",
+        DocumentType.AmendmentForm => "Amendment form",
         _ => "Other"
     };
 }

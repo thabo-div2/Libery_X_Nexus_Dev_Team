@@ -6,6 +6,8 @@
 @inject CurrentUserService CurrentUser
 @using Microsoft.AspNetCore.Components
 @inject CaseService CaseDirectory
+@inject PolicyService PolicyDirectory
+@inject InsightsService Insights
 @using Shared.Models.Enums
 
 <PageTitle>Clients | Nexus</PageTitle>
@@ -24,18 +26,20 @@
         <div class="header-actions">
 
             <div class="search-box" role="search">
-                <span class="search-icon" aria-hidden="true">⌕</span>
+                <span class="search-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
 
                 <input aria-label="Search by name, email or status" type="text"
                        @bind="SearchText"
                        @bind:event="oninput"
+                       @bind:after="OnSearchChanged"
                        placeholder="Search by name, email or status" />
             </div>
 
             @* Filter the list by lifecycle status (FR-11). Works together with the search box. *@
             <select class="status-filter"
                     aria-label="Filter clients by status"
-                    @bind="StatusFilter">
+                    @bind="StatusFilter"
+                    @bind:after="Search">
                 <option value="">All statuses</option>
                 @foreach (var status in Enum.GetValues<ClientStatus>())
                 {
@@ -59,7 +63,7 @@
         <section class="clients-list-panel">
 
             <div class="panel-heading">
-                <h2>@(IsLoading ? "Clients" : $"Clients ({FilteredClients.Count()})")</h2>
+                <h2>@(IsLoading ? "Clients" : $"Clients ({TotalClients})")</h2>
             </div>
 
             @if (!string.IsNullOrEmpty(ListMessage))
@@ -72,7 +76,7 @@
                 @if (IsLoading)
                 {
                     <div class="clients-empty-state">
-                        <span>Loading clients…</span>
+                        <div class="nx-skeleton-stack clients-skeleton" role="status"><span class="visually-hidden">Loading clients</span><span class="nx-skeleton"></span><span class="nx-skeleton"></span><span class="nx-skeleton"></span></div>
                     </div>
                 }
                 else if (!FilteredClients.Any())
@@ -89,13 +93,25 @@
                                 class="client-item @(SelectedClient?.ClientId == client.ClientId ? "selected" : "")"
                                         @onclick="() => SelectClient(client)">
 
-                            <div class="client-item-top">
+                            <span class="client-avatar" aria-hidden="true">@GetInitials(client.FirstName, client.LastName)</span>
+
+                            <span class="client-item-main">
                                 <strong>@client.FirstName @client.LastName</strong>
-                                <span class="client-status-badge">@client.Status</span>
-                            </div>
+                                <span class="client-item-email">@client.Email</span>
+                            </span>
 
-                            <span class="client-item-email">@client.Email</span>
+                            <span class="client-status-dot status-@(client.Status.ToString().ToLowerInvariant())"
+                                  role="img"
+                                  aria-label="@client.Status"
+                                  title="@client.Status"></span>
 
+                        </button>
+                    }
+
+                    @if (ClientResults.Count < TotalClients)
+                    {
+                        <button type="button" class="clients-load-more" disabled="@IsLoadingMore" @onclick="LoadMoreClients">
+                            @(IsLoadingMore ? "Loading…" : $"Load more ({ClientResults.Count} of {TotalClients})")
                         </button>
                     }
                 }
@@ -118,6 +134,8 @@
             {
                 <div class="client-detail-header">
 
+                    <span class="client-avatar client-avatar-lg" aria-hidden="true">@GetInitials(SelectedClient.FirstName, SelectedClient.LastName)</span>
+
                     <div class="client-detail-heading">
                         <h2>@SelectedClient.FirstName @SelectedClient.LastName</h2>
 
@@ -125,17 +143,39 @@
                             <span class="status-dot" aria-hidden="true"></span>
                             @SelectedClient.Status
                         </span>
+
+                        <p class="client-detail-subtitle client-detail-meta">
+                            <span>Client since @SelectedClient.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</span>
+                            <a href="mailto:@SelectedClient.Email">@SelectedClient.Email</a>
+                            @if (!string.IsNullOrWhiteSpace(SelectedClient.Phone))
+                            {
+                                <a href="tel:@SelectedClient.Phone.Replace(" ", "")">@SelectedClient.Phone</a>
+                            }
+                        </p>
                     </div>
 
                     @if (!IsEditing)
                     {
                         <div class="client-detail-actions">
+                            <a class="nx-btn nx-btn-secondary nx-btn-sm"
+                               href="@($"/meeting-prep?clientId={SelectedClient.ClientId}")">
+                                Prep sheet
+                            </a>
+
+                            <button type="button"
+                                    class="nx-btn nx-btn-secondary nx-btn-sm"
+                                    disabled="@IsExporting"
+                                    title="Download a CSV of this client's profile, policies, documents and meetings"
+                                    @onclick="ExportClientAsync">
+                                @(IsExporting ? "Exporting…" : "Export CSV")
+                            </button>
+
                             <button type="button"
                                     class="nx-btn nx-btn-secondary nx-btn-sm"
                                     aria-label="Edit @SelectedClient.FirstName @SelectedClient.LastName"
                                     @ref="EditButton"
                                     @onclick="StartEditing">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                                 Edit
                             </button>
 
@@ -145,13 +185,18 @@
                                     @ref="DeleteButton"
                                     @onclick="AskToDelete"
                                     disabled="@ConfirmingDelete">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
                                 Delete
                             </button>
                         </div>
                     }
 
                 </div>
+
+                @if (!string.IsNullOrEmpty(ExportError))
+                {
+                    <p class="client-delete-error" role="alert">@ExportError</p>
+                }
 
                 @if (!string.IsNullOrEmpty(DetailMessage))
                 {
@@ -169,7 +214,7 @@
                         <strong id="delete-confirm-title">Delete @SelectedClient.FirstName @SelectedClient.LastName?</strong>
 
                         <p id="delete-confirm-text">
-                            This permanently removes their profile, policies, cases, meetings, documents and messages.
+                            This permanently removes their profile, login, policies, cases, meetings, messages, documents and stored files.
                             It can't be undone.
                         </p>
 
@@ -281,80 +326,263 @@
                 }
                 else
                 {
+                @* The profile is split into tabs so it isn't one long scroll. Every panel stays rendered
+                   (only hidden), so switching tabs keeps unsaved notes and form input and doesn't reload. *@
+                <div class="client-tabs" role="tablist" aria-label="Client sections" @onkeydown="OnProfileTabKeyDown">
+                    @foreach (var (key, label) in ProfileTabs)
+                    {
+                        var isActive = ActiveProfileTab == key;
+                        <button type="button"
+                                role="tab"
+                                id="client-tab-@key"
+                                class="client-tab @(isActive ? "is-active" : "")"
+                                aria-selected="@(isActive ? "true" : "false")"
+                                aria-controls="client-panel-@key"
+                                tabindex="@(isActive ? 0 : -1)"
+                                @ref="ProfileTabRefs[key]"
+                                @onclick="() => ActiveProfileTab = key">
+                            @label
+                            @if (key == "policies" && ClientCases.Count > 0)
+                            {
+                                <span class="client-tab-count">@ClientCases.Count</span>
+                            }
+                        </button>
+                    }
+                </div>
+
                 <div class="client-detail-body">
 
-                    <div class="detail-field">
-                        <span class="detail-label">Email</span>
-                        <span class="detail-value">@SelectedClient.Email</span>
+                  <div class="client-tab-panel" role="tabpanel" id="client-panel-overview" aria-labelledby="client-tab-overview" hidden="@(ActiveProfileTab != "overview")">
+
+                    <div class="detail-facts">
+                        <div class="detail-field">
+                            <span class="detail-label">ID number</span>
+                            <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.IdentificationNumber) ? "—" : SelectedClient.IdentificationNumber)</span>
+                        </div>
+
+                        <div class="detail-field">
+                            <span class="detail-label">Risk profile</span>
+                            <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.RiskProfile) ? "—" : SelectedClient.RiskProfile)</span>
+                        </div>
+
+                        <div class="detail-field">
+                            <span class="detail-label">Policies</span>
+                            <span class="detail-value">@(ClientCases.Count == 0 ? "None yet" : ClientCases.Count.ToString())</span>
+                        </div>
                     </div>
 
-                    <div class="detail-field">
-                        <span class="detail-label">Phone</span>
-                        <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.Phone) ? "—" : SelectedClient.Phone)</span>
+                    <div class="overview-case">
+                        <div class="case-progress-head">
+                            <span class="detail-label">Application progress</span>
+                            <button type="button" class="policy-add-link" @onclick="@(() => ActiveProfileTab = "policies")">
+                                @(ClientCases.Count == 0 ? "+ Add a policy" : "Manage policies")
+                            </button>
+                        </div>
+
+                        @if (ClientCases.Count > 1)
+                        {
+                            <div class="overview-policy-switch" role="group" aria-label="Choose a policy">
+                                @foreach (var policyCase in ClientCases)
+                                {
+                                    var isSelected = SelectedCase?.CaseId == policyCase.CaseId;
+                                    <button type="button"
+                                            class="overview-policy-chip @(isSelected ? "is-selected" : "")"
+                                            aria-pressed="@(isSelected ? "true" : "false")"
+                                            disabled="@IsMarkingStep"
+                                            @key="policyCase.CaseId"
+                                            @onclick="() => SelectCase(policyCase)">
+                                        @(string.IsNullOrWhiteSpace(policyCase.PolicyName) ? $"Policy {policyCase.PolicyId}" : policyCase.PolicyName)
+                                    </button>
+                                }
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(CaseError))
+                        {
+                            <p class="clients-error">@CaseError</p>
+                        }
+
+                        @CaseProgressCard
                     </div>
 
-                    <div class="detail-field">
-                        <span class="detail-label">ID number</span>
-                        <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.IdentificationNumber) ? "—" : SelectedClient.IdentificationNumber)</span>
-                    </div>
+                    <OnboardingChecklist Compact="true" @key="(typeof(OnboardingChecklist), SelectedClient.ClientId)" ClientId="SelectedClient.ClientId" />
+                    <ClientNotes @key="(typeof(ClientNotes), SelectedClient.ClientId)" ClientId="SelectedClient.ClientId" />
 
-                    <div class="detail-field">
-                        <span class="detail-label">Risk profile</span>
-                        <span class="detail-value">@(string.IsNullOrWhiteSpace(SelectedClient.RiskProfile) ? "—" : SelectedClient.RiskProfile)</span>
-                    </div>
+                  </div>
 
-                    <div class="detail-field">
-                        <span class="detail-label">Client since</span>
-                        <span class="detail-value">@SelectedClient.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</span>
-                    </div>
+                  <div class="client-tab-panel" role="tabpanel" id="client-panel-policies" aria-labelledby="client-tab-policies" hidden="@(ActiveProfileTab != "policies")">
 
                     <div class="case-progress">
 
-                        <span class="detail-label">Application progress</span>
+                        <div class="case-progress-head">
+                            <span class="detail-label">Policies</span>
+                            <button type="button"
+                                    class="policy-add-link"
+                                    aria-expanded="@(ShowAddPolicy ? "true" : "false")"
+                                    @onclick="ToggleAddPolicyAsync">
+                                @(ShowAddPolicy ? "Cancel" : "+ Add policy")
+                            </button>
+                        </div>
 
                            @if (!string.IsNullOrEmpty(CaseError))
                            {
                              <p class="clients-error">@CaseError</p>
                            }
 
-                           @if (SelectedCase is null)
+                           @* One row per policy. Each policy has its own case, so picking one shows its progress below. *@
+                           <div class="policy-split">
+                           @if (ClientCases.Count > 0)
                            {
-                              <span class="detail-value">No case on file for this client yet.</span>
-                           }
-                            else
-                             {
-                               <ul class="case-step-list">
-                                     @foreach (var (step, label) in CaseSteps)
-                                     {
-                                         var complete = IsStepComplete(step);
-                                         var stepDate = GetStepDate(step);
-                                         <li class="case-step-row @(complete? "is-complete" : "")">
-                                             <label class="case-step-check">
-                                                 <input type="checkbox"
-                                                        class="case-step-input"
-                                                        checked="@complete"
-                                                        disabled="@complete"
-                                                        @onchange="() => MarkStep(step)" />
-                                                 <span class="case-step-box">
-                                                       <svg class="case-step-tick" viewBox="0 0 16 16">
-                                                          <path d="M3 8.5L6.5 12L13 4.5" />
-                                                       </svg>
-                                                 </span>
+                               <div class="policy-list">
+                                   @foreach (var policyCase in ClientCases)
+                                   {
+                                       var isSelected = SelectedCase?.CaseId == policyCase.CaseId;
 
-                                                 <span class="case-step-text">
-                                                       <span class="case-step-label">@label</span>
-                                                        @if (stepDate is not null)
-                                                        {
-                                                          <span class="case-step-date">@stepDate</span>
-                                                        }
-                                                 </span>
-                                             </label>
-                                         </li>
-                                     }
-                               </ul>
-                            }
+                                       <button type="button"
+                                               class="policy-row @(isSelected ? "is-selected" : "")"
+                                               aria-pressed="@(isSelected ? "true" : "false")"
+                                               disabled="@IsMarkingStep"
+                                               @key="policyCase.CaseId"
+                                               @onclick="() => SelectCase(policyCase)">
+                                           <span class="policy-row-name">@(string.IsNullOrWhiteSpace(policyCase.PolicyName) ? $"Policy {policyCase.PolicyId}" : policyCase.PolicyName)</span>
+                                           <span class="policy-row-progress">@CountCompletedSteps(policyCase) of @CaseSteps.Length steps</span>
+                                           <span class="policy-row-bar" aria-hidden="true">
+                                               @for (var i = 0; i < CaseSteps.Length; i++)
+                                               {
+                                                   <i class="@(i < CountCompletedSteps(policyCase) ? "is-done" : "")"></i>
+                                               }
+                                           </span>
+                                       </button>
+                                   }
+                               </div>
+                           }
+
+                           @if (SelectedCase is not null)
+                           {
+                               <PolicyStatusPanel @key="SelectedCase.PolicyId" PolicyId="SelectedCase.PolicyId" IssuedAt="SelectedCase.PolicyIssuedAt" OnChanged="ReloadPolicyStatusAsync" />
+                           }
+                           </div>
+
+                           @if (SelectedCase is not null)
+                           {
+                               <PolicyEditor @key="(typeof(PolicyEditor), SelectedCase.PolicyId)" PolicyId="SelectedCase.PolicyId" OnSaved="ReloadPolicyStatusAsync" />
+                           }
+
+                           <div class="policy-actions">
+                               @if (SelectedCase is not null && !ShowAddPolicy)
+                               {
+                                   <button type="button"
+                                           class="nx-btn nx-btn-danger-outline nx-btn-sm"
+                                           disabled="@(ConfirmingPolicyRemoval || IsRemovingPolicy)"
+                                           @onclick="AskToRemovePolicy">
+                                       Remove this policy
+                                   </button>
+                               }
+                           </div>
+
+                           @if (!string.IsNullOrEmpty(PolicyMessage))
+                           {
+                               <p class="nx-alert nx-alert-success" role="status">@PolicyMessage</p>
+                           }
+
+                           @if (!string.IsNullOrEmpty(PolicyError))
+                           {
+                               <p class="nx-alert nx-alert-danger" role="alert">@PolicyError</p>
+                           }
+
+                           @if (ConfirmingPolicyRemoval && SelectedCase is not null)
+                           {
+                               <div class="policy-remove-confirm" role="alertdialog" aria-label="Remove policy">
+                                   <span>
+                                       Remove @(SelectedCase.PolicyName ?? "this policy") and its application progress? This can't be undone.
+                                   </span>
+                                   <div class="policy-actions">
+                                       <button type="button" class="nx-btn nx-btn-secondary nx-btn-sm" disabled="@IsRemovingPolicy" @onclick="CancelRemovePolicy">Keep policy</button>
+                                       <button type="button" class="nx-btn nx-btn-danger nx-btn-sm" disabled="@IsRemovingPolicy" @onclick="RemovePolicyAsync">
+                                           @(IsRemovingPolicy ? "Removing…" : "Remove policy")
+                                       </button>
+                                   </div>
+                               </div>
+                           }
+
+                           @if (ShowAddPolicy)
+                           {
+                               <div class="policy-form" role="region" aria-label="Add a policy">
+
+                                   @if (PolicyCatalogue.Count > 0)
+                                   {
+                                       <div class="client-edit-field">
+                                           <label class="nx-label" for="new-policy-catalogue">Start from the catalogue <span class="client-edit-optional">(optional)</span></label>
+                                           <select id="new-policy-catalogue" class="nx-input" @onchange="OnCataloguePicked" disabled="@IsAddingPolicy">
+                                               <option value="0">Enter the details myself</option>
+                                               @foreach (var item in PolicyCatalogue)
+                                               {
+                                                   <option value="@item.PolicyId">@item.PolicyName (@item.Provider)</option>
+                                               }
+                                           </select>
+                                       </div>
+                                   }
+
+                                   <div class="client-edit-field">
+                                       <label class="nx-label" for="new-policy-name">Policy name</label>
+                                       <input id="new-policy-name" class="nx-input" type="text" maxlength="200" @bind="NewPolicyName" disabled="@IsAddingPolicy" />
+                                   </div>
+
+                                   <div class="client-edit-field">
+                                       <label class="nx-label" for="new-policy-provider">Provider</label>
+                                       <input id="new-policy-provider" class="nx-input" type="text" maxlength="150" placeholder="e.g. Liberty" @bind="NewPolicyProvider" disabled="@IsAddingPolicy" />
+                                   </div>
+
+                                   <div class="client-edit-row">
+                                       <div class="client-edit-field">
+                                           <label class="nx-label" for="new-policy-premium">Monthly premium <span class="client-edit-optional">(optional)</span></label>
+                                           <input id="new-policy-premium" class="nx-input" type="number" min="0" step="0.01" @bind="NewPolicyPremium" disabled="@IsAddingPolicy" />
+                                       </div>
+
+                                       <div class="client-edit-field">
+                                           <label class="nx-label" for="new-policy-cover">Cover amount <span class="client-edit-optional">(optional)</span></label>
+                                           <input id="new-policy-cover" class="nx-input" type="number" min="0" step="0.01" @bind="NewPolicyCover" disabled="@IsAddingPolicy" />
+                                       </div>
+                                   </div>
+
+                                   <div class="client-edit-row">
+                                       <div class="client-edit-field">
+                                           <label class="nx-label" for="new-policy-start">Start date <span class="client-edit-optional">(optional)</span></label>
+                                           <input id="new-policy-start" class="nx-input" type="date" @bind="NewPolicyStart" disabled="@IsAddingPolicy" />
+                                       </div>
+
+                                       <div class="client-edit-field">
+                                           <label class="nx-label" for="new-policy-end">End date <span class="client-edit-optional">(optional)</span></label>
+                                           <input id="new-policy-end" class="nx-input" type="date" @bind="NewPolicyEnd" disabled="@IsAddingPolicy" />
+                                       </div>
+                                   </div>
+
+                                   <button type="button" class="nx-btn nx-btn-primary nx-btn-sm" disabled="@IsAddingPolicy" @onclick="AddPolicyAsync">
+                                       @(IsAddingPolicy ? "Adding…" : "Add policy")
+                                   </button>
+
+                               </div>
+                           }
+
+                           @CaseProgressCard
 
                     </div>
+
+                  </div>
+
+                  @* Sibling keys must be unique across all panel types. Including the client
+                     still gives each client fresh panels when the selection changes. *@
+                  <div class="client-tab-panel" role="tabpanel" id="client-panel-documents" aria-labelledby="client-tab-documents" hidden="@(ActiveProfileTab != "documents")">
+                    <ClientDocumentRequests @key="(typeof(ClientDocumentRequests), SelectedClient.ClientId)" ClientId="SelectedClient.ClientId" />
+                  </div>
+
+                  <div class="client-tab-panel" role="tabpanel" id="client-panel-tasks" aria-labelledby="client-tab-tasks" hidden="@(ActiveProfileTab != "tasks")">
+                    <AdvisorTasks @key="(typeof(AdvisorTasks), SelectedClient.ClientId)" ClientId="SelectedClient.ClientId" ClientName="@($"{SelectedClient.FirstName} {SelectedClient.LastName}".Trim())" />
+                  </div>
+
+                  <div class="client-tab-panel" role="tabpanel" id="client-panel-activity" aria-labelledby="client-tab-activity" hidden="@(ActiveProfileTab != "activity")">
+                    <ClientTimeline @key="(typeof(ClientTimeline), SelectedClient.ClientId)" ClientId="SelectedClient.ClientId" />
+                  </div>
 
                 </div>
                 }
@@ -373,14 +601,46 @@
 </ErrorContent>
 </ErrorBoundary>
 
+<RealtimeRefresh OnChanged="RefreshRealtimeAsync" />
+
 @code {
+    private async Task RefreshRealtimeAsync()
+    {
+        if (IsEditing || IsSaving || IsMarkingStep) return;
+        await LoadCaseForSelectedClient();
+    }
+
     private List<ClientProfile> ClientResults = new();
     private ClientProfile? SelectedClient;
     private string SearchText = "";
     private string? LoadError;
     private bool IsLoading = true;
     private CaseSummary? SelectedCase;
+
+    // Every case the selected client has: one per policy. SelectedCase is the one whose steps are showing.
+    private List<CaseSummary> ClientCases = new();
+
+    // Add / remove policy
+    private bool ShowAddPolicy;
+    private bool IsAddingPolicy;
+    private bool ConfirmingPolicyRemoval;
+    private bool IsRemovingPolicy;
+    private string? PolicyError;
+    private string? PolicyMessage;
+    private List<PolicySummary> PolicyCatalogue = new();
+    private string NewPolicyName = string.Empty;
+    private string NewPolicyProvider = string.Empty;
+    private double? NewPolicyPremium;
+    private double? NewPolicyCover;
+    private DateTime? NewPolicyStart;
+    private DateTime? NewPolicyEnd;
     private string? CaseError;
+
+    // True while a step is being saved, so a second click can't send the same step twice.
+    private bool IsMarkingStep;
+
+    // Goes up whenever the tick boxes need rebuilding from what is actually saved.
+    private int CaseStepsVersion;
 
     /// <summary>
     /// The status chosen in the filter dropdown. Empty means "All statuses".
@@ -416,36 +676,104 @@
     /// </summary>
     private string? _appliedSearchQuery;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (SearchQuery == _appliedSearchQuery)
         {
             return;
         }
 
+        var firstApply = _appliedSearchQuery is null && !_hasSearched;
         _appliedSearchQuery = SearchQuery;
         SearchText = SearchQuery ?? string.Empty;
+
+        // A new ?search= from the dashboard while the page is open runs a fresh server search.
+        if (!firstApply && _hasSearched) await Search();
+    }
+
+    private bool IsExporting;
+    private string? ExportError;
+
+    /// <summary>
+    /// Downloads a CSV of the selected client's profile, policies, documents and meetings.
+    /// </summary>
+    private async Task ExportClientAsync()
+    {
+        if (SelectedClient is null || IsExporting) return;
+        IsExporting = true;
+        ExportError = null;
+        try { ExportError = await Insights.DownloadClientSummaryAsync(SelectedClient.ClientId); }
+        finally { IsExporting = false; }
+    }
+
+    private const int ClientPageSize = 50;
+    private int TotalClients;
+    private bool IsLoadingMore;
+    private bool _hasSearched;
+    private int _searchVersion;
+    private CancellationTokenSource? _searchDebounce;
+
+    /// <summary>
+    /// Typing waits briefly, then searches on the server, so long client lists never load all at once.
+    /// </summary>
+    private async Task OnSearchChanged()
+    {
+        _searchDebounce?.Cancel();
+        var cts = _searchDebounce = new CancellationTokenSource();
+        try { await Task.Delay(300, cts.Token); }
+        catch (TaskCanceledException) { return; }
+        await Search();
     }
 
     /// <summary>
-    /// Loads all of the advisor's clients once. Typing in the search box then filters
-    /// this list instantly on the page (see FilteredClients), so clearing the box always
-    /// brings every client back, even when the page was opened with ?search= from the dashboard.
+    /// The search box text, split into a server search term and a status. Typing a status
+    /// name such as "Active" filters by status, as the box's placeholder promises.
+    /// </summary>
+    private (string? Term, ClientStatus? Status) CurrentQuery()
+    {
+        ClientStatus? status = Enum.TryParse<ClientStatus>(StatusFilter, true, out var picked) ? picked : null;
+        var term = SearchText.Trim();
+        if (status is null && term.Length > 0 && Enum.TryParse<ClientStatus>(term, true, out var typed) && Enum.IsDefined(typed))
+            return (null, typed);
+        return (term.Length == 0 ? null : term, status);
+    }
+
+    /// <summary>
+    /// Loads the first page of clients that match the search box and status filter.
     /// </summary>
     private async Task Search()
     {
+        var version = ++_searchVersion;
         IsLoading = true;
         LoadError = null;
 
-        var (clients, error) = await ClientDirectory.SearchAsync(null, null);
+        var (term, status) = CurrentQuery();
+        var (clients, total, error) = await ClientDirectory.SearchPageAsync(term, status, 0, ClientPageSize);
+        if (version != _searchVersion) return; // A newer search has started; drop this result.
+
         ClientResults = clients;
+        TotalClients = total;
         LoadError = error;
         IsLoading = false;
+        _hasSearched = true;
+    }
 
-        if (SelectedClient is not null && ClientResults.All(c => c.ClientId != SelectedClient.ClientId))
+    private async Task LoadMoreClients()
+    {
+        if (IsLoadingMore) return;
+        IsLoadingMore = true;
+        var version = _searchVersion;
+        try
         {
-            SelectedClient = null;
+            var (term, status) = CurrentQuery();
+            var (clients, total, error) = await ClientDirectory.SearchPageAsync(term, status, ClientResults.Count, ClientPageSize);
+            if (version != _searchVersion) return;
+            var known = ClientResults.Select(c => c.ClientId).ToHashSet();
+            ClientResults.AddRange(clients.Where(c => known.Add(c.ClientId)));
+            TotalClients = total;
+            LoadError = error;
         }
+        finally { IsLoadingMore = false; }
     }
 
     private static readonly (CaseStep Step, string Label)[] CaseSteps = new[]
@@ -463,10 +791,12 @@
         IsEditing = false;
         ConfirmingDelete = false;
         DeleteError = null;
+        ExportError = null;
         EditError = null;
         DetailMessage = null;
 
         SelectedClient = client;
+        ResetPolicyPanel();
 
         // Fetch the full profile Phone, ID number, Risk profile
         var (fullClient, error) = await ClientDirectory.GetByIdAsync(client.ClientId);
@@ -478,9 +808,16 @@
         await LoadCaseForSelectedClient();
     }
 
-    private async Task LoadCaseForSelectedClient()
+    /// <summary>
+    /// Loads every case for the selected client (one per policy). Keeps the same policy selected
+    /// if it is still there, otherwise shows the first one.
+    /// </summary>
+    private async Task LoadCaseForSelectedClient(int? selectPolicyId = null)
     {
+        var previousCaseId = SelectedCase?.CaseId;
+
         SelectedCase = null;
+        ClientCases = new();
         CaseError = null;
 
         if (SelectedClient is null)
@@ -488,9 +825,254 @@
             return;
         }
 
-        var (cases, error) = await CaseDirectory.GetForClientAsync(SelectedClient.ClientId);
+        var clientId = SelectedClient.ClientId;
+        var (cases, error) = await CaseDirectory.GetForClientAsync(clientId);
+
+        // The advisor may have clicked onto another client while this was loading.
+        if (SelectedClient is null || SelectedClient.ClientId != clientId)
+        {
+            return;
+        }
+
         CaseError = error;
-        SelectedCase = cases.FirstOrDefault();
+
+        // Oldest policy first, so the list doesn't reorder itself every time a step is ticked.
+        ClientCases = cases.OrderBy(c => c.CreatedAt).ThenBy(c => c.CaseId).ToList();
+
+        SelectedCase =
+            (selectPolicyId is int policyId ? ClientCases.FirstOrDefault(c => c.PolicyId == policyId) : null)
+            ?? ClientCases.FirstOrDefault(c => c.CaseId == previousCaseId)
+            ?? ClientCases.FirstOrDefault();
+
+        CaseStepsVersion++;
+    }
+
+    private void SelectCase(CaseSummary policyCase)
+    {
+        if (IsMarkingStep)
+        {
+            return;
+        }
+
+        SelectedCase = policyCase;
+        CaseError = null;
+        PolicyError = null;
+        PolicyMessage = null;
+        ConfirmingPolicyRemoval = false;
+    }
+
+    // Two-letter initials for the avatar tiles, e.g. "Marina Coetzee" -> "MC".
+    private static string GetInitials(string? first, string? last)
+    {
+        var f = string.IsNullOrWhiteSpace(first) ? "" : char.ToUpperInvariant(first.Trim()[0]).ToString();
+        var l = string.IsNullOrWhiteSpace(last) ? "" : char.ToUpperInvariant(last.Trim()[0]).ToString();
+        return f + l;
+    }
+
+    private static int CountCompletedSteps(CaseSummary policyCase)
+    {
+        return new[]
+        {
+            policyCase.DetailsSubmittedAt, policyCase.AdviserReviewAt, policyCase.FicaVerifiedAt,
+            policyCase.SubmittedToLibertyAt, policyCase.PolicyIssuedAt
+        }.Count(when => when.HasValue);
+    }
+
+    /// <summary>
+    /// Keeps the policy list in step after a case changes, so its "x of 5 steps" count is right.
+    /// </summary>
+    private void ReplaceCaseInList(CaseSummary updated)
+    {
+        var index = ClientCases.FindIndex(c => c.CaseId == updated.CaseId);
+
+        if (index >= 0)
+        {
+            ClientCases[index] = updated;
+        }
+    }
+
+    private void ResetPolicyPanel()
+    {
+        ShowAddPolicy = false;
+        ConfirmingPolicyRemoval = false;
+        PolicyError = null;
+        PolicyMessage = null;
+        ClearNewPolicyForm();
+    }
+
+    private void ClearNewPolicyForm()
+    {
+        NewPolicyName = string.Empty;
+        NewPolicyProvider = string.Empty;
+        NewPolicyPremium = null;
+        NewPolicyCover = null;
+        NewPolicyStart = null;
+        NewPolicyEnd = null;
+    }
+
+    /// <summary>
+    /// Opens or closes the add policy form. The catalogue is loaded the first time it opens;
+    /// if that fails the advisor can still type the details in.
+    /// </summary>
+    private async Task ToggleAddPolicyAsync()
+    {
+        ShowAddPolicy = !ShowAddPolicy;
+        ConfirmingPolicyRemoval = false;
+        PolicyError = null;
+        PolicyMessage = null;
+
+        if (!ShowAddPolicy)
+        {
+            ClearNewPolicyForm();
+            return;
+        }
+
+        if (PolicyCatalogue.Count == 0)
+        {
+            var (catalogue, _) = await PolicyDirectory.GetCatalogueAsync();
+            PolicyCatalogue = catalogue ?? new List<PolicySummary>();
+        }
+    }
+
+    /// <summary>
+    /// Fills the form in from the catalogue item the advisor picked. They can still change anything.
+    /// </summary>
+    private void OnCataloguePicked(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e.Value?.ToString(), out var policyId) || policyId <= 0)
+        {
+            return;
+        }
+
+        var item = PolicyCatalogue.FirstOrDefault(p => p.PolicyId == policyId);
+
+        if (item is null)
+        {
+            return;
+        }
+
+        NewPolicyName = item.PolicyName;
+        NewPolicyProvider = item.Provider;
+        NewPolicyPremium = item.PremiumAmount;
+        NewPolicyCover = item.CoverAmount;
+    }
+
+    /// <summary>
+    /// Gives the client another policy. The API creates the policy and its case together.
+    /// </summary>
+    private async Task AddPolicyAsync()
+    {
+        if (IsAddingPolicy || SelectedClient is null)
+        {
+            return;
+        }
+
+        PolicyError = null;
+        PolicyMessage = null;
+
+        var name = NewPolicyName.Trim();
+        var provider = NewPolicyProvider.Trim();
+
+        if (name.Length == 0 || provider.Length == 0)
+        {
+            PolicyError = "Enter the policy name and the provider.";
+            return;
+        }
+
+        if (NewPolicyPremium < 0 || NewPolicyCover < 0)
+        {
+            PolicyError = "The premium and cover amount can't be negative.";
+            return;
+        }
+
+        if (NewPolicyStart.HasValue && NewPolicyEnd.HasValue && NewPolicyEnd < NewPolicyStart)
+        {
+            PolicyError = "The end date can't be before the start date.";
+            return;
+        }
+
+        var clientId = SelectedClient.ClientId;
+        IsAddingPolicy = true;
+
+        try
+        {
+            var request = new CreateClientPolicyRequest(name, provider, null, NewPolicyPremium, NewPolicyCover, NewPolicyStart, NewPolicyEnd);
+            var (policy, error) = await PolicyDirectory.CreateClientPolicyAsync(clientId, request);
+
+            if (policy is null)
+            {
+                PolicyError = error ?? "The policy couldn't be added. Please try again.";
+                return;
+            }
+
+            // The advisor may have clicked onto another client while this was saving.
+            if (SelectedClient is null || SelectedClient.ClientId != clientId)
+            {
+                return;
+            }
+
+            ShowAddPolicy = false;
+            ClearNewPolicyForm();
+            await LoadCaseForSelectedClient(policy.PolicyId);
+            PolicyMessage = $"{policy.PolicyName} was added.";
+        }
+        finally
+        {
+            IsAddingPolicy = false;
+        }
+    }
+
+    private void AskToRemovePolicy()
+    {
+        ConfirmingPolicyRemoval = true;
+        PolicyError = null;
+        PolicyMessage = null;
+    }
+
+    private void CancelRemovePolicy()
+    {
+        ConfirmingPolicyRemoval = false;
+    }
+
+    private async Task RemovePolicyAsync()
+    {
+        if (IsRemovingPolicy || SelectedCase is null || SelectedClient is null)
+        {
+            return;
+        }
+
+        var removing = SelectedCase;
+        var clientId = SelectedClient.ClientId;
+
+        PolicyError = null;
+        PolicyMessage = null;
+        IsRemovingPolicy = true;
+
+        try
+        {
+            var error = await PolicyDirectory.DeleteAsync(removing.PolicyId);
+
+            if (error is not null)
+            {
+                // e.g. the policy still has documents filed under it.
+                PolicyError = error;
+                return;
+            }
+
+            ConfirmingPolicyRemoval = false;
+
+            if (SelectedClient is null || SelectedClient.ClientId != clientId)
+            {
+                return;
+            }
+
+            await LoadCaseForSelectedClient();
+            PolicyMessage = $"{removing.PolicyName ?? "The policy"} was removed.";
+        }
+        finally
+        {
+            IsRemovingPolicy = false;
+        }
     }
 
     private bool IsStepComplete(CaseStep step)
@@ -511,23 +1093,203 @@
         };
     }
 
+    /// <summary>
+    /// Steps happen in order, so a step can't be ticked until the one before it is done.
+    /// </summary>
+    private bool IsStepLocked(CaseStep step)
+    {
+        return step != CaseStep.DetailsSubmitted && !IsStepComplete((CaseStep)((int)step - 1));
+    }
+
+    private bool IsPolicyClosed => SelectedCase?.PolicyStatus is "Cancelled" or "Matured" or "Lapsed";
+
+    // A finished case shows only its summary; this is the case whose steps were opened anyway.
+    private int? ExpandedStepsCaseId;
+
+    // Profile tabs. The chosen tab is kept when switching clients, so an advisor working
+    // through everyone's documents stays on Documents.
+    private static readonly (string Key, string Label)[] ProfileTabs =
+    {
+        ("overview", "Overview"), ("policies", "Policies"), ("documents", "Documents"),
+        ("tasks", "Tasks"), ("activity", "Activity")
+    };
+
+    private string ActiveProfileTab = "overview";
+
+    /// <summary>
+    /// Left/right arrows, Home and End move between tabs, as screen-reader users expect from a tab list.
+    /// </summary>
+    private async Task OnProfileTabKeyDown(KeyboardEventArgs e)
+    {
+        var index = Array.FindIndex(ProfileTabs, t => t.Key == ActiveProfileTab);
+        var next = e.Key switch
+        {
+            "ArrowRight" => (index + 1) % ProfileTabs.Length,
+            "ArrowLeft" => (index - 1 + ProfileTabs.Length) % ProfileTabs.Length,
+            "Home" => 0,
+            "End" => ProfileTabs.Length - 1,
+            _ => -1
+        };
+        if (next < 0) return;
+
+        ActiveProfileTab = ProfileTabs[next].Key;
+        if (ProfileTabRefs.TryGetValue(ActiveProfileTab, out var tab))
+        {
+            try { await tab.FocusAsync(); }
+            catch (Microsoft.JSInterop.JSDisconnectedException) { }
+        }
+    }
+
+    private readonly Dictionary<string, ElementReference> ProfileTabRefs = new();
+
+    /// <summary>
+    /// The selected policy's case progress card. Shown on both the Overview and Policies tabs.
+    /// </summary>
+    private RenderFragment CaseProgressCard => @<text>
+                           @if (SelectedCase is null)
+                           {
+                              <span class="detail-value">This client has no policies yet. Add one to start tracking their application.</span>
+                           }
+                            else
+                             {
+                               @* Compact case progress: one card instead of a five-row checklist. Steps happen in
+                                  order, so only the next step can be marked, and it gets the one action button. *@
+                               var doneCount = CountCompletedSteps(SelectedCase);
+                               var allDone = doneCount == CaseSteps.Length;
+                               var next = CaseSteps.FirstOrDefault(s => !IsStepComplete(s.Step));
+                               var showSteps = !allDone || ExpandedStepsCaseId == SelectedCase.CaseId;
+
+                               <div class="case-compact @(allDone ? "is-done" : "")" @key="(SelectedCase.CaseId, CaseStepsVersion)">
+                                   <div class="case-compact-head">
+                                       @if (allDone)
+                                       {
+                                           <span class="case-compact-badge" aria-hidden="true">
+                                               <svg viewBox="0 0 16 16"><path d="M3 8.5L6.5 12L13 4.5" /></svg>
+                                           </span>
+                                           <div class="case-compact-summary">
+                                               <strong>All @CaseSteps.Length case steps complete</strong>
+                                               <span>Policy issued @(GetStepDate(CaseStep.PolicyIssued) ?? "")</span>
+                                           </div>
+                                           <button type="button" class="case-compact-toggle"
+                                                   aria-expanded="@(showSteps ? "true" : "false")"
+                                                   @onclick="() => ToggleStepsFor(SelectedCase.CaseId)">
+                                               @(showSteps ? "Hide steps" : "View steps")
+                                           </button>
+                                       }
+                                       else
+                                       {
+                                           <div class="case-compact-summary">
+                                               <strong>@doneCount of @CaseSteps.Length steps complete</strong>
+                                               <span>Next: @next.Label</span>
+                                           </div>
+                                           @if (IsPolicyClosed)
+                                           {
+                                               <span class="case-compact-closed">Policy @SelectedCase.PolicyStatus?.ToLowerInvariant()</span>
+                                           }
+                                           else
+                                           {
+                                               <button type="button" class="nx-btn nx-btn-primary nx-btn-sm case-compact-action"
+                                                       disabled="@IsMarkingStep"
+                                                       @onclick="() => MarkStep(next.Step)">
+                                                   @(IsMarkingStep ? "Saving…" : $"Mark {next.Label.ToLowerInvariant()} done")
+                                               </button>
+                                           }
+                                       }
+                                   </div>
+
+                                   <span class="case-compact-bar" role="progressbar" aria-label="Case progress"
+                                         aria-valuemin="0" aria-valuemax="@CaseSteps.Length" aria-valuenow="@doneCount">
+                                       @for (var i = 0; i < CaseSteps.Length; i++)
+                                       {
+                                           <i class="@(i < doneCount ? "is-done" : i == doneCount ? "is-next" : "")"></i>
+                                       }
+                                   </span>
+
+                                   @if (showSteps)
+                                   {
+                                       <ol class="case-compact-steps">
+                                           @foreach (var (step, label) in CaseSteps)
+                                           {
+                                               var complete = IsStepComplete(step);
+                                               var isNext = !allDone && step == next.Step;
+                                               var stepDate = GetStepDate(step);
+                                               <li class="@(complete ? "is-done" : isNext ? "is-next" : "")"
+                                                   title="@(complete ? $"{label}: done {stepDate}" : isNext ? $"{label}: next step" : $"{label}: not started")">
+                                                   <span class="case-compact-dot" aria-hidden="true">
+                                                       @if (complete) { <svg viewBox="0 0 16 16"><path d="M3 8.5L6.5 12L13 4.5" /></svg> }
+                                                   </span>
+                                                   <span class="case-compact-label">@label</span>
+                                                   <span class="case-compact-date">@(complete ? stepDate : isNext ? "Next" : "")</span>
+                                               </li>
+                                           }
+                                       </ol>
+                                   }
+                               </div>
+                            }
+    </text>;
+
+    private void ToggleStepsFor(int caseId) =>
+        ExpandedStepsCaseId = ExpandedStepsCaseId == caseId ? null : caseId;
+
+    private async Task ReloadPolicyStatusAsync() => await LoadCaseForSelectedClient();
+
     private async Task MarkStep(CaseStep step)
     {
-        if (SelectedCase is null)
+        if (SelectedCase is null || IsMarkingStep || IsPolicyClosed)
         {
             return;
         }
 
-        var (updated, error) = await CaseDirectory.MarkStepCompleteAsync(SelectedCase.CaseId, step);
-
-        if (error is not null)
+        if (IsStepComplete(step) || IsStepLocked(step))
         {
-            CaseError = error;
+            // Shouldn't be clickable, but put the tick box back if it was.
+            CaseStepsVersion++;
             return;
         }
 
-        SelectedCase = updated;
-        CaseError = null;
+        var caseId = SelectedCase.CaseId;
+        IsMarkingStep = true;
+
+        try
+        {
+            var (updated, error) = await CaseDirectory.MarkStepCompleteAsync(caseId, step);
+
+            // The advisor may have clicked onto another client while this was saving.
+            if (SelectedCase is null || SelectedCase.CaseId != caseId)
+            {
+                return;
+            }
+
+            if (error is not null || updated is null)
+            {
+                CaseError = error ?? "The step couldn't be saved. Please try again.";
+
+                // Load what is actually saved, in case the step went through before the error.
+                if (SelectedClient is not null)
+                {
+                    var (cases, reloadError) = await CaseDirectory.GetForClientAsync(SelectedClient.ClientId);
+                    var saved = cases.FirstOrDefault(c => c.CaseId == caseId);
+
+                    if (reloadError is null && saved is not null && SelectedCase?.CaseId == caseId)
+                    {
+                        SelectedCase = saved;
+                        ReplaceCaseInList(saved);
+                    }
+                }
+
+                // The browser already ticked the box, so rebuild the list to match what is saved.
+                CaseStepsVersion++;
+                return;
+            }
+
+            SelectedCase = updated;
+            ReplaceCaseInList(updated);
+            CaseError = null;
+        }
+        finally
+        {
+            IsMarkingStep = false;
+        }
     }
 
     private string? GetStepDate(CaseStep step)
@@ -753,10 +1515,12 @@
             return;
         }
 
-        ClientResults.RemoveAll(c => c.ClientId == deleted.ClientId);
+        if (ClientResults.RemoveAll(c => c.ClientId == deleted.ClientId) > 0) TotalClients = Math.Max(0, TotalClients - 1);
         ConfirmingDelete = false;
         SelectedClient = null;
         SelectedCase = null;
+        ClientCases = new();
+        ResetPolicyPanel();
         ShowListMessage($"{deleted.FirstName} {deleted.LastName} was deleted.");
     }
 
